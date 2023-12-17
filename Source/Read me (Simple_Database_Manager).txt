@@ -1,0 +1,10 @@
+Simple Database Manager with Eris Kallisti Dyskordia
+wersja 2023.12.15
+
+MIT License
+
+Copyright (c) 2023 Jacek Mulawka
+
+j.mulawka@interia.pl
+
+https://github.com/jacek-mulawka

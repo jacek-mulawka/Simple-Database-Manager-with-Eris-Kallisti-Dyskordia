@@ -1,0 +1,17 @@
+﻿aa
+Potwierdź
+Tak
+tak
+-->Hint=1
+-->Hint=
+', '
+' );
+    Translation__Component__Add( '
+ID_TAB_COL
+id
+ID
+ID_
+_55
+abc
+123
+aBc

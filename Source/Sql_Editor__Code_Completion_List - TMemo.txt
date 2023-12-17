@@ -1,0 +1,52 @@
+﻿     , 
+     , (case#13#10         when ( T1.C1 > 3320 ) then#13#10           T1.C1#13#10         else#13#10           T1.C2#13#10       end) as ALIAS
+abs( | )
+cast( 'NOW' as timestamp )
+cast(  '13' as varchar( 3 )  )
+cast(  substring( | from 1 for 50 ) as varchar( 50 )  )
+char_length( | )
+ceil( | )
+character_length( | )
+coalesce( |, |, | )
+collate PXW_PLK
+count( | )
+CURRENT_DATE
+CURRENT_TIME
+CURRENT_TIMESTAMP
+dateadd( 2 year to | )
+dateadd: month, day, hour, minute, second, millisecond
+datediff( month, |, | )
+datediff: year, month, week, day, hour, minute, second, millisecond
+delete from 
+distinct 
+extract( year from | )
+extract: month, day, hour, minute, second, millisecond
+first 
+floor( | )
+group by 
+iif( | = 'M', 'Yes', 'No' )
+insert into  values 
+insert into table#13#10    (#13#10        C1#13#10      , C2#13#10    )#13#10  values#13#10    (#13#10        v_c1#13#10      , ( select C2 from T2 where ... )#13#10    )
+lower( | )
+max( | )
+min( | )
+from 
+order by 
+position( 'pattern', T1.C1 )
+RDB$DATABASE
+replace( |, 'old_pattern', 'new_pattern' )
+round( | )
+round( |, 0 )
+select 
+strlen( | )
+substr( | , 6, 7 )
+substring( | from 2 )
+substring( | from 1 for 2 )
+trim( | )
+trunc( | )
+union 
+update 
+upper( | )
+/*
+*/
+--

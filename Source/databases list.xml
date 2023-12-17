@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databases>
+  <database>
+    <alias>Test 1</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_none</component_type>
+    <database_type>Empty 1</database_type>
+    <fire_dac__driver_id></fire_dac__driver_id>
+    <fire_dac__file_path></fire_dac__file_path>
+    <fire_dac__parameters></fire_dac__parameters>
+    <login_prompt>0</login_prompt>
+    <password></password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>user 1</user_name>
+  </database>
+  <database>
+    <alias>Database Abc</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_none</component_type>
+    <database_type>FireBird 3.0</database_type>
+    <fire_dac__driver_id></fire_dac__driver_id>
+    <fire_dac__file_path></fire_dac__file_path>
+    <fire_dac__parameters></fire_dac__parameters>
+    <login_prompt>0</login_prompt>
+    <password></password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>User 2</user_name>
+  </database>
+  <database>
+    <alias>FireBird example Employee.fdb (FDac)</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_FireDAC</component_type>
+    <database_type>FireBird 3.0</database_type>
+    <fire_dac__driver_id>FB</fire_dac__driver_id>
+    <fire_dac__file_path>C:\Program Files\Firebird\examples\empbuild\employee.fdb</fire_dac__file_path>
+    <fire_dac__parameters>CharacterSet=utf8
+</fire_dac__parameters>
+    <login_prompt>0</login_prompt>
+    <password>masterkey</password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>SYSDBA</user_name>
+  </database>
+  <database>
+    <alias>Help (FDac)</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_FireDAC</component_type>
+    <database_type>FireBird 3.0</database_type>
+    <fire_dac__driver_id>FB</fire_dac__driver_id>
+    <fire_dac__file_path>C:\Program Files\Firebird\help\help.fdb</fire_dac__file_path>
+    <fire_dac__parameters>CharacterSet=utf8
+</fire_dac__parameters>
+    <login_prompt>1</login_prompt>
+    <password>masterkey</password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>SYSDBA</user_name>
+  </database>
+  <database>
+    <alias>Test (ADO + FDac)</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_ADO</component_type>
+    <database_type>FireBird 3.0</database_type>
+    <fire_dac__driver_id>FB</fire_dac__driver_id>
+    <fire_dac__file_path></fire_dac__file_path>
+    <fire_dac__parameters>aaa=123
+bbb=456</fire_dac__parameters>
+    <login_prompt>1</login_prompt>
+    <password></password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>User 3</user_name>
+  </database>
+  <database>
+    <alias>Test 4 (x!)</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_FireDAC</component_type>
+    <database_type>Empty 1</database_type>
+    <fire_dac__driver_id></fire_dac__driver_id>
+    <fire_dac__file_path></fire_dac__file_path>
+    <fire_dac__parameters>Server=127.0.0.1
+CharacterSet=utf8</fire_dac__parameters>
+    <login_prompt>0</login_prompt>
+    <password>123abą</password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>&lt;123&gt; User 4</user_name>
+  </database>
+  <database>
+    <alias>æ</alias>
+    <ado__connection_string>string</ado__connection_string>
+    <component_type>ct_none</component_type>
+    <database_type>FireBird 3.0</database_type>
+    <fire_dac__driver_id></fire_dac__driver_id>
+    <fire_dac__file_path>plik</fire_dac__file_path>
+    <fire_dac__parameters></fire_dac__parameters>
+    <login_prompt>0</login_prompt>
+    <password>hasło</password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>user æ</user_name>
+  </database>
+  <database>
+    <alias>01AAA (FDac)</alias>
+    <ado__connection_string></ado__connection_string>
+    <component_type>ct_FireDAC</component_type>
+    <database_type>FireBird 3.0</database_type>
+    <fire_dac__driver_id>FB</fire_dac__driver_id>
+    <fire_dac__file_path>E:\00 E\01AAA.FDB</fire_dac__file_path>
+    <fire_dac__parameters>CharacterSet=utf8</fire_dac__parameters>
+    <login_prompt>0</login_prompt>
+    <password>masterkey</password>
+    <sql__parameter_sign>:</sql__parameter_sign>
+    <sql__quotation_sign>"</sql__quotation_sign>
+    <user_name>SYSDBA</user_name>
+  </database>
+</databases>
