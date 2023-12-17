@@ -1,0 +1,5 @@
+﻿
+by BLOB descriptor
+by descriptor
+by reference
+by value

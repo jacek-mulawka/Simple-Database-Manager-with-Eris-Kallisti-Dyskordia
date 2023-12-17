@@ -1,0 +1,13 @@
+﻿Hints and descriptions source: http://www.destructor.de/firebird/gbak.htm
+ 
+|-BUFFERS|Override page buffers default.|Set cache size for restored database.|
+|-FIX_FSS_DATA|Fix malformed UNICODE_FSS data.|Repair malformed UNICODE_FSS data during Restore [Firebird 2.5].|<charset>|
+|-FIX_FSS_METADATA|Fix malformed UNICODE_FSS metadata.|Repair malformed UNICODE_FSS metadata during Restore [Firebird 2.5].|<charset>|
+|-INACTIVE|Deactivate indexes during restore.|All indexes will be restored as INACTIVE.|
+|-KILL|Restore without creating shadows.|Does not create shadows that are defined in the backup.|
+|-MODE|"Read_only" or "read_write" access.|read_write - Restores to a read/write database (This is the default). read_only - restores to a read-only database.|read_write|read_only|
+|-NO_VALIDITY|Do not restore database validity conditions.|Does not restore validity constraints. So you can restore data that does not meet these constraints and could not be restored otherwise.|
+|-ONE_AT_A_TIME|Restore one table at a time.|Usually the restore takes place in one single transaction for the whole database. This switch puts a commit after each table. So you can use this to partially restore databases with corrupt table data.|
+|-PAGE_SIZE|Override default page size.|Sets page size of new database. <size> can be one of 1024, 2048, 4096, 8192. Default is 1024.|4096|1024|2048|4096|8192|
+V|-REPLACE_DATABASE|Replace database from backup file restore.|Restores over an existing database. This can only be performed by SYSDBA or the owner of the database that is overwritten. Do NOT restore over a database that is in use! [Firebird 1.0, 1.5].|
+|-USE_ALL_SPACE|Do not reserve space for record versions.|Normally, on restore, database pages will be filled to about 80 %. With the use_all_space option, database pages will be filled to 100 %. (Useful for read-only databases which will see no more modifications.)|

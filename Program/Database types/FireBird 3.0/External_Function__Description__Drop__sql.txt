@@ -1,0 +1,1 @@
+﻿comment on function __EXTERNAL_FUNCTION_NAME__ is null 

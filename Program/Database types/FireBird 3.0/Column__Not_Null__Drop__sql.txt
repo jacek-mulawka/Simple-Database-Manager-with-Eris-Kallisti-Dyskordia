@@ -1,0 +1,1 @@
+﻿alter table __TABLE_NAME__ alter __COLUMN_NAME__ drop not null 

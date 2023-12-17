@@ -1,0 +1,217 @@
+﻿select RDB$FUNCTIONS.RDB$FUNCTION_NAME as EXTERNAL_FUNCTION_NAME
+     , RDB$FUNCTIONS.RDB$MODULE_NAME
+     , RDB$FUNCTIONS.RDB$ENTRYPOINT
+/*     , cast(  substring( RDB$FUNCTIONS.RDB$DESCRIPTION from 1 for 10000 ) as varchar( 10000 )  ) as DESCRIPTION_VALUE__CAST*/
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+     , cast(  substring( RDB$FUNCTIONS.RDB$DESCRIPTION from 1 for 8191 ) as varchar( 8191 )  ) as DESCRIPTION_VALUE__CAST
+
+     , (
+         select cast
+                  (
+                      substring
+                        (
+                          list( ' ' || t.FIELD_TYPE )
+                          from 1 for 255
+                        )
+                    as varchar( 255 )
+                  )
+         from
+           (
+             select (case
+                      RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE
+                      when 7 then
+                        (case
+                          RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE
+                          when 1 then
+                            'Numeric'
+
+                          when 2 then
+                            'Decimal'
+
+                          else
+                            'Smallint'
+                        end)
+
+                      when 8 then
+                        (case
+                          RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE
+                          when 1 then
+                            'Numeric'
+
+                          when 2 then
+                            'Decimal'
+
+                          else
+                            'Integer'
+                        end)
+
+                      when 9 then
+                        'Quad'
+
+                      when 10 then
+                        'Float'
+
+                      when 12 then
+                        'Date'
+
+                      when 13 then
+                        'Time'
+
+                      when 14 then
+                        'Char'
+
+                      when 16 then
+                        (case
+                          RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE
+                          when 1 then
+                            'Numeric'
+
+                          when 2 then
+                            'Decimal'
+
+                          else
+                            'Bigint'
+                        end)
+
+                      when 23 then
+                        'Boolean'
+
+                      when 27 then
+                        'Double precision'
+
+                      when 35 then
+                        'Timestamp'
+
+                      when 37 then
+                        'Varchar'
+
+                      when 40 then
+                        'Cstring'
+
+                      when 45 then
+                        'Blob_Id'
+
+                      when 261 then
+                       'Blob'
+
+                      else
+                        RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE||' <?>'
+                    end)||
+                    iif(   RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 37 ) or ( RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 7, 8, 16, 27 ) and RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE = 2  ), '( '||coalesce( RDB$FUNCTION_ARGUMENTS.RDB$CHARACTER_LENGTH, RDB$FUNCTION_ARGUMENTS.RDB$FIELD_PRECISION, '' )||iif(  RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 7, 8, 16 ) and RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE = 2 and RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SCALE is not null, ', '||cast(  abs( RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SCALE ) as smallint  ), ''  )||' )', ''   )||
+                    iif(  RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 40 ), '( '||RDB$FUNCTION_ARGUMENTS.RDB$FIELD_LENGTH||' )', ''  )||
+                    cast(   substring(  coalesce( ' '||RDB$FUNCTION_ARGUMENTS.RDB$DEFAULT_SOURCE, '' ) from 1 for 255  ) as varchar( 255 )   )||
+                    iif(  RDB$FUNCTION_ARGUMENTS.RDB$NULL_FLAG = 1, ' not null', trim( '' )  )||
+                    coalesce(  ' collate '||trim( RDB$COLLATIONS.RDB$COLLATION_NAME ), ''  )
+                    as FIELD_TYPE
+
+             from RDB$FUNCTION_ARGUMENTS
+             left join RDB$COLLATIONS on RDB$COLLATIONS.RDB$COLLATION_ID = RDB$FUNCTION_ARGUMENTS.RDB$COLLATION_ID
+             where RDB$FUNCTION_ARGUMENTS.RDB$FUNCTION_NAME = RDB$FUNCTIONS.RDB$FUNCTION_NAME
+             order by RDB$FUNCTION_ARGUMENTS.RDB$ARGUMENT_POSITION
+           ) as t
+       ) as PARAMETERS__CAST
+
+     , RDB$FUNCTIONS.RDB$OWNER_NAME as OWNER_NAME
+     , RDB$FUNCTIONS.RDB$FUNCTION_ID
+     , RDB$FUNCTIONS.RDB$DESCRIPTION as DESCRIPTION_VALUE
+
+     , (
+         select list( ' ' || t.FIELD_TYPE )
+         from
+           (
+             select (case
+                      RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE
+                      when 7 then
+                        (case
+                          RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE
+                          when 1 then
+                            'Numeric'
+
+                          when 2 then
+                            'Decimal'
+
+                          else
+                            'Smallint'
+                        end)
+
+                      when 8 then
+                        (case
+                          RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE
+                          when 1 then
+                            'Numeric'
+
+                          when 2 then
+                            'Decimal'
+
+                          else
+                            'Integer'
+                        end)
+
+                      when 9 then
+                        'Quad'
+
+                      when 10 then
+                        'Float'
+
+                      when 12 then
+                        'Date'
+
+                      when 13 then
+                        'Time'
+
+                      when 14 then
+                        'Char'
+
+                      when 16 then
+                        (case
+                          RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE
+                          when 1 then
+                            'Numeric'
+
+                          when 2 then
+                            'Decimal'
+
+                          else
+                            'Bigint'
+                        end)
+
+                      when 23 then
+                        'Boolean'
+
+                      when 27 then
+                        'Double precision'
+
+                      when 35 then
+                        'Timestamp'
+
+                      when 37 then
+                        'Varchar'
+
+                      when 40 then
+                        'Cstring'
+
+                      when 45 then
+                        'Blob_Id'
+
+                      when 261 then
+                       'Blob'
+
+                      else
+                        RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE||' <?>'
+                    end)||
+                    iif(   RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 37 ) or ( RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 7, 8, 16, 27 ) and RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE = 2  ), '( '||coalesce( RDB$FUNCTION_ARGUMENTS.RDB$CHARACTER_LENGTH, RDB$FUNCTION_ARGUMENTS.RDB$FIELD_PRECISION, '' )||iif(  RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 7, 8, 16 ) and RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SUB_TYPE = 2 and RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SCALE is not null, ', '||cast(  abs( RDB$FUNCTION_ARGUMENTS.RDB$FIELD_SCALE ) as smallint  ), ''  )||' )', ''   )||
+                    iif(  RDB$FUNCTION_ARGUMENTS.RDB$FIELD_TYPE in ( 40 ), '( '||RDB$FUNCTION_ARGUMENTS.RDB$FIELD_LENGTH||' )', ''  )||
+                    cast(   substring(  coalesce( ' '||RDB$FUNCTION_ARGUMENTS.RDB$DEFAULT_SOURCE, '' ) from 1 for 255  ) as varchar( 255 )   )||
+                    iif(  RDB$FUNCTION_ARGUMENTS.RDB$NULL_FLAG = 1, ' not null', trim( '' )  )||
+                    coalesce(  ' collate '||trim( RDB$COLLATIONS.RDB$COLLATION_NAME ), ''  )
+                    as FIELD_TYPE
+
+             from RDB$FUNCTION_ARGUMENTS
+             left join RDB$COLLATIONS on RDB$COLLATIONS.RDB$COLLATION_ID = RDB$FUNCTION_ARGUMENTS.RDB$COLLATION_ID
+             where RDB$FUNCTION_ARGUMENTS.RDB$FUNCTION_NAME = RDB$FUNCTIONS.RDB$FUNCTION_NAME
+             order by RDB$FUNCTION_ARGUMENTS.RDB$ARGUMENT_POSITION
+           ) as t
+       ) as PARAMETERS
+
+from RDB$FUNCTIONS
+order by RDB$FUNCTIONS.RDB$FUNCTION_NAME

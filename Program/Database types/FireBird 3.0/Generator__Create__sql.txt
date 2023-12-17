@@ -1,0 +1,1 @@
+﻿create generator __GENERATOR_NAME__ 

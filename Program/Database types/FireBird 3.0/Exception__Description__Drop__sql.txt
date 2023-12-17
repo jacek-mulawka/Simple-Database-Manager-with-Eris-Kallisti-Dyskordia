@@ -1,0 +1,1 @@
+﻿comment on exception __EXCEPTION_NAME__ is null 

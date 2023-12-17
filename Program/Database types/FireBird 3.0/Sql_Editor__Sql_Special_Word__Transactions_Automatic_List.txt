@@ -1,0 +1,7 @@
+﻿delete from 
+insert into 
+update 
+
+DELETE FROM 
+INSERT INTO 
+UPDATE 

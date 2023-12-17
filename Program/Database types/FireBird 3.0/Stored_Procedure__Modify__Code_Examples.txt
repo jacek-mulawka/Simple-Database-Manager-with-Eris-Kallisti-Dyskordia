@@ -1,0 +1,27 @@
+﻿  declare variable ZTI integer;
+  declare variable ZTD decimal( 12, 2 );
+  declare variable ZTS varchar( 1000 );
+BEGIN
+
+  ZTS = 'select T1.C1
+              , T1.C2
+         from T1
+         where T1.C2 = 123 ';
+
+  ZTS = ZTS||' order by T1.C3 ';
+
+
+  for execute statement :ZTS
+  into :ZTI,
+       :ZTD
+  do
+    begin
+
+      if ( ZTI is null ) then
+        ZTI = 0;
+
+      suspend;
+
+    end
+
+END

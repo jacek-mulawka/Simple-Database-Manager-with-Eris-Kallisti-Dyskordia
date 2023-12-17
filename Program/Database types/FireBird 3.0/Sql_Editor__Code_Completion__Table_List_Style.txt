@@ -1,0 +1,1 @@
+﻿\color{clHighlight}__table__ \color{clWindowText}\column{}\style{+B}__TABLE_NAME__\style{-B}

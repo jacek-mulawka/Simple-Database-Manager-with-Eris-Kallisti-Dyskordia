@@ -1,0 +1,14 @@
+﻿
+Char ( 10 )
+Date
+Decimal ( 12, 2 )
+Double precision
+Float
+Integer
+Integer not null
+Numeric
+Smallint
+Time
+Timestamp
+Varchar ( 50 )
+Varchar ( 50 ) collate PXW_PLK

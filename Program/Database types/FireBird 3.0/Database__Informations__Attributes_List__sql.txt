@@ -1,0 +1,114 @@
+﻿select 'Default character set' as ATTRIBUTE_NAME
+     , RDB$DATABASE.RDB$CHARACTER_SET_NAME as ATTRIBUTE_VALUE
+from RDB$DATABASE
+
+union all
+
+select 'Description' as ATTRIBUTE_NAME
+     , RDB$DATABASE.RDB$DESCRIPTION as ATTRIBUTE_VALUE
+from RDB$DATABASE
+
+
+union all
+
+
+select 'Backup state' as ATTRIBUTE_NAME
+     , (case
+         MON$DATABASE.MON$BACKUP_STATE
+         when 0 then
+           'Normal'
+
+         when 1 then
+           'Stalled'
+
+         when 2 then
+           'Merge'
+
+         else
+           MON$DATABASE.MON$BACKUP_STATE
+       end) as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select '(Re)creation date' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$CREATION_DATE as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'Database name' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$DATABASE_NAME as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'Owner' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$OWNER as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'Page size' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$PAGE_SIZE as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'Read only' as ATTRIBUTE_NAME
+     , (case
+         MON$DATABASE.MON$READ_ONLY
+         when 0 then
+           'Read write'
+
+         when 1 then
+           'Read only'
+
+         else
+           MON$DATABASE.MON$READ_ONLY
+       end) as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'Reserve space' as ATTRIBUTE_NAME
+     , (case
+         MON$DATABASE.MON$RESERVE_SPACE
+         when 0 then
+           'Use all space'
+
+         when 1 then
+           'Reserve space'
+
+         else
+           MON$DATABASE.MON$RESERVE_SPACE
+       end) as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'Shutdown mode' as ATTRIBUTE_NAME
+     , (case
+         MON$DATABASE.MON$SHUTDOWN_MODE
+         when 0 then
+           'The database is online'
+
+         when 1 then
+           'Multi-user shutdown'
+
+         when 2 then
+           'Single-user shutdown'
+
+         when 3 then
+           'Full shutdown'
+
+         else
+           MON$DATABASE.MON$SHUTDOWN_MODE
+       end) as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+union all
+
+select 'SQL dialect' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$SQL_DIALECT as ATTRIBUTE_VALUE
+from MON$DATABASE

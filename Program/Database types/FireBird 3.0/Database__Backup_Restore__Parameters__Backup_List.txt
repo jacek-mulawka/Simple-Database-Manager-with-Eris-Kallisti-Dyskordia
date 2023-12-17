@@ -1,0 +1,12 @@
+﻿Hints and descriptions source: http://www.destructor.de/firebird/gbak.htm
+ 
+|-CONVERT|Backup external files as tables.|Converts external tables to internal tables.|
+|-EXPAND|No data compression.|Creates an uncompressed backup.|
+|-FACTOR|Blocking factor.|Blocking factor for tape device.|
+V|-GARBAGE_COLLECT|Inhibit garbage collection.|Does not perform garbage collection during backup, so the backup will be faster. When you plan to da a Restore or Sweep anyway after the backup.|
+|-IGNORE|Ignore bad checksums.|Ignores checksum errors while backing up.|
+|-LIMBO|Ignore transactions in limbo.|Ignores limbo transactions while backing up.|
+|-NODBTRIGGERS|Do not run database triggers.|Suppresses Database Triggers from running [Firebird 2.1].|
+|-NT|Non-Transportable backup file format.|Non-transportable format (use only when you know you will restore on same platform and database version).|
+|-OLD_DESCRIPTIONS|Save old style metadata descriptions.||
+V|-TRANSPORTABLE|Transportable backup -- data in XDR format.|Creates a transportable backup (transportable between platforms and server versions). This is the default.|

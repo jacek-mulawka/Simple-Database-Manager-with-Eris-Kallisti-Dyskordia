@@ -1,0 +1,82 @@
+﻿select RDB$TRIGGERS.RDB$TRIGGER_NAME as TRIGGER_NAME
+     , iif( RDB$TRIGGERS.RDB$TRIGGER_INACTIVE = 0, 'V', '' ) as TRIGGER_ACTIVE
+     , RDB$TRIGGERS.RDB$TRIGGER_SEQUENCE as TRIGGER_SEQUENCE
+
+     , (case
+         RDB$TRIGGERS.RDB$TRIGGER_TYPE
+         when 1 then
+           'before insert'
+
+         when 2 then
+           'after insert'
+
+         when 3 then
+           'before update'
+
+         when 4 then
+           'after update'
+
+         when 5 then
+           'before delete'
+
+         when 6 then
+           'after delete'
+
+         when 17 then
+           'before insert or update'
+
+         when 18 then
+           'after insert or update'
+
+         when 25 then
+           'before delete or insert'
+
+         when 26 then
+           'after delete or insert'
+
+         when 27 then
+           'before delete or update'
+
+         when 28 then
+           'after delete or update'
+
+         when 77 then
+           'before delete or insert or update'
+
+         when 78 then
+           'after delete or insert or update'
+
+         when 113 then
+           'before delete or insert or update'
+
+         when 114 then
+           'after delete or insert or update'
+
+         when 8192 then
+           'on connect'
+
+         when 8193 then
+           'on disconnect'
+
+         when 8194 then
+           'on transaction start'
+
+         when 8195 then
+           'on transaction commit'
+
+         when 8196 then
+           'on transaction rollback'
+
+         else
+           RDB$TRIGGERS.RDB$TRIGGER_TYPE||' <?>'
+       end) as TRIGGER_TYPE
+
+/*     , cast(  substring( RDB$TRIGGERS.RDB$DESCRIPTION from 1 for 10000 ) as varchar( 10000 )  ) as DESCRIPTION_VALUE__CAST*/
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+     , cast(  substring( RDB$TRIGGERS.RDB$DESCRIPTION from 1 for 8191 ) as varchar( 8191 )  ) as DESCRIPTION_VALUE__CAST
+     , RDB$TRIGGERS.RDB$DESCRIPTION as DESCRIPTION_VALUE
+     , RDB$TRIGGERS.RDB$TRIGGER_SOURCE as TRIGGER_SOURCE
+     , RDB$TRIGGERS.RDB$TRIGGER_TYPE as TRIGGER_TYPE_NUMBER
+from RDB$TRIGGERS
+where RDB$TRIGGERS.RDB$RELATION_NAME is null
+order by RDB$TRIGGERS.RDB$TRIGGER_SEQUENCE 

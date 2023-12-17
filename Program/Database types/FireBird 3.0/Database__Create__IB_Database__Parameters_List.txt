@@ -1,0 +1,5 @@
+﻿user '__USER_NAME__'
+password '__USER__PASSWORD__'
+page_size __PAGE_SIZE__
+default character set __DEFAULT_CHARACTER_SET__
+collation __COLLATION__

@@ -1,0 +1,13 @@
+﻿select RDB$ROLES.RDB$ROLE_NAME as ROLE_NAME
+     , RDB$ROLES.RDB$OWNER_NAME as OWNER_NAME
+/*     , cast(  substring( RDB$ROLES.RDB$DESCRIPTION from 1 for 10000 ) as varchar( 10000 )  ) as DESCRIPTION_VALUE__CAST*/
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+     , cast(  substring( RDB$ROLES.RDB$DESCRIPTION from 1 for 8191 ) as varchar( 8191 )  ) as DESCRIPTION_VALUE__CAST
+     , RDB$ROLES.RDB$DESCRIPTION as DESCRIPTION_VALUE
+     , RDB$ROLES.RDB$SYSTEM_FLAG
+     , RDB$ROLES.RDB$SECURITY_CLASS
+from RDB$ROLES
+where (
+           RDB$ROLES.RDB$SYSTEM_FLAG = 0
+        or 1 = :system_tables_visible
+      ) 

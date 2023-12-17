@@ -1,0 +1,26 @@
+﻿execute block
+/* returns (  GENERATOR_NAME varchar( 100 ), GENERATOR_VALUE bigint, DESCRIPTION_VALUE varchar( 10000 )  ) */
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+returns (  GENERATOR_NAME varchar( 100 ), GENERATOR_VALUE bigint, DESCRIPTION_VALUE varchar( 8191 )  )
+as
+begin
+
+  for
+    select trim( RDB$GENERATORS.RDB$GENERATOR_NAME )
+         , RDB$GENERATORS.RDB$DESCRIPTION
+    from RDB$GENERATORS
+    where RDB$GENERATORS.RDB$SYSTEM_FLAG is distinct from 1
+    /*order by RDB$GENERATORS.RDB$GENERATOR_NAME*/
+    into GENERATOR_NAME
+       , DESCRIPTION_VALUE
+  do
+      begin
+
+        execute statement
+          'select gen_id( "' || GENERATOR_NAME || '", 0 ) from RDB$DATABASE '
+          into GENERATOR_VALUE;
+
+        suspend;
+
+      end
+end

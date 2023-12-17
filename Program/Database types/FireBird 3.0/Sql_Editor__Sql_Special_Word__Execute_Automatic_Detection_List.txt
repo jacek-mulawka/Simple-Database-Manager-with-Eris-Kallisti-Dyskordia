@@ -1,0 +1,17 @@
+﻿alter 
+create 
+delete from 
+drop 
+insert into 
+recreate 
+set 
+update 
+
+ALTER 
+CREATE 
+DELETE FROM 
+DROP 
+INSERT INTO 
+RECREATE 
+SET 
+UPDATE 

@@ -1,0 +1,14 @@
+﻿select RDB$EXCEPTIONS.RDB$EXCEPTION_NAME as EXCEPTION_NAME
+/*     , cast(  substring( RDB$EXCEPTIONS.RDB$MESSAGE from 1 for 10000 ) as varchar( 10000 )  ) as EXCEPTION_MESSAGE_VALUE__CAST*/
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+     , cast(  substring( RDB$EXCEPTIONS.RDB$MESSAGE from 1 for 8191 ) as varchar( 8191 )  ) as EXCEPTION_MESSAGE_VALUE__CAST
+/*     , cast(  substring( RDB$EXCEPTIONS.RDB$DESCRIPTION from 1 for 10000 ) as varchar( 10000 )  ) as DESCRIPTION_VALUE__CAST*/
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+     , cast(  substring( RDB$EXCEPTIONS.RDB$DESCRIPTION from 1 for 8191 ) as varchar( 8191 )  ) as DESCRIPTION_VALUE__CAST
+     , RDB$EXCEPTIONS.RDB$OWNER_NAME as OWNER_NAME
+     , RDB$EXCEPTIONS.RDB$EXCEPTION_NUMBER
+     , RDB$EXCEPTIONS.RDB$DESCRIPTION as DESCRIPTION_VALUE
+     , RDB$EXCEPTIONS.RDB$MESSAGE as EXCEPTION_MESSAGE_VALUE
+     , RDB$EXCEPTIONS.RDB$SYSTEM_FLAG
+     , RDB$EXCEPTIONS.RDB$SECURITY_CLASS
+from RDB$EXCEPTIONS 

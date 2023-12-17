@@ -1,0 +1,1 @@
+﻿drop exception __EXCEPTION_NAME__ 

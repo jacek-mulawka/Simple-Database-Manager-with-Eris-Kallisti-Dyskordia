@@ -1,0 +1,5 @@
+﻿recreate trigger __TRIGGER_NAME__ 
+__TRIGGER_ACTIVITY__ 
+__TRIGGER_EVENT__ 
+position __TRIGGER_SEQUENCE__ 
+__TRIGGER_SOURCE__ 

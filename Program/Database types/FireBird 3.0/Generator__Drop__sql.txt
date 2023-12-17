@@ -1,0 +1,1 @@
+﻿drop generator __GENERATOR_NAME__ 

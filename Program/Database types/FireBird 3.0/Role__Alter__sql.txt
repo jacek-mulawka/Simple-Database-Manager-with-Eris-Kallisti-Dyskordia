@@ -1,0 +1,2 @@
+﻿alter role __ROLE_NAME__ 
+__PRIVILEGES_LIST__ 

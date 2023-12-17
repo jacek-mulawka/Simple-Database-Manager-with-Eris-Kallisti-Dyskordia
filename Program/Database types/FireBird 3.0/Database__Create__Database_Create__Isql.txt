@@ -1,0 +1,1 @@
+﻿create database "__DATABASE_FILE_PATH__" 

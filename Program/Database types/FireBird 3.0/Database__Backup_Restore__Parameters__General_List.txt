@@ -1,0 +1,15 @@
+﻿Hints and descriptions source: http://www.destructor.de/firebird/gbak.htm
+ 
+|-FETCH_PASSWORD|Fetch password from file.|Instead of -password: Fetch password from the file so it is not visible in the command line. When <filename> is stdin, the user will be prompted for the password. [Firebird 2.5].|<quotation_sign><filename><quotation_sign>|
+|-META_DATA|Backup or restore metadata only.|Only backs up/restores metadata (schema). No table data will be re/stored.|
+V|-PASSWORD <password>|Firebird password.|Database password.|
+|-ROLE|Firebird SQL role.|Connect as role.|<role>|
+|-SERVICE|Use services manager.|Backup: Creates the backup file on the database server, using the Service Manager. Restore: Creates the database from a backup file on the server, using the Service Manager. The backup file, database file, and log file all must reside on the filesystem of this server. So all path names (for database file, backup file, log file) must be specified as viewed from the server's perspective, even when this is called from a remote machine.|
+|-SKIP_DATA|Skip data for table.||
+|-STATISTICS TDRW|Show statistics: T - time from start, D - delta time, R - page reads, W - page writes.||
+|-TRUSTED|Use trusted authentication.||
+V|-USER <user_name>|Firebird user name.|Database user name.|
+V|-VERIFY|Report each action taken.|Verbose (verify) output of what GBAK is doing.|
+|-VERBINT|Verbose information with explicit interval (min 100).||<n>|
+|-Y|Redirect/suppress status message output.|Create Logfile: Redirect all output messages to <filename> The file must not exist before running GBAK! So you have to delete it before the GBAK call. When you use -se (Service Manager), the logfile will (can only) reside on the server's filesystem. |<quotation_sign><path><date_time><quotation_sign>|
+|-Z|Print version number.|Show GBAK version and server version.|

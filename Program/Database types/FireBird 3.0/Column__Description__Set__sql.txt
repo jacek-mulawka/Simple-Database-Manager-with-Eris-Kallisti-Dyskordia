@@ -1,0 +1,1 @@
+﻿comment on column __TABLE_COLUMN_NAME__ is '__DESCRIPTION_VALUE__' 

@@ -1,0 +1,1 @@
+﻿drop external function __EXTERNAL_FUNCTION_NAME__ 

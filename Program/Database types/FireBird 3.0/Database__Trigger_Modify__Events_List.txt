@@ -1,0 +1,5 @@
+﻿on connect
+on disconnect
+on transaction commit
+on transaction rollback
+on transaction start

@@ -1,0 +1,1 @@
+﻿default character set __DEFAULT_CHARACTER_SET__ 

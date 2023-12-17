@@ -1,0 +1,8 @@
+﻿\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}begin else begin \style{-B}-->begin~#13#10  begin#13#10#13#10#13#10#13#10    end#13#10  else#13#10    begin#13#10#13#10#13#10    end
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}declare variable ;\style{-B}-->declare variable ;
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}execute statement :zts\style{-B}-->execute statement :zts#13#10  into :zm_1;#13#10#13#10  if ( :zm_1 null ) then#13#10    zm_1 = 0;
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}execute statement :ZTS\style{-B}-->execute~#13#10ZTS =#13#10    'select T1.C1#13#10          , ''Abc'' as ABC_1#13#10    from T1#13#10#13#10    where T1.C2 = '||:zm_4||'#13#10      and T1.C3 = '''||:zm_4||''' ';#13#10#13#10  for execute statement :ZTS#13#10  into :zm_1,#13#10       :zm_2;
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}for into do begin end\style{-B}-->for select T1.C1#13#10         , T1.C2#13#10    from T1#13#10    into :zt1,#13#10         :zt2#13#10  do#13#10    begin#13#10#13#10#13#10    end
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}if ( and ) then-->if (     :zm_1 is not null#13#10     and :zm_1 <> 0 ) then
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}if (  (  ) or (  )  ) then-->if (    (  )#13#10     or (  )  ) then
+\color{clHotLight}__stored_procedure__ \color{clWindowText}\column{}\style{+B}suspend;\style{-B}-->suspend;
