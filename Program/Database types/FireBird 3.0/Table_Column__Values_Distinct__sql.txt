@@ -1,0 +1,1 @@
+﻿select distinct __TABLE_NAME__.__COLUMN_NAME__ from __TABLE_NAME__ 

@@ -1,0 +1,5 @@
+﻿create table __TABLE_NAME__
+  (
+__COLUMN_NAME__
+__PRIMARY_KEY__
+  ) 

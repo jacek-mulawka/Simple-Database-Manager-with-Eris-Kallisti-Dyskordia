@@ -1,0 +1,14 @@
+﻿select RDB$RELATIONS.RDB$RELATION_NAME as TABLE_NAME
+     , RDB$RELATIONS.RDB$SECURITY_CLASS
+     , cast(  substring( RDB$RELATIONS.RDB$SECURITY_CLASS from 5 for 5 ) as integer  ) as ID
+from RDB$RELATIONS
+where RDB$RELATIONS.RDB$SECURITY_CLASS is not null
+  and RDB$RELATIONS.RDB$SECURITY_CLASS <> 'SQL$1'
+  and RDB$RELATIONS.RDB$SECURITY_CLASS <> 'SQL$2'
+  and RDB$RELATIONS.RDB$SECURITY_CLASS <> 'SQL$3'
+  and RDB$RELATIONS.RDB$VIEW_BLR is null
+  and (
+           RDB$RELATIONS.RDB$RELATION_NAME not like '%$%'
+        or 1 = :system_tables_visible
+      )
+order by RDB$RELATIONS.RDB$RELATION_NAME 

@@ -1,0 +1,101 @@
+﻿select RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_NAME as PARAMETER_NAME
+     , iif( RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_TYPE = 0, 'V', '' ) as PARAMETER_TYPE_INPUT
+
+     , (case
+         RDB$FIELDS.RDB$FIELD_TYPE
+         when 7 then
+           (case
+             RDB$FIELDS.RDB$FIELD_SUB_TYPE
+             when 1 then
+               'Numeric'
+
+             when 2 then
+               'Decimal'
+
+             else
+               'Smallint'
+           end)
+
+         when 8 then
+           (case
+             RDB$FIELDS.RDB$FIELD_SUB_TYPE
+             when 1 then
+               'Numeric'
+
+             when 2 then
+               'Decimal'
+
+             else
+               'Integer'
+           end)
+
+         when 9 then
+           'Quad'
+
+         when 10 then
+           'Float'
+
+         when 12 then
+           'Date'
+
+         when 13 then
+           'Time'
+
+         when 14 then
+           'Char'
+
+         when 16 then
+           (case
+             RDB$FIELDS.RDB$FIELD_SUB_TYPE
+             when 1 then
+               'Numeric'
+
+             when 2 then
+               'Decimal'
+
+             else
+               'Bigint'
+           end)
+
+         when 27 then
+           'Double precision'
+
+         when 35 then
+           'Timestamp'
+
+         when 37 then
+           'Varchar'
+
+         when 40 then
+           'Cstring'
+
+         when 45 then
+           'Blob_Id'
+
+         when 261 then
+           'Blob'
+
+         else
+           RDB$FIELDS.RDB$FIELD_TYPE||' <?>'
+       end)||
+       iif(   RDB$FIELDS.RDB$FIELD_TYPE in ( 37 ) or ( RDB$FIELDS.RDB$FIELD_TYPE in ( 7, 8, 16, 27 ) and RDB$FIELDS.RDB$FIELD_SUB_TYPE = 2  ), '( '||coalesce( RDB$FIELDS.RDB$CHARACTER_LENGTH, RDB$FIELDS.RDB$FIELD_PRECISION, '' )||iif(  RDB$FIELDS.RDB$FIELD_TYPE in ( 7, 8, 16 ) and RDB$FIELDS.RDB$FIELD_SUB_TYPE = 2 and RDB$FIELDS.RDB$FIELD_SCALE is not null, ', '||cast(  abs( RDB$FIELDS.RDB$FIELD_SCALE ) as smallint  ), ''  )||' )', ''   )||
+       cast(   substring(  coalesce( ' '||RDB$RELATION_FIELDS.RDB$DEFAULT_SOURCE, ' '||RDB$FIELDS.RDB$DEFAULT_SOURCE, '' ) from 1 for 255  ) as varchar( 255 )   )||
+       iif(  RDB$RELATION_FIELDS.RDB$NULL_FLAG = 1, ' not null', trim( '' )  )||
+       coalesce(  ' collate '||trim( RDB$COLLATIONS.RDB$COLLATION_NAME ), ''  )
+       as FIELD_TYPE
+
+     , cast(  substring( RDB$PROCEDURE_PARAMETERS.RDB$DEFAULT_SOURCE from 1 for 255 ) as varchar( 255 )  ) as DEFAULT_VALUE__CAST
+     , RDB$PROCEDURE_PARAMETERS.RDB$DEFAULT_SOURCE as DEFAULT_VALUE
+
+     , RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_NUMBER as PARAMETER_NUMBER
+     , RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_TYPE
+     , RDB$PROCEDURE_PARAMETERS.RDB$DESCRIPTION as DESCRIPTION_VALUE
+
+     , RDB$FIELDS.RDB$FIELD_TYPE
+
+from RDB$PROCEDURE_PARAMETERS
+left join RDB$FIELDS on RDB$FIELDS.RDB$FIELD_NAME = RDB$PROCEDURE_PARAMETERS.RDB$FIELD_SOURCE
+left join RDB$RELATION_FIELDS on RDB$RELATION_FIELDS.RDB$FIELD_SOURCE = RDB$PROCEDURE_PARAMETERS.RDB$FIELD_SOURCE
+left join RDB$COLLATIONS on RDB$COLLATIONS.RDB$COLLATION_ID = RDB$FIELDS.RDB$COLLATION_ID and RDB$COLLATIONS.RDB$CHARACTER_SET_ID = RDB$FIELDS.RDB$CHARACTER_SET_ID
+where RDB$PROCEDURE_PARAMETERS.RDB$PROCEDURE_NAME = :stored_procedure_name
+order by RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_TYPE, RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_NUMBER 

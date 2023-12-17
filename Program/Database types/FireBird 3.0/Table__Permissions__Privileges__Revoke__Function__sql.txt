@@ -1,0 +1,1 @@
+﻿revoke __PERMISSIONS_LIST__ on function __TABLE_NAME__ from user __USER_NAME__; 

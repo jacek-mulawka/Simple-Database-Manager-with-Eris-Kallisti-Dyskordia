@@ -1,0 +1,1 @@
+﻿lower(__COLUMN_NAME__)

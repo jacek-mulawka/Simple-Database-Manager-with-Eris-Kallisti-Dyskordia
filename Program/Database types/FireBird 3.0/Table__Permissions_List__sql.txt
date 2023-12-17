@@ -1,0 +1,98 @@
+﻿select distinct t_t.USER_NAME
+
+     , RDB$USER_PRIVILEGES.RDB$PRIVILEGE as PRIVILEGE
+
+     , (
+         select cast(    substring(   trim(  list( t.PRIVILEGE )  ) from 1 for 25   ) as varchar( 25 )    )
+         from
+           (
+             select ' '||trim( RDB$USER_PRIVILEGES.RDB$PRIVILEGE ) as PRIVILEGE
+             from RDB$USER_PRIVILEGES
+             where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+               and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+             order by t_t.USER_NAME, RDB$USER_PRIVILEGES.RDB$PRIVILEGE
+           ) as t
+       ) as PRIVILEGES_SYMBOLS_LIST
+
+     , RDB$USER_PRIVILEGES.RDB$GRANTOR as GRANTOR
+
+     , (
+         select count( RDB$USER_PRIVILEGES.RDB$USER )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+       ) as PRIVILEGES_COUNT
+
+     , (case
+         RDB$USER_PRIVILEGES.RDB$OBJECT_TYPE
+         when 0 then
+           'table'
+
+         when 1 then
+           'view'
+
+         when 2 then
+           'trigger'
+
+         when 5 then
+           'procedure'
+
+         when 7 then
+           'exception'
+
+         when 8 then
+           'user'
+
+         when 9 then
+           'domain'
+
+         when 11 then
+           'character set'
+
+         when 13 then
+           'role'
+
+         when 14 then
+           'generator (sequence)'
+
+         when 15 then
+           'function'
+
+         when 16 then
+           'BLOB filter'
+
+         when 17 then
+           'collation'
+
+         when 18 then
+           'package'
+
+         else
+           RDB$USER_PRIVILEGES.RDB$OBJECT_TYPE||' <?>'
+       end) as PRIVILEGES_OBJECT_TYPE_NAME
+
+from
+  (
+    select distinct t.USER_NAME
+    from
+      (
+
+        select distinct RDB$USER_PRIVILEGES.RDB$USER as USER_NAME
+        from RDB$USER_PRIVILEGES
+        where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+
+        union all
+
+        select SEC$USERS.SEC$USER_NAME as USER_NAME
+        from SEC$USERS
+
+      ) as t
+  ) as t_t
+left join RDB$USER_PRIVILEGES on RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+where (
+        select count( RDB$USER_PRIVILEGES.RDB$USER )
+        from RDB$USER_PRIVILEGES
+        where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+          and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+      ) >= :all_users
+order by t_t.USER_NAME, RDB$USER_PRIVILEGES.RDB$PRIVILEGE

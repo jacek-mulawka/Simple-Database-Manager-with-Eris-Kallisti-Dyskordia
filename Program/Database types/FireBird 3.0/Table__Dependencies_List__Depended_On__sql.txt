@@ -1,0 +1,112 @@
+﻿select RDB$DEPENDENCIES.RDB$DEPENDED_ON_NAME as DEPENDED_ON_NAME
+     , RDB$DEPENDENCIES.RDB$DEPENDED_ON_TYPE as DEPENDED_ON_TYPE
+     , RDB$DEPENDENCIES.RDB$DEPENDENT_NAME as DEPENDENT_NAME
+     , RDB$DEPENDENCIES.RDB$DEPENDENT_TYPE as DEPENDENT_TYPE
+     , RDB$DEPENDENCIES.RDB$FIELD_NAME as FIELD_NAME
+
+     , (case
+         RDB$DEPENDENCIES.RDB$DEPENDED_ON_TYPE
+         when 0 then
+           'table (or a column in it)'
+
+         when 1 then
+           'view'
+
+         when 2 then
+           'trigger'
+
+         when 3 then
+           'computed column'
+
+         when 4 then
+           'CHECK constraint'
+
+         when 5 then
+           'procedure (or its parameter(s))'
+
+         when 6 then
+           'index expression'
+
+         when 7 then
+           'exception'
+
+         when 8 then
+           'user'
+
+         when 9 then
+           'column'
+
+         when 10 then
+           'index'
+
+         when 14 then
+           'generator (sequence)'
+
+         when 15 then
+           'UDF or stored function'
+
+         when 17 then
+           'collation'
+
+         when 18 then
+           'package header'
+
+         when 19 then
+           'package body'
+
+         else
+           RDB$DEPENDENCIES.RDB$DEPENDED_ON_TYPE||' <?>'
+       end) as DEPENDED_ON_TYPE_NAME
+
+
+     , (case
+         RDB$DEPENDENCIES.RDB$DEPENDENT_TYPE
+         when 0 then
+           'table'
+
+         when 1 then
+           'view'
+
+         when 2 then
+           'trigger'
+
+         when 3 then
+           'computed column'
+
+         when 4 then
+           'CHECK constraint'
+
+         when 5 then
+           'procedure'
+
+         when 6 then
+           'index expression'
+
+         when 7 then
+           'exception'
+
+         when 8 then
+           'user'
+
+         when 9 then
+           'column'
+
+         when 10 then
+           'index'
+
+         when 15 then
+           'stored function'
+
+         when 18 then
+           'package header'
+
+         when 19 then
+           'package body'
+
+         else
+           RDB$DEPENDENCIES.RDB$DEPENDENT_TYPE||' <?>'
+       end) as DEPENDENT_TYPE_NAME
+
+from RDB$DEPENDENCIES
+where RDB$DEPENDENCIES.RDB$DEPENDED_ON_NAME = :table_name
+order by RDB$DEPENDENCIES.RDB$DEPENDENT_NAME, RDB$DEPENDENCIES.RDB$DEPENDED_ON_NAME, RDB$DEPENDENCIES.RDB$FIELD_NAME 

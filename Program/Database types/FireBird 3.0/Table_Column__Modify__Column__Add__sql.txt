@@ -1,0 +1,1 @@
+﻿alter table __TABLE_NAME__ add __COLUMN_NAME__ 

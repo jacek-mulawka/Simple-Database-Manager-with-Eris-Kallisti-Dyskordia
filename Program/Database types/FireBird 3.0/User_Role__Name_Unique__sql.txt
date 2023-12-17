@@ -1,0 +1,17 @@
+﻿select count( distinct t.USER_NAME ) as USER_NAME
+from
+  (
+    select distinct RDB$USER_PRIVILEGES.RDB$USER as USER_NAME
+    from RDB$USER_PRIVILEGES
+
+    union
+
+    select SEC$USERS.SEC$USER_NAME as USER_NAME
+    from SEC$USERS
+
+    union
+
+    select RDB$ROLES.RDB$ROLE_NAME as USER_NAME
+    from RDB$ROLES
+  ) as t
+where lower( t.USER_NAME ) = :user_name

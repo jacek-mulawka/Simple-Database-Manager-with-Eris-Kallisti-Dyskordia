@@ -1,0 +1,1 @@
+﻿select * from __TABLE_NAME__ 

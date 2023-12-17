@@ -1,0 +1,13 @@
+﻿
+Blob
+Char ( 10 )
+Date
+Decimal ( 12, 2 )
+Double precision
+Float
+Integer
+Numeric
+Smallint
+Time
+Timestamp
+Varchar ( 50 )

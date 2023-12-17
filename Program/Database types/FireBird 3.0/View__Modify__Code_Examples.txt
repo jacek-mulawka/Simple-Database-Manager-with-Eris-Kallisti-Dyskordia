@@ -1,0 +1,11 @@
+﻿select T1.C1
+     , T1.C2
+from T1
+where T1.C2 = 123
+
+union all
+
+select T2.C1
+     , T2.C2
+from T2
+where T2.C2 = 456

@@ -1,0 +1,11 @@
+﻿select RDB$RELATIONS.RDB$RELATION_NAME as VIEW_NAME
+     , RDB$RELATIONS.RDB$SECURITY_CLASS
+     , cast(  substring( RDB$RELATIONS.RDB$SECURITY_CLASS from 5 for 5 ) as integer  ) as ID
+from RDB$RELATIONS
+where RDB$RELATIONS.RDB$VIEW_BLR is not null
+  and (
+           RDB$RELATIONS.RDB$SYSTEM_FLAG is null
+        or RDB$RELATIONS.RDB$SYSTEM_FLAG = 0
+        or 1 = :system_tables_visible
+      )
+order by RDB$RELATIONS.RDB$RELATION_NAME 

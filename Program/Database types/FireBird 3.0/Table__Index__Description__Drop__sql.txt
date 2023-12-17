@@ -1,0 +1,1 @@
+﻿comment on index __INDEX_NAME__ is null 

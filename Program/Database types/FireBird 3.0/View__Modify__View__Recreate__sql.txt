@@ -1,0 +1,6 @@
+﻿recreate view __VIEW_NAME__
+  (
+    __COLUMN_NAME__
+  )
+ as
+__VIEW_SOURCE__ 

@@ -1,0 +1,13 @@
+﻿
+=
+<>
+>
+>=
+<
+<=
+is null
+is not null
+like
+not like
+(
+)

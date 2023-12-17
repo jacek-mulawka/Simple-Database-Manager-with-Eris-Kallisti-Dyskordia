@@ -1,0 +1,1 @@
+﻿create __PARAMETER_ADDITIONAL__ index __INDEX_NAME__ on __TABLE_NAME__ __COLUMN_NAME__ 

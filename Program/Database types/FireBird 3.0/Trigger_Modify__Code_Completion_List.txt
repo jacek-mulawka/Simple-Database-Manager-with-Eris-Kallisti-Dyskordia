@@ -1,0 +1,9 @@
+﻿\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}begin else begin \style{-B}-->begin~#13#10  begin#13#10#13#10#13#10#13#10    end#13#10  else#13#10    begin#13#10#13#10#13#10    end
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}declare variable ;\style{-B}-->declare variable ;
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}if ( and ) then-->if (     :zm_1 is not null#13#10     and :zm_1 <> 0 ) then
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}if (  (  ) or (  )  ) then-->if (    (  )#13#10     or (  )  ) then
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}NEW.|;\style{-B}-->NEW.|;
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}NEW.COLUMN_1 = 123;\style{-B}-->NEW.COLUMN_1 = 123;
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}NEW.COLUMN_3 = OLD.COLUMN_2;\style{-B}-->NEW.COLUMN_3 = OLD.COLUMN_2;
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}OLD.|;\style{-B}-->OLD.|;
+\color{$00004080}__trigger__ \color{clWindowText}\column{}\style{+B}update (...)\style{-B}-->update~#13#10  if ( current_user = 'SYSDBA' ) then#13#10    begin#13#10#13#10      update TABLE_2 set#13#10             TABLE_2.COLUMN_1 = NEW.COLUMN_2#13#10      where TABLE_2.COLUMN_2 = NEW.COLUMN_1;#13#10#13#10    end

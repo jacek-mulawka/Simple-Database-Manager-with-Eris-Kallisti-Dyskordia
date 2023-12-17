@@ -1,0 +1,23 @@
+﻿as
+  declare variable ZTI integer;
+BEGIN
+
+  /* TABLE_1.COLUMN_1 */
+  /* TABLE_1.COLUMN_2 */
+  /* TABLE_1.COLUMN_3 */
+
+  ZTI = 0;
+
+  NEW.COLUMN_1 = 123;
+  NEW.COLUMN_3 = OLD.COLUMN_2;
+
+  if ( current_user = 'SYSDBA' ) then
+    begin
+
+      update TABLE_2 set
+             TABLE_2.COLUMN_1 = NEW.COLUMN_2
+      where TABLE_2.COLUMN_2 = NEW.COLUMN_1;
+
+    end
+
+END

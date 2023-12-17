@@ -1,0 +1,131 @@
+﻿select t_t.USER_NAME
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'A'
+       ) as ALL_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'S'
+       ) as SELECT_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'I'
+       ) as INSERT_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'U'
+       ) as UPDATE_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'D'
+       ) as DELETE_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'X'
+       ) as EXECUTING_
+
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'R'
+       ) as REFERENCES_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'G'
+       ) as USAGE_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'M'
+       ) as ROLE_MEMBERSHIP
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'C'
+       ) as DDL_CREATE_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'L'
+       ) as DDL_ALTER_
+
+     , (
+         select iif(  count( RDB$USER_PRIVILEGES.RDB$USER ) > 0, 'V', ''  )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+           and RDB$USER_PRIVILEGES.RDB$PRIVILEGE = 'O'
+       ) as DDL_DROP_
+
+
+     , (
+         select count( RDB$USER_PRIVILEGES.RDB$USER )
+         from RDB$USER_PRIVILEGES
+         where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+           and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+       ) as PRIVILEGES_COUNT
+
+from
+  (
+    select distinct t.USER_NAME
+    from
+      (
+
+        select distinct RDB$USER_PRIVILEGES.RDB$USER as USER_NAME
+        from RDB$USER_PRIVILEGES
+        where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+
+        union all
+
+        select SEC$USERS.SEC$USER_NAME as USER_NAME
+        from SEC$USERS
+
+      ) as t
+  ) as t_t
+where (
+        select count( RDB$USER_PRIVILEGES.RDB$USER )
+        from RDB$USER_PRIVILEGES
+        where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = :table_name
+          and RDB$USER_PRIVILEGES.RDB$USER = t_t.USER_NAME
+      ) >= :all_users
+order by t_t.USER_NAME

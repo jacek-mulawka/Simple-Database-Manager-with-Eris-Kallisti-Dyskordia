@@ -1,0 +1,1 @@
+﻿    , primary key ( __COLUMN_NAME__ )

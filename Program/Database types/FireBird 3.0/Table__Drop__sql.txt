@@ -1,0 +1,1 @@
+﻿drop table __TABLE_NAME__ 

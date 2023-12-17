@@ -1,0 +1,1 @@
+﻿comment on view __VIEW_NAME__ is '__DESCRIPTION_VALUE__' 

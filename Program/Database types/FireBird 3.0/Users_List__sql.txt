@@ -1,0 +1,12 @@
+﻿select SEC$USERS.SEC$USER_NAME as USER_NAME
+     , SEC$USERS.SEC$FIRST_NAME as USER__NAME__FIRST
+     , SEC$USERS.SEC$MIDDLE_NAME as USER__NAME__MIDDLE
+     , SEC$USERS.SEC$LAST_NAME as USER__NAME__LAST
+     , iif( SEC$USERS.SEC$ACTIVE = true, 'V', '' ) as USER_ACTIVE
+     , iif( SEC$USERS.SEC$ADMIN = true, 'V', '' ) as USER_IS_ADMINISTRATOR
+/*     , cast(  substring( SEC$USERS.SEC$DESCRIPTION from 1 for 10000 ) as varchar( 10000 )  ) as DESCRIPTION_VALUE__CAST*/
+/* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
+     , cast(  substring( SEC$USERS.SEC$DESCRIPTION from 1 for 8191 ) as varchar( 8191 )  ) as DESCRIPTION_VALUE__CAST
+     , SEC$USERS.SEC$DESCRIPTION as DESCRIPTION_VALUE
+     , SEC$USERS.SEC$PLUGIN
+from SEC$USERS 

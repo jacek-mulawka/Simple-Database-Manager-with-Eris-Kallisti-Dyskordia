@@ -1,0 +1,1 @@
+﻿grant __PERMISSIONS_LIST__ on table __TABLE_NAME__ to user __USER_NAME__; 

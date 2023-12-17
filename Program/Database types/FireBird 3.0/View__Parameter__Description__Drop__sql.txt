@@ -1,0 +1,1 @@
+﻿comment on column __COLUMN_NAME__ is null 

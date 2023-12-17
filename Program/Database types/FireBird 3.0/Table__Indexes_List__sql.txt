@@ -1,0 +1,16 @@
+﻿select RDB$INDICES.RDB$INDEX_NAME as INDEX_NAME
+/*     , RDB$INDICES.RDB$RELATION_NAME as TABLE_NAME*/
+/*     , RDB$INDEX_SEGMENTS.RDB$FIELD_NAME as COLUMN_NAME*/
+
+     , ( /* Multiple column indexes. */
+         select cast(     substring(    trim(   list(  ' ' || trim( RDB$INDEX_SEGMENTS.RDB$FIELD_NAME )  )   ) from 1 for 2000    ) as varchar( 2000 )     )
+         from RDB$INDEX_SEGMENTS
+         where RDB$INDEX_SEGMENTS.RDB$INDEX_NAME = RDB$INDICES.RDB$INDEX_NAME
+       ) as COLUMN_NAME
+
+     , cast(  substring( RDB$INDICES.RDB$DESCRIPTION from 1 for 2000 ) as varchar( 2000 )  ) as DESCRIPTION_VALUE__CAST
+     , RDB$INDICES.RDB$DESCRIPTION as DESCRIPTION_VALUE
+
+from RDB$INDICES
+/*left join RDB$INDEX_SEGMENTS on RDB$INDEX_SEGMENTS.RDB$INDEX_NAME = RDB$INDICES.RDB$INDEX_NAME*/ /* Single column indexes. */
+where RDB$INDICES.RDB$RELATION_NAME = :table_name 

@@ -1,0 +1,1 @@
+﻿revoke ALL on ALL from user __USER_NAME__; 
