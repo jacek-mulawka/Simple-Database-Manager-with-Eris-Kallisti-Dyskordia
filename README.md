@@ -5,7 +5,7 @@ In production.
 A simple database manager dedicated to [FireBird](https://firebirdsql.org/) databases but can, to some extent, support other types of databases. Many parameters can be adjusted (to your own needs, changes in database servers) by editing text files. The program includes translations into several language versions.
 
 
-## Polish
+## Polski
 
 W produkcji.
 
