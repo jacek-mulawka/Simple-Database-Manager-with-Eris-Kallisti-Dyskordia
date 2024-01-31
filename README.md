@@ -1,13 +1,9 @@
 # Simple-Database-Manager-with-Eris-Kallisti-Dyskordia
 
-In production.
-
 A simple database manager dedicated to [FireBird](https://firebirdsql.org/) databases but can, to some extent, support other types of databases. Many parameters can be adjusted (to your own needs, changes in database servers) by editing text files. The program includes translations into several language versions.
 
 
 ## Polski
-
-W produkcji.
 
 Prosty menadżer baz danych dedykowany bazom [FireBird](https://firebirdsql.org/) ale może w jakimś zakresie obsługiwać inne typy baz danych. Bardzo wiele parametrów można dostosować (do własnych potrzeb, zmian w serwerach baz danych) poprzez edycję plików tekstowych. Program zawiera tłumaczenia na kilka wersji językowych.
 
