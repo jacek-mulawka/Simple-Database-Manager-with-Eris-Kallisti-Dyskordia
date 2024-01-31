@@ -1,0 +1,7 @@
+﻿ADS
+FB
+IB
+MSAcc
+MySQL
+PG
+SQLite
