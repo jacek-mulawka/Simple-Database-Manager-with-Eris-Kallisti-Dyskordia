@@ -17,6 +17,7 @@ object View__Modify_Form: TView__Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object View_Name_Etiquette_Label: TLabel
@@ -442,6 +443,7 @@ object View__Modify_Form: TView__Modify_Form
         RightEdge = 255
         SelectedColor.Alpha = 0.400000005960464500
         TabWidth = 2
+        WantTabs = True
         OnReplaceText = View__Source_SynEditReplaceText
       end
     end

@@ -32,108 +32,6 @@ object Database__Modify_Form: TDatabase__Modify_Form
     object Component_Type_TabSheet: TTabSheet
       Caption = 'C. T.'
       ImageIndex = -1
-      object Component_Type_Etiquette_Label: TLabel
-        AlignWithMargins = True
-        Left = 10
-        Top = 40
-        Width = 506
-        Height = 15
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Component type'
-        ExplicitWidth = 90
-      end
-      object Component_Type_Default_Label: TLabel
-        AlignWithMargins = True
-        Left = 10
-        Top = 96
-        Width = 506
-        Height = 15
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Default: '
-        ExplicitWidth = 44
-      end
-      object Connection_Status_Etiquette_Label: TLabel
-        AlignWithMargins = True
-        Left = 10
-        Top = 126
-        Width = 506
-        Height = 15
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Connection status'
-        ExplicitWidth = 96
-      end
-      object Connection_Status_Label: TLabel
-        AlignWithMargins = True
-        Left = 10
-        Top = 156
-        Width = 506
-        Height = 15
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = '<?>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
-        ExplicitWidth = 21
-      end
-      object Tables_List_Count_Etiquette_Label: TLabel
-        Left = 10
-        Top = 390
-        Width = 34
-        Height = 15
-        Caption = 'Tables'
-      end
-      object Tables_List_Count_Label: TLabel
-        Left = 125
-        Top = 390
-        Width = 21
-        Height = 15
-        Caption = '<?>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
-      end
-      object Stored_Procedures_List_Count_Etiquette_Label: TLabel
-        Left = 10
-        Top = 370
-        Width = 96
-        Height = 15
-        Caption = 'Stored procedures'
-      end
-      object Stored_Procedures_List_Count_Label: TLabel
-        Left = 125
-        Top = 370
-        Width = 21
-        Height = 15
-        Caption = '<?>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
-      end
       object Component_Type_Log_Horizontal_Splitter: TSplitter
         Left = 0
         Top = 450
@@ -147,110 +45,6 @@ object Database__Modify_Form: TDatabase__Modify_Form
         ExplicitTop = 242
         ExplicitWidth = 549
       end
-      object Views_List_Count_Etiquette_Label: TLabel
-        Left = 10
-        Top = 410
-        Width = 30
-        Height = 15
-        Caption = 'Views'
-      end
-      object Views_List_Count_Label: TLabel
-        Left = 125
-        Top = 410
-        Width = 21
-        Height = 15
-        Caption = '<?>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
-      end
-      object Database_Name_Label: TLabel
-        AlignWithMargins = True
-        Left = 10
-        Top = 10
-        Width = 506
-        Height = 15
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Database: '
-        ExplicitWidth = 54
-      end
-      object Component_Type_ComboBox: TComboBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 60
-        Width = 506
-        Height = 21
-        Margins.Left = 10
-        Margins.Top = 0
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Style = csOwnerDrawFixed
-        DropDownCount = 40
-        ItemHeight = 15
-        TabOrder = 0
-        OnKeyDown = Component_Type_ComboBoxKeyDown
-      end
-      object Connect_Button: TButton
-        Left = 10
-        Top = 325
-        Width = 100
-        Height = 25
-        Caption = '(Re)Connect'
-        ImageIndex = 3
-        Images = Shared_DataModule.ImageList1
-        TabOrder = 4
-        OnClick = Connect_ButtonClick
-      end
-      object Queries_Open_In_Background_CheckBox: TCheckBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 218
-        Width = 506
-        Height = 17
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Queries (some) open in the background'
-        TabOrder = 2
-      end
-      object Form_View__Additional_Component_Show_CheckBox: TCheckBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 186
-        Width = 506
-        Height = 17
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Form view - show additional components'
-        TabOrder = 1
-      end
-      object Splitter_Show_CheckBox: TCheckBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 250
-        Width = 506
-        Height = 17
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Show splitters (e.g. form view, stored procedure parameters)'
-        TabOrder = 3
-      end
       object Log_Memo: TMemo
         AlignWithMargins = True
         Left = 10
@@ -263,22 +57,236 @@ object Database__Modify_Form: TDatabase__Modify_Form
         Lines.Strings = (
           'Log')
         ScrollBars = ssVertical
-        TabOrder = 5
+        TabOrder = 1
         OnKeyDown = Log_MemoKeyDown
       end
-      object Sql__Quotation_Sign__Use_CheckBox: TCheckBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 282
-        Width = 506
-        Height = 17
-        Margins.Left = 10
-        Margins.Top = 10
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'SQL quotation sign use'
-        TabOrder = 6
+      object Component_Type_Top_Panel: TPanel
+        Left = 0
+        Top = 0
+        Width = 526
+        Height = 450
+        Align = alClient
+        TabOrder = 0
+        object Database_Name_Label: TLabel
+          AlignWithMargins = True
+          Left = 11
+          Top = 11
+          Width = 504
+          Height = 15
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Database: '
+          ExplicitWidth = 54
+        end
+        object Component_Type_Etiquette_Label: TLabel
+          AlignWithMargins = True
+          Left = 11
+          Top = 41
+          Width = 504
+          Height = 15
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Component type'
+          ExplicitWidth = 90
+        end
+        object Component_Type_Default_Label: TLabel
+          AlignWithMargins = True
+          Left = 11
+          Top = 97
+          Width = 504
+          Height = 15
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Default: '
+          ExplicitWidth = 44
+        end
+        object Connection_Status_Etiquette_Label: TLabel
+          AlignWithMargins = True
+          Left = 11
+          Top = 127
+          Width = 504
+          Height = 15
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Connection status'
+          ExplicitWidth = 96
+        end
+        object Connection_Status_Label: TLabel
+          AlignWithMargins = True
+          Left = 11
+          Top = 157
+          Width = 504
+          Height = 15
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = '<?>'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Segoe UI'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 21
+        end
+        object Stored_Procedures_List_Count_Etiquette_Label: TLabel
+          Left = 10
+          Top = 370
+          Width = 96
+          Height = 15
+          Caption = 'Stored procedures'
+        end
+        object Stored_Procedures_List_Count_Label: TLabel
+          Left = 140
+          Top = 370
+          Width = 21
+          Height = 15
+          Caption = '<?>'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Segoe UI'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Tables_List_Count_Etiquette_Label: TLabel
+          Left = 10
+          Top = 390
+          Width = 34
+          Height = 15
+          Caption = 'Tables'
+        end
+        object Tables_List_Count_Label: TLabel
+          Left = 140
+          Top = 390
+          Width = 21
+          Height = 15
+          Caption = '<?>'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Segoe UI'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Views_List_Count_Etiquette_Label: TLabel
+          Left = 10
+          Top = 410
+          Width = 30
+          Height = 15
+          Caption = 'Views'
+        end
+        object Views_List_Count_Label: TLabel
+          Left = 140
+          Top = 410
+          Width = 21
+          Height = 15
+          Caption = '<?>'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Segoe UI'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Component_Type_ComboBox: TComboBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 61
+          Width = 504
+          Height = 21
+          Margins.Left = 10
+          Margins.Top = 0
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Style = csOwnerDrawFixed
+          DropDownCount = 40
+          ItemHeight = 15
+          TabOrder = 0
+          OnKeyDown = Component_Type_ComboBoxKeyDown
+        end
+        object Form_View__Additional_Component_Show_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 187
+          Width = 504
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Form view - show additional components'
+          TabOrder = 1
+        end
+        object Queries_Open_In_Background_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 219
+          Width = 504
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Queries (some) open in the background'
+          TabOrder = 2
+        end
+        object Splitter_Show_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 251
+          Width = 504
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Show splitters (e.g. form view, stored procedure parameters)'
+          TabOrder = 3
+        end
+        object Sql__Quotation_Sign__Use_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 283
+          Width = 504
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 10
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'SQL quotation sign use'
+          TabOrder = 4
+        end
+        object Connect_Button: TButton
+          Left = 10
+          Top = 325
+          Width = 100
+          Height = 25
+          Caption = '(Re)Connect'
+          ImageIndex = 3
+          Images = Shared_DataModule.ImageList1
+          TabOrder = 5
+          OnClick = Connect_ButtonClick
+        end
       end
     end
     object Exceptions_TabSheet: TTabSheet
@@ -566,7 +574,7 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 17
               Width = 152
               Height = 23
-              Hint = 'Enter - open.'
+              Hint = 'Shift + Enter - open and edit;'#13#10'Enter - open.'
               Margins.Left = 10
               Margins.Top = 0
               Margins.Right = 10
@@ -617,7 +625,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 45
               Width = 25
               Height = 25
-              Hint = 'Search prior.'#13#10#13#10'[Ctrl + Enter - open]'
+              Hint = 
+                'Search prior.'#13#10#13#10'[Ctrl + Shift + Enter - open and edit]'#13#10'[Shift ' +
+                '+ Enter - open]'
               Anchors = [akTop, akRight]
               ImageIndex = 13
               Images = Shared_DataModule.ImageList1
@@ -632,7 +642,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 70
               Width = 25
               Height = 25
-              Hint = 'Search next.'#13#10#13#10'[Ctrl + Enter - open]'
+              Hint = 
+                'Search next.'#13#10#13#10'[Ctrl + Shift + Enter - open and edit]'#13#10'[Shift +' +
+                ' Enter - open]'
               Anchors = [akTop, akRight]
               ImageIndex = 14
               Images = Shared_DataModule.ImageList1
@@ -820,7 +832,7 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 17
               Width = 152
               Height = 23
-              Hint = 'Enter - open.'
+              Hint = 'Ctrl + Enter - open table and open table data;'#13#10'Enter - open.'
               Margins.Left = 10
               Margins.Top = 0
               Margins.Right = 10
@@ -871,7 +883,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 45
               Width = 25
               Height = 25
-              Hint = 'Search prior.'#13#10#13#10'[Ctrl + Enter - open]'
+              Hint = 
+                'Search prior.'#13#10#13#10'[Ctrl + Enter - open table and open table data]' +
+                #13#10'[Shift + Enter - open table]'
               Anchors = [akTop, akRight]
               ImageIndex = 13
               Images = Shared_DataModule.ImageList1
@@ -886,7 +900,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 70
               Width = 25
               Height = 25
-              Hint = 'Search next.'#13#10#13#10'[Ctrl + Enter - open]'
+              Hint = 
+                'Search next.'#13#10#13#10'[Ctrl + Enter - open table and open table data]'#13 +
+                #10'[Shift + Enter - open table]'
               Anchors = [akTop, akRight]
               ImageIndex = 14
               Images = Shared_DataModule.ImageList1
@@ -1086,7 +1102,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 17
               Width = 152
               Height = 23
-              Hint = 'Enter - open.'
+              Hint = 
+                'Ctrl + Enter - open and open view data;'#13#10'Shift + Enter - open an' +
+                'd edit;'#13#10'Enter - open.'
               Margins.Left = 10
               Margins.Top = 0
               Margins.Right = 10
@@ -1137,7 +1155,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 45
               Width = 25
               Height = 25
-              Hint = 'Search prior.'#13#10#13#10'[Ctrl + Enter - open]'
+              Hint = 
+                'Search prior.'#13#10#13#10'[Ctrl + Enter - open and open view data]'#13#10'[Ctrl' +
+                ' + Shift + Enter - open and edit]'#13#10'[Shift + Enter - open]'
               Anchors = [akTop, akRight]
               ImageIndex = 13
               Images = Shared_DataModule.ImageList1
@@ -1152,7 +1172,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 70
               Width = 25
               Height = 25
-              Hint = 'Search next.'#13#10#13#10'[Ctrl + Enter - open]'
+              Hint = 
+                'Search next.'#13#10#13#10'[Ctrl + Enter - open and open view data]'#13#10'[Ctrl ' +
+                '+ Shift + Enter - open and edit]'#13#10'[Shift + Enter - open]'
               Anchors = [akTop, akRight]
               ImageIndex = 14
               Images = Shared_DataModule.ImageList1

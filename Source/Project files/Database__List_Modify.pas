@@ -63,6 +63,9 @@ type
     databases_r__lm_g : Common.TDatabases_r;
   end;
 
+const
+  database__list_modify__fire_dac__driver_id__file_name_c : string = 'Database__List_Modify__Fire_Dac__Driver_Id.txt';
+
 var
   Database__List_Modify_Form: TDatabase__List_Modify_Form;
 
@@ -79,6 +82,7 @@ uses
 
 procedure TDatabase__List_Modify_Form.FormCreate( Sender: TObject );
 var
+  zts : string;
   search_rec : TSearchRec;
   component_type_l : Common.TComponent_Type;
 begin
@@ -91,13 +95,13 @@ begin
   Fire_Dac__Driver_Id_ComboBox.Items.Clear();
 
   for component_type_l := Low( Common.TComponent_Type ) to High( Common.TComponent_Type ) do
-    Component_Type_ComboBox.Items.Add(   StringReplace(  GetEnumName( TypeInfo(Common.TComponent_Type), integer(component_type_l) ), 'ct_', '', [ rfReplaceAll ]  )   );
+    Component_Type_ComboBox.Items.Add(   StringReplace(  System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(component_type_l) ), 'ct_', '', [ rfReplaceAll ]  )   );
 
   if Component_Type_ComboBox.Items.Count > 0 then
     Component_Type_ComboBox.ItemIndex := 0;
 
 
-  if FindFirst(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + '\*.*', faDirectory, search_rec  ) = 0 then
+  if FindFirst(  Common.Databases_Type__Directory_Path__Get( '' ) + '*.*', faDirectory, search_rec  ) = 0 then
     begin
 
       repeat
@@ -114,16 +118,28 @@ begin
   FindClose( search_rec );
 
 
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'ADS' );
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'FB' );
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'IB' );
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'MSAcc' );
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'MySQL' );
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'PG' );
-  Fire_Dac__Driver_Id_ComboBox.Items.Add( 'SQLite' );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( '' ) + database__list_modify__fire_dac__driver_id__file_name_c  );
+
+  if Trim( zts ) = '' then
+    begin
+
+      Application.MessageBox( PChar(Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( '' ) + database__list_modify__fire_dac__driver_id__file_name_c + ').'), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
+
+      zts :=
+        'ADS' + #13 + #10 +
+        'FB' + #13 + #10 +
+        'IB' + #13 + #10 +
+        'MSAcc' + #13 + #10 +
+        'MySQL' + #13 + #10 +
+        'PG' + #13 + #10 +
+        'SQLite' + #13 + #10;
+
+    end;
+
+  Common.Items_From_Text_Add( Fire_Dac__Driver_Id_ComboBox.Items, zts );
 
 
-  OpenDialog1.Filter := Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file_default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+  OpenDialog1.Filter := Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
 
 
   Translation.Translation__Apply( Self );
@@ -242,7 +258,7 @@ begin
 
           Database_Type_ComboBox.SetFocus();
 
-          if Application.MessageBox( PChar(Translation.translation__messages_r.database_type_should_not_be_empty+ #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
+          if Application.MessageBox( PChar(Translation.translation__messages_r.database_type_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
             Exit;
 
         end;
@@ -273,6 +289,44 @@ var
   component_type_l : Common.TComponent_Type;
   database__modify_form_l : Database__Modify.TDatabase__Modify_Form;
 begin
+
+  {$region 'Checking the values.'}
+  if Connection__Test__Type_RadioGroup.ItemIndex <> 0 then // ADO.
+    begin
+
+      if    ( Fire_Dac__Driver_Id_ComboBox.ItemIndex <= 0 )
+        and (  Application.MessageBox( PChar(Translation.translation__messages_r.firedac_driver_id_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES  ) then
+        begin
+
+          Fire_Dac__Driver_Id_ComboBox.SetFocus();
+
+          Exit;
+
+        end;
+
+      if    (  Trim( User_Name_Edit.Text ) = '' )
+        and (  Application.MessageBox( PChar(Translation.translation__messages_r.user_name_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES  ) then
+        begin
+
+          User_Name_Edit.SetFocus();
+
+          Exit;
+
+        end;
+
+      if    (  Trim( Password_Edit.Text ) = '' )
+        and (  Application.MessageBox( PChar(Translation.translation__messages_r.user_password_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES  ) then
+        begin
+
+          Password_Edit.SetFocus();
+
+          Exit;
+
+        end;
+
+    end;
+  {$endregion 'Checking the values.'}
+
 
   database__modify_form_l := Database__Modify.TDatabase__Modify_Form.Create( Application );
   database__modify_form_l.databases_r__dm_g.ado__connection_string := Ado__Connection_String_Edit.Text;
@@ -406,8 +460,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Fire_Dac__Parameters_Memo.SelectAll();
 
 end;

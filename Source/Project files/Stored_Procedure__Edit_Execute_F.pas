@@ -8,6 +8,7 @@ uses
   Common,
   Migawka_Prostokat_Tabela_2_SDBM,
   Text__Search_Replace,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -131,6 +132,7 @@ type
     { Private declarations }
     sql__quotation_sign__use__speef_g : boolean;
 
+    output_tab_sheet_switched_g, // Tab switch only once.
     queries_open_in_background_g,
     splitter_show_g,
     stored_procedure__output__sort__direction_ascending_g,
@@ -160,6 +162,8 @@ type
 
     procedure Busy_Notification_Set( const busy_f : boolean );
     procedure Caret_Position_Display();
+    procedure Column__Values__Distinct();
+    procedure Column__Values__Sum();
     procedure Data_Preview( const stored_procedure__parameters_f : boolean = false );
     procedure Data_Refresh();
     function Parent_Caption__Get() : string;
@@ -171,7 +175,7 @@ type
     procedure sql_parameterKeyDown( Sender : TObject; var Key : Word; Shift : TShiftState );
     procedure Stored_Procedure__Description__Set__Sql_Execute( const sql_text_f : string; const show_message_f : boolean = true );
     function Stored_Procedure__Description__Set__Sql_Prepare( const stored_procedure_name_f, description_value_f : string ) : string;
-    procedure Stored_Procedure_Parameters__Free();
+    procedure Stored_Procedure__Parameters__Free();
     procedure Stored_Procedure__Parameters_ScrollBox_Width_Set();
   public
     { Public declarations }
@@ -181,7 +185,9 @@ type
     function Finish__SPEEF() : boolean;
     procedure Options_Set__SPEEF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__SPEEF( const databases_r_f : Common.TDatabases_r; const stored_procedure_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
+    procedure Stored_Procedure__Edit_Execute_F__Edit__SPEEF();
     function Task_Running_Check__SPEEF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__SPEEF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
@@ -193,14 +199,12 @@ const
 implementation
 
 uses
-  System.IOUtils,
   System.Threading,
   Vcl.Clipbrd,
 
   Shared,
   Stored_Procedure__Modify,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
@@ -245,12 +249,12 @@ begin
   if stored_procedure__parameters_sdbm.Query__Active() then
     stored_procedure__parameters_sdbm.Query__Close();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__sql__parameters_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__parameters_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__sql__parameters_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__parameters_list__file_name_c + ').' );
 
       zts :=
         'select RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_NAME as PARAMETER_NAME ' +
@@ -471,24 +475,13 @@ begin
         if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_name_c then
           begin
 
-            Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__parameter__name;
-
             if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width < 50 then
               Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 50;
 
           end
         else
-        if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_type_input_c then
-          begin
-
-            Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__table__data_filter_r.type_input__hint;
-
-          end
-        else
         if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value_c then
           begin
-
-            Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
 
             if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width > 500 then
               Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 500;
@@ -498,8 +491,6 @@ begin
         if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.column_name__default_value__cast_c then
           begin
 
-            Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__default_value;
-
             if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width > 200 then
               Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 200;
 
@@ -507,12 +498,16 @@ begin
         else
           begin
 
-            Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption );
-
             if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width > 200 then
               Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
+
+
+      Self.Translation__Apply__SPEEF( Translation.tak_Grid );
+
+
+      Common.Data_Value_Format__Set( stored_procedure__parameters_sdbm, Log_Memo );
 
     end;
 
@@ -580,6 +575,204 @@ begin
   else
   if Caret_Position_Label.Visible then
     Caret_Position_Label.Visible := false;
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Column__Values__Distinct();
+var
+  items_count_l : integer;
+
+  zts : string;
+begin
+
+  if Self.Task_Running_Check__SPEEF() then
+    Exit;
+
+
+  if   ( stored_procedure__output_sdbm = nil )
+    or ( not stored_procedure__output_sdbm.Query__Active() )
+    or ( stored_procedure__output_sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      zts := Common.Column__Values__Distinct__Processing( stored_procedure__output_sdbm, Stored_Procedure__Output_DBGrid, items_count_l );
+
+
+      Stored_Procedure__Output_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(   Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':'   );
+      Log_Memo.Lines.AddStrings( zts );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      ShowMessage(  Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':' + #13 + zts   );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              zts := Common.Column__Values__Distinct__Processing( stored_procedure__output_sdbm, Stored_Procedure__Output_DBGrid, items_count_l );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      Stored_Procedure__Output_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(   Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':'   );
+                      Log_Memo.Lines.AddStrings( zts );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      ShowMessage(  Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':' + #13 + zts   );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Column__Values__Sum();
+var
+  ztc : currency;
+
+  error_message_l : string;
+begin
+
+  if Self.Task_Running_Check__SPEEF() then
+    Exit;
+
+
+  if   ( stored_procedure__output_sdbm = nil )
+    or ( not stored_procedure__output_sdbm.Query__Active() )
+    or ( stored_procedure__output_sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  //try
+  //  stored_procedure__output_sdbm.Query__Field_By_Name( Sql_Editor_DBGrid.SelectedField.FieldName ).AsCurrency;
+  //except
+  //  on E : Exception do
+  //    begin
+  //
+  //      Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+  //      Exit;
+  //
+  //    end;
+  //end;
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      ztc := Common.Column__Values__Sum__Processing( stored_procedure__output_sdbm, Stored_Procedure__Output_DBGrid, error_message_l );
+
+      Stored_Procedure__Output_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      if Trim( error_message_l ) <> '' then
+        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              ztc := Common.Column__Values__Sum__Processing( stored_procedure__output_sdbm, Stored_Procedure__Output_DBGrid, error_message_l );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      Stored_Procedure__Output_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+                      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      if Trim( error_message_l ) <> '' then
+                        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
 
 end;
 
@@ -659,12 +852,12 @@ begin
   zt_sdbm := Common.TSDBM.Create( stored_procedure__parameters_sdbm );
   zt_sdbm.Component_Type_Set( stored_procedure__parameters_sdbm.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__sql__metadata__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__sql__metadata__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__sql__metadata__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__sql__metadata__file_name_c + ').' );
 
       zts := Common.stored_procedure__sql__metadata_c;
 
@@ -937,7 +1130,7 @@ end;
 function TStored_Procedure__Edit_Execute_F_Frame.Finish__SPEEF() : boolean;
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     begin
 
       Result := false;
@@ -962,7 +1155,7 @@ begin
     FreeAndNil( text__search_replace_form );
 
 
-  Stored_Procedure_Parameters__Free();
+  Stored_Procedure__Parameters__Free();
 
 end;
 
@@ -971,7 +1164,7 @@ begin
 
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Open_ButtonClick( Sender )
   else
   // R.
@@ -985,20 +1178,19 @@ procedure TStored_Procedure__Edit_Execute_F_Frame.Key_Up_Common( Sender : TObjec
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -1034,7 +1226,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__SPEEF( Translation.tak_Self );
 
 
   Query_Active_Notification_Set();
@@ -1131,6 +1323,7 @@ begin
   Self.Name := '';
 
   database_type__speef_g := databases_r_f.database_type;
+  output_tab_sheet_switched_g := false;
   queries_open_in_background_g := queries_open_in_background_f;
   sql__parameter_sign__speef_g := databases_r_f.sql__parameter_sign;
   splitter_show_g := splitter_show_f;
@@ -1157,15 +1350,15 @@ begin
   stored_procedure__output_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
   stored_procedure__parameters_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__SPEEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
+  Self.Options_Set__SPEEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__parameter__default_replace__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__parameter__default_replace__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__parameter__default_replace__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__parameter__default_replace__file_name_c + ').' );
 
       default_replace_g := 'default ';
 
@@ -1188,6 +1381,8 @@ begin
   Common.Font__Set( Stored_Procedure__Description_Memo.Font, Common.sql_editor__font );
   //Common.Font__Set( Stored_Procedure__Source_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Stored_Procedure__Source_SynEdit.Font, Common.sql_editor__font );
+
+  Common.Syn_Edit__Parameters__Set( Stored_Procedure__Source_SynEdit );
 
 
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Stored_Procedure__Source_SynEdit );
@@ -1244,7 +1439,7 @@ begin
   // E.
   if   (
              ( Key = 69 )
-         and ( ssCtrl in Shift )
+         and ( Shift = [ ssCtrl ] )
        )
     or ( Key = VK_RETURN ) then
     Open_ButtonClick( Sender );
@@ -1290,12 +1485,12 @@ end;
 function TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Description__Set__Sql_Prepare( const stored_procedure_name_f, description_value_f : string ) : string;
 begin
 
-  Result := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__sql__description__set__file_name_c  );
+  Result := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__sql__description__set__file_name_c  );
 
   if Trim( Result ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__sql__description__set__file_name_c + ').' );
 
       Result := Common.stored_procedure__sql__description__set_c;
 
@@ -1306,7 +1501,14 @@ begin
 
 end;
 
-procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure_Parameters__Free();
+procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Edit_Execute_F__Edit__SPEEF();
+begin
+
+  Modify__Edit_ButtonClick( nil );
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Parameters__Free();
 var
   i : integer;
 begin
@@ -1342,6 +1544,33 @@ begin
 
 end;
 
+procedure TStored_Procedure__Edit_Execute_F_Frame.Translation__Apply__SPEEF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Stored_Procedure__Parameters_DBGrid.Columns.Count - 1 do
+      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_name_c then
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__parameter__name
+      else
+      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_type_input_c then
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__table__data_filter_r.type_input__hint
+      else
+      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value_c then
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.column_name__default_value__cast_c then
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__default__value
+      else
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName );
+
+end;
+
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Parameter__Name_DBEditChange( Sender: TObject );
 begin
 
@@ -1356,7 +1585,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Output_DBEditChange( Sender: TObject );
 begin
 
-  if Task_Running_Check__SPEEF( false ) then
+  if Self.Task_Running_Check__SPEEF( false ) then
     Exit;
 
 
@@ -1385,7 +1614,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 0 then // Output
     begin
 
-      if Task_Running_Check__SPEEF() then
+      if Self.Task_Running_Check__SPEEF() then
         Exit;
 
 
@@ -1477,7 +1706,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 0 then // Output
     begin
 
-      if Task_Running_Check__SPEEF() then
+      if Self.Task_Running_Check__SPEEF() then
         Exit;
 
 
@@ -1557,7 +1786,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 0 then // Output
     begin
 
-      if Task_Running_Check__SPEEF() then
+      if Self.Task_Running_Check__SPEEF() then
         Exit;
 
 
@@ -1647,7 +1876,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
@@ -1655,7 +1884,7 @@ begin
     or ( not stored_procedure__parameters_sdbm.Query__Active() ) then
     begin
 
-      Data_Open__SPEEF();
+      Self.Data_Open__SPEEF();
 
       Exit;
 
@@ -1672,6 +1901,16 @@ begin
   if not stored_procedure__output_sdbm.Query__Active() then
     begin
 
+      if not output_tab_sheet_switched_g then
+        begin
+
+          PageControl1.ActivePage := Stored_Procedure__Output_TabSheet;
+
+          output_tab_sheet_switched_g := true;
+
+        end;
+
+
       if    ( stored_procedure__parameters_sdbm.Query__Active() )
         and ( stored_procedure__parameters_sdbm.Query__Locate( Common.stored_procedure__column__parameter_type_input_c, Common.db_grid__positive_value_c, [] )  )
         and ( Stored_Procedure__Parameters_ScrollBox.ControlCount <= 0 ) then
@@ -1687,20 +1926,20 @@ begin
       Stored_Procedure__Parameters_ScrollBox.Color := clBtnFace;
 
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__sql__select__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__select__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__sql__select__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__select__file_name_c + ').' );
 
-          zts := 'select * from ' + Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF();
+          zts := 'select * from ' + Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF();
 
         end
       else
         begin
 
-          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF(), [ rfReplaceAll ] );
+          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF(), [ rfReplaceAll ] );
 
         end;
 
@@ -1827,6 +2066,8 @@ begin
           Primary_Column_Find();
 
 
+          Common.Data_Value_Format__Set( stored_procedure__output_sdbm, Log_Memo );
+
           Busy_Notification_Set( false );
 
           Stored_Procedure__Output_DBGrid.SelectedIndex := stored_procedure__output_db_grid__selected_index_copy_g;
@@ -1894,6 +2135,8 @@ begin
                           Primary_Column_Find();
 
 
+                          Common.Data_Value_Format__Set( stored_procedure__output_sdbm, Log_Memo );
+
                           Stored_Procedure__Output_DBGrid.Repaint();
 
                           Busy_Notification_Set( false );
@@ -1919,7 +2162,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
@@ -1942,7 +2185,7 @@ begin
                 ( Sender <> nil )
             and ( TComponent(Sender).Name = Close_Button.Name )
           ) then
-        Stored_Procedure_Parameters__Free();
+        Stored_Procedure__Parameters__Free();
 
     end;
 
@@ -1955,7 +2198,7 @@ var
     : string;
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
@@ -1987,7 +2230,7 @@ begin
   else
     begin
 
-      Data_Open__SPEEF();
+      Self.Data_Open__SPEEF();
 
       Exit;
 
@@ -2098,7 +2341,7 @@ var
   stored_procedure__modify_form_l : Stored_Procedure__Modify.TStored_Procedure__Modify_Form;
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
@@ -2188,7 +2431,7 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  zts := Stored_Procedure__Description__Set__Sql_Prepare( Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF(), description_value_l );
+  zts := Stored_Procedure__Description__Set__Sql_Prepare( Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF(), description_value_l );
 
 
   Log_Memo.Lines.Add( zts );
@@ -2217,23 +2460,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on procedure ' +
-        Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF() +
+        Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF() +
         ' is null ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF(), [ rfReplaceAll ] );
 
     end;
 
@@ -2241,7 +2484,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_the_stored_procedure_description + ' ''' + Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_the_stored_procedure_description + ' ''' + Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -2303,14 +2546,14 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  stored_procedure__parameter_name_l := Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF() + Common.sql__names_separator + Quotation_Sign__SPEEF() + Trim(  stored_procedure__parameters_sdbm.Query__Field_By_Name( Common.stored_procedure__column__parameter_name_c ).AsString  ) + Quotation_Sign__SPEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  stored_procedure__parameter_name_l := Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF() + Common.sql__names_separator + Self.Quotation_Sign__SPEEF() + Trim(  stored_procedure__parameters_sdbm.Query__Field_By_Name( Common.stored_procedure__column__parameter_name_c ).AsString  ) + Self.Quotation_Sign__SPEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__sql__parameter__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__sql__parameter__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__sql__parameter__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + Common.stored_procedure__sql__parameter__description__set__file_name_c + ').' );
 
       zts := Common.stored_procedure__sql__parameter__description__set_c;
 
@@ -2369,14 +2612,14 @@ begin
     Exit;
 
 
-  stored_procedure__parameter_name_l := Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Quotation_Sign__SPEEF() + Common.sql__names_separator + Quotation_Sign__SPEEF() + Trim(  stored_procedure__parameters_sdbm.Query__Field_By_Name( Common.stored_procedure__column__parameter_name_c ).AsString  ) + Quotation_Sign__SPEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  stored_procedure__parameter_name_l := Self.Quotation_Sign__SPEEF() + stored_procedure_name__speef_g + Self.Quotation_Sign__SPEEF() + Common.sql__names_separator + Self.Quotation_Sign__SPEEF() + Trim(  stored_procedure__parameters_sdbm.Query__Field_By_Name( Common.stored_procedure__column__parameter_name_c ).AsString  ) + Self.Quotation_Sign__SPEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__speef_g + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__sql__parameter__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__parameter__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__sql__parameter__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__speef_g ) + stored_procedure__sql__parameter__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on parameter ' +
@@ -2451,8 +2694,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  )
+    and ( Shift = [ ssCtrl ] )
     and ( Sender <> nil ) then
     if TComponent(Sender).Name = Log_Memo.Name then
       Log_Memo.SelectAll()
@@ -2502,41 +2744,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( Stored_Procedure__Source_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( Stored_Procedure__Source_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( Stored_Procedure__Source_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( Stored_Procedure__Source_SynEdit );
-    end
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Stored_Procedure__Source_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Stored_Procedure__Source_SynEdit, text__search_replace_form, true );
+  Common.Syn_Edit_Key_Down( Stored_Procedure__Source_SynEdit, Sender, Key, Shift );
 
 
   Key_Down_Common( Sender, Key, Shift );
@@ -2605,7 +2813,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Parameters_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
 begin
 
-  if Task_Running_Check__SPEEF( false ) then
+  if Self.Task_Running_Check__SPEEF( false ) then
     Exit;
 
 
@@ -2634,7 +2842,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Parameters_DBGridKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
@@ -2667,7 +2875,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Parameters_DBGridTitleClick( Column: TColumn );
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
@@ -2694,7 +2902,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Output_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
 begin
 
-  if Task_Running_Check__SPEEF( false ) then
+  if Self.Task_Running_Check__SPEEF( false ) then
     Exit;
 
 
@@ -2705,10 +2913,18 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Output_DBGridKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 
+  // D.
+  if    ( Key = 68 )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Column__Values__Distinct()
+  else
   // C.
   if    ( Key = 67 )
     and ( Shift = [ ssCtrl ] )
@@ -2722,11 +2938,19 @@ begin
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
     end
   else
+  // S.
+  if    ( Key = 83 )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Column__Values__Sum()
+  else
     Key_Down_Common( Sender, Key, Shift );
 
 end;
 
-procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Output_DBGridKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Output_DBGridKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
   Data_Preview();
@@ -2738,7 +2962,7 @@ end;
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Output_DBGridTitleClick( Column: TColumn );
 begin
 
-  if Task_Running_Check__SPEEF() then
+  if Self.Task_Running_Check__SPEEF() then
     Exit;
 
 

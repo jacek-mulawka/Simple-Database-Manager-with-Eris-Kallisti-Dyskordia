@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -81,32 +82,31 @@ type
     function Quotation_Sign__EFMF() : string;
   public
     { Public declarations }
-    procedure Data_Open__EFMF( const force_refresh_f : boolean = false );
+    procedure Data_Open__EFMF();
     procedure Finish__EFMF();
     procedure Options_Set__EFMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__EFMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const splitter_show_f, sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__EFMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
-  external_function_list__column__parameters__cast_c : string = 'PARAMETERS__CAST';
-  external_function_list__sql__description__drop__file_name_c : string = 'External_Function__Description__Drop__sql.txt';
+  external_functions_list__column__parameters__cast_c : string = 'PARAMETERS__CAST';
   external_functions_list__file_name_c : string = 'External_Functions_List__sql.txt';
+  external_functions_list__sql__description__drop__file_name_c : string = 'External_Function__Description__Drop__sql.txt';
   external_functions_list__sql__external_function__drop__file_name_c : string = 'External_Function__Drop__sql.txt';
 
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
 
   External_Function__Modify,
   Shared,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
-procedure TExternal_Functions_Modify_F_Frame.Data_Open__EFMF( const force_refresh_f : boolean = false );
+procedure TExternal_Functions_Modify_F_Frame.Data_Open__EFMF();
 var
   i : integer;
 
@@ -114,20 +114,16 @@ var
 begin
 
   if   ( external_functions__modify_sdbm = nil )
-    or ( external_functions__modify_sdbm.component_type__sdbm = Common.ct_none )
-    or (
-             ( not force_refresh_f )
-         and ( external_functions__modify_sdbm.Query__Active() )
-       ) then
+    or ( external_functions__modify_sdbm.component_type__sdbm = Common.ct_none ) then
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efmf_g + System.IOUtils.TPath.DirectorySeparatorChar + external_functions_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + external_functions_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_functions_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + external_functions_list__file_name_c + ').' );
 
       zts :=
         'select RDB$FUNCTIONS.RDB$FUNCTION_NAME as EXTERNAL_FUNCTION_NAME ' +
@@ -394,8 +390,8 @@ begin
 
 
       try
-        External_Function_Name_DBEdit.DataField := Common.external_function__column__external_functions_name__big_letter_c;
-        external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString;
+        External_Function_Name_DBEdit.DataField := Common.external_functions__column__external_functions_name__big_letter_c;
+        external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString;
         external_functions__modify_sdbm.Query__Sort(  sort__column_name_g + Common.Sort_Direction_Symbol( sort__direction_ascending_g )  );
       except
         on E : Exception do
@@ -412,13 +408,8 @@ begin
 
 
       for i := 0 to External_Functions_DBGrid.Columns.Count - 1 do
-        if External_Functions_DBGrid.Columns.Items[ i ].FieldName = Common.external_function__column__external_functions_name__big_letter_c then
-          External_Functions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__name
-        else
         if External_Functions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
-
-            External_Functions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
 
             if External_Functions_DBGrid.Columns.Items[ i ].Width > 500 then
               External_Functions_DBGrid.Columns.Items[ i ].Width := 500;
@@ -427,10 +418,7 @@ begin
         else
           begin
 
-            External_Functions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( External_Functions_DBGrid.Columns.Items[ i ].Title.Caption );
-
-
-            if External_Functions_DBGrid.Columns.Items[ i ].FieldName = external_function_list__column__parameters__cast_c then
+            if External_Functions_DBGrid.Columns.Items[ i ].FieldName = external_functions_list__column__parameters__cast_c then
               begin
 
                 if External_Functions_DBGrid.Columns.Items[ i ].Width > 400 then
@@ -442,6 +430,12 @@ begin
                 External_Functions_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
+
+
+      Self.Translation__Apply__EFMF( Translation.tak_Grid );
+
+
+      Common.Data_Value_Format__Set( external_functions__modify_sdbm, Log_Memo );
 
     end;
 
@@ -486,7 +480,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__EFMF( Translation.tak_Self );
 
 end;
 
@@ -496,16 +490,37 @@ begin
   Self.Name := '';
 
   database_type__efmf_g := databases_r_f.database_type;
-  sort__column_name_g := Common.external_function__column__external_functions_name__big_letter_c;
+  sort__column_name_g := Common.external_functions__column__external_functions_name__big_letter_c;
   sort__direction_ascending_g := true;
 
 
   external_functions__modify_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__EFMF( component_type_f, databases_r_f.sql__quotation_sign, splitter_show_f, sql__quotation_sign__use_f );
+  Self.Options_Set__EFMF( component_type_f, databases_r_f.sql__quotation_sign, splitter_show_f, sql__quotation_sign__use_f );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+end;
+
+procedure TExternal_Functions_Modify_F_Frame.Translation__Apply__EFMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to External_Functions_DBGrid.Columns.Count - 1 do
+      if External_Functions_DBGrid.Columns.Items[ i ].FieldName = Common.external_functions__column__external_functions_name__big_letter_c then
+        External_Functions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__name
+      else
+      if External_Functions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        External_Functions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+        External_Functions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( External_Functions_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -655,7 +670,7 @@ begin
     Exit;
 
 
-  primary_key_value_l := external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString;
+  primary_key_value_l := external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString;
 
   external_functions__modify_sdbm.Query__Requery();
 
@@ -669,7 +684,7 @@ begin
     end;
 
 
-  external_functions__modify_sdbm.Query__Locate( Common.external_function__column__external_functions_name__big_letter_c, primary_key_value_l, [ Data.DB.loCaseInsensitive ] );
+  external_functions__modify_sdbm.Query__Locate( Common.external_functions__column__external_functions_name__big_letter_c, primary_key_value_l, [ Data.DB.loCaseInsensitive ] );
 
 end;
 
@@ -712,7 +727,7 @@ begin
     begin
 
       Refresh_ButtonClick( Sender );
-      external_functions__modify_sdbm.Query__Locate( Common.external_function__column__external_functions_name__big_letter_c, external_function_name_l, [ Data.DB.loCaseInsensitive ] );
+      external_functions__modify_sdbm.Query__Locate( Common.external_functions__column__external_functions_name__big_letter_c, external_function_name_l, [ Data.DB.loCaseInsensitive ] );
 
     end;
 
@@ -737,7 +752,7 @@ begin
   external_function__modify_form_l.sql__quotation_sign__efm := sql__quotation_sign__efmf_g;
   external_function__modify_form_l.sql__quotation_sign__use__efm := sql__quotation_sign__use;
   external_function__modify_form_l.external_function__description_value__efm := external_functions__modify_sdbm.Query__Field_By_Name( Common.name__description_value_c ).AsString;
-  external_function__modify_form_l.external_function__name__efm := external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString;
+  external_function__modify_form_l.external_function__name__efm := external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString;
   external_function__modify_form_l.external_function__edit__efm := true;
 
   if not Edit_In_Modal_View_CheckBox.Checked then
@@ -782,23 +797,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efmf_g + System.IOUtils.TPath.DirectorySeparatorChar + external_functions_list__sql__external_function__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + external_functions_list__sql__external_function__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_functions_list__sql__external_function__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + external_functions_list__sql__external_function__drop__file_name_c + ').' );
 
       zts :=
         'drop external function ' +
-        Quotation_Sign__EFMF() + external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString + Quotation_Sign__EFMF() +
+        Self.Quotation_Sign__EFMF() + external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString + Self.Quotation_Sign__EFMF() +
         ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_function__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EFMF() + external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString + Quotation_Sign__EFMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_functions__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__EFMF() + external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString + Self.Quotation_Sign__EFMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -806,7 +821,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_external_function + ' ''' + Quotation_Sign__EFMF() + external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString + Quotation_Sign__EFMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_external_function + ' ''' + Self.Quotation_Sign__EFMF() + external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString + Self.Quotation_Sign__EFMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -875,22 +890,22 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  external_function_name_l := Quotation_Sign__EFMF() + Trim(  external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString  ) + Quotation_Sign__EFMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  external_function_name_l := Self.Quotation_Sign__EFMF() + Trim(  external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString  ) + Self.Quotation_Sign__EFMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efmf_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.external_function__sql__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + Common.external_functions__sql__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.external_function__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + Common.external_functions__sql__description__set__file_name_c + ').' );
 
-      zts := Common.external_function__sql__description__set_c;
+      zts := Common.external_functions__sql__description__set_c;
 
     end;
 
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__description_value_c + Common.sql__word_replace_separator_c, description_value_l, [ rfReplaceAll ] );
-  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_function__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, external_function_name_l, [ rfReplaceAll ] );
+  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_functions__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, external_function_name_l, [ rfReplaceAll ] );
 
 
   Log_Memo.Lines.Add( zts );
@@ -942,14 +957,14 @@ begin
     Exit;
 
 
-  external_function_name_l := Quotation_Sign__EFMF() + Trim(  external_functions__modify_sdbm.Query__Field_By_Name( Common.external_function__column__external_functions_name__big_letter_c ).AsString  ) + Quotation_Sign__EFMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  external_function_name_l := Self.Quotation_Sign__EFMF() + Trim(  external_functions__modify_sdbm.Query__Field_By_Name( Common.external_functions__column__external_functions_name__big_letter_c ).AsString  ) + Self.Quotation_Sign__EFMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efmf_g + System.IOUtils.TPath.DirectorySeparatorChar + external_function_list__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + external_functions_list__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function_list__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efmf_g ) + external_functions_list__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on function ' +
@@ -960,7 +975,7 @@ begin
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_function__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, external_function_name_l, [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_functions__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, external_function_name_l, [ rfReplaceAll ] );
 
     end;
 
@@ -1015,8 +1030,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

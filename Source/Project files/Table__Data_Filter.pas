@@ -10,7 +10,6 @@ uses
 
   Data.DB,
   System.Classes,
-  System.IOUtils,
   System.SysUtils,
   Winapi.Windows,
   Vcl.Clipbrd,
@@ -58,7 +57,8 @@ type
 
     case_insensitive_check_box,
     field_value__dedicated__use_check_box,
-    inactive_check_box
+    inactive_check_box,
+    quotation_sign__use_check_box
       : Vcl.StdCtrls.TCheckBox;
 
     field_value__universal_edit : Vcl.StdCtrls.TEdit;
@@ -69,6 +69,7 @@ type
 
     procedure align_correct_buttonClick( Sender : TObject );
     procedure delete_buttonClick( Sender : TObject );
+    procedure field_value__dedicated__use_check_boxClick( Sender: TObject );
     procedure move_left_buttonClick( Sender : TObject );
     procedure move_right_buttonClick( Sender : TObject );
 
@@ -87,6 +88,7 @@ type
     procedure Align_Correct__DTF();
     function Filter_Value__Get( const sql__quotation_sign__use__tdf_f : boolean ) : string;
     procedure Positions_Swap( const direction_f : TAlign );
+    procedure Translation__Apply__TDF();
   end;
 
   TTable__Data_Filter_t = array of TTable__Data_Filter;
@@ -153,6 +155,7 @@ begin
   Self.field_value__universal_edit := nil;
   Self.logical_sign_combo_box := nil;
   Self.operators_combo_box := nil;
+  Self.quotation_sign__use_check_box := nil;
   Self.sql__quotation_sign__tdf := sql__quotation_sign__tdf_f;
   Self.sql__quotation_sign__use__tdf := false;
 
@@ -187,13 +190,13 @@ begin
   {$region 'Add logical signs.'}
   Self.logical_sign_combo_box.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdf + System.IOUtils.TPath.DirectorySeparatorChar + logical_signs_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + logical_signs_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + logical_signs_list__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + logical_signs_list__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -229,13 +232,13 @@ begin
   zt_sdbm := Common.TSDBM.Create( sdbm_f );
   zt_sdbm.Component_Type_Set( sdbm_f.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdf + System.IOUtils.TPath.DirectorySeparatorChar + Common.table_columns_list__sql__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + Common.table_columns_list__sql__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.table_columns_list__sql__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + Common.table_columns_list__sql__file_name_c + ').' );
 
       zts := Common.table_columns_list__sql_c;
 
@@ -319,13 +322,13 @@ begin
   {$region 'Add operators.'}
   Self.operators_combo_box.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdf + System.IOUtils.TPath.DirectorySeparatorChar + operators_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + operators_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + operators_list__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + operators_list__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -367,14 +370,15 @@ begin
   Self.field_value__dedicated__use_check_box.AlignWithMargins := true;
   Self.field_value__dedicated__use_check_box.Align := alBottom;
   Self.field_value__dedicated__use_check_box.Align := alTop; // Do not work well.
-  Self.field_value__dedicated__use_check_box.Caption := Translation.translation__table__data_filter_r.use_additional_value;
-  Self.field_value__dedicated__use_check_box.Hint := Translation.translation__table__data_filter_r.field_value__dedicated__use_check_box__hint;
   Self.field_value__dedicated__use_check_box.Margins.Bottom := margin_c;
   Self.field_value__dedicated__use_check_box.Margins.Left := margin_c;
   Self.field_value__dedicated__use_check_box.Margins.Right := margin_c;
   Self.field_value__dedicated__use_check_box.Margins.Top := margin_c;
   Self.field_value__dedicated__use_check_box.ShowHint := true;
   Self.field_value__dedicated__use_check_box.Visible := false;
+  Self.field_value__dedicated__use_check_box.Checked := Common.table__data_filter__field_dedicated__default_use;
+  Self.field_value__dedicated__use_check_box.OnClick := field_value__dedicated__use_check_boxClick;
+  Self.field_value__dedicated__use_check_box.OnKeyDown := filterKeyDown;
 
 
   if field_f <> nil then
@@ -459,6 +463,13 @@ begin
         Self.field_value__dedicated__1.Margins.Top := margin_c;
         JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
 
+      end
+    else
+    if field_f.DataType in [ ftFixedChar, ftFixedWideChar, ftString, ftWideString ] then
+      begin
+
+        Self.field_dedicated__data_type := ftString;
+
       end;
     //else
     //  begin
@@ -479,8 +490,7 @@ begin
   Self.buttons_panel.AlignWithMargins := true;
   Self.buttons_panel.Align := alBottom;
   Self.buttons_panel.Align := alTop; // Do not work well.
-  Self.buttons_panel.Height := 25 + margin_c * 2;
-  Self.buttons_panel.Hint := Translation.translation__table__data_filter_r.buttons_panel__hint;
+  Self.buttons_panel.Height := 25 + margin_c * 3;
   Self.buttons_panel.Margins.Bottom := margin_c;
   Self.buttons_panel.Margins.Left := margin_c;
   Self.buttons_panel.Margins.Right := margin_c;
@@ -491,7 +501,6 @@ begin
   Self.delete_button.Parent := Self.buttons_panel;
   Self.delete_button.Caption := '';
   Self.delete_button.Height := 25;
-  Self.delete_button.Hint := Translation.translation__table__data_filter_r.delete_filter__hint;
   Self.delete_button.Images := Shared.Shared_DataModule.ImageList1;
   Self.delete_button.ImageIndex := 12;
   Self.delete_button.Left := margin_c;
@@ -502,27 +511,44 @@ begin
 
   Self.case_insensitive_check_box := Vcl.StdCtrls.TCheckBox.Create( Application );
   Self.case_insensitive_check_box.Parent := Self.buttons_panel;
-  Self.case_insensitive_check_box.Caption := Translation.translation__table__data_filter_r.case_insensitive;
-  Self.case_insensitive_check_box.Hint := Translation.translation__table__data_filter_r.case_insensitive__hint;
   Self.case_insensitive_check_box.Left := Self.delete_button.Left + Self.delete_button.Width + margin_c * 2;
   Self.case_insensitive_check_box.ShowHint := true;
   Self.case_insensitive_check_box.Top := margin_c;
   Self.case_insensitive_check_box.Width := 40;
+  Self.case_insensitive_check_box.OnKeyDown := filterKeyDown;
+
+  Self.quotation_sign__use_check_box := Vcl.StdCtrls.TCheckBox.Create( Application );
+  Self.quotation_sign__use_check_box.Parent := Self.buttons_panel;
+  Self.quotation_sign__use_check_box.Left := Self.case_insensitive_check_box.Left;
+  Self.quotation_sign__use_check_box.ShowHint := true;
+  Self.quotation_sign__use_check_box.Top := Self.case_insensitive_check_box.Top + Self.case_insensitive_check_box.Height;
+  Self.quotation_sign__use_check_box.Width := 40;
+  Self.quotation_sign__use_check_box.Checked :=
+        ( Common.table__data_filter__quotation_sign__use )
+    and ( Self.field_dedicated__data_type in [ ftDate, ftDateTime, ftString, ftTime ] );
+  Self.quotation_sign__use_check_box.OnKeyDown := filterKeyDown;
 
   Self.inactive_check_box := Vcl.StdCtrls.TCheckBox.Create( Application );
   Self.inactive_check_box.Parent := Self.buttons_panel;
-  Self.inactive_check_box.Caption := Translation.translation__table__data_filter_r.disable_filter;
-  Self.inactive_check_box.Hint := Translation.translation__table__data_filter_r.disable_filter__hint;
   Self.inactive_check_box.Left := Self.case_insensitive_check_box.Left + Self.case_insensitive_check_box.Width + margin_c;
   Self.inactive_check_box.ShowHint := true;
   Self.inactive_check_box.Top := margin_c;
   Self.inactive_check_box.Width := 40;
+  Self.inactive_check_box.OnKeyDown := filterKeyDown;
+
+  Self.align_correct_button := Vcl.StdCtrls.TButton.Create( Application );
+  Self.align_correct_button.Parent := Self.buttons_panel;
+  Self.align_correct_button.Height := 20;
+  Self.align_correct_button.Left := Self.inactive_check_box.Left;
+  Self.align_correct_button.ShowHint := true;
+  Self.align_correct_button.Top := Self.quotation_sign__use_check_box.Top;
+  Self.align_correct_button.Width := Self.align_correct_button.Height;
+  Self.align_correct_button.OnClick := align_correct_buttonClick;
 
   Self.move_left_button := Vcl.StdCtrls.TButton.Create( Application );
   Self.move_left_button.Parent := Self.buttons_panel;
   Self.move_left_button.Caption := '';
   Self.move_left_button.Height := Self.delete_button.Height;
-  Self.move_left_button.Hint := Translation.translation__table__data_filter_r.move_left__hint;
   Self.move_left_button.Images := Shared.Shared_DataModule.ImageList1;
   Self.move_left_button.ImageIndex := 15;
   Self.move_left_button.Left := Self.inactive_check_box.Left + Self.inactive_check_box.Width + margin_c;
@@ -535,7 +561,6 @@ begin
   Self.move_right_button.Parent := Self.buttons_panel;
   Self.move_right_button.Caption := '';
   Self.move_right_button.Height := Self.delete_button.Height;
-  Self.move_right_button.Hint := Translation.translation__table__data_filter_r.move_right__hint;
   Self.move_right_button.Images := Shared.Shared_DataModule.ImageList1;
   Self.move_right_button.ImageIndex := 16;
   Self.move_right_button.Left := Self.move_left_button.Left + Self.move_left_button.Width + margin_c;
@@ -544,25 +569,14 @@ begin
   Self.move_right_button.Width := Self.move_right_button.Height;
   Self.move_right_button.OnClick := move_right_buttonClick;
 
-  Self.align_correct_button := Vcl.StdCtrls.TButton.Create( Application );
-  Self.align_correct_button.Parent := Self.buttons_panel;
-  Self.align_correct_button.Caption := Translation.translation__table__data_filter_r.correct_align;
-  Self.align_correct_button.Height := 20;
-  Self.align_correct_button.Hint := Translation.translation__table__data_filter_r.correct_align__hint;
-  Self.align_correct_button.Left := Self.move_right_button.Left + Self.move_right_button.Width + margin_c * 2;
-  Self.align_correct_button.ShowHint := true;
-  Self.align_correct_button.Top := margin_c;
-  Self.align_correct_button.Width := Self.align_correct_button.Height;
-  Self.align_correct_button.OnClick := align_correct_buttonClick;
 
-
-  sql__case_insensitive__tdf := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdf + System.IOUtils.TPath.DirectorySeparatorChar + case_insensitive__file_name_c  );
+  sql__case_insensitive__tdf := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + case_insensitive__file_name_c  );
 
   if Trim( sql__case_insensitive__tdf ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + case_insensitive__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + case_insensitive__file_name_c + ').' );
 
       sql__case_insensitive__tdf :=
         'lower(__COLUMN_NAME__)';
@@ -579,6 +593,12 @@ begin
 
   table__data_filter__table_column__values_distinct_sdbm := Common.TSDBM.Create( sdbm_f );
   table__data_filter__table_column__values_distinct_sdbm.Component_Type_Set( sdbm_f.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
+
+
+  Self.Translation__Apply__TDF();
+
+
+  Self.field_value__dedicated__use_check_boxClick( nil );
 
 end;
 
@@ -610,7 +630,6 @@ begin
   FreeAndNil( Self.logical_sign_combo_box );
   FreeAndNil( Self.operators_combo_box );
 
-
   if Self.field_value__dedicated__1 <> nil then
     if Self.field_dedicated__data_type in [ ftDate, ftTime ] then
       begin
@@ -632,6 +651,10 @@ begin
   FreeAndNil( Self.inactive_check_box );
   FreeAndNil( Self.move_left_button );
   FreeAndNil( Self.move_right_button );
+
+  if Self.quotation_sign__use_check_box <> nil then
+    FreeAndNil( Self.quotation_sign__use_check_box );
+
   FreeAndNil( Self.buttons_panel );
 
 
@@ -659,6 +682,16 @@ begin
 
 end;
 
+procedure TTable__Data_Filter.field_value__dedicated__use_check_boxClick( Sender: TObject );
+begin
+
+  if    ( Self.field_value__dedicated__use_check_box <> nil )
+    and ( Self.quotation_sign__use_check_box <> nil )
+    and ( Self.field_value__dedicated__use_check_box.Visible ) then
+    Self.quotation_sign__use_check_box.Enabled := not Self.field_value__dedicated__use_check_box.Checked;
+
+end;
+
 procedure TTable__Data_Filter.move_left_buttonClick( Sender : TObject );
 begin
 
@@ -683,13 +716,22 @@ var
 begin
 
   if    ( Key = VK_RETURN )
-    and ( ssCtrl in Shift )
+    and ( Shift = [ ssCtrl ] )
     and ( @Filter__Deactivate_wsk <> nil ) then
     Filter__Deactivate_wsk( Sender )
   else
   if    ( Key = VK_RETURN )
     and ( @Filter__Activate_wsk <> nil ) then
     Filter__Activate_wsk( Sender )
+  else
+  // A.
+  if    ( Key = 65 )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    begin
+
+      align_correct_buttonClick( Sender );
+
+    end
   else
   // C.
   if    ( Key = 67 )
@@ -711,10 +753,10 @@ begin
     if Sender is TDateTimePicker then
       try
 
-        if TDateTimePicker(Self.field_value__dedicated__1).Kind = Vcl.ComCtrls.dtkDateTime then
+        if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
           Vcl.Clipbrd.Clipboard.AsText := DateTimeToStr( TDateTimePicker(Sender).DateTime )
         else
-        if TDateTimePicker(Self.field_value__dedicated__1).Kind = Vcl.ComCtrls.dtkTime then
+        if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
           Vcl.Clipbrd.Clipboard.AsText := TimeToStr( TDateTimePicker(Sender).Time )
         else
           Vcl.Clipbrd.Clipboard.AsText := DateToStr( TDateTimePicker(Sender).Date );
@@ -728,7 +770,10 @@ begin
   else
   // D.
   if    ( Key = 68 )
-    and ( ssCtrl in Shift )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        )
     and ( Self.field_name_combo_box <> nil )
     and (  Trim( Self.field_name_combo_box.Text ) <> ''  ) then
     begin
@@ -833,9 +878,39 @@ begin
 
     end
   else
+  // V.
+  if    ( Key = 86 )
+    and ( Shift = [ ssCtrl ] )
+    and ( Sender <> nil ) then
+  begin
+
+    try
+      //if Sender is JvSpin.TJvSpinEdit then
+      //  JvSpin.TJvSpinEdit(Sender).Value := StrToFloat( Vcl.Clipbrd.Clipboard.AsText ) // Do not work well.
+      //else
+      if Sender is TDateTimePicker then
+        begin
+
+          if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
+            TDateTimePicker(Sender).DateTime := StrToDateTime( Vcl.Clipbrd.Clipboard.AsText )
+          else
+          if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
+            TDateTimePicker(Sender).Time := StrToTime( Vcl.Clipbrd.Clipboard.AsText )
+          else
+            TDateTimePicker(Sender).Date  := StrToDate( Vcl.Clipbrd.Clipboard.AsText );
+
+        end;
+
+    except
+      on E : Exception do
+        Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_paste_value_from_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+    end;
+
+  end
+  else
   // /, ?.
   if    ( Key = 191 )
-    and ( ssCtrl in Shift )
+    and ( Shift = [ ssCtrl ] )
     and ( @Filter__Show_wsk <> nil ) then
     Filter__Show_wsk( nil );
 
@@ -898,7 +973,11 @@ end;
 
 function TTable__Data_Filter.Filter_Value__Get( const sql__quotation_sign__use__tdf_f : boolean ) : string;
 var
-  zts : string;
+  i : integer;
+
+  zts_1,
+  zts_2
+    : string;
 begin
 
   Result := '';
@@ -919,12 +998,12 @@ begin
     and (  Trim( Self.field_name_combo_box.Text ) <> ''  ) then
     begin
 
-      zts := ' ' + Self.Quotation_Sign__TDF() + table_name__tdf + Self.Quotation_Sign__TDF() + Common.sql__names_separator + Self.Quotation_Sign__TDF() + Self.field_name_combo_box.Text + Self.Quotation_Sign__TDF() + ' ';
+      zts_1 := ' ' + Self.Quotation_Sign__TDF() + table_name__tdf + Self.Quotation_Sign__TDF() + Common.sql__names_separator + Self.Quotation_Sign__TDF() + Self.field_name_combo_box.Text + Self.Quotation_Sign__TDF() + ' ';
 
       if Self.case_insensitive_check_box.Checked then
-        zts := StringReplace( sql__case_insensitive__tdf, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, zts, [ rfReplaceAll ] );
+        zts_1 := StringReplace( sql__case_insensitive__tdf, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, zts_1, [ rfReplaceAll ] );
 
-      Result := Result + zts;
+      Result := Result + zts_1;
 
     end;
 
@@ -937,45 +1016,75 @@ begin
     and ( Self.field_value__dedicated__1 <> nil ) then
     begin
 
-      zts := '0';
+      zts_1 := '0';
 
 
       if Self.field_dedicated__data_type = ftDate then
         begin
 
-          zts := DateToStr( TDateTimePicker(Self.field_value__dedicated__1).Date );
+          DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__date, TDateTimePicker(Self.field_value__dedicated__1).Date );
 
 
           if Self.field_value__dedicated__2 <> nil then
-            zts := zts + ' ' + TimeToStr( TDateTimePicker(Self.field_value__dedicated__2).Time );
+            begin
 
-          zts := '''' + zts + '''';
+              DateTimeToString( zts_2, Common.table__data_filter__filter__dedicated_value_format__time, TDateTimePicker(Self.field_value__dedicated__2).Time );
+
+              zts_1 := zts_1 + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + zts_2;
+
+            end;
+
+          zts_1 := Common.sql__text_separator + zts_1 + Common.sql__text_separator;
 
         end
       else
       if Self.field_dedicated__data_type = ftInteger then
         begin
 
-          zts := FloatToStr( JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value );
-          zts := StringReplace( zts, ',', '.', [ rfReplaceAll ] );
+          zts_2 := FloatToStr( JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value );
+          zts_2 := StringReplace( zts_2, ' ', '', [ rfReplaceAll ] );
+
+
+          zts_1 := '';
+
+          for i := 1 to Length( zts_2 ) do
+            try
+              StrToInt( zts_2[ i ] );
+              zts_1 := zts_1 + zts_2[ i ];
+            except
+              zts_1 := zts_1 + Common.table__data_filter__filter__dedicated_value_format__separator__decimal;
+            end;
+
+
+          zts_1 := StringReplace( zts_1, ',', '.', [ rfReplaceAll ] );
 
         end
       else
       if Self.field_dedicated__data_type = ftTime then
         begin
 
-          zts := TimeToStr( TDateTimePicker(Self.field_value__dedicated__1).Time );
-          zts := '''' + zts + '''';
+          DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__time, TDateTimePicker(Self.field_value__dedicated__1).Time );
+          zts_1 := Common.sql__text_separator + zts_1 + Common.sql__text_separator;
 
         end;
 
 
-      Result := Result + zts;
+      Result := Result + zts_1;
 
     end
   else
     if Self.field_value__universal_edit <> nil then
-      Result := Result + Self.field_value__universal_edit.Text;
+      begin
+
+        zts_1 := Self.field_value__universal_edit.Text;
+
+        if Self.quotation_sign__use_check_box.Checked then
+          zts_1 := Common.sql__text_separator + zts_1 + Common.sql__text_separator;
+
+
+        Result := Result + zts_1;
+
+      end;
 
 end;
 
@@ -1090,6 +1199,71 @@ begin
 
 
   SetLength( table__data_filter_t, 0 );
+
+end;
+
+procedure TTable__Data_Filter.Translation__Apply__TDF();
+begin
+
+  if Self.align_correct_button <> nil then
+    begin
+
+      Self.align_correct_button.Caption := Translation.translation__table__data_filter_r.correct_align;
+      Self.align_correct_button.Hint := Translation.translation__table__data_filter_r.correct_align__hint;
+
+    end;
+
+
+  if Self.buttons_panel <> nil then
+    Self.buttons_panel.Hint := Translation.translation__table__data_filter_r.buttons_panel__hint;
+
+
+  if Self.case_insensitive_check_box <> nil then
+    begin
+
+      Self.case_insensitive_check_box.Caption := Translation.translation__table__data_filter_r.case_insensitive;
+      Self.case_insensitive_check_box.Hint := Translation.translation__table__data_filter_r.case_insensitive__hint;
+
+    end;
+
+
+  if Self.delete_button <> nil then
+    Self.delete_button.Hint := Translation.translation__table__data_filter_r.delete_filter__hint;
+
+
+  if Self.field_value__dedicated__use_check_box <> nil then
+    begin
+
+      Self.field_value__dedicated__use_check_box.Caption := Translation.translation__table__data_filter_r.use_additional_value;
+      Self.field_value__dedicated__use_check_box.Hint := Translation.translation__table__data_filter_r.field_value__dedicated__use_check_box__hint;
+
+    end;
+
+
+  if Self.inactive_check_box <> nil then
+    begin
+
+      Self.inactive_check_box.Caption := Translation.translation__table__data_filter_r.disable_filter;
+      Self.inactive_check_box.Hint := Translation.translation__table__data_filter_r.disable_filter__hint;
+
+    end;
+
+
+  if Self.move_left_button <> nil then
+    Self.move_left_button.Hint := Translation.translation__table__data_filter_r.move_left__hint;
+
+
+  if Self.move_right_button <> nil then
+    Self.move_right_button.Hint := Translation.translation__table__data_filter_r.move_right__hint;
+
+
+  if Self.quotation_sign__use_check_box <> nil then
+    begin
+
+      Self.quotation_sign__use_check_box.Caption := Translation.translation__table__data_filter_r.automatically_use_quotation_sign;
+      Self.quotation_sign__use_check_box.Hint := Translation.translation__table__data_filter_r.automatically_use_quotation_sign__hint;
+
+    end;
 
 end;
 

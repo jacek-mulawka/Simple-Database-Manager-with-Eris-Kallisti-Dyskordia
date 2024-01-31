@@ -14,6 +14,7 @@ interface
 
 uses
   Common,
+  Database__Modify,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, System.ImageList, Vcl.ImgList;
@@ -113,6 +114,7 @@ type
     databases_list_box__width_default_g : integer;
 
     procedure Databases__Modified_Notification_Set( modified_f : boolean );
+    function SQL_Editor__Close_Prompt__DBM( zt_database__modify_form_f : Database__Modify.TDatabase__Modify_Form = nil; const item_index_f : integer = -1 ) : boolean;
   public
     { Public declarations }
   end;
@@ -127,13 +129,13 @@ uses
 
   Xml.XMLDoc,
   Xml.XMLIntf,
-  System.IOUtils,
   System.TypInfo,
+
+  SynEdit,
 
   About,
   Database__Backup_Restore,
   Database__Create,
-  Database__Modify,
   Database__List_Modify,
   Options,
   Shared,
@@ -154,21 +156,133 @@ begin
 
 end;
 
+function TSimple_Database_Manager_Form.SQL_Editor__Close_Prompt__DBM( zt_database__modify_form_f : Database__Modify.TDatabase__Modify_Form = nil; const item_index_f : integer = -1 ) : boolean;
+var
+  ztb,
+  task_is_running_l
+    : boolean;
+
+  i : integer;
+
+  modal_result_l : TModalResult;
+
+  zt_database__modify_form : Database__Modify.TDatabase__Modify_Form;
+begin
+
+  Result := true; // false - should not close, true - can close.
+
+
+  if not Common.sql_editor__close_prompt then
+    Exit;
+
+
+  for i := Self.MDIChildCount - 1 downto 0 do
+    if Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form then
+      Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Close_Can__Checked__Set( false );
+
+
+  ztb := false; // To start the loop.
+  modal_result_l := mrNone;
+
+  while not ztb do
+    begin
+
+      ztb := true; // Here as a check whether all MDIChildren was analysed.
+
+      zt_database__modify_form := nil;
+
+      for i := 0 to Self.MDIChildCount - 1 do
+        if    ( Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form )
+          and ( not Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Close_Can__Checked__Get() )
+          and (
+                   ( item_index_f = -1 )
+                or ( TDatabase__Modify_Form(Self.MDIChildren[ i ]).item_index_g = item_index_f )
+              )
+          and (
+                   ( zt_database__modify_form_f = nil )
+                or ( Self.MDIChildren[ i ] = zt_database__modify_form_f )
+              ) then
+          begin
+
+            ztb := false;
+
+            Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Close_Can__Checked__Set( true );
+
+            zt_database__modify_form := Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]);
+
+            Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).BringToFront(); // BringToFront change the order of MDIChildren.
+
+
+            Break;
+
+          end;
+
+
+      if zt_database__modify_form <> nil then
+        for i := 0 to Self.MDIChildCount - 1 do
+          if    ( Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form )
+            and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]) = zt_database__modify_form ) then
+            begin
+
+              modal_result_l := Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Sql_Editor__Page__Close__All( modal_result_l );
+
+              if modal_result_l = mrCancel then
+                begin
+
+                  Result := false;
+
+                  Exit;
+
+                end;
+
+              Break;
+
+            end;
+
+    end;
+
+
+  for i := 0 to Self.MDIChildCount - 1 do
+    if    ( Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form )
+      and (
+               ( item_index_f = -1 )
+            or ( TDatabase__Modify_Form(Self.MDIChildren[ i ]).item_index_g = item_index_f )
+          )
+      and (
+               ( zt_database__modify_form_f = nil )
+            or ( Self.MDIChildren[ i ] = zt_database__modify_form_f )
+          )
+      and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Sql_Editor__Page__Count__Get() > 0 ) then
+      Result := false;
+
+end;
+
 procedure TSimple_Database_Manager_Form.FormShow( Sender: TObject );
 begin
 
   Common.all_files_find__filter := '*.*';
-  Common.csv_file__data_separator := ',';
-  Common.csv_file__text_qualifier := '"';
+  Common.csv__file__data_separator := ',';
+  Common.csv__file__default_extension := '.csv';
+  Common.csv__file__text_qualifier := '"';
+  Common.data_presentation__data_value_format__date := 'dd.mm.yyyy';
+  Common.data_presentation__data_value_format__date__use := true;
+  Common.data_presentation__data_value_format__date_time := 'dd.mm.yyyy hh:mm:ss.zzz';
+  Common.data_presentation__data_value_format__date_time__use := true;
+  Common.data_presentation__data_value_format__numbers := '### ### ### ### ### ### ##0';
+  Common.data_presentation__data_value_format__numbers__use := true;
+  Common.data_presentation__data_value_format__real_numbers := '### ### ### ### ### ### ##0.######';
+  Common.data_presentation__data_value_format__real_numbers__use := true;
+  Common.data_presentation__data_value_format__time := 'hh:mm:ss.zzz';
+  Common.data_presentation__data_value_format__time__use := true;
   Common.database__backup_restore__quotation_sign := '"';
   Common.database__backup__application__file_path:= 'C:\Program Files\Firebird\gbak.exe';
   Common.database__correctness_check_text__backup := 'gbak:closing file, committing, and finishing.';
   Common.database__correctness_check_text__restore := 'gbak:finishing, closing, and going home';
-  Common.database__backup__file_default_extension := '.fbk';
+  Common.database__backup__file__default_extension := '.fbk';
   Common.database__backup__file_name__suffix_default__item_index := 1;
   Common.database__create__application__file_path := 'C:\Program Files\Firebird\isql.exe';
-  Common.database__file_default_extension := '.fdb';
-  Common.exe__file_default_extension := '.exe';
+  Common.database__file__default_extension := '.fdb';
+  Common.exe__file__default_extension := '.exe';
 
   Common.fire_dac__fetch_options__mode := fmOnDemand;
   Common.fire_dac__fetch_options__record_count_mode := cmVisible;
@@ -180,8 +294,11 @@ begin
   Common.log__auto_scroll__seconds := 5;
   Common.queries_open_in_background := true;
   Common.splitter_show := true;
-  Common.sql_editor__code_completion_window__default__lines_in_window := 70;
-  Common.sql_editor__code_completion_window__default__width := 800;
+  Common.sql_editor__close_prompt := true;
+  Common.sql_editor__code__completion_window__default__lines_in_window := 70;
+  Common.sql_editor__code__completion_window__default__width := 800;
+  Common.sql_editor__code__dent_width := 2;
+  Common.sql_editor__comments_delete := true;
   Common.sql_editor__execute_automatic_detection := true;
   Common.sql_editor__transactions_automatic := true;
   Common.sql_editor__query_output_save_field_format__date := 'dd.mm.yyyy';
@@ -192,13 +309,23 @@ begin
   Common.sql_editor__words_highlight__color__background := $0080DDFF; // Yellow / orange.
   Common.sql_editor__words_highlight__color__border := $00226DA8; // Brown.
   Common.sql__command_separator := ';';
+  Common.sql__comment__begin := '/*';
+  Common.sql__comment__end := '*/';
+  Common.sql__comment__line := '//';
   Common.sql__external_function__parameter_separator := ', ';
   Common.sql__names_separator := '.';
   Common.sql__quotation_sign__use := false;
   Common.sql__text_separator := '''';
   Common.sql__view__parameter_separator := #13 + #10 + '  , ';
   Common.system_tables_visible := false;
+  Common.table__data_filter__field_dedicated__default_use := true;
+  Common.table__data_filter__filter__dedicated_value_format__date := 'dd.mm.yyyy';
+  Common.table__data_filter__filter__dedicated_value_format__separator__date_time := ' ';
+  Common.table__data_filter__filter__dedicated_value_format__separator__decimal := '.';
+  Common.table__data_filter__filter__dedicated_value_format__time := 'hh:mm:ss';
+  Common.table__data_filter__quotation_sign__use := true;
   Common.table__data_modify__editing__default_state := false;
+  Common.txt__file__default_extension := '.txt';
   Common.text__search__history_save_to_file := true;
   Common.text__search__history_save_to_file__items_count := 40;
   Common.text__search__window__one_common := true;
@@ -207,6 +334,25 @@ begin
   Common.table__data_modify__filter__height_keeper__top := 270;
 
   Common.sql_editor__font := Vcl.Graphics.TFont.Create();
+  Common.syn_editor_options :=
+    [
+      SynEdit.TSynEditorOption.eoAutoIndent,
+      SynEdit.TSynEditorOption.eoCopyPlainText,
+      SynEdit.TSynEditorOption.eoDisableScrollArrows,
+      SynEdit.TSynEditorOption.eoDragDropEditing,
+      SynEdit.TSynEditorOption.eoDropFiles,
+      SynEdit.TSynEditorOption.eoEnhanceEndKey,
+      SynEdit.TSynEditorOption.eoEnhanceHomeKey,
+      SynEdit.TSynEditorOption.eoGroupUndo,
+      SynEdit.TSynEditorOption.eoHideShowScrollbars,
+      SynEdit.TSynEditorOption.eoKeepCaretX,
+      SynEdit.TSynEditorOption.eoShowLigatures,
+      SynEdit.TSynEditorOption.eoShowScrollHint,
+      SynEdit.TSynEditorOption.eoSmartTabDelete,
+      SynEdit.TSynEditorOption.eoTabIndent,
+      SynEdit.TSynEditorOption.eoTabsToSpaces
+    ];
+
   Common.Font__Set( Common.sql_editor__font, Self.Font );
 
   databases_list_box__width_default_g := Databases_List_ListBox.Width;
@@ -304,8 +450,7 @@ begin
     begin
 
       for i := 0 to Self.MDIChildCount - 1  do
-        if    ( Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form )
-          and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).item_index_g = Databases_List_ListBox.ItemIndex ) then
+        if Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form then
           Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Options_Set__DM();
 
 
@@ -562,7 +707,7 @@ begin
                     begin
 
                       for component_type_l := Low( Common.TComponent_Type ) to High( Common.TComponent_Type ) do
-                        if zt_xml_document.DocumentElement.ChildNodes[ i ].ChildNodes[ j ].Text = GetEnumName( TypeInfo(Common.TComponent_Type), integer(component_type_l) ) then
+                        if zt_xml_document.DocumentElement.ChildNodes[ i ].ChildNodes[ j ].Text = System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(component_type_l) ) then
                           begin
 
                             databases_r_t[ zti ].component_type := component_type_l;
@@ -689,7 +834,7 @@ begin
 
       zt__xml_node.AddChild( 'alias' ).Text := databases_r_t[ i ].alias;
       zt__xml_node.AddChild( 'ado__connection_string' ).Text := databases_r_t[ i ].ado__connection_string;
-      zt__xml_node.AddChild( 'component_type' ).Text := GetEnumName( TypeInfo(Common.TComponent_Type), integer(databases_r_t[ i ].component_type) );
+      zt__xml_node.AddChild( 'component_type' ).Text := System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(databases_r_t[ i ].component_type) );
       zt__xml_node.AddChild( 'database_type' ).Text := databases_r_t[ i ].database_type;
       zt__xml_node.AddChild( 'fire_dac__driver_id' ).Text := databases_r_t[ i ].fire_dac__driver_id;
       zt__xml_node.AddChild( 'fire_dac__file_path' ).Text := databases_r_t[ i ].fire_dac__file_path;
@@ -797,13 +942,20 @@ begin
 end;
 
 procedure TSimple_Database_Manager_Form.Databases__Close__One_MenuItemClick( Sender: TObject );
+var
+  task_is_running_l : boolean;
 begin
 
   if Self.MDIChildCount > 0 then
     begin
 
       if    ( Self.MDIChildren[ 0 ] is Database__Modify.TDatabase__Modify_Form )
-        and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ 0 ]).Task_Running_Check__DM() ) then
+        and (  not SQL_Editor__Close_Prompt__DBM( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ 0 ]) )  ) then
+        Exit;
+
+
+      if    ( Self.MDIChildren[ 0 ] is Database__Modify.TDatabase__Modify_Form )
+        and (  Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ 0 ]).Task_Running_Check__DM( task_is_running_l )  ) then
         begin
 
           Application.MessageBox( PChar(Translation.translation__messages_r.tasks_are_still_running_wait_until_finish), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
@@ -821,7 +973,10 @@ end;
 
 procedure TSimple_Database_Manager_Form.Databases__Close__Selected_MenuItemClick( Sender: TObject );
 var
-  ztb : boolean;
+  ztb,
+  task_is_running_l
+    : boolean;
+
   i : integer;
 begin
 
@@ -831,14 +986,26 @@ begin
     Exit;
 
 
-  ztb := true;
+  SQL_Editor__Close_Prompt__DBM( nil, Databases_List_ListBox.ItemIndex );
+
+
+  ztb := false;
+  task_is_running_l := false;
+
 
   for i := Self.MDIChildCount - 1 downto 0 do
     if    ( Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form )
       and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).item_index_g = Databases_List_ListBox.ItemIndex ) then
       begin
 
-        if not Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Task_Running_Check__DM() then
+        if    (
+                   ( not Common.sql_editor__close_prompt )
+                or (
+                         ( Common.sql_editor__close_prompt )
+                     and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Sql_Editor__Page__Count__Get() <= 0 )
+                   )
+              )
+          and (  not Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Task_Running_Check__DM( task_is_running_l )  ) then
           begin
 
             Self.MDIChildren[ i ].Close();
@@ -846,20 +1013,24 @@ begin
 
           end
         else
-          if ztb then
-            ztb := false;
+          if    ( task_is_running_l )
+            and ( not ztb ) then
+            ztb := true;
 
       end;
 
 
-  if not ztb then
+  if ztb then
     Application.MessageBox( PChar(Translation.translation__messages_r.tasks_are_still_running_wait_until_finish), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
 
 end;
 
 procedure TSimple_Database_Manager_Form.Databases__Close__All_MenuItemClick( Sender: TObject );
 var
-  ztb : boolean;
+  ztb,
+  task_is_running_l
+    : boolean;
+
   i : integer;
 begin
 
@@ -869,14 +1040,28 @@ begin
     Exit;
 
 
-  ztb := true;
+  SQL_Editor__Close_Prompt__DBM();
+
+
+  ztb := false;
+  task_is_running_l := false;
+
 
   for i := Self.MDIChildCount - 1 downto 0 do
     if Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form then
       begin
 
-        if   ( not Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Task_Running_Check__DM() )
-          or (  Application.MessageBox( PChar(Translation.translation__messages_r.force_close_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) = IDYES  ) then
+        if    (
+                   ( not Common.sql_editor__close_prompt )
+                or (
+                         ( Common.sql_editor__close_prompt )
+                     and ( Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Sql_Editor__Page__Count__Get() <= 0 )
+                   )
+              )
+          and (
+                   (  not Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Task_Running_Check__DM( task_is_running_l )  )
+                or (  Application.MessageBox( PChar(Translation.translation__messages_r.force_close_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) = IDYES  )
+              ) then
           begin
 
             Self.MDIChildren[ i ].Close();
@@ -884,8 +1069,9 @@ begin
 
           end
         else
-          if ztb then
-            ztb := false;
+          if    ( task_is_running_l )
+            and ( not ztb ) then
+            ztb := true;
 
       end
     else
@@ -897,7 +1083,7 @@ begin
       end;
 
 
-  if not ztb then
+  if ztb then
     Application.MessageBox( PChar(Translation.translation__messages_r.tasks_are_still_running_wait_until_finish), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
 
 end;
@@ -976,15 +1162,15 @@ procedure TSimple_Database_Manager_Form.Databases_List_ListBoxKeyDown( Sender: T
 begin
 
   if    ( Key = VK_INSERT )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Database__Create_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   if Key = VK_INSERT then
     begin
 
@@ -992,12 +1178,12 @@ begin
       Databases__Add_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   if   ( Key = VK_SPACE )
     or (
              ( Key = VK_RETURN )
-         and ( ssCtrl in Shift )
+         and ( Shift = [ ssCtrl ] )
        ) then
     begin
 
@@ -1005,8 +1191,8 @@ begin
       Databases__Edit_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   if Key = VK_DELETE then
     begin
 
@@ -1014,70 +1200,70 @@ begin
       Databases__Delete_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   // B.
   if    ( Key = 66 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Database__Backup_Restore_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   // C.
   if    ( Key = 67 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Databases__Copy_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Databases__Refresh_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   // S.
   if    ( Key = 83 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Databases__Save_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   if    ( Key = VK_UP )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Databases__Move__Up_MenuItemClick( Sender );
 
-    end;
-
+    end
+  else
   if    ( Key = VK_DOWN )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
       Databases__Move__Down_MenuItemClick( Sender );
 
-    end;
-
+    end
+  else
   if Key = VK_RETURN then
     begin
 
@@ -1085,23 +1271,22 @@ begin
       Databases__Open_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   // W.
   if    ( Key = 87 )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
       Key := 0;
       Databases__Close__All_MenuItemClick( Sender );
       Databases_List_ListBox.SetFocus();
 
-    end;
-
+    end
+  else
   // W.
   if    ( Key = 87 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;

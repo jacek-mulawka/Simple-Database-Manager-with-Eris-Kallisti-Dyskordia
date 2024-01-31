@@ -61,9 +61,6 @@ uses
 constructor TView__Parameter.Create( parent_f : Vcl.Controls.TWinControl; var view__parameter_id_f : integer; const parameter__name_f, parameter__description_f : string; const splitter_show_f : boolean; on_click_wsk_f : TOn_Click_wsk );
 const
   margin_c : integer = 5;
-
-var
-  zti : integer;
 begin
 
   inherited Create( Vcl.Forms.Application );

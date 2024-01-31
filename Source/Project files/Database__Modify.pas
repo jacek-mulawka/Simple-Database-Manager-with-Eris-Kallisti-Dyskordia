@@ -18,6 +18,8 @@ uses
   FireDAC.Phys.MSAcc, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet, Vcl.Menus;
 
 type
+  TConnection_Status_Caption = ( csc_Connected, csc_Disconnected, csc_Error );
+
   TDatabase__Modify_Form = class( TForm )
     ADOConnection1: TADOConnection;
     FDConnection1: TFDConnection;
@@ -157,6 +159,7 @@ type
     Database__Informations_TabSheet: TTabSheet;
     Users_List_TabSheet: TTabSheet;
     Database_Name_Label: TLabel;
+    Component_Type_Top_Panel: TPanel;
     procedure FormCreate( Sender: TObject );
     procedure FormShow( Sender: TObject );
     procedure FormClose( Sender: TObject; var Action: TCloseAction );
@@ -237,6 +240,8 @@ type
     procedure Views_List__PageControlDragDrop( Sender, Source: TObject; X, Y: Integer );
   private
     { Private declarations }
+    close_can__checked__dm : boolean;
+
     id_search__stored_procedures_list_g,
     id_search__tables_list_g,
     id_search__views__list_g,
@@ -248,25 +253,40 @@ type
     view_name_g
       : string;
 
+    connection_status_caption_g : TConnection_Status_Caption;
+
     sdbm : Common.TSDBM;
 
     function Additional_Component_Show__Get() : boolean;
     function Component_Type_Get() : Common.TComponent_Type;
+    procedure Connection_Status_Label__Translation__Apply();
     function Connection__Open( const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : boolean;
     procedure Connections__Close();
     procedure Database__Data_Load();
     function Page_Control_Children_Find( page_control_f : TPageControl; const pccff_f : Common.TPage_Control_Children_Find_Function ) : boolean;
     function Quotation_Sign__DM() : string;
     function Splitter_Show__Get() : boolean;
+    function Sql_Editor__Page__Close__One( const modal_result_f : TModalResult = mrNone ) : TModalResult;
+    procedure Stored_Procedures_List__Stored_Procedure__Open__DM();
+    procedure Stored_Procedures_List__Stored_Procedure__Open__Edit__DM();
+    procedure Tables_List__Table__Open__DM();
+    procedure Tables_List__Table__Data_Open__DM();
+    procedure Views_List__View__Open__DM();
+    procedure Views_List__View__Data_Open__DM();
+    procedure Views_List__View__Open__Edit__DM();
   public
     { Public declarations }
     item_index_g : integer;
     databases_r__dm_g : Common.TDatabases_r;
 
+    function Close_Can__Checked__Get() : boolean;
+    procedure Close_Can__Checked__Set( const close_can__checked_f : boolean );
     function Connection_Test__DM( const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : boolean;
     procedure Options_Set__DM();
     procedure Prepare__DM();
-    function Task_Running_Check__DM() : boolean;
+    function Sql_Editor__Page__Close__All( const modal_result_f : TModalResult = mrNone ) : TModalResult;
+    function Sql_Editor__Page__Count__Get() : integer;
+    function Task_Running_Check__DM( var task_is_running_f : boolean ) : boolean;
   end;
 
 const
@@ -283,7 +303,6 @@ implementation
 
 uses
   System.TypInfo,
-  System.IOUtils,
   Vcl.Clipbrd,
 
   Database__Informations_F,
@@ -312,6 +331,20 @@ begin
 
 end;
 
+function TDatabase__Modify_Form.Close_Can__Checked__Get() : boolean;
+begin
+
+  Result := close_can__checked__dm;
+
+end;
+
+procedure TDatabase__Modify_Form.Close_Can__Checked__Set( const close_can__checked_f : boolean );
+begin
+
+  close_can__checked__dm := close_can__checked_f;
+
+end;
+
 function TDatabase__Modify_Form.Component_Type_Get() : Common.TComponent_Type;
 begin
 
@@ -320,6 +353,22 @@ begin
     Result := Common.TComponent_Type(Component_Type_ComboBox.ItemIndex)
   else
     Result := Common.ct_none;
+
+end;
+
+procedure TDatabase__Modify_Form.Connection_Status_Label__Translation__Apply();
+begin
+
+  case connection_status_caption_g of
+      csc_Connected :
+        Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
+
+      csc_Error :
+        Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
+
+      else
+        Connection_Status_Label.Caption := Translation.translation__messages_r.word__disconnected;
+    end;
 
 end;
 
@@ -396,7 +445,8 @@ begin
 
             Result := false;
 
-            Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
+            //Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
+            connection_status_caption_g := csc_Error;
             Connection_Status_Label.Font.Color := clRed;
 
             Log_Memo.Lines.Add( E.Message );
@@ -410,7 +460,8 @@ begin
       if ADOConnection1.Connected then
         begin
 
-          Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
+          //Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
+          connection_status_caption_g := csc_Connected;
           Connection_Status_Label.Font.Color := clGreen;
 
         end;
@@ -457,7 +508,8 @@ begin
 
             Result := false;
 
-            Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
+            //Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
+            connection_status_caption_g := csc_Error;
             Connection_Status_Label.Font.Color := clRed;
 
             Log_Memo.Lines.Add( E.Message );
@@ -471,12 +523,16 @@ begin
       if FDConnection1.Connected then
         begin
 
-          Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
+          //Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
+          connection_status_caption_g := csc_Connected;
           Connection_Status_Label.Font.Color := clGreen;
 
         end;
 
     end;
+
+
+  Connection_Status_Label__Translation__Apply();
 
 end;
 
@@ -506,8 +562,12 @@ begin
     end;
 
 
-  Connection_Status_Label.Caption := Translation.translation__messages_r.word__disconnected;
+  //Connection_Status_Label.Caption := Translation.translation__messages_r.word__disconnected;
+  connection_status_caption_g := csc_Disconnected;
   Connection_Status_Label.Font.Color := clWindowText;
+
+
+  Connection_Status_Label__Translation__Apply();
 
 end;
 
@@ -657,12 +717,12 @@ begin
 
       Stored_Procedures_List__ListBox.Items.Clear();
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedures_list__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + stored_procedures_list__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedures_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + stored_procedures_list__file_name_c + ').' );
 
           zts :=
             'select RDB$PROCEDURES.RDB$PROCEDURE_NAME as STORED_PROCEDURE_NAME ' +
@@ -777,12 +837,12 @@ begin
 
       Tables_List__ListBox.Items.Clear();
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Common.tables_list__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Common.tables_list__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.tables_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Common.tables_list__file_name_c + ').' );
 
           zts :=
             'select RDB$RELATIONS.RDB$RELATION_NAME as TABLE_NAME ' +
@@ -934,12 +994,12 @@ begin
 
       Views_List__ListBox.Items.Clear();
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + views_list__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + views_list__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + views_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + views_list__file_name_c + ').' );
 
           zts :=
             'select RDB$RELATIONS.RDB$RELATION_NAME as VIEW_NAME ' +
@@ -1077,6 +1137,15 @@ begin
 
   Translation.Translation__Apply( Self );
 
+  Self.Caption := Self.Caption + ' - ' + databases_r__dm_g.alias;
+  Component_Type_Default_Label.Caption := translation__messages_r.default__with_a_capital_letter + ': ' + StringReplace(  System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(databases_r__dm_g.component_type) ), 'ct_', '', [ rfReplaceAll ]  );
+  Database_Name_Label.Caption := Database_Name_Label.Caption + ' ' + databases_r__dm_g.alias;
+
+  Connection_Status_Label__Translation__Apply();
+
+
+  Page_Control_Children_Find( Main_PageControl, Common.pccff_Translation__Apply );
+
 end;
 
 function TDatabase__Modify_Form.Page_Control_Children_Find( page_control_f : TPageControl; const pccff_f : Common.TPage_Control_Children_Find_Function ) : boolean;
@@ -1096,7 +1165,7 @@ begin
 
           Result := Page_Control_Children_Find( TPageControl(page_control_f.Pages[ i ].Controls[ j ]), pccff_f );
 
-          if    ( pccff_f = Common.pccff_Task_Running_Check )
+          if    ( pccff_f in [ Common.pccff_Task_Running_Check ] )
             and ( Result ) then
             Exit;
 
@@ -1157,12 +1226,47 @@ begin
                            ( page_control_f.Pages[ i ].Controls[ j ].ClassType = View_Modify_F.TView_Modify_F_Frame )
                        and (  View_Modify_F.TView_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Task_Running_Check__VMF( false )  )
                      ) then
-                    begin
+                  begin
 
-                      Result := true;
-                      Exit;
+                    Result := true;
+                    Exit;
 
-                    end;
+                  end;
+
+              end;
+
+            Common.pccff_Translation__Apply :
+              begin
+
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Database__Informations_F.TDatabase__Informations_F_Frame then
+                  Database__Informations_F.TDatabase__Informations_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__DIF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Exceptions_Modify_F.TExceptions_Modify_F_Frame then
+                  Exceptions_Modify_F.TExceptions_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__EMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame then
+                  External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__EFMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Generators_Modify_F.TGenerators_Modify_F_Frame then
+                  Generators_Modify_F.TGenerators_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__GMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Roles_Modify_F.TRoles_Modify_F_Frame then
+                  Roles_Modify_F.TRoles_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__RMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Sql_Editor_F.TSql_Editor_F_Frame then
+                  Sql_Editor_F.TSql_Editor_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__SEF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame then
+                  Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__SPMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Table_Modify_F.TTable_Modify_F_Frame then
+                  Table_Modify_F.TTable_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__TMoF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Users_Modify_F.TUsers_Modify_F_Frame then
+                  Users_Modify_F.TUsers_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__UMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = View_Modify_F.TView_Modify_F_Frame then
+                  View_Modify_F.TView_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Translation__Apply__VMF();
 
               end;
           end;
@@ -1174,14 +1278,11 @@ var
   component_type_l : Common.TComponent_Type;
 begin
 
+  Self.Options_Set__DM();
+
+
+  sdbm := Common.TSDBM.Create( ADOConnection1, FDConnection1, ADOQuery1, FDQuery1 );
   sdbm.component_type__sdbm := databases_r__dm_g.component_type;
-
-
-  Self.Caption := Self.Caption + ' - ' + databases_r__dm_g.alias;
-
-  Database_Name_Label.Caption := Database_Name_Label.Caption + ' ' + databases_r__dm_g.alias;
-
-  Component_Type_Default_Label.Caption := Component_Type_Default_Label.Caption + StringReplace(  GetEnumName( TypeInfo(Common.TComponent_Type), integer(databases_r__dm_g.component_type) ), 'ct_', '', [ rfReplaceAll ]  );
 
 
   Component_Type_ComboBox.Clear();
@@ -1189,7 +1290,7 @@ begin
   for component_type_l := Low( Common.TComponent_Type ) to High( Common.TComponent_Type ) do
     begin
 
-      Component_Type_ComboBox.Items.Add(   StringReplace(  GetEnumName( TypeInfo(Common.TComponent_Type), integer(component_type_l) ), 'ct_', '', [ rfReplaceAll ]  )   );
+      Component_Type_ComboBox.Items.Add(   StringReplace(  System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(component_type_l) ), 'ct_', '', [ rfReplaceAll ]  )   );
 
 
       if component_type_l = databases_r__dm_g.component_type then
@@ -1209,15 +1310,15 @@ begin
 
 
   //???
-  //Database__Informations_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Common.database__informations__attributes_list__file_name_c  ); // If need move the declaration database__informations__attributes_list__file_name_c from Database__Informations_Modify_F to Common.
-  //Exceptions_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Exceptions_Modify_F.exceptions_list__file_name_c  );
-  //External_Functions_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + External_Functions_Modify_F.external_functions_list__file_name_c  );
-  //Generators_List_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Generators_Modify_F.generators_list__file_name_c  );
-  //Roles_List_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Roles_Modify_F.roles_list__file_name_c  );
-  //Stored_Procedures_List_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedures_list__file_name_c  );
-  //Tables_List_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Common.tables_list__file_name_c  );
-  //Users_List_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + Users_Modify_F.users_list__file_name_c  );
-  //Views_List_TabSheet.TabVisible := FileExists(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + views_list__file_name_c  );
+  //Database__Informations_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Common.database__informations__attributes_list__file_name_c  ); // If need move the declaration database__informations__attributes_list__file_name_c from Database__Informations_Modify_F to Common.
+  //Exceptions_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Exceptions_Modify_F.exceptions_list__file_name_c  );
+  //External_Functions_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + External_Functions_Modify_F.external_functions_list__file_name_c  );
+  //Generators_List_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Generators_Modify_F.generators_list__file_name_c  );
+  //Roles_List_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Roles_Modify_F.roles_list__file_name_c  );
+  //Stored_Procedures_List_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + stored_procedures_list__file_name_c  );
+  //Tables_List_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Common.tables_list__file_name_c  );
+  //Users_List_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + Users_Modify_F.users_list__file_name_c  );
+  //Views_List_TabSheet.TabVisible := FileExists(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + views_list__file_name_c  );
 
 end;
 
@@ -1242,10 +1343,212 @@ begin
 
 end;
 
-function TDatabase__Modify_Form.Task_Running_Check__DM() : boolean;
+function TDatabase__Modify_Form.Sql_Editor__Page__Close__All( const modal_result_f : TModalResult = mrNone ) : TModalResult;
+var
+  i : integer;
 begin
 
-  Result := Page_Control_Children_Find( Main_PageControl, Common.pccff_Task_Running_Check )
+  if modal_result_f = mrYesToAll then
+    Result := mrYesToAll
+  else
+    Result := mrNone;
+
+
+  for i := Sql_Editor__PageControl.PageCount - 1 downto 0 do
+    begin
+
+      Sql_Editor__PageControl.ActivePageIndex := i;
+
+      Result := Sql_Editor__Page__Close__One( Result );
+
+
+      if Result = mrCancel then
+        Break;
+
+    end;
+
+end;
+
+function TDatabase__Modify_Form.Sql_Editor__Page__Close__One( const modal_result_f : TModalResult = mrNone ) : TModalResult;
+var
+  last_tab_is_closing_l : boolean;
+begin
+
+  if modal_result_f = mrYesToAll then
+    Result := mrYesToAll
+  else
+    Result := mrNone;
+
+
+  if    ( Sql_Editor__PageControl.PageCount > 0 )
+    and ( Sql_Editor__PageControl.ActivePageIndex >= 0 )
+    and ( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].PageIndex <= Sql_Editor__PageControl.PageCount - 1 )
+    and ( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].ControlCount > 0 )
+    and ( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].Controls[ 0 ].ClassType = Sql_Editor_F.TSql_Editor_F_Frame )
+    and (  Sql_Editor_F.TSql_Editor_F_Frame(Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].Controls[ 0 ]).Finish__SEF( Result )  ) then
+    begin
+
+      last_tab_is_closing_l :=
+            ( Sql_Editor__PageControl.PageCount > 1 )
+        and ( Sql_Editor__PageControl.ActivePageIndex = Sql_Editor__PageControl.PageCount - 1 );
+
+
+      FreeAndNil( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ] );
+
+
+      if last_tab_is_closing_l then
+        Sql_Editor__PageControl.ActivePageIndex := Sql_Editor__PageControl.PageCount - 1;
+
+
+      if Sql_Editor__PageControl.PageCount <= 0 then
+        sql_editor__tabs__count_total_g := 0;
+
+    end;
+
+end;
+
+function TDatabase__Modify_Form.Sql_Editor__Page__Count__Get() : integer;
+begin
+
+  Result := Sql_Editor__PageControl.PageCount;
+
+end;
+
+procedure TDatabase__Modify_Form.Stored_Procedures_List__Stored_Procedure__Open__DM();
+var
+  tab_sheet_l : TTabSheet;
+  stored_procedure_modify_f_frame_l : Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame;
+begin
+
+  if   ( Stored_Procedures_List__ListBox.Items.Count <= 0 )
+    or ( Stored_Procedures_List__ListBox.ItemIndex < 0 )
+    or ( Stored_Procedures_List__ListBox.ItemIndex >= Stored_Procedures_List__ListBox.Items.Count ) then
+    Exit;
+
+
+  tab_sheet_l := TTabSheet.Create( Application );
+  tab_sheet_l.Caption := Stored_Procedures_List__ListBox.Items[ Stored_Procedures_List__ListBox.ItemIndex ];
+  tab_sheet_l.PageControl := Stored_Procedures_List__PageControl;
+  Stored_Procedures_List__PageControl.ActivePageIndex := Stored_Procedures_List__PageControl.PageCount - 1;
+
+
+  stored_procedure_modify_f_frame_l := Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame.Create( Application );
+  stored_procedure_modify_f_frame_l.Parent := tab_sheet_l;
+  stored_procedure_modify_f_frame_l.Align := alClient;
+  stored_procedure_modify_f_frame_l.Additional_Component_Show__Get_wsk := Additional_Component_Show__Get;
+  stored_procedure_modify_f_frame_l.Splitter_Show__Get_wsk := Splitter_Show__Get;
+  stored_procedure_modify_f_frame_l.Prepare__SPMF( databases_r__dm_g, Stored_Procedures_List__ListBox.Items[ Stored_Procedures_List__ListBox.ItemIndex ], Component_Type_Get(), ADOConnection1, FDConnection1, Queries_Open_In_Background_CheckBox.Checked, Splitter_Show_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+
+end;
+
+procedure TDatabase__Modify_Form.Stored_Procedures_List__Stored_Procedure__Open__Edit__DM();
+begin
+
+  Stored_Procedures_List__Stored_Procedure__Open__DM();
+
+
+  if    ( Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.PageCount - 1 ].ControlCount > 0 )
+    and ( Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.PageCount - 1 ].Controls[ Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.PageCount - 1 ].ControlCount - 1 ].ClassType = Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame ) then
+    Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.PageCount - 1 ].Controls[ Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.PageCount - 1 ].ControlCount - 1 ]).Stored_Procedure__Edit__SPMF();
+
+end;
+
+procedure TDatabase__Modify_Form.Tables_List__Table__Open__DM();
+var
+  tab_sheet_l : TTabSheet;
+  table_modify_f_frame_l : Table_Modify_F.TTable_Modify_F_Frame;
+begin
+
+  if   ( Tables_List__ListBox.Items.Count <= 0 )
+    or ( Tables_List__ListBox.ItemIndex < 0 )
+    or ( Tables_List__ListBox.ItemIndex >= Tables_List__ListBox.Items.Count ) then
+    Exit;
+
+
+  tab_sheet_l := TTabSheet.Create( Application );
+  tab_sheet_l.Caption := Tables_List__ListBox.Items[ Tables_List__ListBox.ItemIndex ];
+  tab_sheet_l.PageControl := Tables_List__PageControl;
+  Tables_List__PageControl.ActivePageIndex := Tables_List__PageControl.PageCount - 1;
+
+
+  table_modify_f_frame_l := Table_Modify_F.TTable_Modify_F_Frame.Create( Application );
+  table_modify_f_frame_l.Parent := tab_sheet_l;
+  table_modify_f_frame_l.Align := alClient;
+  table_modify_f_frame_l.Additional_Component_Show__Get_wsk := Additional_Component_Show__Get;
+  table_modify_f_frame_l.Splitter_Show__Get_wsk := Splitter_Show__Get;
+  table_modify_f_frame_l.Prepare__TMoF( databases_r__dm_g, Tables_List__ListBox.Items[ Tables_List__ListBox.ItemIndex ], Component_Type_Get(), ADOConnection1, FDConnection1, Form_View__Additional_Component_Show_CheckBox.Checked, Queries_Open_In_Background_CheckBox.Checked, Splitter_Show_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+
+end;
+
+procedure TDatabase__Modify_Form.Tables_List__Table__Data_Open__DM();
+begin
+
+  Tables_List__Table__Open__DM();
+
+
+  if    ( Tables_List__PageControl.Pages[ Tables_List__PageControl.PageCount - 1 ].ControlCount > 0 )
+    and ( Tables_List__PageControl.Pages[ Tables_List__PageControl.PageCount - 1 ].Controls[ Tables_List__PageControl.Pages[ Tables_List__PageControl.PageCount - 1 ].ControlCount - 1 ].ClassType = Table_Modify_F.TTable_Modify_F_Frame ) then
+    Table_Modify_F.TTable_Modify_F_Frame(Tables_List__PageControl.Pages[ Tables_List__PageControl.PageCount - 1 ].Controls[ Tables_List__PageControl.Pages[ Tables_List__PageControl.PageCount - 1 ].ControlCount - 1 ]).Table__Data_Open__TMoF();
+
+end;
+
+function TDatabase__Modify_Form.Task_Running_Check__DM( var task_is_running_f : boolean ) : boolean;
+begin
+
+  Result := Page_Control_Children_Find( Main_PageControl, Common.pccff_Task_Running_Check );
+
+  task_is_running_f := Result;
+
+end;
+
+procedure TDatabase__Modify_Form.Views_List__View__Open__DM();
+var
+  tab_sheet_l : TTabSheet;
+  view_modify_f_frame_l : View_Modify_F.TView_Modify_F_Frame;
+begin
+
+  if   ( Views_List__ListBox.Items.Count <= 0 )
+    or ( Views_List__ListBox.ItemIndex < 0 )
+    or ( Views_List__ListBox.ItemIndex >= Views_List__ListBox.Items.Count ) then
+    Exit;
+
+
+  tab_sheet_l := TTabSheet.Create( Application );
+  tab_sheet_l.Caption := Views_List__ListBox.Items[ Views_List__ListBox.ItemIndex ];
+  tab_sheet_l.PageControl := Views_List__PageControl;
+  Views_List__PageControl.ActivePageIndex := Views_List__PageControl.PageCount - 1;
+
+
+  view_modify_f_frame_l := View_Modify_F.TView_Modify_F_Frame.Create( Application );
+  view_modify_f_frame_l.Parent := tab_sheet_l;
+  view_modify_f_frame_l.Align := alClient;
+  view_modify_f_frame_l.Additional_Component_Show__Get_wsk := Additional_Component_Show__Get;
+  view_modify_f_frame_l.Splitter_Show__Get_wsk := Splitter_Show__Get;
+  view_modify_f_frame_l.Prepare__VMF( databases_r__dm_g, Views_List__ListBox.Items[ Views_List__ListBox.ItemIndex ], Component_Type_Get(), ADOConnection1, FDConnection1, Queries_Open_In_Background_CheckBox.Checked, Splitter_Show_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+
+end;
+
+procedure TDatabase__Modify_Form.Views_List__View__Data_Open__DM();
+begin
+
+  Views_List__View__Open__DM();
+
+
+  if    ( Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].ControlCount > 0 )
+    and ( Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].Controls[ Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].ControlCount - 1 ].ClassType = View_Modify_F.TView_Modify_F_Frame ) then
+    View_Modify_F.TView_Modify_F_Frame(Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].Controls[ Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].ControlCount - 1 ]).View__Data_Open__VMF();
+
+end;
+
+procedure TDatabase__Modify_Form.Views_List__View__Open__Edit__DM();
+begin
+
+  Views_List__View__Open__DM();
+
+
+  if    ( Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].ControlCount > 0 )
+    and ( Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].Controls[ Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].ControlCount - 1 ].ClassType = View_Modify_F.TView_Modify_F_Frame ) then
+    View_Modify_F.TView_Modify_F_Frame(Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].Controls[ Views_List__PageControl.Pages[ Views_List__PageControl.PageCount - 1 ].ControlCount - 1 ]).View__Edit__VMF();
 
 end;
 
@@ -1255,22 +1558,16 @@ begin
   id_search__stored_procedures_list_g := -1;
   id_search__tables_list_g := -1;
   id_search__views__list_g := -1;
+  connection_status_caption_g := csc_Disconnected;
   item_index_g := -1;
   sql_editor__tabs__count_total_g := 0;
   stored_procedure_name_g := '';
   table_name_g := '';
   view_name_g := '';
 
+  Close_Can__Checked__Set( false );
+
   //FDConnection1.FormatOptions.MaxStringSize := Common.fd_connection__format_options__max_string_size;
-
-
-  Options_Set__DM();
-
-
-  sdbm := Common.TSDBM.Create( ADOConnection1, FDConnection1, ADOQuery1, FDQuery1 );
-
-
-  Component_Type_Default_Label.Caption := translation__messages_r.default__with_a_capital_letter + ': ';
 
 end;
 
@@ -1302,9 +1599,6 @@ begin
       Exit;
 
     end;
-
-
-  FreeAndNil( sdbm );
 
 
   for i := 0 to Main_PageControl.PageCount - 1 do
@@ -1339,14 +1633,15 @@ begin
 
 
   Tables_List__Page__Close__All_ButtonClick( Sender );
-  Sql_Editor__Page__Close__All_ButtonClick( Sender );
+  Sql_Editor__Page__Close__All();
   Stored_Procedures_List__Page__Close__All_ButtonClick( Sender );
   Views_List__Page__Close__All_ButtonClick( Sender );
 
 
   if   ( Sql_Editor__PageControl.PageCount > 0 )
     or ( Stored_Procedures_List__PageControl.PageCount > 0 )
-    or ( Tables_List__PageControl.PageCount > 0 ) then
+    or ( Tables_List__PageControl.PageCount > 0 )
+    or ( Views_List__PageControl.PageCount > 0 ) then
     begin
 
       Action := TCloseAction.caNone;
@@ -1354,6 +1649,9 @@ begin
       
     end;
   
+
+  FreeAndNil( sdbm );
+
 
   Connections__Close();
 
@@ -1421,8 +1719,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -1451,36 +1748,14 @@ end;
 procedure TDatabase__Modify_Form.Sql_Editor__Page__Close__One_ButtonClick( Sender: TObject );
 begin
 
-  if    ( Sql_Editor__PageControl.PageCount > 0 )
-    and ( Sql_Editor__PageControl.ActivePageIndex >= 0 )
-    and ( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].PageIndex <= Sql_Editor__PageControl.PageCount - 1 )
-    and ( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].ControlCount > 0 )
-    and ( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].Controls[ 0 ].ClassType = Sql_Editor_F.TSql_Editor_F_Frame )
-    and ( Sql_Editor_F.TSql_Editor_F_Frame(Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ].Controls[ 0 ]).Finish__SEF() ) then    
-    begin
-
-      FreeAndNil( Sql_Editor__PageControl.Pages[ Sql_Editor__PageControl.ActivePageIndex ] );
-
-          
-      if Sql_Editor__PageControl.PageCount <= 0 then
-        sql_editor__tabs__count_total_g := 0;
-
-    end;
+  Sql_Editor__Page__Close__One();
 
 end;
 
 procedure TDatabase__Modify_Form.Sql_Editor__Page__Close__All_ButtonClick( Sender: TObject );
-var
-  i : integer;
 begin
 
-  for i := Sql_Editor__PageControl.PageCount - 1 downto 0 do
-    begin
-
-      Sql_Editor__PageControl.ActivePageIndex := i;
-      Sql_Editor__Page__Close__One_ButtonClick( Sender );
-
-    end;
+  Sql_Editor__Page__Close__All();
 
 end;
 
@@ -1559,29 +1834,12 @@ begin
 end;
 
 procedure TDatabase__Modify_Form.Stored_Procedures_List__ListBoxDblClick( Sender: TObject );
-var
-  tab_sheet_l : TTabSheet;
-  stored_procedure_modify_f_frame_l : Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame;
 begin
 
-  if   ( Stored_Procedures_List__ListBox.Items.Count <= 0 )
-    or ( Stored_Procedures_List__ListBox.ItemIndex < 0 )
-    or ( Stored_Procedures_List__ListBox.ItemIndex >= Stored_Procedures_List__ListBox.Items.Count ) then
-    Exit;
-
-
-  tab_sheet_l := TTabSheet.Create( Application );
-  tab_sheet_l.Caption := Stored_Procedures_List__ListBox.Items[ Stored_Procedures_List__ListBox.ItemIndex ];
-  tab_sheet_l.PageControl := Stored_Procedures_List__PageControl;
-  Stored_Procedures_List__PageControl.ActivePageIndex := Stored_Procedures_List__PageControl.PageCount - 1;
-
-
-  stored_procedure_modify_f_frame_l := Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame.Create( Application );
-  stored_procedure_modify_f_frame_l.Parent := tab_sheet_l;
-  stored_procedure_modify_f_frame_l.Align := alClient;
-  stored_procedure_modify_f_frame_l.Additional_Component_Show__Get_wsk := Additional_Component_Show__Get;
-  stored_procedure_modify_f_frame_l.Splitter_Show__Get_wsk := Splitter_Show__Get;
-  stored_procedure_modify_f_frame_l.Prepare__SPMF( databases_r__dm_g, Stored_Procedures_List__ListBox.Items[ Stored_Procedures_List__ListBox.ItemIndex ], Component_Type_Get(), ADOConnection1, FDConnection1, Queries_Open_In_Background_CheckBox.Checked, Splitter_Show_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+  if GetKeyState( VK_SHIFT ) < 0 then
+    Stored_Procedures_List__Stored_Procedure__Open__Edit__DM()
+  else
+    Stored_Procedures_List__Stored_Procedure__Open__DM();
 
 end;
 
@@ -1592,7 +1850,7 @@ begin
 
 
   if    ( Key = VK_DELETE )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
@@ -1601,7 +1859,7 @@ begin
     end
   else
   if    ( Key = VK_INSERT )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
@@ -1617,11 +1875,20 @@ begin
 
     end
   else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+      Stored_Procedures_List__Stored_Procedure__Open__Edit__DM();
+
+    end
+  else
   if Key = VK_RETURN then
     begin
 
       Key := 0;
-      Stored_Procedures_List__ListBoxDblClick( Sender );
+      Stored_Procedures_List__Stored_Procedure__Open__DM();
 
     end
   else
@@ -1640,7 +1907,7 @@ begin
   else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Stored_Procedures_List__Refresh_MenuItemClick( Sender );
@@ -1651,7 +1918,10 @@ end;
 
 procedure TDatabase__Modify_Form.Stored_Procedures_List__Page__Close__One_ButtonClick( Sender: TObject );
 var
-  ztb : boolean;
+  ztb,
+  last_tab_is_closing_l
+    : boolean;
+
   i : integer;
 begin
 
@@ -1670,7 +1940,20 @@ begin
 
 
       if ztb then
-        FreeAndNil( Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.ActivePageIndex ] );
+        begin
+
+          last_tab_is_closing_l :=
+                ( Stored_Procedures_List__PageControl.PageCount > 1 )
+            and ( Stored_Procedures_List__PageControl.ActivePageIndex = Stored_Procedures_List__PageControl.PageCount - 1 );
+
+
+          FreeAndNil( Stored_Procedures_List__PageControl.Pages[ Stored_Procedures_List__PageControl.ActivePageIndex ] );
+
+
+          if last_tab_is_closing_l then
+            Stored_Procedures_List__PageControl.ActivePageIndex := Stored_Procedures_List__PageControl.PageCount - 1;
+
+        end;
 
     end;
 
@@ -1818,8 +2101,12 @@ end;
 procedure TDatabase__Modify_Form.Stored_Procedures_List__Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssShift ] ) then
+    Stored_Procedures_List__Stored_Procedure__Open__Edit__DM()
+  else
   if Key = VK_RETURN then
-    Stored_Procedures_List__ListBoxDblClick( Sender );
+    Stored_Procedures_List__Stored_Procedure__Open__DM();
 
 end;
 
@@ -1827,8 +2114,12 @@ procedure TDatabase__Modify_Form.Stored_Procedures_List__Search_ButtonKeyDown( S
 begin
 
   if    ( Key = VK_RETURN )
-    and ( Shift = [ ssCtrl ] ) then
-    Stored_Procedures_List__ListBoxDblClick( Sender );
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    Stored_Procedures_List__Stored_Procedure__Open__Edit__DM()
+  else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssShift ] ) then
+    Stored_Procedures_List__Stored_Procedure__Open__DM();
 
 end;
 
@@ -1897,15 +2188,15 @@ begin
     Exit;
 
 
-  stored_procedures_name_l := Quotation_Sign__DM() + Stored_Procedures_List__ListBox.Items[ Stored_Procedures_List__ListBox.ItemIndex ] + Quotation_Sign__DM();
+  stored_procedures_name_l := Self.Quotation_Sign__DM() + Stored_Procedures_List__ListBox.Items[ Stored_Procedures_List__ListBox.ItemIndex ] + Self.Quotation_Sign__DM();
   item_index_copy_l := Stored_Procedures_List__ListBox.ItemIndex;
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + stored_procedure__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + stored_procedure__drop__file_name_c + ').' );
 
       zts :=
         'drop procedure ' +
@@ -1932,7 +2223,7 @@ begin
   for i := Stored_Procedures_List__PageControl.PageCount - 1 downto 0 do
     if    ( Stored_Procedures_List__PageControl.Pages[ i ].ControlCount > 0 )
       and ( Stored_Procedures_List__PageControl.Pages[ i ].Controls[ 0 ].ClassType = Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame )
-      and ( Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(Stored_Procedures_List__PageControl.Pages[ i ].Controls[ 0 ]).Stored_Procedure_Name__Get__SPMF() = stored_procedures_name_l ) then
+      and ( Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(Stored_Procedures_List__PageControl.Pages[ i ].Controls[ 0 ]).Stored_Procedure__Name__Get__SPMF() = stored_procedures_name_l ) then
       begin
 
         Stored_Procedures_List__PageControl.ActivePageIndex := i;
@@ -1946,7 +2237,7 @@ begin
   for i := Stored_Procedures_List__PageControl.PageCount - 1 downto 0 do
     if    ( Stored_Procedures_List__PageControl.Pages[ i ].ControlCount > 0 )
       and ( Stored_Procedures_List__PageControl.Pages[ i ].Controls[ 0 ].ClassType = Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame )
-      and ( Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(Stored_Procedures_List__PageControl.Pages[ i ].Controls[ 0 ]).Stored_Procedure_Name__Get__SPMF() = stored_procedures_name_l ) then
+      and ( Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(Stored_Procedures_List__PageControl.Pages[ i ].Controls[ 0 ]).Stored_Procedure__Name__Get__SPMF() = stored_procedures_name_l ) then
         begin
 
           ztb := true;
@@ -2057,29 +2348,13 @@ begin
 end;
 
 procedure TDatabase__Modify_Form.Tables_List__ListBoxDblClick( Sender: TObject );
-var
-  tab_sheet_l : TTabSheet;
-  table_modify_f_frame_l : Table_Modify_F.TTable_Modify_F_Frame;
 begin
 
-  if   ( Tables_List__ListBox.Items.Count <= 0 )
-    or ( Tables_List__ListBox.ItemIndex < 0 )
-    or ( Tables_List__ListBox.ItemIndex >= Tables_List__ListBox.Items.Count ) then
-    Exit;
-
-
-  tab_sheet_l := TTabSheet.Create( Application );
-  tab_sheet_l.Caption := Tables_List__ListBox.Items[ Tables_List__ListBox.ItemIndex ];
-  tab_sheet_l.PageControl := Tables_List__PageControl;
-  Tables_List__PageControl.ActivePageIndex := Tables_List__PageControl.PageCount - 1;
-
-
-  table_modify_f_frame_l := Table_Modify_F.TTable_Modify_F_Frame.Create( Application );
-  table_modify_f_frame_l.Parent := tab_sheet_l;
-  table_modify_f_frame_l.Align := alClient;
-  table_modify_f_frame_l.Additional_Component_Show__Get_wsk := Additional_Component_Show__Get;
-  table_modify_f_frame_l.Splitter_Show__Get_wsk := Splitter_Show__Get;
-  table_modify_f_frame_l.Prepare__TMoF( databases_r__dm_g, Tables_List__ListBox.Items[ Tables_List__ListBox.ItemIndex ], Component_Type_Get(), ADOConnection1, FDConnection1, Form_View__Additional_Component_Show_CheckBox.Checked, Queries_Open_In_Background_CheckBox.Checked, Splitter_Show_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+  if    (  GetKeyState( VK_CONTROL ) < 0  )
+    and (  GetKeyState( VK_MENU ) >= 0  ) then
+    Tables_List__Table__Data_Open__DM()
+  else
+    Tables_List__Table__Open__DM();
 
 end;
 
@@ -2090,7 +2365,7 @@ begin
 
 
   if    ( Key = VK_DELETE )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
@@ -2106,11 +2381,20 @@ begin
 
     end
   else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+      Tables_List__Table__Data_Open__DM();
+
+    end
+  else
   if Key = VK_RETURN then
     begin
 
       Key := 0;
-      Tables_List__ListBoxDblClick( Sender );
+      Tables_List__Table__Open__DM();
 
     end
   else
@@ -2129,7 +2413,7 @@ begin
   else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Tables_List__Refresh_MenuItemClick( Sender );
@@ -2140,7 +2424,10 @@ end;
 
 procedure TDatabase__Modify_Form.Tables_List__Page__Close__One_ButtonClick( Sender: TObject );
 var
-  ztb : boolean;
+  ztb,
+  last_tab_is_closing_l
+    : boolean;
+
   i : integer;
 begin
 
@@ -2159,7 +2446,20 @@ begin
 
 
       if ztb then
-        FreeAndNil( Tables_List__PageControl.Pages[ Tables_List__PageControl.ActivePageIndex ] );
+        begin
+
+          last_tab_is_closing_l :=
+                ( Tables_List__PageControl.PageCount > 1 )
+            and ( Tables_List__PageControl.ActivePageIndex = Tables_List__PageControl.PageCount - 1 );
+
+
+          FreeAndNil( Tables_List__PageControl.Pages[ Tables_List__PageControl.ActivePageIndex ] );
+
+
+          if last_tab_is_closing_l then
+            Tables_List__PageControl.ActivePageIndex := Tables_List__PageControl.PageCount - 1;
+
+        end;
 
     end;
 
@@ -2307,8 +2607,12 @@ end;
 procedure TDatabase__Modify_Form.Tables_List__Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] ) then
+    Tables_List__Table__Data_Open__DM()
+  else
   if Key = VK_RETURN then
-    Tables_List__ListBoxDblClick( Sender );
+    Tables_List__Table__Open__DM();
 
 end;
 
@@ -2317,7 +2621,11 @@ begin
 
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl ] ) then
-    Tables_List__ListBoxDblClick( Sender );
+    Tables_List__Table__Data_Open__DM()
+  else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssShift ] ) then
+    Tables_List__Table__Open__DM();
 
 end;
 
@@ -2371,15 +2679,15 @@ begin
     Exit;
 
 
-  table_name_l := Quotation_Sign__DM() + Tables_List__ListBox.Items[ Tables_List__ListBox.ItemIndex ] + Quotation_Sign__DM();
+  table_name_l := Self.Quotation_Sign__DM() + Tables_List__ListBox.Items[ Tables_List__ListBox.ItemIndex ] + Self.Quotation_Sign__DM();
   item_index_copy_l := Tables_List__ListBox.ItemIndex;
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + table__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + table__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + table__drop__file_name_c + ').' );
 
       zts :=
         'drop table ' +
@@ -2406,7 +2714,7 @@ begin
   for i := Tables_List__PageControl.PageCount - 1 downto 0 do
     if    ( Tables_List__PageControl.Pages[ i ].ControlCount > 0 )
       and ( Tables_List__PageControl.Pages[ i ].Controls[ 0 ].ClassType = Table_Modify_F.TTable_Modify_F_Frame )
-      and ( Table_Modify_F.TTable_Modify_F_Frame(Tables_List__PageControl.Pages[ i ].Controls[ 0 ]).Table_Name__Get__TMoF() = table_name_l ) then
+      and ( Table_Modify_F.TTable_Modify_F_Frame(Tables_List__PageControl.Pages[ i ].Controls[ 0 ]).Table__Name__Get__TMoF() = table_name_l ) then
       begin
 
         Tables_List__PageControl.ActivePageIndex := i;
@@ -2420,7 +2728,7 @@ begin
   for i := Tables_List__PageControl.PageCount - 1 downto 0 do
     if    ( Tables_List__PageControl.Pages[ i ].ControlCount > 0 )
       and ( Tables_List__PageControl.Pages[ i ].Controls[ 0 ].ClassType = Table_Modify_F.TTable_Modify_F_Frame )
-      and ( Table_Modify_F.TTable_Modify_F_Frame(Tables_List__PageControl.Pages[ i ].Controls[ 0 ]).Table_Name__Get__TMoF() = table_name_l ) then
+      and ( Table_Modify_F.TTable_Modify_F_Frame(Tables_List__PageControl.Pages[ i ].Controls[ 0 ]).Table__Name__Get__TMoF() = table_name_l ) then
         begin
 
           ztb := true;
@@ -2525,29 +2833,16 @@ begin
 end;
 
 procedure TDatabase__Modify_Form.Views_List__ListBoxDblClick( Sender: TObject );
-var
-  tab_sheet_l : TTabSheet;
-  view_modify_f_frame_l : View_Modify_F.TView_Modify_F_Frame;
 begin
 
-  if   ( Views_List__ListBox.Items.Count <= 0 )
-    or ( Views_List__ListBox.ItemIndex < 0 )
-    or ( Views_List__ListBox.ItemIndex >= Views_List__ListBox.Items.Count ) then
-    Exit;
-
-
-  tab_sheet_l := TTabSheet.Create( Application );
-  tab_sheet_l.Caption := Views_List__ListBox.Items[ Views_List__ListBox.ItemIndex ];
-  tab_sheet_l.PageControl := Views_List__PageControl;
-  Views_List__PageControl.ActivePageIndex := Views_List__PageControl.PageCount - 1;
-
-
-  view_modify_f_frame_l := View_Modify_F.TView_Modify_F_Frame.Create( Application );
-  view_modify_f_frame_l.Parent := tab_sheet_l;
-  view_modify_f_frame_l.Align := alClient;
-  view_modify_f_frame_l.Additional_Component_Show__Get_wsk := Additional_Component_Show__Get;
-  view_modify_f_frame_l.Splitter_Show__Get_wsk := Splitter_Show__Get;
-  view_modify_f_frame_l.Prepare__VMF( databases_r__dm_g, Views_List__ListBox.Items[ Views_List__ListBox.ItemIndex ], Component_Type_Get(), ADOConnection1, FDConnection1, Queries_Open_In_Background_CheckBox.Checked, Splitter_Show_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+  if GetKeyState( VK_SHIFT ) < 0 then
+    Views_List__View__Open__Edit__DM()
+  else
+  if    (  GetKeyState( VK_CONTROL ) < 0  )
+    and (  GetKeyState( VK_MENU ) >= 0  ) then
+    Views_List__View__Data_Open__DM()
+  else
+    Views_List__View__Open__DM();
 
 end;
 
@@ -2558,7 +2853,7 @@ begin
 
 
   if    ( Key = VK_DELETE )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
@@ -2567,7 +2862,7 @@ begin
     end
   else
   if    ( Key = VK_INSERT )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Key := 0;
@@ -2583,11 +2878,20 @@ begin
 
     end
   else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+      Views_List__View__Open__Edit__DM();
+
+    end
+  else
   if Key = VK_RETURN then
     begin
 
       Key := 0;
-      Views_List__ListBoxDblClick( Sender );
+      Views_List__View__Open__DM();
 
     end
   else
@@ -2606,7 +2910,7 @@ begin
   else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Views_List__Refresh_MenuItemClick( Sender );
@@ -2617,7 +2921,10 @@ end;
 
 procedure TDatabase__Modify_Form.Views_List__Page__Close__One_ButtonClick( Sender: TObject );
 var
-  ztb : boolean;
+  ztb,
+  last_tab_is_closing_l
+    : boolean;
+
   i : integer;
 begin
 
@@ -2636,7 +2943,20 @@ begin
 
 
       if ztb then
-        FreeAndNil( Views_List__PageControl.Pages[ Views_List__PageControl.ActivePageIndex ] );
+        begin
+
+          last_tab_is_closing_l :=
+                ( Views_List__PageControl.PageCount > 1 )
+            and ( Views_List__PageControl.ActivePageIndex = Views_List__PageControl.PageCount - 1 );
+
+
+          FreeAndNil( Views_List__PageControl.Pages[ Views_List__PageControl.ActivePageIndex ] );
+
+
+          if last_tab_is_closing_l then
+            Views_List__PageControl.ActivePageIndex := Views_List__PageControl.PageCount - 1;
+
+        end;
 
     end;
 
@@ -2784,8 +3104,16 @@ end;
 procedure TDatabase__Modify_Form.Views_List__Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] ) then
+      Views_List__View__Data_Open__DM()
+  else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssShift ] ) then
+      Views_List__View__Open__Edit__DM()
+  else
   if Key = VK_RETURN then
-    Views_List__ListBoxDblClick( Sender );
+    Views_List__View__Open__DM();
 
 end;
 
@@ -2793,8 +3121,16 @@ procedure TDatabase__Modify_Form.Views_List__Search_ButtonKeyDown( Sender: TObje
 begin
 
   if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    Views_List__View__Open__Edit__DM()
+  else
+  if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl ] ) then
-    Views_List__ListBoxDblClick( Sender );
+    Views_List__View__Data_Open__DM()
+  else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssShift ] ) then
+    Views_List__View__Open__DM();
 
 end;
 
@@ -2863,15 +3199,15 @@ begin
     Exit;
 
 
-  views__name_l := Quotation_Sign__DM() + Views_List__ListBox.Items[ Views_List__ListBox.ItemIndex ] + Quotation_Sign__DM();
+  views__name_l := Self.Quotation_Sign__DM() + Views_List__ListBox.Items[ Views_List__ListBox.ItemIndex ] + Self.Quotation_Sign__DM();
   item_index_copy_l := Views_List__ListBox.ItemIndex;
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + databases_r__dm_g.database_type + System.IOUtils.TPath.DirectorySeparatorChar + view__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + view__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + view__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + view__drop__file_name_c + ').' );
 
       zts :=
         'drop view ' +
@@ -2898,7 +3234,7 @@ begin
   for i := Views_List__PageControl.PageCount - 1 downto 0 do
     if    ( Views_List__PageControl.Pages[ i ].ControlCount > 0 )
       and ( Views_List__PageControl.Pages[ i ].Controls[ 0 ].ClassType = View_Modify_F.TView_Modify_F_Frame )
-      and ( View_Modify_F.TView_Modify_F_Frame(Views_List__PageControl.Pages[ i ].Controls[ 0 ]).View_Name__Get__VMF() = views__name_l ) then
+      and ( View_Modify_F.TView_Modify_F_Frame(Views_List__PageControl.Pages[ i ].Controls[ 0 ]).View__Name__Get__VMF() = views__name_l ) then
       begin
 
         Views_List__PageControl.ActivePageIndex := i;
@@ -2912,7 +3248,7 @@ begin
   for i := Views_List__PageControl.PageCount - 1 downto 0 do
     if    ( Views_List__PageControl.Pages[ i ].ControlCount > 0 )
       and ( Views_List__PageControl.Pages[ i ].Controls[ 0 ].ClassType = View_Modify_F.TView_Modify_F_Frame )
-      and ( View_Modify_F.TView_Modify_F_Frame(Views_List__PageControl.Pages[ i ].Controls[ 0 ]).View_Name__Get__VMF() = views__name_l ) then
+      and ( View_Modify_F.TView_Modify_F_Frame(Views_List__PageControl.Pages[ i ].Controls[ 0 ]).View__Name__Get__VMF() = views__name_l ) then
         begin
 
           ztb := true;

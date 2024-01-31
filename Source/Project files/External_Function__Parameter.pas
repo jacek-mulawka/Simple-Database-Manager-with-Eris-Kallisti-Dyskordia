@@ -62,9 +62,6 @@ uses
 constructor TExternal_Function__Parameter.Create( parent_f : Vcl.Controls.TWinControl; var external_function__parameter_id_f : integer; const parameter_by_f, parameter_data_type_f, parameter_type_input_f, data_types_list_f, parameter_by_list_f : string; const splitter_show_f : boolean; on_click_wsk_f : TOn_Click_wsk );
 const
   margin_c : integer = 5;
-
-var
-  zti : integer;
 begin
 
   inherited Create( Vcl.Forms.Application );
@@ -165,6 +162,23 @@ begin
       Self.parameter_by__vertical_splitter.Width := 6;
 
     end;
+
+
+  Self.align_correct_button := Vcl.StdCtrls.TButton.Create( Application );
+  Self.align_correct_button.Parent := Self;
+  Self.align_correct_button.Align := alRight;
+  Self.align_correct_button.AlignWithMargins := true;
+  Self.align_correct_button.Caption := Translation.translation__table__data_filter_r.correct_align;
+  Self.align_correct_button.Height := 20;
+  Self.align_correct_button.Hint := Translation.translation__table__data_filter_r.correct_align__hint;
+  Self.align_correct_button.Margins.Bottom := margin_c;
+  Self.align_correct_button.Margins.Left := margin_c * 2;
+  Self.align_correct_button.Margins.Right := margin_c * 2;
+  Self.align_correct_button.Margins.Top := margin_c;
+  Self.align_correct_button.ShowHint := true;
+  Self.align_correct_button.Visible := false;
+  Self.align_correct_button.Width := Self.align_correct_button.Height;
+  Self.align_correct_button.OnClick := align_correct_buttonClick;
 
 end;
 

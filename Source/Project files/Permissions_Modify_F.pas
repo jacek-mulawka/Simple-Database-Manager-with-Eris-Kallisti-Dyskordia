@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -97,6 +98,7 @@ type
     procedure Finish__PMF();
     procedure Options_Set__PMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__PMF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const permissions_object_type_f : TPermissions_Object_Type; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__PMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
@@ -119,12 +121,10 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
   Vcl.ComCtrls,
 
-  Shared,
-  Translation;
+  Shared;
 
 {$R *.dfm}
 
@@ -146,17 +146,17 @@ begin
     permissions_sdbm.Query__Close();
 
   if Modify__Permissions__Row_One_CheckBox.Checked then
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__row_one__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__row_one__file_name_c  )
   else
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__file_name_c  );
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if Modify__Permissions__Row_One_CheckBox.Checked then
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__row_one__file_name_c + ').' )
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__row_one__file_name_c + ').' )
       else
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__file_name_c + ').' );
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__file_name_c + ').' );
 
       if Modify__Permissions__Row_One_CheckBox.Checked then
         zts :=
@@ -460,21 +460,18 @@ begin
 
 
       for i := 0 to Permissions_DBGrid.Columns.Count - 1 do
-        if Permissions_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
-          begin
+        begin
 
-            Permissions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__user_name;
+          if Permissions_DBGrid.Columns.Items[ i ].Width < 50 then
+            Permissions_DBGrid.Columns.Items[ i ].Width := 50;
 
-          end
-        else
-          begin
+        end;
 
-            Permissions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Permissions_DBGrid.Columns.Items[ i ].Title.Caption );
 
-            if Permissions_DBGrid.Columns.Items[ i ].Width < 50 then
-              Permissions_DBGrid.Columns.Items[ i ].Width := 50;
+      Self.Translation__Apply__PMF( Translation.tak_Grid );
 
-          end;
+
+      Common.Data_Value_Format__Set( permissions_sdbm, Log_Memo );
 
     end;
 
@@ -500,20 +497,19 @@ procedure TPermissions_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key :
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -537,7 +533,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__PMF( Translation.tak_Self );
 
 end;
 
@@ -607,24 +603,24 @@ begin
 
   permissions_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__PMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
+  Self.Options_Set__PMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
 
   Modify__Privileges_Name_CheckListBox.Items.Clear();
 
   if permissions_object_type_g in [ pot_function, pot_procedure_stored ] then
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions__privileges_list__procedure__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions__privileges_list__procedure__file_name_c  )
   else
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions__privileges_list__table__file_name_c  );
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions__privileges_list__table__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if permissions_object_type_g in [ pot_function, pot_procedure_stored ] then
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions__privileges_list__procedure__file_name_c + ').' )
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions__privileges_list__procedure__file_name_c + ').' )
       else
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions__privileges_list__table__file_name_c + ').' );
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions__privileges_list__table__file_name_c + ').' );
 
       if permissions_object_type_g in [ pot_function, pot_procedure_stored ] then
         zts :=
@@ -658,6 +654,24 @@ begin
     end
   else
     Result := '';
+
+end;
+
+procedure TPermissions_Modify_F_Frame.Translation__Apply__PMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Permissions_DBGrid.Columns.Count - 1 do
+      if Permissions_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
+        Permissions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__user__name
+      else
+        Permissions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Permissions_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -845,7 +859,7 @@ begin
     end;
 
 
-  Data_Open__PMF();
+  Self.Data_Open__PMF();
 
 
   if    ( permissions_sdbm.Query__Active() )
@@ -927,23 +941,23 @@ begin
 
 
   if permissions_object_type_g in [ pot_function ] then
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__grant__function__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__function__file_name_c  )
   else
   if permissions_object_type_g in [ pot_procedure_stored ] then
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__grant__procedure__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__procedure__file_name_c  )
   else
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__grant__table__file_name_c  );
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__table__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if permissions_object_type_g in [ pot_function ] then
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__grant__function__file_name_c + ').' )
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__function__file_name_c + ').' )
       else
       if permissions_object_type_g in [ pot_procedure_stored ] then
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__grant__procedure__file_name_c + ').' )
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__procedure__file_name_c + ').' )
       else
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__grant__table__file_name_c + ').' );
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__table__file_name_c + ').' );
 
 
       zts :=
@@ -952,17 +966,17 @@ begin
         ' on ' +
         object_name_l +
         ' ' +
-        Quotation_Sign__PMF() + table_name__pmf_g + Quotation_Sign__PMF() +
+        Self.Quotation_Sign__PMF() + table_name__pmf_g + Self.Quotation_Sign__PMF() +
         ' to user ' +
-        Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF() + ' ';
+        Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF() + ' ';
 
     end
   else
     begin
 
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + permissions_list__privileges_list__name_c + Common.sql__word_replace_separator_c, privileges_list_l, [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__PMF() + table_name__pmf_g + Quotation_Sign__PMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__PMF() + table_name__pmf_g + Self.Quotation_Sign__PMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -970,7 +984,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.grant_privileges_on__1 + ' ''' + privileges_list_l + ''' ' + Translation.translation__messages_r.grant_privileges_on__2 + ' ' + object_name_l + ' ''' + Quotation_Sign__PMF() + table_name__pmf_g + Quotation_Sign__PMF() + ''' ' + Translation.translation__messages_r.grant_privileges_on__3 + ' ''' + Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.grant_privileges_on__1 + ' ''' + privileges_list_l + ''' ' + Translation.translation__messages_r.grant_privileges_on__2 + ' ' + object_name_l + ' ''' + Self.Quotation_Sign__PMF() + table_name__pmf_g + Self.Quotation_Sign__PMF() + ''' ' + Translation.translation__messages_r.grant_privileges_on__3 + ' ''' + Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1023,12 +1037,12 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__grant__all_on_all__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__all_on_all__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__grant__all_on_all__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__grant__all_on_all__file_name_c + ').' );
 
       zts :=
         'grant ALL on ALL to user ' + //???
@@ -1137,23 +1151,23 @@ begin
 
 
   if permissions_object_type_g in [ pot_function ] then
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__revoke__function__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__function__file_name_c  )
   else
   if permissions_object_type_g in [ pot_procedure_stored ] then
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__revoke__procedure__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__procedure__file_name_c  )
   else
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__revoke__table__file_name_c  );
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__table__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if permissions_object_type_g in [ pot_function ] then
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__revoke__function__file_name_c + ').' )
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__function__file_name_c + ').' )
       else
       if permissions_object_type_g in [ pot_procedure_stored ] then
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__revoke__procedure__file_name_c + ').' )
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__procedure__file_name_c + ').' )
       else
-        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__revoke__table__file_name_c + ').' );
+        Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__table__file_name_c + ').' );
 
 
       zts :=
@@ -1162,17 +1176,17 @@ begin
         ' on ' +
         object_name_l +
         ' ' +
-        Quotation_Sign__PMF() + table_name__pmf_g + Quotation_Sign__PMF() +
+        Self.Quotation_Sign__PMF() + table_name__pmf_g + Self.Quotation_Sign__PMF() +
         ' from user ' +
-        Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF() + ' ';
+        Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF() + ' ';
 
     end
   else
     begin
 
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + permissions_list__privileges_list__name_c + Common.sql__word_replace_separator_c, privileges_list_l, [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__PMF() + table_name__pmf_g + Quotation_Sign__PMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__PMF() + table_name__pmf_g + Self.Quotation_Sign__PMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -1180,7 +1194,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.revoke_privileges_on__1 + ' ''' + privileges_list_l + ''' ' + Translation.translation__messages_r.revoke_privileges_on__2 + ' ' + object_name_l + ' ''' + Quotation_Sign__PMF() + table_name__pmf_g + Quotation_Sign__PMF() + ''' ' + Translation.translation__messages_r.revoke_privileges_on__3 + ' ''' + Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.revoke_privileges_on__1 + ' ''' + privileges_list_l + ''' ' + Translation.translation__messages_r.revoke_privileges_on__2 + ' ' + object_name_l + ' ''' + Self.Quotation_Sign__PMF() + table_name__pmf_g + Self.Quotation_Sign__PMF() + ''' ' + Translation.translation__messages_r.revoke_privileges_on__3 + ' ''' + Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1233,22 +1247,22 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__pmf_g + System.IOUtils.TPath.DirectorySeparatorChar + permissions_list__sql__privileges__revoke__all_on_all__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__all_on_all__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + permissions_list__sql__privileges__revoke__all_on_all__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__pmf_g ) + permissions_list__sql__privileges__revoke__all_on_all__file_name_c + ').' );
 
       zts :=
         'revoke ALL on ALL from user ' +
-        Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF() + ' ';
+        Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF() + ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -1256,7 +1270,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.revoke_all_on_all_privileges_from_user + ' ''' + Quotation_Sign__PMF() + User_Name_DBEdit.Text + Quotation_Sign__PMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.revoke_all_on_all_privileges_from_user + ' ''' + Self.Quotation_Sign__PMF() + User_Name_DBEdit.Text + Self.Quotation_Sign__PMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1305,18 +1319,17 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Privileges_Name_CheckListBox.CheckAll( cbChecked, false, false )
   else
   // N.
   if    ( Key = 78 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Privileges_Name_CheckListBox.CheckAll( cbUnchecked, false, false )
   else
   // I.
   if    ( Key = 73 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     for i := 0 to Modify__Privileges_Name_CheckListBox.Items.Count - 1 do
       Modify__Privileges_Name_CheckListBox.Checked[ i ] := not Modify__Privileges_Name_CheckListBox.Checked[ i ];
 
@@ -1327,8 +1340,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

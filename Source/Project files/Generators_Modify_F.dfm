@@ -2,14 +2,14 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
   Left = 0
   Top = 0
   Width = 640
-  Height = 480
+  Height = 600
   TabOrder = 0
   PixelsPerInch = 96
   object Vertical_Splitter: TSplitter
     Left = 185
     Top = 0
     Width = 6
-    Height = 480
+    Height = 600
     AutoSnap = False
     Color = clSkyBlue
     MinSize = 1
@@ -21,16 +21,17 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
     Left = 0
     Top = 0
     Width = 185
-    Height = 480
+    Height = 600
     Align = alLeft
     TabOrder = 0
+    ExplicitHeight = 880
     DesignSize = (
       185
-      480)
+      600)
     object Record_Number__Records_Count_Label: TLabel
       AlignWithMargins = True
       Left = 11
-      Top = 454
+      Top = 574
       Width = 163
       Height = 15
       Hint = 'Record number / records count.'
@@ -42,7 +43,8 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
       Caption = '<?> / <?>'
       ParentShowHint = False
       ShowHint = True
-      ExplicitWidth = 53
+      ExplicitLeft = 23
+      ExplicitTop = 849
     end
     object Generator_Name_Etiquette_Label: TLabel
       AlignWithMargins = True
@@ -62,7 +64,7 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
     end
     object Log_Horizontal_Splitter: TSplitter
       Left = 1
-      Top = 339
+      Top = 529
       Width = 183
       Height = 6
       Cursor = crVSplit
@@ -325,17 +327,19 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
     object Log_Memo: TMemo
       AlignWithMargins = True
       Left = 11
-      Top = 348
+      Top = 538
       Width = 163
-      Height = 98
+      Height = 28
       Margins.Left = 10
       Margins.Right = 10
       Align = alClient
       Lines.Strings = (
         'Log')
       ScrollBars = ssVertical
-      TabOrder = 3
+      TabOrder = 4
       OnKeyDown = Log_MemoKeyDown
+      ExplicitTop = 348
+      ExplicitHeight = 98
     end
     object Buttons_Panel__Hide_Button: TButton
       Left = 155
@@ -348,18 +352,145 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 4
+      TabOrder = 5
       OnClick = Buttons_Panel__Hide_ButtonClick
+    end
+    object Permissions_GroupBox: TGroupBox
+      AlignWithMargins = True
+      Left = 11
+      Top = 339
+      Width = 163
+      Height = 185
+      Margins.Left = 10
+      Margins.Top = 0
+      Margins.Right = 10
+      Margins.Bottom = 5
+      Align = alTop
+      Caption = 'Permissions'
+      TabOrder = 3
+      DesignSize = (
+        163
+        185)
+      object Permissions__User_Names_Etiquette_Label: TLabel
+        AlignWithMargins = True
+        Left = 12
+        Top = 22
+        Width = 139
+        Height = 15
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Users'
+        ExplicitWidth = 28
+      end
+      object Permissions__User_Names_CheckListBox: TCheckListBox
+        AlignWithMargins = True
+        Left = 12
+        Top = 42
+        Width = 139
+        Height = 110
+        Hint = 
+          'Ctrl + A - select all'#13#10'Ctrl + I - invert selection'#13#10'Ctrl + N - u' +
+          'nselect all'#13#10'Ctrl + R - refresh'#13#10'Ctrl + Enter - users filter can' +
+          'cel'#13#10'Enter - users filter apply '
+        Margins.Left = 10
+        Margins.Top = 0
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        ItemHeight = 15
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnKeyDown = Permissions__User_Names_CheckListBoxKeyDown
+        ExplicitTop = 17
+        ExplicitHeight = 155
+      end
+      object Permissions__Grant_Button: TButton
+        Left = 10
+        Top = 155
+        Width = 25
+        Height = 25
+        Hint = 'Grant permission.'
+        Anchors = [akLeft, akBottom]
+        ImageIndex = 0
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = Permissions__Grant_ButtonClick
+        ExplicitTop = 255
+      end
+      object Permissions__Revoke_Button: TButton
+        Left = 45
+        Top = 155
+        Width = 25
+        Height = 25
+        Hint = 'Revoke permission.'
+        Anchors = [akLeft, akBottom]
+        ImageIndex = 10
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = Permissions__Revoke_ButtonClick
+        ExplicitTop = 200
+      end
+      object Permissions__Refresh_Button: TButton
+        Left = 125
+        Top = 15
+        Width = 25
+        Height = 25
+        Hint = 'Refresh.'#13#10#13#10'[Ctrl + R]'
+        Anchors = [akTop, akRight]
+        ImageIndex = 3
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = Permissions__Refresh_ButtonClick
+      end
+      object Permissions__Filter__Users__Apply_Button: TButton
+        Left = 90
+        Top = 155
+        Width = 25
+        Height = 25
+        Hint = 'Users filter apply.'
+        Anchors = [akRight, akBottom]
+        ImageIndex = 4
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 4
+        OnClick = Permissions__Filter__Users__Apply_ButtonClick
+      end
+      object Permissions__Filter__Users__Cancel_Button: TButton
+        Left = 125
+        Top = 155
+        Width = 25
+        Height = 25
+        Hint = 'Users filter cancel.'
+        Anchors = [akRight, akBottom]
+        ImageIndex = 2
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+        OnClick = Permissions__Filter__Users__Cancel_ButtonClick
+      end
     end
   end
   object Generators_DBGrid: TDBGrid
     Left = 191
     Top = 0
     Width = 449
-    Height = 480
+    Height = 600
     Align = alClient
     DataSource = Generators_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = Generators_PopupMenu
     ReadOnly = True
     TabOrder = 1

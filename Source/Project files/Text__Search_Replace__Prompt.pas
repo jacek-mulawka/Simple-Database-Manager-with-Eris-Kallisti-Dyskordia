@@ -1,5 +1,10 @@
 unit Text__Search_Replace__Prompt;{10.Lis.2023}
 
+  // mrYes = replace and continue
+  // mrCancel = do not replace and break
+  // mrNo = do not replace and continue
+  // mrYesToAll = replace all
+
 interface
 
 uses
@@ -7,6 +12,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls;
 
 type
+  TSet_Of_TMsgDlgBtn = set of TMsgDlgBtn;
+
   TText__Search_Replace__Prompt_Form = class( TForm )
     Icon_Image: TImage;
     Message_Panel: TPanel;
@@ -22,7 +29,10 @@ type
     { Private declarations }
   public
     { Public declarations }
-    procedure Caption_Text_Set( const caption_text_f : string );
+    procedure Caption_Text__Replace__Set( const caption_text_f : string );
+    procedure Caption_Text__Set( const caption_text_f : string );
+
+    function Modal_Result__Get( const caption_text_f : string; buttons_f : TSet_Of_TMsgDlgBtn = [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbCancel, TMsgDlgBtn.mbNo, TMsgDlgBtn.mbYesToAll ] ) : TModalResult;
   end;
 
 var
@@ -36,10 +46,36 @@ uses
 
 {$R *.dfm}
 
-procedure TText__Search_Replace__Prompt_Form.Caption_Text_Set( const caption_text_f : string );
+procedure TText__Search_Replace__Prompt_Form.Caption_Text__Replace__Set( const caption_text_f : string );
 begin
 
   Message_Panel.Caption := Translation.translation__messages_r.replace_this_occurrence_of + ' ''' +  caption_text_f + '''?';
+
+end;
+
+procedure TText__Search_Replace__Prompt_Form.Caption_Text__Set( const caption_text_f : string );
+begin
+
+  Message_Panel.Caption := caption_text_f;
+
+end;
+
+function TText__Search_Replace__Prompt_Form.Modal_Result__Get( const caption_text_f : string; buttons_f : TSet_Of_TMsgDlgBtn = [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbCancel, TMsgDlgBtn.mbNo, TMsgDlgBtn.mbYesToAll ] ) : TModalResult;
+var
+  text__search_replace__prompt_form_l : TText__Search_Replace__Prompt_Form;
+begin
+
+  text__search_replace__prompt_form_l := Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Create( Application );
+  text__search_replace__prompt_form_l.Caption_Text__Set( caption_text_f );
+  text__search_replace__prompt_form_l.Position := poScreenCenter;
+
+  text__search_replace__prompt_form_l.Yes_Button.Visible := TMsgDlgBtn.mbYes in buttons_f;
+  text__search_replace__prompt_form_l.No_Button.Visible := TMsgDlgBtn.mbNo in buttons_f;
+  text__search_replace__prompt_form_l.Cancel_Button.Visible := TMsgDlgBtn.mbCancel in buttons_f;
+  text__search_replace__prompt_form_l.Yes_To_All_Button.Visible := TMsgDlgBtn.mbYesToAll in buttons_f;
+
+  Result := text__search_replace__prompt_form_l.ShowModal();
+  FreeAndNil( text__search_replace__prompt_form_l );
 
 end;
 

@@ -88,7 +88,6 @@ var
 implementation
 
 uses
-  System.IOUtils,
   System.Threading,
   Vcl.Clipbrd,
 
@@ -186,9 +185,9 @@ begin
 
   Search_GroupBox.Caption := Search_GroupBox.Caption +
     ' ' +
-    Quotation_Sign__TCVD() + table_name__tcvd + Quotation_Sign__TCVD() +
+    Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() +
     Common.sql__names_separator +
-    Quotation_Sign__TCVD() + column_name__tcvd + Quotation_Sign__TCVD();
+    Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD();
 
 
   Log_Memo.Height := 1;
@@ -200,27 +199,27 @@ begin
   Ok_Button.Visible := fsModal in Self.FormState;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcvd + System.IOUtils.TPath.DirectorySeparatorChar + table_column__values_distinct__sql__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__values_distinct__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c + ').' );
 
       zts :=
         'select distinct ' +
-        Quotation_Sign__TCVD() + table_name__tcvd + Quotation_Sign__TCVD() +
+        Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() +
         Common.sql__names_separator +
-        Quotation_Sign__TCVD() + column_name__tcvd + Quotation_Sign__TCVD() +
+        Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD() +
         ' from ' +
-        Quotation_Sign__TCVD() + table_name__tcvd + Quotation_Sign__TCVD() + ' ';
+        Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() + ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCVD() + column_name__tcvd + Quotation_Sign__TCVD(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCVD() + table_name__tcvd + Quotation_Sign__TCVD(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD(), [ rfReplaceAll ] );
 
     end;
 
@@ -255,7 +254,7 @@ end;
 procedure TTable_Column__Values_Distinct_Form.FormClose( Sender: TObject; var Action: TCloseAction );
 begin
 
-  if Task_Running_Check__TCVD() then
+  if Self.Task_Running_Check__TCVD() then
     begin
 
       Action := TCloseAction.caNone;
@@ -295,7 +294,7 @@ end;
 procedure TTable_Column__Values_Distinct_Form.Value_DBEditChange( Sender: TObject );
 begin
 
-  if Task_Running_Check__TCVD( false ) then
+  if Self.Task_Running_Check__TCVD( false ) then
     Exit;
 
 
@@ -316,7 +315,7 @@ var
   locate_options : Data.DB.TLocateOptions;
 begin
 
-  if Task_Running_Check__TCVD() then
+  if Self.Task_Running_Check__TCVD() then
     Exit;
 
 
@@ -371,7 +370,7 @@ end;
 procedure TTable_Column__Values_Distinct_Form.Search__Next_ButtonClick( Sender: TObject );
 begin
 
-  if Task_Running_Check__TCVD() then
+  if Self.Task_Running_Check__TCVD() then
     Exit;
 
 
@@ -411,7 +410,7 @@ end;
 procedure TTable_Column__Values_Distinct_Form.Search__Prior_ButtonClick( Sender: TObject );
 begin
 
-  if Task_Running_Check__TCVD() then
+  if Self.Task_Running_Check__TCVD() then
     Exit;
 
 
@@ -457,7 +456,7 @@ var
   primary_key_value_l : string;
 begin
 
-  if Task_Running_Check__TCVD() then
+  if Self.Task_Running_Check__TCVD() then
     Exit;
 
 
@@ -629,7 +628,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__TCVD() then
+  if Self.Task_Running_Check__TCVD() then
     Exit;
 
 
@@ -661,8 +660,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

@@ -134,7 +134,6 @@ var
 implementation
 
 uses
-  System.IOUtils,
   System.TypInfo,
   System.UITypes,
   //Winapi.ShellAPI,
@@ -175,7 +174,7 @@ begin
 
   Database_Type_ComboBox.Items.Clear();
 
-  if FindFirst(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + '\*.*', faDirectory, search_rec  ) = 0 then
+  if FindFirst(  Common.Databases_Type__Directory_Path__Get( '' ) + '*.*', faDirectory, search_rec  ) = 0 then
     begin
 
       repeat
@@ -224,7 +223,7 @@ end;
 
 procedure TDatabase__Create_Form.Command_Prepare_ButtonClick( Sender: TObject );
 
-  function Quotation_Sign__DBC() : string;
+  function Quotation_Sign__DBC_L() : string;
   begin
 
     if Quotation_Sign__Use_CheckBox.Checked then
@@ -270,7 +269,7 @@ begin
 
       User_Name_Edit.SetFocus();
 
-      if Application.MessageBox( PChar(Translation.translation__messages_r.user_name_should_not_be_empty+ #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
+      if Application.MessageBox( PChar(Translation.translation__messages_r.user_name_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
         Exit;
 
     end;
@@ -280,7 +279,7 @@ begin
 
       Password_Edit.SetFocus();
 
-      if Application.MessageBox( PChar(Translation.translation__messages_r.user_password_should_not_be_empty+ #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
+      if Application.MessageBox( PChar(Translation.translation__messages_r.user_password_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
         Exit;
 
     end;
@@ -328,7 +327,7 @@ begin
   if Creation_Method_RadioGroup.ItemIndex = 1 then // isql.exe.
     begin
 
-      Command_Memo.Lines.Add( Quotation_Sign__DBC() + Database__Create__Application__File_Path_Edit.Text + Quotation_Sign__DBC() );
+      Command_Memo.Lines.Add( Quotation_Sign__DBC_L() + Database__Create__Application__File_Path_Edit.Text + Quotation_Sign__DBC_L() );
 
       zts :=
         StringReplace( word__database_create__isql_g, Common.sql__word_replace_separator_c + database__create__parameters__value__database_file_path_c + Common.sql__word_replace_separator_c, Database__File_Path_Edit.Text, [ rfReplaceAll ] );
@@ -544,8 +543,8 @@ begin
 
           zt_edit := Database__Create__Application__File_Path_Edit;
 
-          OpenDialog1.DefaultExt := Common.exe__file_default_extension;
-          OpenDialog1.Filter := Translation.translation__messages_r.application_files + '|*' + Common.exe__file_default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+          OpenDialog1.DefaultExt := Common.exe__file__default_extension;
+          OpenDialog1.Filter := Translation.translation__messages_r.application_files + '|*' + Common.exe__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
           OpenDialog1.Options := OpenDialog1.Options + [ System.UITypes.TOpenOption.ofFileMustExist ];
 
         end
@@ -554,8 +553,8 @@ begin
 
           zt_edit := Database__File_Path_Edit;
 
-          OpenDialog1.DefaultExt := Common.database__file_default_extension;
-          OpenDialog1.Filter := Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file_default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+          OpenDialog1.DefaultExt := Common.database__file__default_extension;
+          OpenDialog1.Filter := Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
 
           OpenDialog1.Options := OpenDialog1.Options - [ System.UITypes.TOpenOption.ofFileMustExist ];
 
@@ -586,12 +585,12 @@ var
   zts : string;
 begin
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__ib_database__parameters_list__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__ib_database__parameters_list__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__ib_database__parameters_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__ib_database__parameters_list__file_name_c + ').' );
 
       ib_database__parameters_g :=
         'user ''__USER_NAME__''' + #13 + #10 +
@@ -612,12 +611,12 @@ begin
 
 
   {$region 'Isql.'}
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__collation__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__collation__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__collation__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__collation__isql__file_name_c + ').' );
 
       //word__collation__isql_g := 'collation __COLLATION__ ';
       word__collation__isql_g := '';
@@ -636,12 +635,12 @@ begin
   Log_Memo.Lines.Add( 'Collation isql: ' + word__collation__isql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__database_create__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__database_create__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__database_create__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__database_create__isql__file_name_c + ').' );
 
       word__database_create__isql_g := 'create database "__DATABASE_FILE_PATH__" ';
 
@@ -659,12 +658,12 @@ begin
   Log_Memo.Lines.Add( 'Database create isql: ' + word__database_create__isql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__default_character_set__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__default_character_set__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__default_character_set__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__default_character_set__isql__file_name_c + ').' );
 
       //word__default_character_set__isql_g := 'default character set __DEFAULT_CHARACTER_SET__ ';
       word__default_character_set__isql_g := '';
@@ -683,12 +682,12 @@ begin
   Log_Memo.Lines.Add( 'Default character set isql: ' + word__default_character_set__isql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__exit__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__exit__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__exit__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__exit__isql__file_name_c + ').' );
 
       word__exit__isql_g := ' exit;';
 
@@ -706,12 +705,12 @@ begin
   Log_Memo.Lines.Add( 'Exit isql: ' + word__exit__isql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__page_size__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__page_size__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__page_size__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__page_size__isql__file_name_c + ').' );
 
       word__page_size__isql_g := 'page_size __PAGE_SIZE__ ';
 
@@ -729,12 +728,12 @@ begin
   Log_Memo.Lines.Add( 'Page size isql: ' + word__page_size__isql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__password__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__password__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__password__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__password__isql__file_name_c + ').' );
 
       word__password__isql_g := 'password ''__USER__PASSWORD__'' ';
 
@@ -752,12 +751,12 @@ begin
   Log_Memo.Lines.Add( 'Password isql: ' + word__password__isql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__isql__user_name__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__user_name__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__isql__user_name__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__isql__user_name__isql__file_name_c + ').' );
 
       word__user_name__isql_g := 'user __USER_NAME__ ';
 
@@ -777,12 +776,12 @@ begin
 
 
   {$region 'Sql.'}
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__sql__collation__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__collation__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__sql__collation__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__collation__sql__file_name_c + ').' );
 
       word__collation__sql_g := 'collation __COLLATION__ ';
 
@@ -800,12 +799,12 @@ begin
   Log_Memo.Lines.Add( 'Collation sql: ' + word__collation__sql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__sql__database_create__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__database_create__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__sql__database_create__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__database_create__sql__file_name_c + ').' );
 
       word__database_create__sql_g := 'create database ''__DATABASE_FILE_PATH__'' ';
 
@@ -823,12 +822,12 @@ begin
   Log_Memo.Lines.Add( 'Database create sql: ' + word__database_create__sql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__sql__default_character_set__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__default_character_set__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__sql__default_character_set__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__default_character_set__sql__file_name_c + ').' );
 
       word__default_character_set__sql_g := 'default character set __DEFAULT_CHARACTER_SET__ ';
 
@@ -846,12 +845,12 @@ begin
   Log_Memo.Lines.Add( 'Default character set sql: ' + word__default_character_set__sql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__sql__page_size__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__page_size__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__sql__page_size__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__page_size__sql__file_name_c + ').' );
 
       word__page_size__sql_g := 'page_size __PAGE_SIZE__ ';
 
@@ -869,12 +868,12 @@ begin
   Log_Memo.Lines.Add( 'Page size sql: ' + word__page_size__sql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__sql__password__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__password__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__sql__password__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__password__sql__file_name_c + ').' );
 
       word__password__sql_g := 'password ''__USER__PASSWORD__'' ';
 
@@ -892,12 +891,12 @@ begin
   Log_Memo.Lines.Add( 'Password sql: ' + word__password__sql_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__sql__user_name__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__user_name__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__sql__user_name__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__sql__user_name__sql__file_name_c + ').' );
 
       word__user_name__sql_g := 'user __USER_NAME__ ';
 
@@ -916,12 +915,12 @@ begin
   {$endregion 'Sql.'}
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__parameters__collation_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__collation_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__parameters__collation_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__collation_list__file_name_c + ').' );
 
       zts :=
         'PXW_PLK' + #13 + #10 +
@@ -1087,12 +1086,12 @@ begin
     Database__Collation_ComboBox.ItemIndex := 0;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__parameters__default_character_set_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__default_character_set_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__parameters__default_character_set_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__default_character_set_list__file_name_c + ').' );
 
       zts :=
         'WIN1250' + #13 + #10 +
@@ -1161,12 +1160,12 @@ begin
     Database__Default_Character_Set_ComboBox.ItemIndex := 0;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__parameters__page_size_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__page_size_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__parameters__page_size_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__page_size_list__file_name_c + ').' );
 
       zts :=
         '8192' + #13 + #10 +
@@ -1184,12 +1183,12 @@ begin
     Database__Page_Size_ComboBox.ItemIndex := 0;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__parameters__sql_dialect_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__sql_dialect_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__parameters__sql_dialect_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__parameters__sql_dialect_list__file_name_c + ').' );
 
       zts :=
         '3' + #13 + #10 +
@@ -1206,12 +1205,12 @@ begin
     Database__Sql_Dialect_ComboBox.ItemIndex := 0;
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__hint__ib_database__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__hint__ib_database__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__hint__ib_database__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__hint__ib_database__file_name_c + ').' );
 
       hint__ib_database_g := '';
 
@@ -1230,12 +1229,12 @@ begin
     Translation.translation__messages_r.database_create__hint__ib_database;
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__hint__isql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__hint__isql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__hint__isql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__hint__isql__file_name_c + ').' );
 
       hint__isql_g := '';
 
@@ -1254,12 +1253,12 @@ begin
     Translation.translation__messages_r.database_create__hint__isql;
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + database__create__hint__sql__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__hint__sql__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__create__hint__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + database__create__hint__sql__file_name_c + ').' );
 
       hint__sql_g := '';
 
@@ -1349,8 +1348,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -1360,8 +1358,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Command_Memo.SelectAll();
 
 end;

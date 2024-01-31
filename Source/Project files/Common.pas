@@ -14,16 +14,19 @@ uses
   Vcl.Forms,
   Vcl.Graphics,
   Vcl.Grids,
+  Vcl.ComCtrls,
   Vcl.Controls,
   Vcl.StdCtrls,
   Winapi.Windows,
+
+  SynCompletionProposal,
 
   Text__Search_Replace;
 
 type
   TComponent_Type = ( ct_none, ct_ADO, ct_FireDAC );
   TOperation_Duration_Calculating_Type = ( odct_multi_command, odct_multi_command__initialization, odct_single_command );
-  TPage_Control_Children_Find_Function = ( pccff_none, pccff_Options_Set, pccff_Task_Running_Check );
+  TPage_Control_Children_Find_Function = ( pccff_none, pccff_Options_Set, pccff_Task_Running_Check, pccff_Translation__Apply );
 
   TKey_Down_wsk = procedure( Sender : TObject; var Key : Word; Shift : TShiftState ) of object;
 
@@ -43,6 +46,14 @@ type
       : string;
 
     component_type : TComponent_Type;
+  end;
+
+  TObject_Id_Caption = class
+    id : integer;
+
+    caption,
+    name
+      : string;
   end;
 
   TSDBM = class
@@ -112,11 +123,13 @@ type
     procedure Query__Open();
     function Query__Param_By_Index__Name__Get( const parameter_number_f : integer ) : string;
     function Query__Param_By_Index__Value__Get( const parameter_number_f : integer ) : variant;
+    procedure Query__Param_By_Index__Set( const index_f : integer; const value_f : variant; log_memo_f : TMemo = nil );
     procedure Query__Param_By_Name__Set( const name_f : string; const value_f : variant; log_memo_f : TMemo = nil );
     function Query__Parameters_Count() : integer;
     procedure Query__Prior();
     function Query__Record_Count() : integer;
     function Query__Record_Number() : integer;
+    procedure Query__Record_Number__Set( const query_record_number_copy_f : integer );
     procedure Query__Requery();
     procedure Query__Sort( sort_string_f : string );
     function Query__Sql__Get() : string;
@@ -155,8 +168,14 @@ type
 
 
 function Case_Insensitive_To_String( const value_f : string; const case_insensitive_f : boolean ) : string;
-function Column_Name_To_Grid_Caption( const column_name_f : string ) : string;
+function Column__Name_To_Grid_Caption( const column_name_f : string ) : string;
+function Column__Values__Distinct__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var items_count_f : integer; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : string;
+function Column__Values__Sum__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var error_message_f : string; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : currency;
+procedure Comment__Uncomment_Line( syn_edit_f : TSynEdit; const go_up_f : boolean = false );
+procedure Data_Value_Format__Set( sdbm_f : TSDBM; log_memo_f : TMemo; const display_format__disabled_f: boolean = false );
+function Databases_Type__Directory_Path__Get( const database_type_f : string ) : string;
 procedure DB_Grid_Draw_Column_Cell( const sort__column_name_f : string; db_grid_f : Vcl.DBGrids.TDBGrid; const Rect : Winapi.Windows.TRect; DataCol : Integer; Column : Vcl.DBGrids.TColumn; State : Vcl.Grids.TGridDrawState );
+procedure DB_Grid_Select( db_grid_f : Vcl.DBGrids.TDBGrid; const selected_f : boolean; const invertf : boolean = false );
 procedure Font__Set( font__to_f, font__from_f : TFont );
 procedure Items_From_Text_Add( items_f : System.Classes.TStrings; text_f : string );
 function Parent_Form_Find( object_f : TObject ) : TForm;
@@ -164,8 +183,11 @@ function Sort_Direction_Symbol( const ascending_f : boolean = true ) : string;
 function Sql_Special_Characters_Protect( const text_f : string ) : string;
 procedure Syn_Completion_Proposal_After_Code_Completion( syn_edit_f : TSynEdit; var code_completion__cursor_position_f : integer );
 procedure Syn_Completion_Proposal_Code_Completion( var code_completion__cursor_position_f : integer; var value_f : string );
-function Syn_Edit__CharScan( syn_edit_f : TSynEdit ) : string;
+procedure Syn_Completion_Proposal__Parameters__Set( syn_completion_proposal_f : SynCompletionProposal.TSynCompletionProposal );
+function Syn_Edit__CharScan( syn_edit_f : TSynEdit; const do_delete_f : boolean = false ) : string;
+function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean;
 procedure Syn_Edit__On_Replace_Text( syn_edit_f : TSynEdit; ASearch, AReplace : string; Line, Column : Integer; var Action : TSynReplaceAction; AClientRect : TRect );
+procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit ); overload;
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__background_f, color__border_f : integer ); overload;
 procedure Syn_Edit__Words_Highlight( syn_edit_f : TSynEdit );
@@ -437,9 +459,9 @@ const
     'order by RDB$DEPENDENCIES.RDB$DEPENDENT_NAME, RDB$DEPENDENCIES.RDB$DEPENDED_ON_NAME, RDB$DEPENDENCIES.RDB$FIELD_NAME ';
     {$endregion 'Sql text.'}
 
-  external_function__column__external_functions_name__big_letter_c : string = 'EXTERNAL_FUNCTION_NAME';
-  external_function__sql__description__set_c : string = 'comment on function __EXTERNAL_FUNCTION_NAME__ is ''__DESCRIPTION_VALUE__'' ';
-  external_function__sql__description__set__file_name_c : string = 'External_Function__Description__Set__sql.txt';
+  external_functions__column__external_functions_name__big_letter_c : string = 'EXTERNAL_FUNCTION_NAME';
+  external_functions__sql__description__set_c : string = 'comment on function __EXTERNAL_FUNCTION_NAME__ is ''__DESCRIPTION_VALUE__'' ';
+  external_functions__sql__description__set__file_name_c : string = 'External_Function__Description__Set__sql.txt';
 
   languages__directory_name_c : string = 'Languages';
   languages__file__extension_c : string = '.txt';
@@ -496,12 +518,15 @@ const
     //'\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min\style{-B}-->min( | )' + #13 + #10 +
     //'\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}order by\style{-B}-->order by ' + #13 + #10;
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}     , \style{-B}-->     , ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}#13#10\style{-B}-->#13#10' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}     , (case(...)\style{-B}-->case~#13#10     , (case#13#10         when ( T1.C1 > 3320 ) then#13#10           T1.C1#13#10         else#13#10           T1.C2#13#10       end) as ALIAS' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}abs( | )\style{-B}-->abs( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}ascii_char( 13 )||ascii_char( 10 )\style{-B}-->ascii_char( 13 )||ascii_char( 10 )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}boolean \style{-B}-->boolean ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast( ''NOW'' as timestamp )\style{-B}-->cast( ''NOW'' as timestamp )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast(  ''13'' as varchar( 3 )  )\style{-B}-->cast(  ''13'' as varchar( 3 )  )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast(  substring( | from 1 for 50 ) as varchar( 50 )  )\style{-B}-->cast(  substring( | from 1 for 50 ) as varchar( 50 )  )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}char \style{-B}-->char ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}char_length( | )\style{-B}-->char_length( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}ceil( | )\style{-B}-->ceil( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}character_length( | )\style{-B}-->character_length( | )' + #13 + #10 +
@@ -511,10 +536,13 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}CURRENT_DATE\style{-B}-->CURRENT_DATE' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}CURRENT_TIME\style{-B}-->CURRENT_TIME' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}CURRENT_TIMESTAMP\style{-B}-->CURRENT_TIMESTAMP' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}date \style{-B}-->date ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}dateadd( 2 year to | )\style{-B}-->dateadd( 2 year to | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}dateadd: month, day, hour, minute, second, millisecond\style{-B}-->dateadd: month, day, hour, minute, second, millisecond' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}datediff( month, |, | )\style{-B}-->datediff( month, |, | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}datediff: year, month, week, day, hour, minute, second, millisecond\style{-B}-->datediff: year, month, week, day, hour, minute, second, millisecond' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}decimal( 12, 4 ); \style{-B}-->decimal( 12, 4 ) ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}declare variable \style{-B}-->declare variable ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}delete from \style{-B}-->delete from ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}distinct \style{-B}-->distinct ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract( year from | )\style{-B}-->extract( year from | )' + #13 + #10 +
@@ -527,8 +555,9 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into  values \style{-B}-->insert into  values ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into table(...)\style{-B}-->insert into tabela#13#10    (#13#10        C1#13#10      , C2#13#10    )#13#10  values#13#10    (#13#10        v_c1#13#10      ' +
       ', ( select C2 from T2 where ... )#13#10    )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}integer \style{-B}-->integer ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}join\style{-B}-->join ' + #13 + #10 +
-    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on = \style{-B}-->left join | on = ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on  = \style{-B}-->left join | on  = ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (select)\style{-B}-->list~#13#10select cast#13#10         (#13#10           substring#13#10             (#13#10               list( ''(id: '' || T1.C1 || ''; name: '' || T1.C2 || '')'' )' +
       '#13#10               from 1 for 50#13#10             )#13#10           as varchar( 50 )#13#10         )#13#10from T1' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (     , )\style{-B}-->list~#13#10     , (#13#10         select cast#13#10                  (#13#10                    substring#13#10                      (#13#10' +
@@ -536,26 +565,32 @@ const
       '                        /* list( distinct T1.C1, '', '' )  // Or. */#13#10                        from 1 for 50#13#10                      )#13#10                    as varchar( 50 )#13#10                  )#13#10         from T1#13#10' +
       '         where T1 = 1#13#10       )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}lower( | )\style{-B}-->lower( | )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}lpad( | , 6, 0 )\style{-B}-->lpad( | , 6, 0 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}max( | )\style{-B}-->max( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min( | )\style{-B}-->min( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}order by\style{-B}-->order by ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}position( ''pattern'', T1.C1 )\style{-B}-->position( ''pattern'', T1.C1 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}RDB$DATABASE\style{-B}-->RDB$DATABASE' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}replace( |, ''old_pattern'', ''new_pattern'' )\style{-B}-->replace( |, ''old_pattern'', ''new_pattern'' )' + #13 + #10 +
-    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}right join | on = \style{-B}-->right join | on = ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}right join | on  = \style{-B}-->right join |  on = ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}round( | )\style{-B}-->round( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}round( |, 0 )\style{-B}-->round( |, 0 )' + #13 + #10 +
-    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}select \style{-B}-->select ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}rpad( | , 6, 0 )\style{-B}-->rpad( | , 6, 0 )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}smallint \style{-B}-->smallint ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}strlen( | )\style{-B}-->strlen( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substr( | , 6, 7 )\style{-B}-->substr( | , 6, 7 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substring( | from 2 )\style{-B}-->substring( | from 2 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substring( | from 1 for 2 )\style{-B}-->substring( | from 1 for 2 )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}sum( | )\style{-B}-->sum( | )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}time \style{-B}-->time ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}timestamp \style{-B}-->timestamp ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trim( | )\style{-B}-->trim( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trunc( | )\style{-B}-->trunc( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union \style{-B}-->union ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}update \style{-B}-->update ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}upper( | )\style{-B}-->upper( | )' + #13 + #10 +
-    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}where\style{-B}-->where ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}varchar( 100 ) \style{-B}-->varchar( 100 ) ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}where \style{-B}-->where ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}/*\style{-B}-->/*' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}*/\style{-B}-->*/' + #13 + #10;
     {$endregion 'Code completion list.'}
@@ -668,13 +703,22 @@ var
   fire_dac__fetch_options__record_count_mode : TFDRecordCountMode;
   fire_dac__fetch_options__rowset_size : integer;
 
+  data_presentation__data_value_format__date__use,
+  data_presentation__data_value_format__date_time__use,
+  data_presentation__data_value_format__numbers__use,
+  data_presentation__data_value_format__real_numbers__use,
+  data_presentation__data_value_format__time__use,
   form_view__additional_component_show,
   queries_open_in_background,
+  sql_editor__close_prompt,
+  sql_editor__comments_delete,
   sql_editor__execute_automatic_detection,
   sql_editor__transactions_automatic,
   sql__quotation_sign__use,
   splitter_show,
   system_tables_visible,
+  table__data_filter__field_dedicated__default_use,
+  table__data_filter__quotation_sign__use,
   table__data_modify__editing__default_state,
   text__search__history_save_to_file,
   text__search__window__one_common
@@ -682,8 +726,9 @@ var
 
   database__backup__file_name__suffix_default__item_index,
   log__auto_scroll__seconds,
-  sql_editor__code_completion_window__default__lines_in_window,
-  sql_editor__code_completion_window__default__width,
+  sql_editor__code__completion_window__default__lines_in_window,
+  sql_editor__code__completion_window__default__width,
+  sql_editor__code__dent_width,
   sql_editor__words_highlight__color__background,
   sql_editor__words_highlight__color__border,
   //fd_connection__format_options__max_string_size, // Do not work. //????
@@ -692,16 +737,22 @@ var
     : integer;
 
   all_files_find__filter,
-  csv_file__data_separator,
-  csv_file__text_qualifier,
+  csv__file__data_separator,
+  csv__file__default_extension,
+  csv__file__text_qualifier,
+  data_presentation__data_value_format__date,
+  data_presentation__data_value_format__date_time,
+  data_presentation__data_value_format__numbers,
+  data_presentation__data_value_format__real_numbers,
+  data_presentation__data_value_format__time,
   database__backup_restore__quotation_sign,
   database__backup__application__file_path,
-  database__backup__file_default_extension,
+  database__backup__file__default_extension,
   database__correctness_check_text__backup,
   database__correctness_check_text__restore,
   database__create__application__file_path,
-  database__file_default_extension,
-  exe__file_default_extension,
+  database__file__default_extension,
+  exe__file__default_extension,
   language__selected,
   sql_editor__query_output_save_field_format__date,
   sql_editor__query_output_save_field_format__real_numbers,
@@ -709,13 +760,23 @@ var
   sql_editor__query_output_save_field_format__separator__decimal,
   sql_editor__query_output_save_field_format__time,
   sql__command_separator,
+  sql__comment__begin,
+  sql__comment__end,
+  sql__comment__line,
   sql__external_function__parameter_separator,
   sql__names_separator,
   sql__text_separator,
-  sql__view__parameter_separator
+  sql__view__parameter_separator,
+  table__data_filter__filter__dedicated_value_format__date,
+  table__data_filter__filter__dedicated_value_format__separator__date_time,
+  table__data_filter__filter__dedicated_value_format__separator__decimal,
+  table__data_filter__filter__dedicated_value_format__time,
+  txt__file__default_extension
     : string;
 
   sql_editor__font : Vcl.Graphics.TFont;
+
+  syn_editor_options : SynEdit.TSynEditorOptions;
 
 
 implementation
@@ -727,6 +788,7 @@ uses
   System.IOUtils,
   System.StrUtils,
   System.SysUtils,
+  Vcl.Clipbrd,
 
   plgSearchHighlighter,
 
@@ -1261,7 +1323,7 @@ begin
 
   if    ( Self.component_type__sdbm = ct_ADO )
     and ( Self.ado_query__sdbm <> nil ) then
-    Result := Self.ado_query__sdbm.Locate( key_fields_f, key_values_f, options_f )
+    Result := Self.ado_query__sdbm.Locate( key_fields_f, key_values_f, options_f )  // Do not work well for texts without 'loCaseInsensitive' option.
   else
   if    ( Self.component_type__sdbm = ct_FireDAC )
     and ( Self.fd_query__sdbm <> nil ) then
@@ -1330,6 +1392,51 @@ begin
   if    ( Self.component_type__sdbm = ct_FireDAC )
     and ( Self.fd_query__sdbm <> nil ) then
     Result := Self.fd_query__sdbm.Params.Items[ parameter_number_f ].Value;
+
+end;
+
+procedure TSDBM.Query__Param_By_Index__Set( const index_f : integer; const value_f : variant; log_memo_f : TMemo = nil );
+begin
+
+  if    ( Self.component_type__sdbm = ct_ADO )
+    and ( Self.ado_query__sdbm <> nil ) then
+    begin
+
+      if    ( index_f >= 0 )
+        and ( Self.ado_query__sdbm.Parameters.Count > index_f ) then
+        try
+          Self.ado_query__sdbm.Parameters.Items[ index_f ].Value := value_f;
+        except
+          on E : Exception do
+            begin
+
+              if log_memo_f <> nil then
+                log_memo_f.Lines.Add(  StringReplace( E.Message, #10, #13 + #10, [ rfReplaceAll ] )  );
+
+              Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_set_query_parameter + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+
+            end;
+        end;
+
+    end
+  else
+  if    ( Self.component_type__sdbm = ct_FireDAC )
+    and ( Self.fd_query__sdbm <> nil )
+    and ( index_f >= 0 )
+    and ( Self.fd_query__sdbm.Params.Count > index_f ) then
+      try
+        Self.fd_query__sdbm.Params.Items[ index_f ].Value := value_f;
+      except
+        on E : Exception do
+          begin
+
+            if log_memo_f <> nil then
+              log_memo_f.Lines.Add(  StringReplace( E.Message, #10, #13 + #10, [ rfReplaceAll ] )  );
+
+            Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_set_query_parameter + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+
+          end;
+      end;
 
 end;
 
@@ -1438,6 +1545,19 @@ begin
   if    ( Self.component_type__sdbm = ct_FireDAC )
     and ( Self.fd_query__sdbm <> nil ) then
     Result := Self.fd_query__sdbm.RecNo;
+
+end;
+
+procedure TSDBM.Query__Record_Number__Set( const query_record_number_copy_f : integer );
+begin
+
+  if    ( Self.component_type__sdbm = ct_ADO )
+    and ( Self.ado_query__sdbm <> nil ) then
+    Self.ado_query__sdbm.RecNo := query_record_number_copy_f
+  else
+  if    ( Self.component_type__sdbm = ct_FireDAC )
+    and ( Self.fd_query__sdbm <> nil ) then
+    Self.fd_query__sdbm.RecNo := query_record_number_copy_f;
 
 end;
 
@@ -1983,13 +2103,13 @@ begin
 
 end;
 
-function Column_Name_To_Grid_Caption( const column_name_f : string ) : string;
+function Column__Name_To_Grid_Caption( const column_name_f : string ) : string;
 begin
 
   if AnsiUpperCase( column_name_f ) = 'DEFAULT_VALUE' then
     begin
 
-      Result := Translation.translation__messages_r.word__default_value;
+      Result := Translation.translation__messages_r.word__default__value;
       Exit;
 
     end
@@ -2059,6 +2179,403 @@ begin
 
 end;
 
+function Column__Values__Distinct__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var items_count_f : integer; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : string;
+var
+  was_null_l : boolean;
+
+  zti,
+  progress_bar_step_distance_l,
+  query_record_number_copy_l
+    : integer;
+
+  zt_string_list : TStringList;
+begin
+
+  // Nested functions not allowed in threads.
+
+  Result := '';
+  items_count_f := -1;
+  was_null_l := false;
+
+
+  if   ( sdbm_f = nil )
+    or ( not sdbm_f.Query__Active() ) then
+    Exit;
+
+
+  sdbm_f.Query__Disable_Controls(); // Do not work well here.
+  db_grid_f.Enabled := false;
+
+  query_record_number_copy_l := sdbm_f.Query__Record_Number();
+
+
+  if    ( progres_show_f )
+    and ( progress_bar_f = nil ) then
+    progres_show_f := false;
+
+
+  if sdbm_f.component_type__sdbm = Common.TComponent_Type.ct_FireDAC then
+    begin
+
+      // FireDAC may not give total record count.
+
+      sdbm_f.Query__Last();
+
+    end;
+
+
+  sdbm_f.Query__First();
+
+
+  zt_string_list := TStringList.Create();
+
+
+  if progres_show_f then
+    begin
+
+      if sdbm_f.Query__Record_Count() <= 99 then
+        progress_bar_step_distance_l := 1
+      else
+      if sdbm_f.Query__Record_Count() <= 999 then
+        progress_bar_step_distance_l := 10
+      else
+      if sdbm_f.Query__Record_Count() <= 9999 then
+        progress_bar_step_distance_l := 100
+      else
+        progress_bar_step_distance_l := 1000;
+
+
+      progress_bar_f.Position := 0; // May case the application to freeze.
+      progress_bar_f.Max := sdbm_f.Query__Record_Count();
+      progress_bar_f.Step := progress_bar_step_distance_l;
+      progress_bar_f.Visible := true;
+
+    end;
+
+
+  while not sdbm_f.Query__Eof() do
+    begin
+
+      if    ( not was_null_l )
+        and ( sdbm_f.Query__Field_By_Name( db_grid_f.SelectedField.FieldName ).IsNull ) then
+        begin
+
+          was_null_l := true;
+
+          zt_string_list.Add( Common.notification__sign__null_c );
+          zt_string_list.Sort();
+
+        end
+      else
+      if    ( not sdbm_f.Query__Field_By_Name( db_grid_f.SelectedField.FieldName ).IsNull )
+        and (  not zt_string_list.Find( sdbm_f.Query__Field_By_Name( db_grid_f.SelectedField.FieldName ).AsString, zti )  ) then
+        begin
+
+          zt_string_list.Add( sdbm_f.Query__Field_By_Name( db_grid_f.SelectedField.FieldName ).AsString );
+          zt_string_list.Sort();
+
+        end;
+
+
+      if    ( progres_show_f )
+        and ( sdbm_f.Query__Record_Number() mod progress_bar_step_distance_l = 0 ) then
+        begin
+
+          progress_bar_f.StepIt();
+
+
+          if progress_bar_f.Visible then
+            Application.ProcessMessages();
+
+        end;
+
+
+      sdbm_f.Query__Next();
+
+    end;
+
+
+  Result := zt_string_list.Text;
+  items_count_f := zt_string_list.Count;
+
+
+  zt_string_list.Clear();
+  FreeAndNil( zt_string_list );
+
+
+  sdbm_f.Query__Record_Number__Set( query_record_number_copy_l );
+
+
+  db_grid_f.Enabled := true;
+  sdbm_f.Query__Enable_Controls();
+
+
+  if progres_show_f then
+    begin
+
+      progress_bar_f.Position := progress_bar_f.Max;
+
+
+      if progress_bar_f.Visible then
+        progress_bar_f.Visible := false;
+
+    end;
+
+end;
+
+function Column__Values__Sum__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var error_message_f : string; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : currency;
+var
+  progress_bar_step_distance_l,
+  query_record_number_copy_l
+    : integer;
+begin
+
+  // Nested functions not allowed in threads.
+
+  Result := 0;
+  error_message_f := '';
+
+
+  if   ( sdbm_f = nil )
+    or ( not sdbm_f.Query__Active() ) then
+    Exit;
+
+
+  sdbm_f.Query__Disable_Controls(); // Do not work well here.
+  db_grid_f.Enabled := false;
+
+  query_record_number_copy_l := sdbm_f.Query__Record_Number();
+
+
+  if    ( progres_show_f )
+    and ( progress_bar_f = nil ) then
+    progres_show_f := false;
+
+
+  if sdbm_f.component_type__sdbm = TComponent_Type.ct_FireDAC then
+    begin
+
+      // FireDAC may not give total record count.
+
+      sdbm_f.Query__Last();
+
+    end;
+
+
+  sdbm_f.Query__First();
+
+
+  if progres_show_f then
+    begin
+
+      if sdbm_f.Query__Record_Count() <= 99 then
+        progress_bar_step_distance_l := 1
+      else
+      if sdbm_f.Query__Record_Count() <= 999 then
+        progress_bar_step_distance_l := 10
+      else
+      if sdbm_f.Query__Record_Count() <= 9999 then
+        progress_bar_step_distance_l := 100
+      else
+        progress_bar_step_distance_l := 1000;
+
+
+      progress_bar_f.Position := 0; // May case the application to freeze.
+      progress_bar_f.Max := sdbm_f.Query__Record_Count();
+      progress_bar_f.Step := progress_bar_step_distance_l;
+      progress_bar_f.Visible := true;
+
+    end;
+
+
+  while not sdbm_f.Query__Eof() do
+    begin
+
+      try
+        Result := Result + sdbm_f.Query__Field_By_Name( db_grid_f.SelectedField.FieldName ).AsCurrency;
+      except
+        on E : Exception do
+          begin
+
+            if    ( progres_show_f )
+              and ( not progress_bar_f.Visible ) then
+              progress_bar_f.Visible := true;
+
+
+            if Pos( E.Message, error_message_f ) <= 0 then
+              error_message_f := error_message_f + #13 + E.Message;
+
+          end;
+      end;
+
+
+      if    ( progres_show_f )
+        and ( sdbm_f.Query__Record_Number() mod progress_bar_step_distance_l = 0 ) then
+        begin
+
+          progress_bar_f.StepIt();
+
+
+          if progress_bar_f.Visible then
+            Application.ProcessMessages();
+
+        end;
+
+
+      sdbm_f.Query__Next();
+
+    end;
+
+
+  sdbm_f.Query__Record_Number__Set( query_record_number_copy_l );
+
+
+  db_grid_f.Enabled := true;
+  sdbm_f.Query__Enable_Controls();
+
+
+  if progres_show_f then
+    begin
+
+      progress_bar_f.Position := progress_bar_f.Max;
+
+
+      if progress_bar_f.Visible then
+        progress_bar_f.Visible := false;
+
+    end;
+
+end;
+
+procedure Comment__Uncomment_Line( syn_edit_f : TSynEdit; const go_up_f : boolean = false );
+var
+  line_number_l : integer;
+begin
+
+  if syn_edit_f = nil then
+    Exit;
+
+
+  //line_number_l := memo_f.CaretPos.Y;
+  line_number_l := syn_edit_f.CaretY - 1;
+
+
+  if   ( syn_edit_f.Lines.Count < 0 )
+    or ( syn_edit_f.Lines.Count < line_number_l )
+    or ( line_number_l < 0 ) then
+    //or (  Trim( syn_edit_f.Lines[ line_number_l ] ) = ''  ) then
+    Exit;
+
+
+  if Pos(  Common.sql__comment__begin, Trim( syn_edit_f.Lines[ line_number_l ] )  ) = 1 then
+    begin
+
+      // Uncomment.
+
+      syn_edit_f.Lines[ line_number_l ] := StringReplace( syn_edit_f.Lines[ line_number_l ], Common.sql__comment__begin, '', [] );
+      syn_edit_f.Lines[ line_number_l ] := StringReplace( syn_edit_f.Lines[ line_number_l ], Common.sql__comment__end, '', [] );
+
+    end
+  else
+    begin
+
+      // Comment.
+
+      syn_edit_f.Lines[ line_number_l ] :=
+        Common.sql__comment__begin +
+        syn_edit_f.Lines[ line_number_l ] +
+        Common.sql__comment__end;
+
+    end;
+
+
+  if not go_up_f then
+    begin
+
+      // Go to the next line.
+
+      //if line_number_l < memo_f.Lines.Count then
+      //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y + 1 );
+      if line_number_l < syn_edit_f.Lines.Count - 1 then
+        syn_edit_f.CaretY := syn_edit_f.CaretY + 1;
+
+    end
+  else
+    begin
+
+      // Go to the previous line.
+
+      //if line_number_l > 0 then
+      //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y - 1 );
+      if line_number_l > 0 then
+        syn_edit_f.CaretY := syn_edit_f.CaretY - 1;
+
+    end;
+
+end;
+
+procedure Data_Value_Format__Set( sdbm_f : TSDBM; log_memo_f : TMemo; const display_format__disabled_f : boolean = false );
+
+  procedure Format__Set( const field_name_f_f, display_format_f_f : string; log_memo_f_F : TMemo; const display_format__disabled_f_f: boolean );
+  begin
+
+    try
+      if display_format__disabled_f_f then
+        sdbm_f.Query__Display_Format( field_name_f_f, '' )
+      else
+        sdbm_f.Query__Display_Format( field_name_f_f, display_format_f_f );
+    except
+      on E : Exception do
+        begin
+
+          if log_memo_f <> nil then
+            log_memo_f.Lines.Add( Translation.translation__messages_r.failed_to_read_generator_value + #13 + #13 + E.Message + ').' );
+
+        end;
+    end;
+
+  end;
+
+var
+  i : integer;
+begin
+
+  if    ( sdbm_f <> nil )
+    and ( sdbm_f.Query__Active() ) then
+    for i := 0 to sdbm_f.Query__Field_Count() - 1 do
+      if    ( data_presentation__data_value_format__date__use )
+        and ( sdbm_f.Query__Fields( i ).DataType in [ ftDate ] ) then
+        Format__Set( sdbm_f.Query__Fields( i ).FieldName, data_presentation__data_value_format__date, log_memo_f, display_format__disabled_f )
+      else
+      if    ( data_presentation__data_value_format__date_time__use )
+        and ( sdbm_f.Query__Fields( i ).DataType in [ ftDateTime, ftTimeStamp, ftTimeStampOffset, ftOraTimeStamp ] ) then
+        Format__Set( sdbm_f.Query__Fields( i ).FieldName, data_presentation__data_value_format__date_time, log_memo_f, display_format__disabled_f )
+      else
+      if    ( data_presentation__data_value_format__numbers__use )
+        and ( sdbm_f.Query__Fields( i ).DataType in [ ftAutoInc, ftByte, ftBytes, ftInteger, ftLargeint, ftLongWord, ftShortint, ftSmallint, ftWord ] ) then
+        Format__Set( sdbm_f.Query__Fields( i ).FieldName, data_presentation__data_value_format__numbers, log_memo_f, display_format__disabled_f )
+      else
+      if    ( data_presentation__data_value_format__real_numbers__use )
+        and ( sdbm_f.Query__Fields( i ).DataType in [ ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes ] ) then
+        Format__Set( sdbm_f.Query__Fields( i ).FieldName, data_presentation__data_value_format__real_numbers, log_memo_f, display_format__disabled_f )
+      else
+      if    ( data_presentation__data_value_format__time__use )
+        and ( sdbm_f.Query__Fields( i ).DataType in [ ftTime ] ) then
+        Format__Set( sdbm_f.Query__Fields( i ).FieldName, data_presentation__data_value_format__time, log_memo_f, display_format__disabled_f );
+
+end;
+
+function Databases_Type__Directory_Path__Get( const database_type_f : string ) : string;
+begin
+
+  Result := ExtractFilePath( Application.ExeName ) + databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar;
+
+  if Trim( database_type_f ) <> '' then
+    Result := Result +
+      database_type_f + System.IOUtils.TPath.DirectorySeparatorChar;
+
+end;
+
 procedure DB_Grid_Draw_Column_Cell( const sort__column_name_f : string; db_grid_f : Vcl.DBGrids.TDBGrid; const Rect : Winapi.Windows.TRect; DataCol : Integer; Column : Vcl.DBGrids.TColumn; State : Vcl.Grids.TGridDrawState );
 begin
 
@@ -2104,6 +2621,47 @@ begin
         end;
 
     end;
+
+end;
+
+procedure DB_Grid_Select( db_grid_f : Vcl.DBGrids.TDBGrid; const selected_f : boolean; const invertf : boolean = false );
+var
+  zti : integer;
+begin
+
+  if   ( db_grid_f = nil )
+    or ( db_grid_f.DataSource = nil )
+    or ( db_grid_f.DataSource.DataSet = nil )
+    or ( not db_grid_f.DataSource.DataSet.Active ) then
+    Exit;
+
+
+  db_grid_f.DataSource.DataSet.DisableControls();
+
+
+  zti := db_grid_f.DataSource.DataSet.RecNo;
+
+
+  db_grid_f.DataSource.DataSet.First();
+
+  while not db_grid_f.DataSource.DataSet.Eof do
+    begin
+
+      if not invertf then
+        db_grid_f.SelectedRows.CurrentRowSelected := selected_f
+      else
+        db_grid_f.SelectedRows.CurrentRowSelected := not db_grid_f.SelectedRows.CurrentRowSelected;
+
+
+      db_grid_f.DataSource.DataSet.Next();
+
+    end;
+
+
+  db_grid_f.DataSource.DataSet.RecNo := zti;
+
+
+  db_grid_f.DataSource.DataSet.EnableControls();
 
 end;
 
@@ -2233,13 +2791,30 @@ begin
 
 end;
 
-function Syn_Edit__CharScan( syn_edit_f : TSynEdit ) : string;
+procedure Syn_Completion_Proposal__Parameters__Set( syn_completion_proposal_f : SynCompletionProposal.TSynCompletionProposal );
+begin
+
+  if syn_completion_proposal_f = nil then
+    Exit;
+
+
+  if syn_completion_proposal_f.NbLinesInWindow <> sql_editor__code__completion_window__default__lines_in_window then
+    syn_completion_proposal_f.NbLinesInWindow := sql_editor__code__completion_window__default__lines_in_window;
+
+  if syn_completion_proposal_f.Width <> sql_editor__code__completion_window__default__width then
+    syn_completion_proposal_f.Width := sql_editor__code__completion_window__default__width;
+
+end;
+
+function Syn_Edit__CharScan( syn_edit_f : TSynEdit; const do_delete_f : boolean = false ) : string;
 var
   cRun,
   vBlockEnd_Char,
   vBlockBegin_Char,
   Value_Char
    : Integer;
+
+  zts : string;
 begin
 
   // Based on: SynEdit.pas - TCustomSynEdit.SetWordBlock.
@@ -2249,6 +2824,7 @@ begin
 
   if syn_edit_f = nil then
     Exit;
+
 
   Value_Char := syn_edit_f.CaretX;
 
@@ -2278,6 +2854,245 @@ begin
 
 
   Result := Copy( syn_edit_f.LineText, vBlockBegin_Char, vBlockEnd_Char - vBlockBegin_Char );
+
+
+  if    ( do_delete_f )
+    and ( Result = '' )
+    and ( vBlockBegin_Char > 0 )
+    and ( vBlockBegin_Char = vBlockEnd_Char )
+    and (  vBlockBegin_Char < Length( syn_edit_f.LineText )  )
+    and ( syn_edit_f.LineText[ vBlockBegin_Char ] = ' ' ) then
+    begin
+
+      while (  vBlockEnd_Char <= Length( syn_edit_f.LineText )  )
+        and ( syn_edit_f.LineText[ vBlockEnd_Char ] = ' ' ) do
+        inc( vBlockEnd_Char );
+
+
+      Result := Copy( syn_edit_f.LineText, vBlockBegin_Char, vBlockEnd_Char - vBlockBegin_Char );
+
+    end;
+
+
+  if    ( do_delete_f )
+    and ( Result <> '' )
+    and ( vBlockEnd_Char > vBlockBegin_Char ) then
+    begin
+
+      zts := syn_edit_f.LineText;
+      syn_edit_f.CaretX := vBlockBegin_Char;
+
+      Delete( zts, vBlockBegin_Char, vBlockEnd_Char - vBlockBegin_Char );
+
+      syn_edit_f.LineText := zts;
+
+    end;
+
+end;
+
+function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean;
+
+  procedure Select_All_L( syn_edit_f_f : TSynEdit );
+  var
+    carret_position_buffer_coord_l,
+    selection_end_buffer_coord_l
+      : SynEditTypes.TBufferCoord;
+  begin
+
+    if syn_edit_f_f = nil then
+      Exit;
+
+
+    carret_position_buffer_coord_l.Char := syn_edit_f_f.CaretX;
+    carret_position_buffer_coord_l.Line := syn_edit_f_f.CaretY;
+
+
+    selection_end_buffer_coord_l.Char := 1;
+    selection_end_buffer_coord_l.Line := syn_edit_f_f.Lines.Count;
+
+    if selection_end_buffer_coord_l.Line > 0 then
+      inc(  selection_end_buffer_coord_l.Char, Length( syn_edit_f_f.Lines[ selection_end_buffer_coord_l.Line - 1 ] )  )
+    else
+      selection_end_buffer_coord_l.Line := 1;
+
+
+    syn_edit_f_f.SetCaretAndSelection(  carret_position_buffer_coord_l, SynEditTypes.BufferCoord( 1, 1 ), selection_end_buffer_coord_l  );
+
+  end;
+
+var
+  zti : integer;
+
+  zts : string;
+begin
+
+  Result := false;
+
+
+  if syn_edit_f = nil then
+    Exit;
+
+
+  if    ( not syn_edit_f.ReadOnly )
+    and ( Key = VK_DELETE )
+    and ( Shift = [ ssCtrl ] )
+    and (  Trim( syn_edit_f.SelText ) = ''  ) then
+    begin
+
+      Common.Syn_Edit__CharScan( syn_edit_f, true );
+
+      Result := true;
+
+    end
+  else
+  if Key = VK_F3 then
+    begin
+
+      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
+        Common.Text__Search_Replace__Window_Show( syn_edit_f, text__search_replace_form )
+      else
+        begin
+
+          if ssShift in Shift then
+            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
+
+
+          Common.Text__Search_Replace__Do( syn_edit_f, text__search_replace_form );
+
+        end;
+
+
+       Result := true;
+
+    end
+  else
+  // 0 - 9.
+  if    ( Key  in [ 48..57 ] )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    begin
+
+      zti := Key - 48;
+      Key := 0;
+
+
+      if not syn_edit_f.IsBookmark( zti ) then
+        syn_edit_f.SetBookMark( zti, syn_edit_f.CaretX, syn_edit_f.CaretY )
+      else
+        syn_edit_f.ClearBookMark( zti );
+
+
+      Result := true;
+
+    end
+  else
+  // 0 - 9.
+  if    ( Key  in [ 48..57 ] )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      zti := Key - 48;
+
+
+      if syn_edit_f.IsBookmark( zti ) then
+        syn_edit_f.GotoBookMark( zti );
+
+
+      Result := true;
+
+    end
+  else
+  // /.
+  if    ( not syn_edit_f.ReadOnly )
+    and ( Key = VK_OEM_2 )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    begin
+
+      Common.Comment__Uncomment_Line( syn_edit_f, true );
+
+      Result := true;
+
+    end
+  else
+  // /.
+  if    ( not syn_edit_f.ReadOnly )
+    and ( Key = VK_OEM_2 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Common.Comment__Uncomment_Line( syn_edit_f );
+
+      Result := true;
+
+    end
+  else
+  // A.
+  if    ( Key = 65 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+
+      Select_All_L( syn_edit_f );
+
+
+      Result := true;
+
+    end
+  else
+  // C.
+  if    ( Key = 67 )
+    and ( Shift = [ ssCtrl ] )
+    and (  Trim( syn_edit_f.SelText ) = ''  ) then
+    begin
+
+      zts := Common.Syn_Edit__CharScan( syn_edit_f );
+
+      if zts <> '' then
+        Vcl.Clipbrd.Clipboard.AsText := zts;
+
+
+      Result := true;
+
+    end
+  else
+  // F.
+  if    ( Key = 70 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Common.Text__Search_Replace__Window_Show( syn_edit_f, text__search_replace_form );
+
+      Result := true;
+
+    end
+  else
+  // H.
+  if    ( Key = 72 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Common.Text__Search_Replace__Window_Show( syn_edit_f, text__search_replace_form, true );
+
+      Result := true;
+
+    end
+  else
+  // X.
+  if    ( not syn_edit_f.ReadOnly )
+    and ( Key = 88 )
+    and ( Shift = [ ssCtrl ] )
+    and (  Trim( syn_edit_f.SelText ) = ''  ) then
+    begin
+
+      zts := Common.Syn_Edit__CharScan( syn_edit_f, true );
+
+      if zts <> '' then
+        Vcl.Clipbrd.Clipboard.AsText := zts;
+
+
+      Result := true;
+
+    end;
 
 end;
 
@@ -2347,7 +3162,7 @@ begin
 
 
       text__search_replace__prompt_form_l := Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Create( Application );
-      text__search_replace__prompt_form_l.Caption_Text_Set( ASearch );
+      text__search_replace__prompt_form_l.Caption_Text__Replace__Set( ASearch );
 
       text__search_replace__prompt_form_l.Left := zt_point.X;
       text__search_replace__prompt_form_l.Top := zt_point.Y + line_height_l;
@@ -2376,6 +3191,21 @@ begin
         end;
 
    end;
+
+end;
+
+procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
+begin
+
+  if syn_edit_f = nil then
+    Exit;
+
+
+  if syn_edit_f.TabWidth <> Common.sql_editor__code__dent_width then
+    syn_edit_f.TabWidth := Common.sql_editor__code__dent_width;
+
+
+  syn_edit_f.Options := syn_editor_options;
 
 end;
 
@@ -2478,7 +3308,7 @@ begin
 
   zt_string_list := TStringList.Create();
 
-  zt_string_list.LoadFromFile( file_path_f, TEncoding.UTF8 );
+  zt_string_list.LoadFromFile( file_path_f, System.SysUtils.TEncoding.UTF8 );
   Result := zt_string_list.Text;
 
   FreeAndNil( zt_string_list );
@@ -2629,13 +3459,13 @@ begin
   zt_sdbm := Common.TSDBM.Create( sdbm_f );
   zt_sdbm.Component_Type_Set( sdbm_f.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type_f + System.IOUtils.TPath.DirectorySeparatorChar + user_role__name_unique__file_name_c  );
+  zts := Text__File_Load(  Databases_Type__Directory_Path__Get( database_type_f ) + user_role__name_unique__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + user_role__name_unique__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Databases_Type__Directory_Path__Get( database_type_f ) + user_role__name_unique__file_name_c + ').' );
 
       zts :=
         'select count( distinct t.USER_NAME ) as USER_NAME ' +

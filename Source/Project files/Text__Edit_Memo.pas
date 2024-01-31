@@ -137,7 +137,7 @@ procedure TText__Edit_Memo_Form.Description_EditKeyDown( Sender: TObject; var Ke
 begin
 
   if    ( Key = VK_RETURN )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Ok_ButtonClick( Sender );
 
 end;
@@ -146,13 +146,12 @@ procedure TText__Edit_Memo_Form.Description_MemoKeyDown( Sender: TObject; var Ke
 begin
 
   if    ( Key = VK_RETURN )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Ok_ButtonClick( Sender )
   else
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Description_Memo.SelectAll();
 
 end;

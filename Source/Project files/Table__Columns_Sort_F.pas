@@ -54,24 +54,23 @@ type
     { Public declarations }
     parent_supreme_tab_sheet : Vcl.Controls.TWinControl;
 
-    procedure Data_Open__TCSF( const refresh_all_f : boolean = false );
+    procedure Data_Open__TCSF();
     procedure Finish__TCSF();
     procedure Options_Set__TCSF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__TCSF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean; table__data_modify_f__data_close__tcsf_wsk_f : TTable__Data_Modify_F__Data_Close__TCSF_wsk );
+    procedure Translation__Apply__TCSF();
   end;
 
 implementation
 
 uses
-  System.IOUtils,
-
   Shared,
   Translation;
 
 {$R *.dfm}
 
-procedure TTable__Columns_Sort_F_Frame.Data_Open__TCSF( const refresh_all_f : boolean = false );
+procedure TTable__Columns_Sort_F_Frame.Data_Open__TCSF();
 var
   zts : string;
 begin
@@ -83,12 +82,12 @@ begin
 
   Columns_Sort_ListView.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcsf_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.table_columns_list__sql__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcsf_g ) + Common.table_columns_list__sql__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.table_columns_list__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcsf_g ) + Common.table_columns_list__sql__file_name_c + ').' );
 
       zts := Common.table_columns_list__sql_c;
 
@@ -181,20 +180,19 @@ procedure TTable__Columns_Sort_F_Frame.Key_Up_Common( Sender : TObject; var Key 
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -216,7 +214,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__TCSF();
 
 end;
 
@@ -290,7 +288,7 @@ begin
 
   columns_sort_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__TCSF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
+  Self.Options_Set__TCSF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
@@ -308,6 +306,13 @@ begin
     end
   else
     Result := '';
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Translation__Apply__TCSF();
+begin
+
+  Translation.Translation__Apply( Self );
 
 end;
 
@@ -341,19 +346,19 @@ begin
     Exit; // If the dataset is open sorting the columns may cause errors (e.g. access violation).
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.save_columns_positions__table + ' ''' + Quotation_Sign__TCSF() + table_name__tcsf_g + Quotation_Sign__TCSF() + ''')?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.save_columns_positions__table + ' ''' + Self.Quotation_Sign__TCSF() + table_name__tcsf_g + Self.Quotation_Sign__TCSF() + ''')?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
   error_occurred := false;
 
 
-  sql__position_set_l := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcsf_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.table_column__position_set__sql__file_name_c  );
+  sql__position_set_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcsf_g ) + Common.table_column__position_set__sql__file_name_c  );
 
   if Trim( sql__position_set_l ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.table_column__position_set__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcsf_g ) + Common.table_column__position_set__sql__file_name_c + ').' );
 
       sql__position_set_l := Common.table_column__position_set__sql_c;
 
@@ -375,9 +380,9 @@ begin
 
       zts := sql__position_set_l;
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCSF() + Columns_Sort_ListView.Items[ i ].Caption + Quotation_Sign__TCSF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCSF() + Columns_Sort_ListView.Items[ i ].Caption + Self.Quotation_Sign__TCSF(), [ rfReplaceAll ] );
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__position_value_c + Common.sql__word_replace_separator_c, ( i + 1 ).ToString(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCSF() + table_name__tcsf_g + Quotation_Sign__TCSF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCSF() + table_name__tcsf_g + Self.Quotation_Sign__TCSF(), [ rfReplaceAll ] );
 
       Log_Memo.Lines.Add( zts );
 
@@ -424,7 +429,7 @@ end;
 procedure TTable__Columns_Sort_F_Frame.Refresh_ButtonClick( Sender: TObject );
 begin
 
-  Data_Open__TCSF();
+  Self.Data_Open__TCSF();
 
 end;
 
@@ -440,8 +445,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

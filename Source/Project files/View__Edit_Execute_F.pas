@@ -8,6 +8,7 @@ uses
   Common,
   Migawka_Prostokat_Tabela_2_SDBM,
   Text__Search_Replace,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -128,6 +129,7 @@ type
     { Private declarations }
     sql__quotation_sign__use__veef_g : boolean;
 
+    output_tab_sheet_switched_g, // Tab switch only once.
     queries_open_in_background_g,
     splitter_show_g,
     view__output__sort__direction_ascending_g,
@@ -156,6 +158,8 @@ type
 
     procedure Busy_Notification_Set( const busy_f : boolean );
     procedure Caret_Position_Display();
+    procedure Column__Values__Distinct();
+    procedure Column__Values__Sum();
     procedure Data_Preview( const view__parameters_f : boolean = false );
     procedure Data_Refresh();
     function Parent_Caption__Get() : string;
@@ -164,7 +168,6 @@ type
     procedure Primary_Column_Find();
     procedure Query_Active_Notification_Set();
     function Quotation_Sign__VEEF() : string;
-    procedure sql_parameterKeyDown( Sender : TObject; var Key : Word; Shift : TShiftState );
     procedure View__Description__Set__Sql_Execute( const sql_text_f : string; const show_message_f : boolean = true );
     function View__Description__Set__Sql_Prepare( const view_name_f, description_value_f : string ) : string;
   public
@@ -176,10 +179,13 @@ type
     procedure Options_Set__VEEF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__VEEF( const databases_r_f : Common.TDatabases_r; const view_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     function Task_Running_Check__VEEF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__VEEF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+    procedure View__Edit_Execute_F__Data_Open__VEEF();
+    procedure View__Edit_Execute_F__Edit__VEEF();
   end;
 
 const
-  view_columns__sql__metadata__file_name_c : string = 'View__Columns__Metadata_List__sql.txt';
+  view__columns__sql__metadata__file_name_c : string = 'View__Columns__Metadata_List__sql.txt';
   view__sql__description__drop__file_name_c : string = 'View__Description__Drop__sql.txt';
   view__sql__parameter__description__drop__file_name_c : string = 'View__Parameter__Description__Drop__sql.txt';
   view__sql__select__file_name_c : string = 'View__Select__sql.txt';
@@ -187,14 +193,12 @@ const
 implementation
 
 uses
-  System.IOUtils,
   System.Threading,
   Vcl.Clipbrd,
 
   Shared,
   View__Modify,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
@@ -239,12 +243,12 @@ begin
   if view__columns_sdbm.Query__Active() then
     view__columns_sdbm.Query__Close();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + view_columns__sql__metadata__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__columns__sql__metadata__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + view_columns__sql__metadata__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__columns__sql__metadata__file_name_c + ').' );
 
       zts :=
         'select RDB$RELATION_FIELDS.RDB$FIELD_NAME as COLUMN_NAME ' +
@@ -452,8 +456,6 @@ begin
         if View__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__column__big_letters_c then
           begin
 
-            View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__parameter__name;
-
             if View__Parameters_DBGrid.Columns.Items[ i ].Width < 50 then
               View__Parameters_DBGrid.Columns.Items[ i ].Width := 50;
 
@@ -462,8 +464,6 @@ begin
         if View__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
 
-            View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
-
             if View__Parameters_DBGrid.Columns.Items[ i ].Width > 500 then
               View__Parameters_DBGrid.Columns.Items[ i ].Width := 500;
 
@@ -471,12 +471,16 @@ begin
         else
           begin
 
-            View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption );
-
             if View__Parameters_DBGrid.Columns.Items[ i ].Width > 200 then
               View__Parameters_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
+
+
+      Self.Translation__Apply__VEEF( Translation.tak_Grid );
+
+
+      Common.Data_Value_Format__Set( view__columns_sdbm, Log_Memo );
 
     end;
 
@@ -547,6 +551,204 @@ begin
 
 end;
 
+procedure TView__Edit_Execute_F_Frame.Column__Values__Distinct();
+var
+  items_count_l : integer;
+
+  zts : string;
+begin
+
+  if Self.Task_Running_Check__VEEF() then
+    Exit;
+
+
+  if   ( view__output_sdbm = nil )
+    or ( not view__output_sdbm.Query__Active() )
+    or ( view__output_sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      zts := Common.Column__Values__Distinct__Processing( view__output_sdbm, View__Output_DBGrid, items_count_l );
+
+
+      View__Output_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(   Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':'   );
+      Log_Memo.Lines.AddStrings( zts );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      ShowMessage(  Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':' + #13 + zts   );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              zts := Common.Column__Values__Distinct__Processing( view__output_sdbm, View__Output_DBGrid, items_count_l );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      View__Output_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(   Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':'   );
+                      Log_Memo.Lines.AddStrings( zts );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      ShowMessage(  Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':' + #13 + zts   );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
+
+end;
+
+procedure TView__Edit_Execute_F_Frame.Column__Values__Sum();
+var
+  ztc : currency;
+
+  error_message_l : string;
+begin
+
+  if Self.Task_Running_Check__VEEF() then
+    Exit;
+
+
+  if   ( view__output_sdbm = nil )
+    or ( not view__output_sdbm.Query__Active() )
+    or ( view__output_sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  //try
+  //  view__output_sdbm.Query__Field_By_Name( Sql_Editor_DBGrid.SelectedField.FieldName ).AsCurrency;
+  //except
+  //  on E : Exception do
+  //    begin
+  //
+  //      Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+  //      Exit;
+  //
+  //    end;
+  //end;
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      ztc := Common.Column__Values__Sum__Processing( view__output_sdbm, View__Output_DBGrid, error_message_l );
+
+      View__Output_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      if Trim( error_message_l ) <> '' then
+        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              ztc := Common.Column__Values__Sum__Processing( view__output_sdbm, View__Output_DBGrid, error_message_l );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      View__Output_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+                      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      if Trim( error_message_l ) <> '' then
+                        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
+
+end;
+
 procedure TView__Edit_Execute_F_Frame.Data_Preview( const view__parameters_f : boolean = false );
 begin
 
@@ -609,12 +811,12 @@ begin
   zt_sdbm := Common.TSDBM.Create( view__columns_sdbm );
   zt_sdbm.Component_Type_Set( view__columns_sdbm.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.view__sql__metadata__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + Common.view__sql__metadata__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.view__sql__metadata__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + Common.view__sql__metadata__file_name_c + ').' );
 
       zts := Common.view__sql__metadata_c;
 
@@ -709,7 +911,7 @@ end;
 function TView__Edit_Execute_F_Frame.Finish__VEEF() : boolean;
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     begin
 
       Result := false;
@@ -741,7 +943,7 @@ begin
 
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Open_ButtonClick( Sender )
   else
   // R.
@@ -755,20 +957,19 @@ procedure TView__Edit_Execute_F_Frame.Key_Up_Common( Sender : TObject; var Key :
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -804,7 +1005,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__VEEF( Translation.tak_Self );
 
 
   Query_Active_Notification_Set();
@@ -894,13 +1095,12 @@ begin
 end;
 
 procedure TView__Edit_Execute_F_Frame.Prepare__VEEF( const databases_r_f : Common.TDatabases_r; const view_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
-var
-  zts : string;
 begin
 
   Self.Name := '';
 
   database_type__veef_g := databases_r_f.database_type;
+  output_tab_sheet_switched_g := false;
   queries_open_in_background_g := queries_open_in_background_f;
   sql__parameter_sign__veef_g := databases_r_f.sql__parameter_sign;
   splitter_show_g := splitter_show_f;
@@ -926,7 +1126,7 @@ begin
   view__output_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
   view__columns_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__VEEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
+  Self.Options_Set__VEEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
 
 
   Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
@@ -935,6 +1135,8 @@ begin
   Common.Font__Set( View__Parameters__Description_DBMemo.Font, Common.sql_editor__font );
   //Common.Font__Set( View__Source_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( View__Source_SynEdit.Font, Common.sql_editor__font );
+
+  Common.Syn_Edit__Parameters__Set( View__Source_SynEdit );
 
 
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( View__Source_SynEdit );
@@ -985,16 +1187,36 @@ begin
 
 end;
 
-procedure TView__Edit_Execute_F_Frame.sql_parameterKeyDown( Sender : TObject; var Key : Word; Shift : TShiftState );
+function TView__Edit_Execute_F_Frame.Task_Running_Check__VEEF( const message_show_f : boolean = true ) : boolean;
 begin
 
-  // E.
-  if   (
-             ( Key = 69 )
-         and ( ssCtrl in Shift )
-       )
-    or ( Key = VK_RETURN ) then
-    Open_ButtonClick( Sender );
+  Result := task_is_running_g;
+
+
+  if    ( Result )
+    and ( message_show_f ) then
+    Application.MessageBox( PChar(Translation.translation__messages_r.task_is_still_running_wait_until_finish), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
+
+end;
+
+procedure TView__Edit_Execute_F_Frame.Translation__Apply__VEEF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to View__Parameters_DBGrid.Columns.Count - 1 do
+      if View__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__column__big_letters_c then
+        View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__parameter__name
+      else
+      if View__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+        View__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( View__Parameters_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -1037,12 +1259,12 @@ end;
 function TView__Edit_Execute_F_Frame.View__Description__Set__Sql_Prepare( const view_name_f, description_value_f : string ) : string;
 begin
 
-  Result := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.view__sql__description__set__file_name_c  );
+  Result := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + Common.view__sql__description__set__file_name_c  );
 
   if Trim( Result ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.view__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + Common.view__sql__description__set__file_name_c + ').' );
 
       Result := Common.view__sql__description__set_c;
 
@@ -1053,15 +1275,17 @@ begin
 
 end;
 
-function TView__Edit_Execute_F_Frame.Task_Running_Check__VEEF( const message_show_f : boolean = true ) : boolean;
+procedure TView__Edit_Execute_F_Frame.View__Edit_Execute_F__Data_Open__VEEF();
 begin
 
-  Result := task_is_running_g;
+  Open_ButtonClick( nil );
 
+end;
 
-  if    ( Result )
-    and ( message_show_f ) then
-    Application.MessageBox( PChar(Translation.translation__messages_r.task_is_still_running_wait_until_finish), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
+procedure TView__Edit_Execute_F_Frame.View__Edit_Execute_F__Edit__VEEF();
+begin
+
+  Modify__Edit_ButtonClick( nil );
 
 end;
 
@@ -1079,7 +1303,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Output_DBEditChange( Sender: TObject );
 begin
 
-  if Task_Running_Check__VEEF( false ) then
+  if Self.Task_Running_Check__VEEF( false ) then
     Exit;
 
 
@@ -1108,7 +1332,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 0 then // Output
     begin
 
-      if Task_Running_Check__VEEF() then
+      if Self.Task_Running_Check__VEEF() then
         Exit;
 
 
@@ -1200,7 +1424,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 0 then // Output
     begin
 
-      if Task_Running_Check__VEEF() then
+      if Self.Task_Running_Check__VEEF() then
         Exit;
 
 
@@ -1280,7 +1504,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 0 then // Output
     begin
 
-      if Task_Running_Check__VEEF() then
+      if Self.Task_Running_Check__VEEF() then
         Exit;
 
 
@@ -1365,7 +1589,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
@@ -1373,7 +1597,7 @@ begin
     or ( not view__columns_sdbm.Query__Active() ) then
     begin
 
-      Data_Open__VEEF();
+      Self.Data_Open__VEEF();
 
       Exit;
 
@@ -1390,20 +1614,30 @@ begin
   if not view__output_sdbm.Query__Active() then
     begin
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + view__sql__select__file_name_c  );
+      if not output_tab_sheet_switched_g then
+        begin
+
+          PageControl1.ActivePage := View__Output_TabSheet;
+
+          output_tab_sheet_switched_g := true;
+
+        end;
+
+
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__sql__select__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + view__sql__select__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__sql__select__file_name_c + ').' );
 
-          zts := 'select * from ' + Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF();
+          zts := 'select * from ' + Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF();
 
         end
       else
         begin
 
-          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__view__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF(), [ rfReplaceAll ] );
+          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__view__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF(), [ rfReplaceAll ] );
 
         end;
 
@@ -1453,6 +1687,8 @@ begin
 
           Primary_Column_Find();
 
+
+          Common.Data_Value_Format__Set( view__output_sdbm, Log_Memo );
 
           Busy_Notification_Set( false );
 
@@ -1521,6 +1757,8 @@ begin
                           Primary_Column_Find();
 
 
+                          Common.Data_Value_Format__Set( view__output_sdbm, Log_Memo );
+
                           View__Output_DBGrid.Repaint();
 
                           Busy_Notification_Set( false );
@@ -1546,7 +1784,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
@@ -1574,7 +1812,7 @@ var
     : string;
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
@@ -1606,7 +1844,7 @@ begin
   else
     begin
 
-      Data_Open__VEEF();
+      Self.Data_Open__VEEF();
 
       Exit;
 
@@ -1717,7 +1955,7 @@ var
   view__modify_form_l : View__Modify.TView__Modify_Form;
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
@@ -1807,7 +2045,7 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  zts := View__Description__Set__Sql_Prepare( Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF(), description_value_l );
+  zts := View__Description__Set__Sql_Prepare( Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF(), description_value_l );
 
 
   Log_Memo.Lines.Add( zts );
@@ -1836,23 +2074,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + view__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + view__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on view ' +
-        Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF() +
+        Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF() +
         ' is null ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__view__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__view__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF(), [ rfReplaceAll ] );
 
     end;
 
@@ -1860,7 +2098,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_the_view_description + ' ''' + Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_the_view_description + ' ''' + Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1922,14 +2160,14 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  view__parameter_name_l := Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF() + Common.sql__names_separator + Quotation_Sign__VEEF() + Trim(  view__columns_sdbm.Query__Field_By_Name( Common.name__column__big_letters_c ).AsString  ) + Quotation_Sign__VEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  view__parameter_name_l := Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF() + Common.sql__names_separator + Self.Quotation_Sign__VEEF() + Trim(  view__columns_sdbm.Query__Field_By_Name( Common.name__column__big_letters_c ).AsString  ) + Self.Quotation_Sign__VEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.view__sql__parameter__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + Common.view__sql__parameter__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.view__sql__parameter__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + Common.view__sql__parameter__description__set__file_name_c + ').' );
 
       zts := Common.view__sql__parameter__description__set_c;
 
@@ -1988,14 +2226,14 @@ begin
     Exit;
 
 
-  view__parameter_name_l := Quotation_Sign__VEEF() + view_name__veef_g + Quotation_Sign__VEEF() + Common.sql__names_separator + Quotation_Sign__VEEF() + Trim(  view__columns_sdbm.Query__Field_By_Name( Common.name__column__big_letters_c ).AsString  ) + Quotation_Sign__VEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  view__parameter_name_l := Self.Quotation_Sign__VEEF() + view_name__veef_g + Self.Quotation_Sign__VEEF() + Common.sql__names_separator + Self.Quotation_Sign__VEEF() + Trim(  view__columns_sdbm.Query__Field_By_Name( Common.name__column__big_letters_c ).AsString  ) + Self.Quotation_Sign__VEEF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__veef_g + System.IOUtils.TPath.DirectorySeparatorChar + view__sql__parameter__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__sql__parameter__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + view__sql__parameter__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__veef_g ) + view__sql__parameter__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on column ' +
@@ -2070,8 +2308,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  )
+    and ( Shift = [ ssCtrl ] )
     and ( Sender <> nil ) then
     if TComponent(Sender).Name = Log_Memo.Name then
       Log_Memo.SelectAll()
@@ -2121,41 +2358,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( View__Source_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( View__Source_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( View__Source_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( View__Source_SynEdit );
-    end
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( View__Source_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( View__Source_SynEdit, text__search_replace_form, true );
+  Common.Syn_Edit_Key_Down( View__Source_SynEdit, Sender, Key, Shift );
 
 
   Key_Down_Common( Sender, Key, Shift );
@@ -2224,7 +2427,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Parameters_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
 begin
 
-  if Task_Running_Check__VEEF( false ) then
+  if Self.Task_Running_Check__VEEF( false ) then
     Exit;
 
 
@@ -2235,7 +2438,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Parameters_DBGridKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
@@ -2268,7 +2471,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Parameters_DBGridTitleClick( Column: TColumn );
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
@@ -2295,7 +2498,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Output_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
 begin
 
-  if Task_Running_Check__VEEF( false ) then
+  if Self.Task_Running_Check__VEEF( false ) then
     Exit;
 
 
@@ -2306,10 +2509,18 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Output_DBGridKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 
+  // D.
+  if    ( Key = 68 )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Column__Values__Distinct()
+  else
   // C.
   if    ( Key = 67 )
     and ( Shift = [ ssCtrl ] )
@@ -2323,11 +2534,19 @@ begin
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
     end
   else
+  // S.
+  if    ( Key = 83 )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Column__Values__Sum()
+  else
     Key_Down_Common( Sender, Key, Shift );
 
 end;
 
-procedure TView__Edit_Execute_F_Frame.View__Output_DBGridKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TView__Edit_Execute_F_Frame.View__Output_DBGridKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
   Data_Preview();
@@ -2339,7 +2558,7 @@ end;
 procedure TView__Edit_Execute_F_Frame.View__Output_DBGridTitleClick( Column: TColumn );
 begin
 
-  if Task_Running_Check__VEEF() then
+  if Self.Task_Running_Check__VEEF() then
     Exit;
 
 

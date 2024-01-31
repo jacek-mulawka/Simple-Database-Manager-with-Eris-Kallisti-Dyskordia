@@ -17,6 +17,7 @@ object External_Function__Modify_Form: TExternal_Function__Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object External_Function_Name_Etiquette_Label: TLabel

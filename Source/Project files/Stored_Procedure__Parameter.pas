@@ -73,9 +73,6 @@ uses
 constructor TStored_Procedure__Parameter.Create( parent_f : Vcl.Controls.TWinControl; var stored_procedure__parameter_id_f : integer; const parameter__name_f, parameter__data_type_f, parameter__default_value_f, parameter__description_f, parameter__type_input_f, data_types_list_f : string; const splitter_show_f : boolean; on_click_wsk_f : TOn_Click_wsk );
 const
   margin_c : integer = 5;
-
-var
-  zti : integer;
 begin
 
   inherited Create( Vcl.Forms.Application );

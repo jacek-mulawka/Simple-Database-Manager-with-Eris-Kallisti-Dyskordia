@@ -43,9 +43,6 @@ uses
 constructor TDatabase__Backup_Restore__Parameter.Create( parent_f : Vcl.Controls.TWinControl; const checked_f : boolean; const parameter__name_f, parameter__description_f, parameter__hint_f, parameter__values_f : string; const splitter_show_f : boolean );
 const
   margin_c : integer = 5;
-
-var
-  zti : integer;
 begin
 
   inherited Create( Vcl.Forms.Application );

@@ -7,6 +7,7 @@ uses
 
   Common,
   Text__Search_Replace,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -108,35 +109,34 @@ type
     function Quotation_Sign__TrMF() : string;
   public
     { Public declarations }
-    parent_supreme_tab_sheet : Vcl.Controls.TWinControl;
+    parent_supreme_tab_sheet__trmf : Vcl.Controls.TWinControl;
 
     text__search_replace_form : Text__Search_Replace.TText__Search_Replace_Form;
 
-    procedure Data_Open__TrMF( const force_refresh_f : boolean = false );
+    procedure Data_Open__TrMF();
     procedure Finish__TrMF();
     procedure Options_Set__TrMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__TrMF( const triggers_type_f : TTriggers_Type; const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__TrMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
   table__triggers_list__file_name_c : string = 'Table__Triggers_List__sql.txt';
   database__triggers_list__file_name_c : string = 'Database__Triggers_List__sql.txt';
-  trigger__sql__description__drop__file_name_c : string = 'Trigger__Description__Drop__sql.txt';
-  trigger__sql__description__set__file_name_c : string = 'Trigger__Description__Set__sql.txt';
+  triggers_list__sql__description__drop__file_name_c : string = 'Trigger__Description__Drop__sql.txt';
+  triggers_list__sql__description__set__file_name_c : string = 'Trigger__Description__Set__sql.txt';
   triggers_list__sql__trigger_drop__file_name_c : string = 'Trigger__Drop__sql.txt';
 
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
   Vcl.ComCtrls,
 
   Database__Trigger_Modify,
   Shared,
   Table__Trigger_Modify,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
@@ -148,7 +148,7 @@ begin
 
 end;
 
-procedure TTriggers_Modify_F_Frame.Data_Open__TrMF( const force_refresh_f : boolean = false );
+procedure TTriggers_Modify_F_Frame.Data_Open__TrMF();
 var
   i : integer;
 
@@ -158,11 +158,7 @@ var
 begin
 
   if   ( triggers_sdbm = nil )
-    or ( triggers_sdbm.component_type__sdbm = Common.ct_none )
-    or (
-             ( not force_refresh_f )
-         and ( triggers_sdbm.Query__Active() )
-       ) then
+    or ( triggers_sdbm.component_type__sdbm = Common.ct_none ) then
     Exit;
 
 
@@ -178,12 +174,12 @@ begin
     triggers_list__file_name_l := table__triggers_list__file_name_c;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__trmf_g + System.IOUtils.TPath.DirectorySeparatorChar + triggers_list__file_name_l  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__file_name_l  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + triggers_list__file_name_l + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__file_name_l + ').' );
 
       zts :=
         'select RDB$TRIGGERS.RDB$TRIGGER_NAME as TRIGGER_NAME ' +
@@ -371,8 +367,6 @@ begin
         if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__active_c then
           begin
 
-            Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__active;
-
             if Triggers_DBGrid.Columns.Items[ i ].Width < 50 then
               Triggers_DBGrid.Columns.Items[ i ].Width := 50;
 
@@ -380,8 +374,6 @@ begin
         else
         if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__name__big_letters_c then
           begin
-
-            Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__trigger__name;
 
             if Triggers_DBGrid.Columns.Items[ i ].Width > 500 then
               Triggers_DBGrid.Columns.Items[ i ].Width := 500;
@@ -391,8 +383,6 @@ begin
         if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
 
-            Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
-
             if Triggers_DBGrid.Columns.Items[ i ].Width > 500 then
               Triggers_DBGrid.Columns.Items[ i ].Width := 500;
 
@@ -400,12 +390,16 @@ begin
         else
           begin
 
-            Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Triggers_DBGrid.Columns.Items[ i ].Title.Caption );
-
             if Triggers_DBGrid.Columns.Items[ i ].Width > 200 then
               Triggers_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
+
+
+      Self.Translation__Apply__TrMF( Translation.tak_Grid );
+
+
+      Common.Data_Value_Format__Set( triggers_sdbm, Log_Memo );
 
     end;
 
@@ -453,12 +447,12 @@ end;
 function TTriggers_Modify_F_Frame.Trigger__Description__Set__Sql_Prepare( const trigger_name_f, description_value_f : string ) : string;
 begin
 
-  Result := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__trmf_g + System.IOUtils.TPath.DirectorySeparatorChar + trigger__sql__description__set__file_name_c  );
+  Result := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__sql__description__set__file_name_c  );
 
   if Trim( Result ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + trigger__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__sql__description__set__file_name_c + ').' );
 
       Result :=
         'comment on trigger ' +
@@ -494,20 +488,19 @@ procedure TTriggers_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key : Wo
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -531,7 +524,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__TrMF( Translation.tak_Self );
 
 end;
 
@@ -540,14 +533,14 @@ var
   zti : integer;
 begin
 
-  if    ( parent_supreme_tab_sheet <> nil )
-    and ( parent_supreme_tab_sheet is TTabSheet )
-    and ( parent_supreme_tab_sheet.Parent <> nil )
-    and ( parent_supreme_tab_sheet.Parent is TPageControl )
-    and ( TPageControl(parent_supreme_tab_sheet.Parent).PageCount > 1 ) then
+  if    ( parent_supreme_tab_sheet__trmf <> nil )
+    and ( parent_supreme_tab_sheet__trmf is TTabSheet )
+    and ( parent_supreme_tab_sheet__trmf.Parent <> nil )
+    and ( parent_supreme_tab_sheet__trmf.Parent is TPageControl )
+    and ( TPageControl(parent_supreme_tab_sheet__trmf.Parent).PageCount > 1 ) then
     begin
 
-      zti := TPageControl(parent_supreme_tab_sheet.Parent).ActivePageIndex;
+      zti := TPageControl(parent_supreme_tab_sheet__trmf.Parent).ActivePageIndex;
 
 
       if not prior_f then
@@ -557,7 +550,7 @@ begin
 
           inc( zti );
 
-          if zti > TPageControl(parent_supreme_tab_sheet.Parent).PageCount - 1 then
+          if zti > TPageControl(parent_supreme_tab_sheet__trmf.Parent).PageCount - 1 then
             zti := 0;
 
         end
@@ -569,12 +562,12 @@ begin
           dec( zti );
 
           if zti < 0 then
-            zti := TPageControl(parent_supreme_tab_sheet.Parent).PageCount - 1;
+            zti := TPageControl(parent_supreme_tab_sheet__trmf.Parent).PageCount - 1;
 
         end;
 
 
-      TPageControl(parent_supreme_tab_sheet.Parent).ActivePageIndex := zti;
+      TPageControl(parent_supreme_tab_sheet__trmf.Parent).ActivePageIndex := zti;
 
     end;
 
@@ -612,12 +605,14 @@ begin
 
   triggers_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__TrMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
+  Self.Options_Set__TrMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
   //Common.Font__Set( Trigger_Source_DBMemo.Font, Common.sql_editor__font );
   Common.Font__Set( Trigger_Source_SynEdit.Font, Common.sql_editor__font );
+
+  Common.Syn_Edit__Parameters__Set( Trigger_Source_SynEdit );
 
 
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Trigger_Source_SynEdit );
@@ -635,6 +630,30 @@ begin
     end
   else
     Result := '';
+
+end;
+
+procedure TTriggers_Modify_F_Frame.Translation__Apply__TrMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Triggers_DBGrid.Columns.Count - 1 do
+      if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__active_c then
+        Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__active
+      else
+      if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__name__big_letters_c then
+        Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__trigger__name
+      else
+      if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+        Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Triggers_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -789,7 +808,7 @@ begin
     or ( not triggers_sdbm.Query__Active() ) then
     begin
 
-      Data_Open__TrMF( true );
+      Self.Data_Open__TrMF();
 
       Exit;
 
@@ -922,7 +941,7 @@ begin
     begin
 
       if trigger_edit_l then
-        Trigger__Description__Set__Sql_Execute(  Trigger__Description__Set__Sql_Prepare( Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Quotation_Sign__TrMF(), description_value_l ), false  );
+        Trigger__Description__Set__Sql_Execute(  Trigger__Description__Set__Sql_Prepare( Self.Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Self.Quotation_Sign__TrMF(), description_value_l ), false  );
 
 
       Refresh_ButtonClick( Sender );
@@ -966,23 +985,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__trmf_g + System.IOUtils.TPath.DirectorySeparatorChar + triggers_list__sql__trigger_drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__sql__trigger_drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + triggers_list__sql__trigger_drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__sql__trigger_drop__file_name_c + ').' );
 
       zts :=
         'drop trigger ' +
-        Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Quotation_Sign__TrMF() +
+        Self.Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Self.Quotation_Sign__TrMF() +
         ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__name__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Quotation_Sign__TrMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__name__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Self.Quotation_Sign__TrMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -990,7 +1009,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_trigger + ' ''' + Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Quotation_Sign__TrMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_trigger + ' ''' + Self.Quotation_Sign__TrMF() + triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString + Self.Quotation_Sign__TrMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1033,8 +1052,6 @@ end;
 
 procedure TTriggers_Modify_F_Frame.Trigger__Description__Set_MenuItemClick( Sender: TObject );
 var
-  ztb : boolean;
-
   modal_result : TModalResult;
 
   zts,
@@ -1064,7 +1081,7 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  trigger_name_l := Quotation_Sign__TrMF() + Trim(  triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString  ) + Quotation_Sign__TrMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  trigger_name_l := Self.Quotation_Sign__TrMF() + Trim(  triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString  ) + Self.Quotation_Sign__TrMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
 
   zts := Trigger__Description__Set__Sql_Prepare( trigger_name_l, description_value_l );
@@ -1099,14 +1116,14 @@ begin
     Exit;
 
 
-  trigger_name_l := Quotation_Sign__TrMF() + Trim(  triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString  ) + Quotation_Sign__TrMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  trigger_name_l := Self.Quotation_Sign__TrMF() + Trim(  triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString  ) + Self.Quotation_Sign__TrMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__trmf_g + System.IOUtils.TPath.DirectorySeparatorChar + trigger__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + trigger__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__trmf_g ) + triggers_list__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on trigger ' +
@@ -1204,41 +1221,7 @@ end;
 procedure TTriggers_Modify_F_Frame.Trigger_Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( Trigger_Source_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( Trigger_Source_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( Trigger_Source_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( Trigger_Source_SynEdit );
-    end
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Trigger_Source_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Trigger_Source_SynEdit, text__search_replace_form, true );
+  Common.Syn_Edit_Key_Down( Trigger_Source_SynEdit, Sender, Key, Shift );
 
 end;
 
@@ -1267,8 +1250,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

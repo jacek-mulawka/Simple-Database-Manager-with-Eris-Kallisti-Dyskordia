@@ -87,11 +87,12 @@ type
     { Public declarations }
     parent_supreme_tab_sheet : Vcl.Controls.TWinControl;
 
-    procedure Data_Open__DF( const refresh_all_f : boolean = false );
+    procedure Data_Open__DF();
     procedure Finish__DF();
     procedure Options_Set__DF( const component_type_f : Common.TComponent_Type );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__DF( const table_name_f, database_type_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection );
+    procedure Translation__Apply__DF();
     procedure Tree_Nodes_Dispose();
   end;
 
@@ -101,7 +102,6 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
 
   Shared,
@@ -109,9 +109,169 @@ uses
 
 {$R *.dfm}
 
-procedure TDependencies_F_Frame.Data_Open__DF( const refresh_all_f : boolean = false );
+procedure TDependencies_F_Frame.Data_Open__DF();
 
-  procedure Node_Data_Set( node_data_r_wsk_f : TNode_Data_r_wsk );
+  procedure Node_Data__Set( node_data_r_wsk_f : TNode_Data_r_wsk );
+
+    function Translation__Apply__L( const name_f : string ) : string;
+    begin
+
+      if AnsiUpperCase( name_f ) = 'CHECK CONSTRAINT' then
+        begin
+
+          Result := Translation.translation__messages_r.word__check_constraint;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'COLLATION' then
+        begin
+
+          Result := Translation.translation__messages_r.word__collation;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'COLUMN' then
+        begin
+
+          Result := Translation.translation__messages_r.word__column;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'COMPUTED COLUMN' then
+        begin
+
+          Result := Translation.translation__messages_r.word__computed_column;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'EXCEPTION' then
+        begin
+
+          Result := Translation.translation__messages_r.word__exception;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'GENERATOR (SEQUENCE)' then
+        begin
+
+          Result := Translation.translation__messages_r.word__generator__sequence_;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'INDEX' then
+        begin
+
+          Result := Translation.translation__messages_r.word__index;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'INDEX EXPRESSION' then
+        begin
+
+          Result := Translation.translation__messages_r.word__index__expression;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'PACKAGE BODY' then
+        begin
+
+          Result := Translation.translation__messages_r.word__package__body;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'PACKAGE HEADER' then
+        begin
+
+          Result := Translation.translation__messages_r.word__package__header;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'PROCEDURE' then
+        begin
+
+          Result := Translation.translation__messages_r.word__procedure;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'PROCEDURE (OR ITS PARAMETER(S))' then
+        begin
+
+          Result := Translation.translation__messages_r.word__procedure___or_its_parameter_s__;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'STORED FUNCTION' then
+        begin
+
+          Result := Translation.translation__messages_r.word__stored_function;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'TABLE' then
+        begin
+
+          Result := Translation.translation__messages_r.word__table;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'TABLE (OR A COLUMN IN IT)' then
+        begin
+
+          Result := Translation.translation__messages_r.word__table___or_a_column_in_it_;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'TRIGGER' then
+        begin
+
+          Result := Translation.translation__messages_r.word__trigger;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'USER' then
+        begin
+
+          Result := Translation.translation__messages_r.word__user;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'UDF OR STORED FUNCTION' then
+        begin
+
+          Result := Translation.translation__messages_r.word__udf_or_stored_function;
+          Exit;
+
+        end
+      else
+      if AnsiUpperCase( name_f ) = 'VIEW' then
+        begin
+
+          Result := Translation.translation__messages_r.word__view;
+          Exit;
+
+        end
+      else
+        Result := name_f;
+
+    end;
+
   begin
 
     inc( id_search_g );
@@ -138,7 +298,7 @@ procedure TDependencies_F_Frame.Data_Open__DF( const refresh_all_f : boolean = f
       end;
 
 
-    node_data_r_wsk_f.etiquette___nd := node_data_r_wsk_f.name__nd + ' - ' + node_data_r_wsk_f.etiquette___nd;
+    node_data_r_wsk_f.etiquette___nd := node_data_r_wsk_f.name__nd + ' - ' + Translation__Apply__L( node_data_r_wsk_f.etiquette___nd );
 
   end;
 
@@ -195,9 +355,9 @@ begin
 
 
   if Dependencies_Type_RadioGroup.ItemIndex = 0 then // Dependent objects.
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__df_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.dependencies_list__depended_on__file_name_c  )
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__df_g ) + Common.dependencies_list__depended_on__file_name_c  )
   else
-    zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__df_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.dependencies_list__dependent__file_name_c  );
+    zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__df_g ) + Common.dependencies_list__dependent__file_name_c  );
 
 
   if Trim( zts ) = '' then
@@ -206,7 +366,7 @@ begin
       if Dependencies_Type_RadioGroup.ItemIndex = 0 then // Dependent objects.
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.dependencies_list__depended_on__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__df_g ) + Common.dependencies_list__depended_on__file_name_c + ').' );
 
           zts := Common.dependencies_list__depended_on__sql_c;
 
@@ -214,7 +374,7 @@ begin
       else
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.dependencies_list__dependent__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__df_g ) + Common.dependencies_list__dependent__file_name_c + ').' );
 
           zts := Common.dependencies_list__dependent__sql_c;
 
@@ -339,7 +499,7 @@ begin
                       New( node_data_r_wsk_l );
 
                       node_data_r_wsk_l.id_node__nd := dependencies_count_l;
-                      Node_Data_Set( node_data_r_wsk_l );
+                      Node_Data__Set( node_data_r_wsk_l );
 
                       Tree_Node_Add( node_data_r_wsk_l );
 
@@ -351,7 +511,7 @@ begin
 
               New( node_data_r_wsk_l );
 
-              Node_Data_Set( node_data_r_wsk_l );
+              Node_Data__Set( node_data_r_wsk_l );
 
 
               if dependencies_sdbm.Query__Field_By_Name( Common.dependencies_list__column__field_name_c ).IsNull then
@@ -428,20 +588,19 @@ procedure TDependencies_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word;
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -459,7 +618,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__DF();
 
 end;
 
@@ -528,7 +687,7 @@ begin
 
   dependencies_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__DF( component_type_f );
+  Self.Options_Set__DF( component_type_f );
 
 
   Common.Font__Set( Dependencies_Description_Memo.Font, Common.sql_editor__font );
@@ -571,6 +730,13 @@ begin
 
 end;
 
+procedure TDependencies_F_Frame.Translation__Apply__DF();
+begin
+
+  Translation.Translation__Apply( Self );
+
+end;
+
 procedure TDependencies_F_Frame.Tree_Nodes_Dispose();
 var
   i : integer;
@@ -587,7 +753,7 @@ end;
 procedure TDependencies_F_Frame.Refresh_ButtonClick( Sender: TObject );
 begin
 
-  Data_Open__DF();
+  Self.Data_Open__DF();
 
 end;
 
@@ -781,8 +947,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -792,8 +957,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Dependencies_Description_Memo.SelectAll();
 
 end;

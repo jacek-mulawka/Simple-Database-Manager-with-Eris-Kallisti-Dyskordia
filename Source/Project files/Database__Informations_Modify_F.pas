@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Menus;
@@ -61,13 +62,14 @@ type
     function Quotation_Sign__DIMF() : string;
   public
     { Public declarations }
-    parent_supreme_tab_sheet : Vcl.Controls.TWinControl;
+    parent_supreme_tab_sheet__dimf : Vcl.Controls.TWinControl;
 
-    procedure Data_Open__DIMF( const refresh_all_f : boolean = false );
+    procedure Data_Open__DIMF();
     procedure Finish__DIMF();
     procedure Options_Set__DIMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__DIMF( const database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__DIMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
@@ -83,17 +85,199 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
   Vcl.ComCtrls,
 
   Text__Edit_Memo,
-  Shared,
-  Translation;
+  Shared;
 
 {$R *.dfm}
 
-procedure TDatabase__Informations_Modify_F_Frame.Data_Open__DIMF( const refresh_all_f : boolean = false );
+procedure TDatabase__Informations_Modify_F_Frame.Data_Open__DIMF();
+
+  function Translation__Apply__L( const name_f : string ) : string;
+  begin
+
+    if AnsiUpperCase( name_f ) = 'BACKUP STATE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__backup_state;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'DATABASE PATH OR ALIAS' then
+      begin
+
+        Result := Translation.translation__messages_r.word__database_path_or_alias;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'DEFAULT CHARACTER SET' then
+      begin
+
+        Result := Translation.translation__messages_r.word__default__character_set;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'DESCRIPTION' then
+      begin
+
+        Result := Translation.translation__messages_r.word__description;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'FILLING DATABASE PAGES' then
+      begin
+
+        Result := Translation.translation__messages_r.word__filling_database_pages;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'FULL SHUTDOWN' then
+      begin
+
+        Result := Translation.translation__messages_r.word__full_shutdown;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'MERGE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__merge;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'MULTI-USER SHUTDOWN' then
+      begin
+
+        Result := Translation.translation__messages_r.word__multi_user_shutdown;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'NORMAL' then
+      begin
+
+        Result := Translation.translation__messages_r.word__normal;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'OWNER' then
+      begin
+
+        Result := Translation.translation__messages_r.word__owner;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'PAGE SIZE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__page_size;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'READ ONLY' then
+      begin
+
+        Result := Translation.translation__messages_r.word__read__only;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'READ WRITE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__read__write;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'READING MODE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__reading_mode;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = '(RE)CREATION DATE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__re_creation_date;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'RESERVE SPACE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__reserve_space;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'SHUTDOWN MODE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__shutdown_mode;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'SINGLE-USER SHUTDOWN' then
+      begin
+
+        Result := Translation.translation__messages_r.word__single_user_shutdown;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'SQL DIALECT' then
+      begin
+
+        Result := Translation.translation__messages_r.word__sql_dialect;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'STALLED' then
+      begin
+
+        Result := Translation.translation__messages_r.word__stalled;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'THE DATABASE IS ONLINE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__the_database_is_online;
+        Exit;
+
+      end
+    else
+    if AnsiUpperCase( name_f ) = 'USE ALL SPACE' then
+      begin
+
+        Result := Translation.translation__messages_r.word__use_all_space;
+        Exit;
+
+      end
+    else
+      Result := name_f;
+
+  end;
+
 var
   i : integer;
 
@@ -123,37 +307,20 @@ begin
   if Metadata_StringGrid.Cells[ 0, 0 ] = '' then
     begin
 
-      Metadata_StringGrid.Cells[ 0, 0 ] := Translation.translation__messages_r.word__no_;
-      Metadata_StringGrid.Cells[ database__informations__column_number__attribute__name_c, 0 ] := Translation.translation__messages_r.word__attribute_name;
-        Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__name_c ] := 200;
-      Metadata_StringGrid.Cells[ database__informations__column_number__attribute__value_c, 0 ] := Translation.translation__messages_r.word__attribute_value;
-        Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__value_c ] := 500;
+      Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__name_c ] := 300;
+      Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__value_c ] := 500;
 
     end;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__dimf_g + System.IOUtils.TPath.DirectorySeparatorChar + database__informations__attributes_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__attributes_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__informations__attributes_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__attributes_list__file_name_c + ').' );
 
       zts :=
-        'select ''Default character set'' as ATTRIBUTE_NAME ' +
-        '     , RDB$DATABASE.RDB$CHARACTER_SET_NAME as ATTRIBUTE_VALUE ' +
-        'from RDB$DATABASE ' +
-        ' ' +
-        'union all ' +
-        ' ' +
-        'select ''Description'' as ATTRIBUTE_NAME ' +
-        '     , RDB$DATABASE.RDB$DESCRIPTION as ATTRIBUTE_VALUE ' +
-        'from RDB$DATABASE ' +
-        ' ' +
-        ' ' +
-        'union all ' +
-        ' ' +
-        ' ' +
         'select ''Backup state'' as ATTRIBUTE_NAME ' +
         '     , (case ' +
         '         MON$DATABASE.MON$BACKUP_STATE ' +
@@ -171,49 +338,43 @@ begin
         '       end) as ATTRIBUTE_VALUE ' +
         'from MON$DATABASE ' +
         ' ' +
-        'union all ' +
         ' ' +
         'select ''(Re)creation date'' as ATTRIBUTE_NAME ' +
         '     , MON$DATABASE.MON$CREATION_DATE as ATTRIBUTE_VALUE ' +
         'from MON$DATABASE ' +
         ' ' +
+        ' ' +
         'union all ' +
         ' ' +
-        'select ''Database name'' as ATTRIBUTE_NAME ' +
+        ' ' +
+        'select ''Database path or alias'' as ATTRIBUTE_NAME ' +
         '     , MON$DATABASE.MON$DATABASE_NAME as ATTRIBUTE_VALUE ' +
         'from MON$DATABASE ' +
         ' ' +
-        'union all ' +
-        ' ' +
-        'select ''Owner'' as ATTRIBUTE_NAME ' +
-        '     , MON$DATABASE.MON$OWNER as ATTRIBUTE_VALUE ' +
-        'from MON$DATABASE ' +
         ' ' +
         'union all ' +
         ' ' +
-        'select ''Page size'' as ATTRIBUTE_NAME ' +
-        '     , MON$DATABASE.MON$PAGE_SIZE as ATTRIBUTE_VALUE ' +
-        'from MON$DATABASE ' +
+        ' ' +
+        'select ''Default character set'' as ATTRIBUTE_NAME ' +
+        '     , RDB$DATABASE.RDB$CHARACTER_SET_NAME as ATTRIBUTE_VALUE ' +
+        'from RDB$DATABASE ' +
+        ' ' +
         ' ' +
         'union all ' +
         ' ' +
-        'select ''Read only'' as ATTRIBUTE_NAME ' +
-        '     , (case ' +
-        '         MON$DATABASE.MON$READ_ONLY ' +
-        '         when 0 then ' +
-        '           ''Read write'' ' +
         ' ' +
-        '         when 1 then ' +
-        '           ''Read only'' ' +
+        'select ''Description'' as ATTRIBUTE_NAME ' +
+        '     , RDB$DATABASE.RDB$DESCRIPTION as ATTRIBUTE_VALUE ' +
+        'from RDB$DATABASE ' +
         ' ' +
-        '         else ' +
-        '           MON$DATABASE.MON$READ_ONLY ' +
-        '       end) as ATTRIBUTE_VALUE ' +
-        'from MON$DATABASE ' +
         ' ' +
         'union all ' +
         ' ' +
-        'select ''Reserve space'' as ATTRIBUTE_NAME ' +
+        ' ' +
+        'union all ' +
+        ' ' +
+        ' ' +
+        'select ''Filling database pages'' as ATTRIBUTE_NAME ' +
         '     , (case ' +
         '         MON$DATABASE.MON$RESERVE_SPACE ' +
         '         when 0 then ' +
@@ -227,7 +388,43 @@ begin
         '       end) as ATTRIBUTE_VALUE ' +
         'from MON$DATABASE ' +
         ' ' +
+        ' ' +
         'union all ' +
+        ' ' +
+        ' ' +
+        'select ''Owner'' as ATTRIBUTE_NAME ' +
+        '     , MON$DATABASE.MON$OWNER as ATTRIBUTE_VALUE ' +
+        'from MON$DATABASE ' +
+        ' ' +
+        ' ' +
+        'union all ' +
+        ' ' +
+        ' ' +
+        'select ''Page size'' as ATTRIBUTE_NAME ' +
+        '     , MON$DATABASE.MON$PAGE_SIZE as ATTRIBUTE_VALUE ' +
+        'from MON$DATABASE ' +
+        ' ' +
+        ' ' +
+        'union all ' +
+        ' ' +
+        ' ' +
+        'select ''Reading mode'' as ATTRIBUTE_NAME ' +
+        '     , (case ' +
+        '         MON$DATABASE.MON$READ_ONLY ' +
+        '         when 0 then ' +
+        '           ''Read write'' ' +
+        ' ' +
+        '         when 1 then ' +
+        '           ''Read only'' ' +
+        ' ' +
+        '         else ' +
+        '           MON$DATABASE.MON$READ_ONLY ' +
+        '       end) as ATTRIBUTE_VALUE ' +
+        'from MON$DATABASE ' +
+        ' ' +
+        ' ' +
+        'union all ' +
+        ' ' +
         ' ' +
         'select ''Shutdown mode'' as ATTRIBUTE_NAME ' +
         '     , (case ' +
@@ -249,7 +446,9 @@ begin
         '       end) as ATTRIBUTE_VALUE ' +
         'from MON$DATABASE ' +
         ' ' +
+        ' ' +
         'union all ' +
+        ' ' +
         ' ' +
         'select ''SQL dialect'' as ATTRIBUTE_NAME ' +
         '     , MON$DATABASE.MON$SQL_DIALECT as ATTRIBUTE_VALUE ' +
@@ -332,12 +531,15 @@ begin
               // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
               Metadata_StringGrid.Cells[ 0, database_informations_sdbm.Query__Record_Number() ] := Trim(  FormatFloat( '### ### ### ### ### ### ##0', database_informations_sdbm.Query__Record_Number() )  );
-              Metadata_StringGrid.Cells[ database__informations__column_number__attribute__name_c, database_informations_sdbm.Query__Record_Number() ] := Trim(  database_informations_sdbm.Query__Field_By_Name( database__informations__column__attribute__name_c ).AsString  );
-              Metadata_StringGrid.Cells[ database__informations__column_number__attribute__value_c, database_informations_sdbm.Query__Record_Number() ] := Trim(  database_informations_sdbm.Query__Field_By_Name( database__informations__column__attribute__value_c ).AsString  );
+              Metadata_StringGrid.Cells[ database__informations__column_number__attribute__name_c, database_informations_sdbm.Query__Record_Number() ] := Translation__Apply__L(   Trim(  database_informations_sdbm.Query__Field_By_Name( database__informations__column__attribute__name_c ).AsString  )   );
+              Metadata_StringGrid.Cells[ database__informations__column_number__attribute__value_c, database_informations_sdbm.Query__Record_Number() ] := Translation__Apply__L(   Trim(  database_informations_sdbm.Query__Field_By_Name( database__informations__column__attribute__value_c ).AsString  )   );
 
               database_informations_sdbm.Query__Next();
 
             end;
+
+
+          Self.Translation__Apply__DIMF( Translation.tak_Grid );
 
         end;
 
@@ -347,12 +549,12 @@ begin
   if database_informations_sdbm.Query__Active() then
     database_informations_sdbm.Query__Close();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__dimf_g + System.IOUtils.TPath.DirectorySeparatorChar + database__informations__database__description__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__database__description__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__informations__database__description__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__database__description__file_name_c + ').' );
 
       zts :=
         'select RDB$DATABASE.RDB$DESCRIPTION as DESCRIPTION_VALUE ' +
@@ -436,20 +638,19 @@ procedure TDatabase__Informations_Modify_F_Frame.Key_Up_Common( Sender : TObject
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -471,7 +672,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__DIMF( Translation.tak_Self );
 
 end;
 
@@ -480,14 +681,14 @@ var
   zti : integer;
 begin
 
-  if    ( parent_supreme_tab_sheet <> nil )
-    and ( parent_supreme_tab_sheet is TTabSheet )
-    and ( parent_supreme_tab_sheet.Parent <> nil )
-    and ( parent_supreme_tab_sheet.Parent is TPageControl )
-    and ( TPageControl(parent_supreme_tab_sheet.Parent).PageCount > 1 ) then
+  if    ( parent_supreme_tab_sheet__dimf <> nil )
+    and ( parent_supreme_tab_sheet__dimf is TTabSheet )
+    and ( parent_supreme_tab_sheet__dimf.Parent <> nil )
+    and ( parent_supreme_tab_sheet__dimf.Parent is TPageControl )
+    and ( TPageControl(parent_supreme_tab_sheet__dimf.Parent).PageCount > 1 ) then
     begin
 
-      zti := TPageControl(parent_supreme_tab_sheet.Parent).ActivePageIndex;
+      zti := TPageControl(parent_supreme_tab_sheet__dimf.Parent).ActivePageIndex;
 
 
       if not prior_f then
@@ -497,7 +698,7 @@ begin
 
           inc( zti );
 
-          if zti > TPageControl(parent_supreme_tab_sheet.Parent).PageCount - 1 then
+          if zti > TPageControl(parent_supreme_tab_sheet__dimf.Parent).PageCount - 1 then
             zti := 0;
 
         end
@@ -509,20 +710,22 @@ begin
           dec( zti );
 
           if zti < 0 then
-            zti := TPageControl(parent_supreme_tab_sheet.Parent).PageCount - 1;
+            zti := TPageControl(parent_supreme_tab_sheet__dimf.Parent).PageCount - 1;
 
         end;
 
 
-      TPageControl(parent_supreme_tab_sheet.Parent).ActivePageIndex := zti;
+      TPageControl(parent_supreme_tab_sheet__dimf.Parent).ActivePageIndex := zti;
+
+
+      if Assigned( TPageControl(parent_supreme_tab_sheet__dimf.Parent).OnChange ) then
+        TPageControl(parent_supreme_tab_sheet__dimf.Parent).OnChange( nil );
 
     end;
 
 end;
 
 procedure TDatabase__Informations_Modify_F_Frame.Prepare__DIMF( const database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
-var
-  zts : string;
 begin
 
   Self.Name := '';
@@ -533,7 +736,7 @@ begin
 
   database_informations_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__DIMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
+  Self.Options_Set__DIMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
   Metadata_StringGrid.ColCount := 2;
@@ -547,6 +750,8 @@ end;
 function TDatabase__Informations_Modify_F_Frame.Quotation_Sign__DIMF() : string;
 begin
 
+  // Unused.
+
   if sql__quotation_sign__use__dimf_g then
     begin
 
@@ -555,6 +760,27 @@ begin
     end
   else
     Result := '';
+
+end;
+
+procedure TDatabase__Informations_Modify_F_Frame.Translation__Apply__DIMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All ] then
+    Self.Data_Open__DIMF() // Call Self.Translation__Apply__DIMF( Translation.tak_Grid );.
+  else
+    if tak_f in [ Translation.tak_Grid ] then
+      begin
+
+        Metadata_StringGrid.Cells[ 0, 0 ] := Translation.translation__messages_r.word__no_;
+        Metadata_StringGrid.Cells[ database__informations__column_number__attribute__name_c, 0 ] := Translation.translation__messages_r.word__attribute_name;
+        Metadata_StringGrid.Cells[ database__informations__column_number__attribute__value_c, 0 ] := Translation.translation__messages_r.word__attribute_value;
+
+      end;
 
 end;
 
@@ -569,7 +795,7 @@ begin
   row_number_copy := Metadata_StringGrid.Row;
 
 
-  Data_Open__DIMF();
+  Self.Data_Open__DIMF();
 
 
   if    ( col_number_copy > 0 )
@@ -738,12 +964,12 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__dimf_g + System.IOUtils.TPath.DirectorySeparatorChar + database__informations__sql__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__sql__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__informations__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__sql__description__set__file_name_c + ').' );
 
       zts :=
         'comment on database is ''' + description_value_l + ''' ';
@@ -803,12 +1029,12 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__dimf_g + System.IOUtils.TPath.DirectorySeparatorChar + database__informations__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + database__informations__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__dimf_g ) + database__informations__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on database is null ';
@@ -852,8 +1078,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -863,8 +1088,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Database_Description_Memo.SelectAll();
 
 end;

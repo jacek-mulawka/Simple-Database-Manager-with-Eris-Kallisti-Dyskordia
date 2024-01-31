@@ -38,8 +38,8 @@ type
     Open_Button: TButton;
     Sql__Next_Button: TButton;
     Sql__Prior_Button: TButton;
-    Csv_File__Data_Separator_Edit: TEdit;
-    Csv_File__Text_Qualifier_Edit: TEdit;
+    Csv__File__Data_Separator_Edit: TEdit;
+    Csv__File__Text_Qualifier_Edit: TEdit;
     Middle_Panel: TPanel;
     Sql_Text_Panel: TPanel;
     Sql_Text_Horizontal_Splitter: TSplitter;
@@ -86,6 +86,17 @@ type
     Query_Output_Save_Field_Format__Separator__Date_Time_Edit: TEdit;
     Sql_Text_SynEdit: TSynEdit;
     Sql_Text__SynCompletionProposal: TSynCompletionProposal;
+    Sql_ProgressBar: TProgressBar;
+    Data_Value_Format__Disabled_CheckBox: TCheckBox;
+    Comments_Delete_CheckBox: TCheckBox;
+    Text__File_GroupBox: TGroupBox;
+    Text__File__Buttons_Panel: TPanel;
+    Text__File__Encoding_ComboBox: TComboBox;
+    Text__File__Find_Button: TButton;
+    Text__File__Load_Button: TButton;
+    Text__File__Path_Edit: TEdit;
+    Text__File__Save_Button: TButton;
+    OpenDialog1: TOpenDialog;
 
     procedure Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 
@@ -114,9 +125,18 @@ type
     procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search_ButtonKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
+    procedure Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
+
     procedure Tab_Name__Set_ButtonClick( Sender: TObject );
     procedure Tab_Name_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Buttons_Panel__Hide_ButtonClick( Sender: TObject );
+
+    procedure File_Path_EditExit( Sender: TObject );
+
+    procedure Text__File__Find_ButtonClick( Sender: TObject );
+    procedure Text__File__Load_ButtonClick( Sender: TObject );
+    procedure Text__File__Save_ButtonClick( Sender: TObject );
+    procedure Text__FileKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
     procedure Sql_Text_MemoClick( Sender: TObject );
     procedure Sql_Text_MemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
@@ -145,6 +165,7 @@ type
     procedure Sql_Editor_DBGridTitleClick( Column: TColumn );
   private
     { Private declarations }
+    busy_g,
     queries_open_in_background_g,
     sql__quotation_sign__use__sef_g,
     sort__direction_ascending_g,
@@ -162,7 +183,9 @@ type
     code_completion__column_list__clear_symbol_g,
     code_completion__column_list__style_g,
     code_completion__table_list_style_g,
+    csv__file__name_saved_g,
     database_type__sef_g,
+    parent_caption_copy_g,
     sort__column_name_g,
     sql_editor__column_name_add_text__1_g,
     sql_editor__column_name_add_text__2_g,
@@ -170,7 +193,11 @@ type
     sql_editor__table_name_add_text__1_g,
     sql_editor__table_name_add_text__2_a_g,
     sql_editor__table_name_add_text__2_b_g,
-    sql__quotation_sign__sef_g
+    sql__quotation_sign__sef_g,
+    text__file_group_box_caption_copy_g,
+    text__file__name_saved_g,
+    text__file__path_copy_g,
+    text__file__text_copy_g
       : string;
 
     sql_editor__sql_special_word__execute_automatic_detection__list_g_t,
@@ -186,7 +213,11 @@ type
 
     procedure Busy_Notification_Set( const busy_f : boolean );
     procedure Caret_Position_Display();
-    procedure Columns_List_All();
+    function Close_Block_Check__SEF( var modal_result_f : TModalResult; const message_show_f : boolean = true ) : boolean;
+    procedure Column__Values__Distinct();
+    procedure Column__Values__Sum();
+    procedure Columns_List__All();
+    procedure Columns_List__Star( const shift_f : TShiftState );
     procedure Data_Preview();
     procedure Key_Down_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
     function Open_Execute( const command_execute_f : boolean; var history_text_f : string; command_execute_parameters_t_f : array of string ) : boolean; overload;
@@ -203,10 +234,11 @@ type
     procedure Transaction_Active_Notification_Set();
   public
     { Public declarations }
-    function Finish__SEF() : boolean;
+    function Finish__SEF( var modal_result_f : TModalResult ) : boolean;
     procedure Options_Set__SEF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__SEF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
     function Task_Running_Check__SEF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__SEF();
   end;
 
 const
@@ -215,6 +247,7 @@ const
   sql_editor__code_completion__table_list_style__file_name_c : string = 'Sql_Editor__Code_Completion__Table_List_Style.txt';
   sql_editor__column_name_add_text__1__file_name_c : string = 'Sql_Editor__Column_Name_Add_Text__1.txt';
   sql_editor__column_name_add_text__2__file_name_c : string = 'Sql_Editor__Column_Name_Add_Text__2.txt';
+  sql_editor__notification__sign__file_changed_c : string = '*';
   sql_editor__select_all_columns_text__file_name_c : string = 'Sql_Editor__Select_All_Columns_Text.txt';
   sql_editor__sql_special_word__execute_automatic_detection__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Execute_Automatic_Detection_List.txt';
   sql_editor__sql_special_word__transactions_automatic__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Transactions_Automatic_List.txt';
@@ -225,12 +258,12 @@ const
 implementation
 
 uses
-  System.IOUtils,
   System.StrUtils,
   System.Threading,
   Vcl.Clipbrd,
 
   Shared,
+  Text__Search_Replace__Prompt,
   Translation;
 
 {$R *.dfm}
@@ -238,13 +271,10 @@ uses
 procedure TSql_Editor_F_Frame.Busy_Notification_Set( const busy_f : boolean );
 begin
 
-  if    ( busy_f )
-    and (  Pos( Common.notification__sign__busy_c, Parent_Caption__Get() ) <= 0  ) then
-    Parent_Caption__Set( Parent_Caption__Get() + Common.notification__sign__busy_c )
-  else
-  if    ( not busy_f )
-    and (  Pos( Common.notification__sign__busy_c, Parent_Caption__Get() ) > 0  ) then
-    Parent_Caption__Set(  StringReplace( Parent_Caption__Get(), Common.notification__sign__busy_c, '', [ rfReplaceAll ] )  );
+  busy_g := busy_f;
+
+
+  Caret_Position_Display();
 
 
   if busy_f then
@@ -263,6 +293,8 @@ begin
 end;
 
 procedure TSql_Editor_F_Frame.Caret_Position_Display();
+var
+  zts : string;
 begin
 
   if    ( Data_Preview_DBMemo.Height > 1 )
@@ -272,12 +304,291 @@ begin
         ) then
     Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Data_Preview_DBMemo.CaretPos.Y + 1 )  ) + ' / ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Data_Preview_DBMemo.CaretPos.X + 1 )  ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Data_Preview_DBMemo.Lines.Text.Length )  )
   else
-    //Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.CaretPos.Y + 1 )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.CaretPos.X + 1 ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.Lines.Text.Length )  )   );
-    Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.CaretY )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.CaretX ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.Lines.Text.Length )  )   );
+    begin
+
+      //Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.CaretPos.Y + 1 )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.CaretPos.X + 1 ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.Lines.Text.Length )  )   );
+      Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.CaretY )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.CaretX ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.Lines.Text.Length )  )   );
+
+    end;
+
+
+
+  if busy_g then
+    zts := Common.notification__sign__busy_c
+  else
+    zts := '';
+
+
+  if Left_Panel.Width <= 1 then
+    zts := ' | ' + Caret_Position_Label.Caption + zts;
+
+
+  if    (  Trim( text__file__path_copy_g ) <> ''  )
+    and ( text__file__text_copy_g <> Sql_Text_SynEdit.Lines.Text ) then
+    begin
+
+      zts := zts + sql_editor__notification__sign__file_changed_c;
+
+
+      if Text__File_GroupBox.Caption <> text__file_group_box_caption_copy_g + Common.notification__sign__busy_c then
+        Text__File_GroupBox.Caption := text__file_group_box_caption_copy_g + Common.notification__sign__busy_c;
+
+    end
+  else
+    if Text__File_GroupBox.Caption <> text__file_group_box_caption_copy_g then
+      Text__File_GroupBox.Caption := text__file_group_box_caption_copy_g;
+
+
+  Parent_Caption__Set( parent_caption_copy_g + zts );
 
 end;
 
-procedure TSql_Editor_F_Frame.Columns_List_All();
+function TSql_Editor_F_Frame.Close_Block_Check__SEF( var modal_result_f : TModalResult; const message_show_f : boolean = true ) : boolean;
+begin
+
+  // Result = false - can close, true - should not close.
+
+  if   ( not Common.sql_editor__close_prompt )
+    or ( modal_result_f = mrYesToAll ) then
+    begin
+
+      Result := false;
+
+      Exit;
+
+    end;
+
+
+
+  if   (  Trim( Sql_Text_SynEdit.Lines.Text ) <> ''  )
+    //or (
+    //         (  Trim( text__file__path_copy_g ) <> ''  )
+    //     and ( text__file__text_copy_g <> Sql_Text_SynEdit.Lines.Text )
+    //   )
+    or (
+             ( sql_editor_sdbm <> nil )
+         and ( sql_editor_sdbm.Query__Active() )
+         and ( sql_editor_sdbm.Query__Record_Count() > 0 )
+       ) then
+    Result := true
+  else
+    Result := false;
+
+
+  if    ( Result )
+    and ( message_show_f ) then
+    begin
+
+      modal_result_f := Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.sql_editor_contains_data__continue_ );
+
+
+      if modal_result_f in [ mrYes, mrYesToAll ] then
+        Result := false;
+
+    end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Column__Values__Distinct();
+var
+  items_count_l : integer;
+
+  zts : string;
+begin
+
+  if Self.Task_Running_Check__SEF() then
+    Exit;
+
+
+  if   ( sql_editor_sdbm = nil )
+    or ( not sql_editor_sdbm.Query__Active() )
+    or ( sql_editor_sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      zts := Common.Column__Values__Distinct__Processing( sql_editor_sdbm, Sql_Editor_DBGrid, items_count_l, Sql_ProgressBar, true );
+
+
+      Sql_Editor_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(   Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':'   );
+      Log_Memo.Lines.AddStrings( zts );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      ShowMessage(  Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':' + #13 + zts   );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              zts := Common.Column__Values__Distinct__Processing( sql_editor_sdbm, Sql_Editor_DBGrid, items_count_l, Sql_ProgressBar );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      Sql_Editor_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(   Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':'   );
+                      Log_Memo.Lines.AddStrings( zts );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      ShowMessage(  Translation.translation__messages_r.items_count + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', items_count_l )  ) + ':' + #13 + zts   );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Column__Values__Sum();
+var
+  ztc : currency;
+
+  error_message_l : string;
+begin
+
+  if Self.Task_Running_Check__SEF() then
+    Exit;
+
+
+  if   ( sql_editor_sdbm = nil )
+    or ( not sql_editor_sdbm.Query__Active() )
+    or ( sql_editor_sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  //try
+  //  sql_editor_sdbm.Query__Field_By_Name( Sql_Editor_DBGrid.SelectedField.FieldName ).AsCurrency;
+  //except
+  //  on E : Exception do
+  //    begin
+  //
+  //      Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+  //      Exit;
+  //
+  //    end;
+  //end;
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      ztc := Common.Column__Values__Sum__Processing( sql_editor_sdbm, Sql_Editor_DBGrid, error_message_l, Sql_ProgressBar, true );
+
+
+      Sql_Editor_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      if Trim( error_message_l ) <> '' then
+        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              ztc := Common.Column__Values__Sum__Processing( sql_editor_sdbm, Sql_Editor_DBGrid, error_message_l, Sql_ProgressBar );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      Sql_Editor_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+                      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      if Trim( error_message_l ) <> '' then
+                        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Columns_List__All();
 var
   i : integer;
 begin
@@ -292,6 +603,19 @@ begin
         Columns_List_ListBoxDblClick( nil );
 
     end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Columns_List__Star( const shift_f : TShiftState );
+begin
+
+  Columns_List_ListBox.ItemIndex := 0;
+
+  Columns_List_ListBoxDblClick( nil );
+
+
+  if shift_f = [ ssCtrl ] then
+    Tables_List_ListBoxDblClick( nil );
 
 end;
 
@@ -318,10 +642,10 @@ begin
 
 end;
 
-function TSql_Editor_F_Frame.Finish__SEF() : boolean;
+function TSql_Editor_F_Frame.Finish__SEF( var modal_result_f : TModalResult ) : boolean;
 begin
 
-  if Task_Running_Check__SEF() then
+  if Self.Task_Running_Check__SEF() then
     begin
 
       Result := false;
@@ -330,7 +654,10 @@ begin
 
     end
   else
-    Result := true;
+    Result := not Close_Block_Check__SEF( modal_result_f );
+
+  if not Result then
+    Exit;
 
 
   Common.Text__Search_Replace__Syn_Edit__Set( nil, text__search_replace_form );
@@ -356,33 +683,53 @@ begin
 
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     Open_ButtonClick( Execute_Button )
   else
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Open_ButtonClick( Sender )
+  else
+  // L.
+  if    ( Key = 76 )
+    and ( Shift = [ ssCtrl ] ) then
+    Text__File__Load_ButtonClick( Sender )
   else
   // N.
   if    ( Key = 78 )
-    and ( ssCtrl in Shift ) then
-    Sql__Next_ButtonClick( Sender )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+
+      Sql__Next_ButtonClick( Sender );
+
+    end
+  else
+  // O.
+  if    ( Key = 79 )
+    and ( Shift = [ ssCtrl ] ) then
+    Text__File__Find_ButtonClick( Sender )
   else
   // P.
   if    ( Key = 80 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql__Prior_ButtonClick( Sender )
   else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Refresh_ButtonClick( Sender )
   else
   // S.
   if    ( Key = 83 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    Text__File__Save_ButtonClick( Sender )
+  else
+  // S.
+  if    ( Key = 83 )
+    and ( Shift = [ ssCtrl ] ) then
     Output_Save_ButtonClick( Sender );
 
 end;
@@ -391,20 +738,19 @@ procedure TSql_Editor_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; S
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -413,35 +759,131 @@ end;
 
 function TSql_Editor_F_Frame.Open_Execute( const command_execute_f : boolean; var history_text_f : string; command_execute_parameters_t_f : array of string ) : boolean;
 
-  function Sql__Command_Divide_By_Separator( const sql_text_f : string ) : integer;
+  function Sql__Command__Comments_Delete( sql_text_f : string ) : string;
   var
-    sql_text_separator_occurred_l : boolean;
+    sql__comment_occurred_l,
+    sql__text_separator_occurred_l
+      : boolean;
+
     i_l : integer;
   begin
 
-    sql_text_separator_occurred_l := false;
+    // Result is the sql command without comments.
 
-    for i_l := 1 to Length( sql_text_f ) do
-      if    ( not sql_text_separator_occurred_l )
-        and ( sql_text_f[ i_l ] = Common.sql__command_separator ) then
-        begin
+    Result := '';
 
-          // Sql separated command.
+    sql__comment_occurred_l := false;
+    sql__text_separator_occurred_l := false;
 
-          if Trim(   Copy(  sql_text_f, i_l + 1, Length( sql_text_f )  )   ) <> '' then
-            Result := i_l
-          else
-            Break; // Only one sql command with the separator at the end.
+    while Length( sql_text_f ) > 0 do
+      begin
+
+        if    ( not sql__text_separator_occurred_l )
+          and ( not sql__comment_occurred_l )
+          and (  Pos( Common.sql__comment__line, sql_text_f ) = 1  ) then
+          begin
+
+            i_l := Pos( #10, sql_text_f );
+
+            if Pos( #13, sql_text_f ) > i_l then
+              i_l := Pos( #13, sql_text_f );
+
+            if i_l > 0 then
+              Delete( sql_text_f, 1, i_l ) // Delete whole line.
+            else
+              Exit;
+
+          end
+        else
+        if Pos( Common.sql__text_separator, sql_text_f ) = 1 then
+          begin
+
+            sql__text_separator_occurred_l := not sql__text_separator_occurred_l;
+
+            Result := Result + Copy(  sql_text_f, 1, Length( Common.sql__text_separator )  );
+
+            Delete(  sql_text_f, 1, Length( Common.sql__text_separator )  );
+
+          end
+        else
+        if    ( not sql__text_separator_occurred_l )
+          and ( not sql__comment_occurred_l )
+          and (  Pos( Common.sql__comment__begin, sql_text_f ) = 1  ) then
+          begin
+
+            sql__comment_occurred_l := true;
+
+            Delete(  sql_text_f, 1, Length( Common.sql__comment__begin )  );
+
+          end
+        else
+        if    ( not sql__text_separator_occurred_l )
+          and ( sql__comment_occurred_l )
+          and (  Pos( Common.sql__comment__end, sql_text_f ) = 1  ) then
+          begin
+
+            sql__comment_occurred_l := false;
+
+            Delete(  sql_text_f, 1, Length( Common.sql__comment__end )  );
+
+          end
+        else
+          begin
+
+            if not sql__comment_occurred_l then
+              Result := Result + sql_text_f[ 1 ];
 
 
-          Exit;
+            Delete( sql_text_f, 1, 1 );
 
-        end
-      else
-        if sql_text_f[ i_l ] = Common.sql__text_separator then
-          sql_text_separator_occurred_l := not sql_text_separator_occurred_l;
+          end;
+
+      end;
+
+  end;
+
+  function Sql__Command__Divide_By_Separator( sql_text_f : string ) : integer;
+  var
+    sql_text_separator_occurred_l : boolean;
+
+    i_l : integer;
+  begin
+
+    // Result is the position of the separator.
 
     Result := -1; // Sql has only one command.
+
+    i_l := 0;
+    sql_text_separator_occurred_l := false;
+
+    while Length( sql_text_f ) > 0 do
+      begin
+
+        inc( i_l );
+
+        if    ( not sql_text_separator_occurred_l )
+          and (  Pos( Common.sql__command_separator, sql_text_f ) = 1  ) then
+          begin
+
+            // Sql separated command.
+
+            if Trim(   Copy(  sql_text_f, 2, Length( sql_text_f )  )   ) <> '' then
+              Result := i_l
+            else
+              Break; // Only one sql command with the separator at the end.
+
+
+            Exit;
+
+          end
+        else
+          if Pos( Common.sql__text_separator, sql_text_f ) = 1 then
+            sql_text_separator_occurred_l := not sql_text_separator_occurred_l;
+
+
+        Delete( sql_text_f, 1, 1 );
+
+      end;
 
   end;
 
@@ -474,7 +916,10 @@ begin
 
       sql_command_copy__for_history_text_l := sql_command_copy_l;
 
-      i := Sql__Command_Divide_By_Separator( sql_command_copy_l );
+      if Comments_Delete_CheckBox.Checked then
+        sql_command_copy_l := Sql__Command__Comments_Delete( sql_command_copy_l );
+
+      i := Sql__Command__Divide_By_Separator( sql_command_copy_l );
 
       if i <= 0 then
         begin
@@ -508,7 +953,7 @@ begin
           while i > 0 do
             begin
 
-              error_message_l := Copy( sql_command_copy_l, 1, i );
+              error_message_l := Copy( sql_command_copy_l, 1, i ); // Here temporarily as the sql command.
 
               Delete( sql_command_copy_l, 1, i );
 
@@ -528,7 +973,7 @@ begin
                 end;
 
 
-              i := Sql__Command_Divide_By_Separator( sql_command_copy_l );
+              i := Sql__Command__Divide_By_Separator( sql_command_copy_l );
 
             end;
 
@@ -569,35 +1014,131 @@ end;
 
 function TSql_Editor_F_Frame.Open_Execute( const command_execute_f : boolean; var history_text_f : string; command_execute_parameters_t_f : array of const ) : boolean;
 
-  function Sql__Command_Divide_By_Separator( const sql_text_f : string ) : integer;
+  function Sql__Command__Comments_Delete( sql_text_f : string ) : string;
   var
-    sql_text_separator_occurred_l : boolean;
+    sql__comment_occurred_l,
+    sql__text_separator_occurred_l
+      : boolean;
+
     i_l : integer;
   begin
 
-    sql_text_separator_occurred_l := false;
+    // Result is the sql command without comments.
 
-    for i_l := 1 to Length( sql_text_f ) do
-      if    ( not sql_text_separator_occurred_l )
-        and ( sql_text_f[ i_l ] = Common.sql__command_separator ) then
-        begin
+    Result := '';
 
-          // Sql separated command.
+    sql__comment_occurred_l := false;
+    sql__text_separator_occurred_l := false;
 
-          if Trim(   Copy(  sql_text_f, i_l + 1, Length( sql_text_f )  )   ) <> '' then
-            Result := i_l
-          else
-            Break; // Only one sql command with the separator at the end.
+    while Length( sql_text_f ) > 0 do
+      begin
+
+        if    ( not sql__text_separator_occurred_l )
+          and ( not sql__comment_occurred_l )
+          and (  Pos( Common.sql__comment__line, sql_text_f ) = 1  ) then
+          begin
+
+            i_l := Pos( #10, sql_text_f );
+
+            if Pos( #13, sql_text_f ) > i_l then
+              i_l := Pos( #13, sql_text_f );
+
+            if i_l > 0 then
+              Delete( sql_text_f, 1, i_l ) // Delete whole line.
+            else
+              Exit;
+
+          end
+        else
+        if Pos( Common.sql__text_separator, sql_text_f ) = 1 then
+          begin
+
+            sql__text_separator_occurred_l := not sql__text_separator_occurred_l;
+
+            Result := Result + Copy(  sql_text_f, 1, Length( Common.sql__text_separator )  );
+
+            Delete(  sql_text_f, 1, Length( Common.sql__text_separator )  );
+
+          end
+        else
+        if    ( not sql__text_separator_occurred_l )
+          and ( not sql__comment_occurred_l )
+          and (  Pos( Common.sql__comment__begin, sql_text_f ) = 1  ) then
+          begin
+
+            sql__comment_occurred_l := true;
+
+            Delete(  sql_text_f, 1, Length( Common.sql__comment__begin )  );
+
+          end
+        else
+        if    ( not sql__text_separator_occurred_l )
+          and ( sql__comment_occurred_l )
+          and (  Pos( Common.sql__comment__end, sql_text_f ) = 1  ) then
+          begin
+
+            sql__comment_occurred_l := false;
+
+            Delete(  sql_text_f, 1, Length( Common.sql__comment__end )  );
+
+          end
+        else
+          begin
+
+            if not sql__comment_occurred_l then
+              Result := Result + sql_text_f[ 1 ];
 
 
-          Exit;
+            Delete( sql_text_f, 1, 1 );
 
-        end
-      else
-        if sql_text_f[ i_l ] = Common.sql__text_separator then
-          sql_text_separator_occurred_l := not sql_text_separator_occurred_l;
+          end;
+
+      end;
+
+  end;
+
+  function Sql__Command__Divide_By_Separator( sql_text_f : string ) : integer;
+  var
+    sql_text_separator_occurred_l : boolean;
+
+    i_l : integer;
+  begin
+
+    // Result is the position of the separator.
 
     Result := -1; // Sql has only one command.
+
+    i_l := 0;
+    sql_text_separator_occurred_l := false;
+
+    while Length( sql_text_f ) > 0 do
+      begin
+
+        inc( i_l );
+
+        if    ( not sql_text_separator_occurred_l )
+          and (  Pos( Common.sql__command_separator, sql_text_f ) = 1  ) then
+          begin
+
+            // Sql separated command.
+
+            if Trim(   Copy(  sql_text_f, 2, Length( sql_text_f )  )   ) <> '' then
+              Result := i_l
+            else
+              Break; // Only one sql command with the separator at the end.
+
+
+            Exit;
+
+          end
+        else
+          if Pos( Common.sql__text_separator, sql_text_f ) = 1 then
+            sql_text_separator_occurred_l := not sql_text_separator_occurred_l;
+
+
+        Delete( sql_text_f, 1, 1 );
+
+      end;
 
   end;
 
@@ -632,7 +1173,10 @@ begin
 
       sql_command_copy__for_history_text_l := sql_command_copy_l;
 
-      i := Sql__Command_Divide_By_Separator( sql_command_copy_l );
+      if Comments_Delete_CheckBox.Checked then
+        sql_command_copy_l := Sql__Command__Comments_Delete( sql_command_copy_l );
+
+      i := Sql__Command__Divide_By_Separator( sql_command_copy_l );
 
       if i <= 0 then
         begin
@@ -666,7 +1210,7 @@ begin
           while i > 0 do
             begin
 
-              error_message_l := Copy( sql_command_copy_l, 1, i );
+              error_message_l := Copy( sql_command_copy_l, 1, i ); // Here temporarily as the sql command.
 
               Delete( sql_command_copy_l, 1, i );
 
@@ -686,7 +1230,7 @@ begin
                 end;
 
 
-              i := Sql__Command_Divide_By_Separator( sql_command_copy_l );
+              i := Sql__Command__Divide_By_Separator( sql_command_copy_l );
 
             end;
 
@@ -755,12 +1299,12 @@ begin
 
       Tables_List_ListBox.Items.Clear();
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.tables_list__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.tables_list__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.tables_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.tables_list__file_name_c + ').' );
 
           zts :=
             'select RDB$RELATIONS.RDB$RELATION_NAME as TABLE_NAME ' +
@@ -871,7 +1415,7 @@ begin
   Query_Active_Notification_Set();
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__SEF();
 
 end;
 
@@ -975,24 +1519,31 @@ begin
   Self.Name := '';
 
   code_completion__cursor_position_g := -1;
+  csv__file__name_saved_g := '';
   id_search__columns_list_g := -1;
   id_search__tablse_list_g := -1;
   database_type__sef_g := databases_r_f.database_type;
-  sql_editor_db_grid__selected_index_copy_g := 0;
+  busy_g := false;
   queries_open_in_background_g := queries_open_in_background_f;
   sort__column_name_g := '';
   sort__direction_ascending_g := true;
+  sql_editor_db_grid__selected_index_copy_g := 0;
   SetLength( sql_editor__sql_special_word__execute_automatic_detection__list_g_t, 0 );
   SetLength( sql_editor__sql_special_word__transactions_automatic__list_g_t, 0 );
   SetLength( sql_text_history_g_t, 0 );
   sql_text_history__index_current_g := -1;
   task_is_running_g := false;
+  text__file_group_box_caption_copy_g := '';
+  text__file__name_saved_g := '';
+  text__file__path_copy_g := '';
+  text__file__text_copy_g := '';
   text__search_replace_form := nil;
   transactions_count_g := 0;
 
 
-  Csv_File__Data_Separator_Edit.Text := Common.csv_file__data_separator;
-  Csv_File__Text_Qualifier_Edit.Text := Common.csv_file__text_qualifier;
+  Comments_Delete_CheckBox.Checked := Common.sql_editor__comments_delete;
+  Csv__File__Data_Separator_Edit.Text := Common.csv__file__data_separator;
+  Csv__File__Text_Qualifier_Edit.Text := Common.csv__file__text_qualifier;
   Data_Preview_DBMemo.Height := 1;
   Sql_Parameters_ScrollBox.Width := 1;
   Tables_List_ListBox.Height := Round( Tables_Columns_List_Panel.Height * 0.5 ) - Tables_List_Horizontal_Splitter.Height;
@@ -1014,13 +1565,13 @@ begin
   sql_editor_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
 
-  sql_editor__select_all_columns_text_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__select_all_columns_text__file_name_c  );
+  sql_editor__select_all_columns_text_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__select_all_columns_text__file_name_c  );
   sql_editor__select_all_columns_text_g := Newline_Characters_Delete( sql_editor__select_all_columns_text_g );
 
   if Trim( sql_editor__select_all_columns_text_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__select_all_columns_text__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__select_all_columns_text__file_name_c + ').' );
 
       sql_editor__select_all_columns_text_g := '*';
 
@@ -1029,19 +1580,20 @@ begin
   Log_Memo.Lines.Add( 'Select all columns text: ' + sql_editor__select_all_columns_text_g + '.' );
 
 
-  Options_Set__SEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, sql__quotation_sign__use_f );
+  parent_caption_copy_g := Parent_Caption__Get();
+  Tab_Name_Edit.Text := parent_caption_copy_g;
 
 
-  Tab_Name_Edit.Text := Parent_Caption__Get();
+  Self.Options_Set__SEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, sql__quotation_sign__use_f );
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__sql_special_word__execute_automatic_detection__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute_automatic_detection__file_name_c  );
 
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__sql_special_word__execute_automatic_detection__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute_automatic_detection__file_name_c + ').' );
 
       zts_1 :=
         'alter ' + #13 + #10 +
@@ -1092,13 +1644,13 @@ begin
     end;
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__sql_special_word__transactions_automatic__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__transactions_automatic__file_name_c  );
 
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__sql_special_word__transactions_automatic__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__transactions_automatic__file_name_c + ').' );
 
       zts_1 :=
         'delete from ' + #13 + #10 +
@@ -1140,13 +1692,13 @@ begin
     end;
 
 
-  code_completion__column_list__clear_symbol_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__code_completion__column_list__clear_symbol__file_name_c  );
+  code_completion__column_list__clear_symbol_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__code_completion__column_list__clear_symbol__file_name_c  );
   code_completion__column_list__clear_symbol_g := Newline_Characters_Delete( code_completion__column_list__clear_symbol_g );
 
   if Trim( code_completion__column_list__clear_symbol_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__code_completion__column_list__clear_symbol__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__code_completion__column_list__clear_symbol__file_name_c + ').' );
 
       code_completion__column_list__clear_symbol_g := 'column \';
 
@@ -1155,13 +1707,13 @@ begin
   Log_Memo.Lines.Add( 'Code completion column list clear symbol: ' + code_completion__column_list__clear_symbol_g + '.' );
 
 
-  code_completion__column_list__style_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__code_completion__column_list_style__file_name_c  );
+  code_completion__column_list__style_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__code_completion__column_list_style__file_name_c  );
   code_completion__column_list__style_g := Newline_Characters_Delete( code_completion__column_list__style_g );
 
   if Trim( code_completion__column_list__style_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__code_completion__column_list_style__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__code_completion__column_list_style__file_name_c + ').' );
 
       code_completion__column_list__style_g := '\color{$000456FF}' + Translation.translation__code_completion__column_c + ' \color{clWindowText}\column{}\style{+B}' + Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c + '\style{-B}';
 
@@ -1172,13 +1724,13 @@ begin
   Log_Memo.Lines.Add( 'Code completion column list style: ' + code_completion__column_list__style_g + '.' );
 
 
-  code_completion__table_list_style_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__code_completion__table_list_style__file_name_c  );
+  code_completion__table_list_style_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__code_completion__table_list_style__file_name_c  );
   code_completion__table_list_style_g := Newline_Characters_Delete( code_completion__table_list_style_g );
 
   if Trim( code_completion__table_list_style_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__code_completion__table_list_style__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__code_completion__table_list_style__file_name_c + ').' );
 
       code_completion__table_list_style_g := '\color{clHighlight}' + Translation.translation__code_completion__table_c + ' \color{clWindowText}\column{}\style{+B}' + Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c + '\style{-B}';
 
@@ -1189,12 +1741,12 @@ begin
   Log_Memo.Lines.Add( 'Code completion table list style: ' + code_completion__table_list_style_g + '.' );
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.sql_editor__code_completion_list__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.sql_editor__code_completion_list__file_name_c  );
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.sql_editor__code_completion_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.sql_editor__code_completion_list__file_name_c + ').' );
 
 
       zts_1 := Common.sql_editor__code_completion_list_c;
@@ -1239,13 +1791,13 @@ begin
     end;
 
 
-  sql_editor__column_name_add_text__1_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__column_name_add_text__1__file_name_c  );
+  sql_editor__column_name_add_text__1_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__column_name_add_text__1__file_name_c  );
   sql_editor__column_name_add_text__1_g := Newline_Characters_Delete( sql_editor__column_name_add_text__1_g );
 
   if Trim( sql_editor__column_name_add_text__1_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__column_name_add_text__1__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__column_name_add_text__1__file_name_c + ').' );
 
       sql_editor__column_name_add_text__1_g := 'select ';
 
@@ -1254,13 +1806,13 @@ begin
   Log_Memo.Lines.Add( 'Column name add text 1: ' + sql_editor__column_name_add_text__1_g + '.' );
 
 
-  sql_editor__column_name_add_text__2_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__column_name_add_text__2__file_name_c  );
+  sql_editor__column_name_add_text__2_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__column_name_add_text__2__file_name_c  );
   sql_editor__column_name_add_text__2_g := Newline_Characters_Delete( sql_editor__column_name_add_text__2_g );
 
   if Trim( sql_editor__column_name_add_text__2_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__column_name_add_text__2__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__column_name_add_text__2__file_name_c + ').' );
 
       sql_editor__column_name_add_text__2_g := '     , ';
 
@@ -1269,13 +1821,13 @@ begin
   Log_Memo.Lines.Add( 'Column name add text 2: ' + sql_editor__column_name_add_text__2_g + '.' );
 
 
-  sql_editor__table_name_add_text__1_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__table_name_add_text__1__file_name_c  );
+  sql_editor__table_name_add_text__1_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__table_name_add_text__1__file_name_c  );
   sql_editor__table_name_add_text__1_g := Newline_Characters_Delete( sql_editor__table_name_add_text__1_g );
 
   if Trim( sql_editor__table_name_add_text__1_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__table_name_add_text__1__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__table_name_add_text__1__file_name_c + ').' );
 
       sql_editor__table_name_add_text__1_g := 'from ';
 
@@ -1284,13 +1836,13 @@ begin
   Log_Memo.Lines.Add( 'Table name add text 1: ' + sql_editor__table_name_add_text__1_g + '.' );
 
 
-  sql_editor__table_name_add_text__2_a_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__table_name_add_text__2__a__file_name_c  );
+  sql_editor__table_name_add_text__2_a_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__table_name_add_text__2__a__file_name_c  );
   sql_editor__table_name_add_text__2_a_g := Newline_Characters_Delete( sql_editor__table_name_add_text__2_a_g );
 
   if Trim( sql_editor__table_name_add_text__2_a_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__table_name_add_text__2__a__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__table_name_add_text__2__a__file_name_c + ').' );
 
       sql_editor__table_name_add_text__2_a_g := 'left join ';
 
@@ -1299,13 +1851,13 @@ begin
   Log_Memo.Lines.Add( 'Table name add text 2 a: ' + sql_editor__table_name_add_text__2_a_g + '.' );
 
 
-  sql_editor__table_name_add_text__2_b_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + sql_editor__table_name_add_text__2__b__file_name_c  );
+  sql_editor__table_name_add_text__2_b_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__table_name_add_text__2__b__file_name_c  );
   sql_editor__table_name_add_text__2_b_g := Newline_Characters_Delete( sql_editor__table_name_add_text__2_b_g );
 
   if Trim( sql_editor__table_name_add_text__2_b_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + sql_editor__table_name_add_text__2__b__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__table_name_add_text__2__b__file_name_c + ').' );
 
       sql_editor__table_name_add_text__2_b_g := ' on  = ';
 
@@ -1314,8 +1866,7 @@ begin
   Log_Memo.Lines.Add( 'Table name add text 2 b: ' + sql_editor__table_name_add_text__2_b_g + '.' );
 
 
-  Sql_Text__SynCompletionProposal.NbLinesInWindow := Common.sql_editor__code_completion_window__default__lines_in_window;
-  Sql_Text__SynCompletionProposal.Width := Common.sql_editor__code_completion_window__default__width;
+  Common.Syn_Completion_Proposal__Parameters__Set( Sql_Text__SynCompletionProposal );
 
 
   Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
@@ -1323,11 +1874,13 @@ begin
   //Common.Font__Set( Sql_Text_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Sql_Text_SynEdit.Font, Common.sql_editor__font );
 
+  Common.Syn_Edit__Parameters__Set( Sql_Text_SynEdit );
+
 
   for zti_1 := 0 to Tables_List_ListBox.Items.Count - 1 do
     begin
 
-      Sql_Text__SynCompletionProposal.InsertList.Add( Quotation_Sign__SEF() + Tables_List_ListBox.Items[ zti_1 ] + Quotation_Sign__SEF() );
+      Sql_Text__SynCompletionProposal.InsertList.Add( Self.Quotation_Sign__SEF() + Tables_List_ListBox.Items[ zti_1 ] + Self.Quotation_Sign__SEF() );
       Sql_Text__SynCompletionProposal.ItemList.Add(  StringReplace( code_completion__table_list_style_g, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Tables_List_ListBox.Items[ zti_1 ], [ rfReplaceAll ] )  );
 
     end;
@@ -1442,14 +1995,13 @@ begin
 
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     Open_ButtonClick( Execute_Button )
   else
   // E.
   if   (
              ( Key = 69 )
-         and ( ssCtrl in Shift )
+         and ( Shift = [ ssCtrl ] )
        )
     or ( Key = VK_RETURN ) then
     Open_ButtonClick( Sender );
@@ -1472,6 +2024,8 @@ var
   zti : integer;
   zts : string;
 begin
+
+  // Unused.
 
   if    ( Sender <> nil )
     and ( Sender is TMenuItem ) then
@@ -1536,10 +2090,25 @@ begin
 
 end;
 
+procedure TSql_Editor_F_Frame.Translation__Apply__SEF();
+begin
+
+  Translation.Translation__Apply( Self );
+
+
+  text__file_group_box_caption_copy_g := Text__File_GroupBox.Caption;
+
+  OpenDialog1.Filter := Translation.translation__messages_r.text_files + '|*' + Common.txt__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+
+
+  Caret_Position_Display();
+
+end;
+
 procedure TSql_Editor_F_Frame.Sql_Editor_Column_DBEditChange( Sender: TObject );
 begin
 
-  if Task_Running_Check__SEF( false ) then
+  if Self.Task_Running_Check__SEF( false ) then
     Exit;
 
 
@@ -1592,12 +2161,12 @@ begin
 
       Columns_List_ListBox.Items.Add( sql_editor__select_all_columns_text_g );
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__sef_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.table_columns_list__sql__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.table_columns_list__sql__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.table_columns_list__sql__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.table_columns_list__sql__file_name_c + ').' );
 
           zts := Common.table_columns_list__sql_c;
 
@@ -1685,7 +2254,7 @@ begin
         for i := 1 to Columns_List_ListBox.Items.Count - 1 do
           begin
 
-            Sql_Text__SynCompletionProposal.InsertList.Add( Quotation_Sign__SEF() + Columns_List_ListBox.Items[ i ] + Quotation_Sign__SEF() );
+            Sql_Text__SynCompletionProposal.InsertList.Add( Self.Quotation_Sign__SEF() + Columns_List_ListBox.Items[ i ] + Self.Quotation_Sign__SEF() );
             Sql_Text__SynCompletionProposal.ItemList.Add(  StringReplace( code_completion__column_list__style_g, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Columns_List_ListBox.Items[ i ], [ rfReplaceAll ] )  );
 
           end;
@@ -1713,7 +2282,7 @@ begin
   zt_strings := Sql_Text_SynEdit.Lines;
 
 
-  zts := Quotation_Sign__SEF() + Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ] + Quotation_Sign__SEF();
+  zts := Self.Quotation_Sign__SEF() + Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ] + Self.Quotation_Sign__SEF();
 
   if Pos(   AnsiLowerCase(  Trim( sql_editor__table_name_add_text__1_g )  ), AnsiLowerCase( zt_strings.Text )   ) <= 0 then
     zts := sql_editor__table_name_add_text__1_g + zts
@@ -1770,7 +2339,7 @@ begin
 
 
   if Columns_List_ListBox.Items[ Columns_List_ListBox.ItemIndex ] <> sql_editor__select_all_columns_text_g then
-    zts := Quotation_Sign__SEF() + Columns_List_ListBox.Items[ Columns_List_ListBox.ItemIndex ] + Quotation_Sign__SEF()
+    zts := Self.Quotation_Sign__SEF() + Columns_List_ListBox.Items[ Columns_List_ListBox.ItemIndex ] + Self.Quotation_Sign__SEF()
   else
     zts := Columns_List_ListBox.Items[ Columns_List_ListBox.ItemIndex ];
 
@@ -1778,7 +2347,7 @@ begin
   if    ( Tables_List_ListBox.Items.Count > 0 )
     and ( Tables_List_ListBox.ItemIndex >= 0 )
     and ( Tables_List_ListBox.ItemIndex < Tables_List_ListBox.Items.Count ) then
-    zts := Quotation_Sign__SEF() + Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ] + Quotation_Sign__SEF() + Common.sql__names_separator + zts;
+    zts := Self.Quotation_Sign__SEF() + Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ] + Self.Quotation_Sign__SEF() + Common.sql__names_separator + zts;
 
 
   if   ( Sql_Text_SynEdit.SelText = Common.sql_editor__column_replace_sign_c )
@@ -1901,9 +2470,22 @@ end;
 procedure TSql_Editor_F_Frame.Tables_List_ListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if    (
+             (
+                   ( Key = VK_RETURN )
+               and ( Shift = [ ssCtrl ] )
+             )
+          or (
+                   ( Key = VK_SPACE )
+               and ( Shift = [ ssCtrl ] )
+             )
+        )
+    and ( Columns_List_ListBox.Items.Count > 0 ) then
+    Columns_List__Star( Shift )
+  else
   if    ( Key = VK_RETURN )
-    and ( Shift = [ ssCtrl ] ) then
-    Columns_List_All()
+    and ( Shift = [ ssShift ] ) then
+    Columns_List__All()
   else
   if Key = VK_RETURN then
     Tables_List_ListBoxDblClick( Sender )
@@ -1915,7 +2497,7 @@ begin
     and ( Tables_List_ListBox.ItemIndex >= 0 )
     and ( Tables_List_ListBox.ItemIndex < Tables_List_ListBox.Items.Count ) then
     try
-      Vcl.Clipbrd.Clipboard.AsText := Quotation_Sign__SEF() + Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ] + Quotation_Sign__SEF();
+      Vcl.Clipbrd.Clipboard.AsText := Self.Quotation_Sign__SEF() + Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ] + Self.Quotation_Sign__SEF();
     except
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
@@ -1923,8 +2505,8 @@ begin
   else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
-    Options_Set__SEF( sql_editor_sdbm.component_type__sdbm, sql__quotation_sign__sef_g, queries_open_in_background_g, sql__quotation_sign__use__sef_g )
+    and ( Shift = [ ssCtrl ] ) then
+    Self.Options_Set__SEF( sql_editor_sdbm.component_type__sdbm, sql__quotation_sign__sef_g, queries_open_in_background_g, sql__quotation_sign__use__sef_g )
   else
     Key_Down_Common( Sender, Key, Shift );
 
@@ -1938,7 +2520,7 @@ begin
 
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl ] ) then
-    Columns_List_All()
+    Columns_List__All()
   else
   if Key = VK_RETURN then
     Columns_List_ListBoxDblClick( Sender )
@@ -1950,7 +2532,7 @@ begin
     and ( Columns_List_ListBox.ItemIndex >= 0 )
     and ( Columns_List_ListBox.ItemIndex < Columns_List_ListBox.Items.Count ) then
     try
-      Vcl.Clipbrd.Clipboard.AsText := Quotation_Sign__SEF() + Columns_List_ListBox.Items[ Columns_List_ListBox.ItemIndex ] + Quotation_Sign__SEF();
+      Vcl.Clipbrd.Clipboard.AsText := Self.Quotation_Sign__SEF() + Columns_List_ListBox.Items[ Columns_List_ListBox.ItemIndex ] + Self.Quotation_Sign__SEF();
     except
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
@@ -1958,7 +2540,7 @@ begin
   else
   // R.
   if    ( Key = 82 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Tables_List_ListBoxClick( Sender )
   else
     Key_Down_Common( Sender, Key, Shift );
@@ -2013,10 +2595,7 @@ var
   k
     : integer;
 
-  zts,
-  history_text_l,
-  sql_command_copy_l
-    : string;
+  history_text_l : string;
 
   command_execute_parameters_t : array of string;
   //command_execute_parameters_var_rec_t : array of TVarRec; //????
@@ -2030,7 +2609,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__SEF() then
+  if Self.Task_Running_Check__SEF() then
     Exit;
 
 
@@ -2355,6 +2934,7 @@ begin
 
           Primary_Column_Find();
 
+          Data_Value_Format__Disabled_CheckBoxClick( Sender );
 
           Busy_Notification_Set( false );
 
@@ -2434,6 +3014,8 @@ begin
                           Primary_Column_Find();
 
 
+                          Data_Value_Format__Disabled_CheckBoxClick( Sender );
+
                           Sql_Editor_DBGrid.Repaint();
 
                           Busy_Notification_Set( false );
@@ -2466,7 +3048,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__SEF() then
+  if Self.Task_Running_Check__SEF() then
     Exit;
 
 
@@ -2502,7 +3084,7 @@ var
     : string;
 begin
 
-  if Task_Running_Check__SEF() then
+  if Self.Task_Running_Check__SEF() then
     Exit;
 
 
@@ -2615,16 +3197,16 @@ procedure TSql_Editor_F_Frame.Output_Save_ButtonClick( Sender: TObject );
       Result := StringReplace( Result, #13, '', [ rfReplaceAll ] );
 
 
-    if Pos( Csv_File__Text_Qualifier_Edit.Text, Result ) > 0 then
-      Result := StringReplace( Result, Csv_File__Text_Qualifier_Edit.Text, Csv_File__Text_Qualifier_Edit.Text + Csv_File__Text_Qualifier_Edit.Text, [ rfReplaceAll ] );
+    if Pos( Csv__File__Text_Qualifier_Edit.Text, Result ) > 0 then
+      Result := StringReplace( Result, Csv__File__Text_Qualifier_Edit.Text, Csv__File__Text_Qualifier_Edit.Text + Csv__File__Text_Qualifier_Edit.Text, [ rfReplaceAll ] );
 
 
-    if   (  Pos( Csv_File__Data_Separator_Edit.Text, Result ) > 0  )
-      or (  Pos( Csv_File__Text_Qualifier_Edit.Text, Result ) > 0  ) then
+    if   (  Pos( Csv__File__Data_Separator_Edit.Text, Result ) > 0  )
+      or (  Pos( Csv__File__Text_Qualifier_Edit.Text, Result ) > 0  ) then
       Result :=
-        Csv_File__Text_Qualifier_Edit.Text +
+        Csv__File__Text_Qualifier_Edit.Text +
         Result +
-        Csv_File__Text_Qualifier_Edit.Text;
+        Csv__File__Text_Qualifier_Edit.Text;
 
   end;
 
@@ -2715,12 +3297,20 @@ begin
     Exit;
 
 
-  if Trim( SaveDialog1.FileName ) = '' then
-    SaveDialog1.FileName := Tab_Name_Edit.Text + '.csv';
+  SaveDialog1.Filter := Translation.translation__messages_r.csv_files + '|*' + Common.csv__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+
+
+  if Trim( csv__file__name_saved_g ) = '' then
+    csv__file__name_saved_g := Tab_Name_Edit.Text + Common.csv__file__default_extension;
+
+  SaveDialog1.FileName := csv__file__name_saved_g;
 
 
   if SaveDialog1.Execute() then
     begin
+
+      csv__file__name_saved_g := SaveDialog1.FileName;
+
 
       sql_editor_sdbm.Query__Disable_Controls();
 
@@ -2735,7 +3325,7 @@ begin
         begin
 
           if i > 0 then
-            zts := zts + Csv_File__Data_Separator_Edit.Text;
+            zts := zts + Csv__File__Data_Separator_Edit.Text;
 
           zts := zts + Csv__Value_Prepare(  sql_editor_sdbm.Query__Fields( i ).FieldName  );
 
@@ -2756,7 +3346,7 @@ begin
             begin
 
               if i > 0 then
-                zts := zts + Csv_File__Data_Separator_Edit.Text;
+                zts := zts + Csv__File__Data_Separator_Edit.Text;
 
               zts := zts + Csv__Value_Prepare(   Csv__Value_Format(  sql_editor_sdbm.Query__Fields( i )  )   );
 
@@ -2914,7 +3504,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 1 then // Query output.
     begin
 
-      if Task_Running_Check__SEF() then
+      if Self.Task_Running_Check__SEF() then
         Exit;
 
 
@@ -2935,34 +3525,37 @@ begin
       if sql_editor_sdbm.Query__Locate( sort__column_name_g, Search_Edit.Text, locate_options ) then
         Search_Edit.Color := clWindow
       else
-        begin
+        if not Search__Partial_Key_CheckBox.Checked then
+          Search_Edit.Color := Common.color__red__light_c
+        else
+          begin
 
-          Search_Edit.Color := Common.color__red__light_c;
+            Search_Edit.Color := Common.color__red__light_c;
 
 
-          sql_editor_sdbm.Query__Disable_Controls();
+            sql_editor_sdbm.Query__Disable_Controls();
 
-          sql_editor_sdbm.Query__First();
+            sql_editor_sdbm.Query__First();
 
-          while not sql_editor_sdbm.Query__Eof do
-            begin
+            while not sql_editor_sdbm.Query__Eof do
+              begin
 
-              if Pos(   Common.Case_Insensitive_To_String( Search_Edit.Text, Search__Case_Insensitive_CheckBox.Checked ), Common.Case_Insensitive_To_String(  sql_editor_sdbm.Query__Field_By_Name( sort__column_name_g ).AsString, Search__Case_Insensitive_CheckBox.Checked  )   ) > 0 then
-                begin
+                if Pos(   Common.Case_Insensitive_To_String( Search_Edit.Text, Search__Case_Insensitive_CheckBox.Checked ), Common.Case_Insensitive_To_String(  sql_editor_sdbm.Query__Field_By_Name( sort__column_name_g ).AsString, Search__Case_Insensitive_CheckBox.Checked  )   ) > 0 then
+                  begin
 
-                  Search_Edit.Color := clWindow;
+                    Search_Edit.Color := clWindow;
 
-                  Break;
+                    Break;
 
-                end;
+                  end;
 
-              sql_editor_sdbm.Query__Next();
+                sql_editor_sdbm.Query__Next();
 
-            end;
+              end;
 
-          sql_editor_sdbm.Query__Enable_Controls();
+            sql_editor_sdbm.Query__Enable_Controls();
 
-        end;
+          end;
 
     end;
 
@@ -3011,7 +3604,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 1 then // Query output.
     begin
 
-      if Task_Running_Check__SEF() then
+      if Self.Task_Running_Check__SEF() then
         Exit;
 
 
@@ -3130,7 +3723,7 @@ begin
   if Search_In_RadioGroup.ItemIndex = 1 then // Query output.
     begin
 
-      if Task_Running_Check__SEF() then
+      if Self.Task_Running_Check__SEF() then
         Exit;
 
 
@@ -3209,20 +3802,37 @@ end;
 procedure TSql_Editor_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] )
+    and ( Search_In_RadioGroup.ItemIndex <> 1 ) // Query output.
+    and ( Columns_List_ListBox.Items.Count > 0 ) then
+    Columns_List__Star( Shift )
+  else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssShift ] )
+    and ( Search_In_RadioGroup.ItemIndex <> 1 ) then // Query output.
+    Columns_List__All()
+  else
   if Key = VK_RETURN then
-    if Search_In_RadioGroup.ItemIndex = 0 then // Columns list.
-      begin
+    begin
 
-        Columns_List_ListBoxDblClick( Sender );
+      if Search_In_RadioGroup.ItemIndex = 0 then // Columns list.
+        begin
 
-      end
-    else
-    if Search_In_RadioGroup.ItemIndex = 2 then // Tables list.
-      begin
+          Columns_List_ListBoxDblClick( Sender );
 
-        Tables_List_ListBoxDblClick( Sender );
+        end
+      else
+      if Search_In_RadioGroup.ItemIndex = 2 then // Tables list.
+        begin
 
-      end;
+          Tables_List_ListBoxDblClick( Sender );
+
+        end;
+
+    end
+  else
+    Key_Down_Common( Sender, Key, Shift );
 
 end;
 
@@ -3230,15 +3840,32 @@ procedure TSql_Editor_F_Frame.Search_ButtonKeyDown( Sender: TObject; var Key: Wo
 begin
 
   if    ( Key = VK_RETURN )
-    and ( Shift = [ ssCtrl ] ) then
-    Search_EditKeyDown( Sender, Key, Shift );
+    and ( Shift = [ ssShift ] ) then
+    Search_EditKeyDown( Sender, Key, Shift )
+  else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl ] )
+    and ( Columns_List_ListBox.Items.Count > 0 ) then
+    Columns_List__Star( Shift )
+  else
+    Key_Down_Common( Sender, Key, Shift );
+
+end;
+
+procedure TSql_Editor_F_Frame.Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
+begin
+
+  Common.Data_Value_Format__Set( sql_editor_sdbm, Log_Memo, Data_Value_Format__Disabled_CheckBox.Checked );
 
 end;
 
 procedure TSql_Editor_F_Frame.Tab_Name__Set_ButtonClick( Sender: TObject );
 begin
 
-  Parent_Caption__Set( Tab_Name_Edit.Text );
+  parent_caption_copy_g := Tab_Name_Edit.Text;
+
+
+  Caret_Position_Display();
 
 end;
 
@@ -3257,6 +3884,182 @@ begin
 
   Left_Panel.Width := 1;
 
+
+  Caret_Position_Display();
+
+end;
+
+procedure TSql_Editor_F_Frame.File_Path_EditExit( Sender: TObject );
+begin
+
+  if    ( Sender <> nil )
+    and ( Sender is TEdit )then
+    if    (  Trim( TEdit(Sender).Text ) <> ''  )
+      and (  not FileExists( TEdit(Sender).Text )  ) then
+      TEdit(Sender).Color := Common.color__red__light_c
+    else
+      TEdit(Sender).Color := clWindow;
+
+end;
+
+procedure TSql_Editor_F_Frame.Text__File__Find_ButtonClick( Sender: TObject );
+begin
+
+  if Trim( Text__File__Path_Edit.Text ) <> '' then
+    begin
+
+      OpenDialog1.InitialDir := ExtractFilePath( Text__File__Path_Edit.Text );
+
+      OpenDialog1.FileName := ExtractFileName( Text__File__Path_Edit.Text )
+
+    end;
+
+
+  if OpenDialog1.Execute() then
+    Text__File__Path_Edit.Text := OpenDialog1.FileName;
+
+
+  File_Path_EditExit( Text__File__Path_Edit );
+
+end;
+
+procedure TSql_Editor_F_Frame.Text__File__Load_ButtonClick( Sender: TObject );
+begin
+
+  if Trim( Text__File__Path_Edit.Text ) = '' then
+    begin
+
+      Text__File__Find_ButtonClick( Sender );
+
+
+      if Trim( Text__File__Path_Edit.Text ) = '' then
+        Exit;
+
+    end;
+
+
+  if not FileExists( Text__File__Path_Edit.Text ) then
+    begin
+
+      Application.MessageBox( PChar(Translation.translation__messages_r.file_not_found + ':' + #13 + #13 + Text__File__Path_Edit.Text + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+      Exit;
+
+    end;
+
+
+  if    (  Trim( text__file__path_copy_g ) <> ''  )
+    and ( text__file__text_copy_g <> Sql_Text_SynEdit.Lines.Text )
+    and (  Application.MessageBox( PChar(Translation.translation__messages_r.file_changed_ + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) = IDNO  ) then
+    Exit;
+
+
+  Sql_Text_SynEdit.Lines.LoadFromFile( Text__File__Path_Edit.Text );
+
+  text__file__path_copy_g := Text__File__Path_Edit.Text;
+  text__file__text_copy_g := Sql_Text_SynEdit.Lines.Text;
+
+
+  Caret_Position_Display();
+
+end;
+
+procedure TSql_Editor_F_Frame.Text__File__Save_ButtonClick( Sender: TObject );
+var
+  text_file__path_copy_l : string;
+
+  zt_encoding : System.SysUtils.TEncoding;
+begin
+
+  text_file__path_copy_l := '';
+
+
+  if    ( text__file__path_copy_g = Text__File__Path_Edit.Text )
+    and (  FileExists( Text__File__Path_Edit.Text )  ) then
+    begin
+
+      text_file__path_copy_l := text__file__path_copy_g;
+
+    end
+  else
+    begin
+
+      SaveDialog1.Filter := Translation.translation__messages_r.text_files + '|*' + Common.txt__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+
+
+      if DirectoryExists(  ExtractFilePath( Text__File__Path_Edit.Text )  ) then
+        SaveDialog1.InitialDir := ExtractFilePath( Text__File__Path_Edit.Text )
+      else
+        Application.MessageBox(  PChar(Translation.translation__messages_r.directory_does_not_exist + ':' + #13 + #13 + ExtractFilePath( Text__File__Path_Edit.Text ) + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+
+
+      if Trim( text__file__name_saved_g ) = '' then
+        text__file__name_saved_g := Tab_Name_Edit.Text + Common.txt__file__default_extension;
+
+
+      if text__file__path_copy_g <> Text__File__Path_Edit.Text then
+        SaveDialog1.FileName := ExtractFileName( Text__File__Path_Edit.Text )
+      else
+        SaveDialog1.FileName := text__file__name_saved_g;
+
+
+      if SaveDialog1.Execute() then
+        text_file__path_copy_l := SaveDialog1.FileName;
+
+    end;
+
+
+  if Trim( text_file__path_copy_l ) <> '' then
+    begin
+
+      if Trim( Text__File__Encoding_ComboBox.Text ) <> '' then
+        begin
+
+          if Text__File__Encoding_ComboBox.Text = 'ANSI' then
+            zt_encoding := System.SysUtils.TEncoding.ANSI
+          else
+          if Text__File__Encoding_ComboBox.Text = 'Unicode' then
+            zt_encoding := System.SysUtils.TEncoding.Unicode
+          else
+          if Text__File__Encoding_ComboBox.Text = 'UTF8' then
+            zt_encoding := System.SysUtils.TEncoding.UTF8
+          else
+            zt_encoding := nil;
+
+        end
+      else
+        zt_encoding := nil;
+
+      if    (  Trim( Text__File__Encoding_ComboBox.Text ) <> ''  )
+        and ( zt_encoding <> nil ) then
+        begin
+
+          Sql_Text_SynEdit.Lines.SaveToFile( Text__File__Path_Edit.Text, zt_encoding );
+
+        end
+      else
+        Sql_Text_SynEdit.Lines.SaveToFile( Text__File__Path_Edit.Text );
+
+
+
+
+      text__file__name_saved_g := ExtractFileName( text_file__path_copy_l );
+      text__file__path_copy_g := text_file__path_copy_l;
+      text__file__text_copy_g := Sql_Text_SynEdit.Lines.Text;
+
+      Text__File__Path_Edit.Text := text_file__path_copy_l;
+
+
+      Caret_Position_Display();
+
+    end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Text__FileKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  Key_Down_Common( Sender, Key, Shift );
+
 end;
 
 procedure TSql_Editor_F_Frame.Sql_Text_MemoClick( Sender: TObject );
@@ -3270,7 +4073,7 @@ procedure TSql_Editor_F_Frame.Sql_Text_MemoKeyDown( Sender: TObject; var Key: Wo
 begin
 
   if    ( Key = VK_SPACE )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Sql_Text_PopupMenu.Popup( 0, 0 );
@@ -3281,8 +4084,7 @@ begin
   else
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Text_Memo.SelectAll()
   else
     Key_Down_Common( Sender, Key, Shift );
@@ -3302,7 +4104,7 @@ procedure TSql_Editor_F_Frame.Sql_Text_MemoMouseDown( Sender: TObject; Button: T
 begin
 
   if    ( Button = mbRight )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Text_PopupMenu.Popup( 0, 0 );
 
 end;
@@ -3328,41 +4130,7 @@ end;
 procedure TSql_Editor_F_Frame.Sql_Text_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( Sql_Text_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( Sql_Text_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( Sql_Text_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( Sql_Text_SynEdit );
-    end
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Sql_Text_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Sql_Text_SynEdit, text__search_replace_form, true );
+  Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift );
 
 
   Key_Down_Common( Sender, Key, Shift );
@@ -3377,6 +4145,8 @@ begin
   Common.Syn_Edit__Words_Highlight( Sql_Text_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
+
+  Key_Up_Common( Sender, Key, Shift );
 
 end;
 
@@ -3420,8 +4190,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -3458,6 +4227,19 @@ begin
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
     end
+  else
+  // D.
+  if    ( Key = 68 )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Column__Values__Distinct()
+  else
+  // S.
+  if    ( Key = 83 )
+    and ( Shift = [ ssShift ] ) then // Ctrl + S is for Output_Save_Button.
+    Column__Values__Sum()
   else
     Key_Down_Common( Sender, Key, Shift );
 

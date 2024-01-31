@@ -64,7 +64,7 @@ object Simple_Database_Manager_Form: TSimple_Database_Manager_Form
         OnClick = Databases__Add_MenuItemClick
       end
       object Databases__Edit_MenuItem: TMenuItem
-        Caption = 'Edit list [Space, Ctrl + Enter]'
+        Caption = 'Edit list [Spacebar, Ctrl + Enter]'
         ImageIndex = 1
         OnClick = Databases__Edit_MenuItemClick
       end
@@ -197,7 +197,7 @@ object Simple_Database_Manager_Form: TSimple_Database_Manager_Form
       OnClick = Databases__Add_MenuItemClick
     end
     object Databases__Edit_2_MenuItem: TMenuItem
-      Caption = 'Edit list [Space, Ctrl + Enter]'
+      Caption = 'Edit list [Spacebar, Ctrl + Enter]'
       ImageIndex = 1
       OnClick = Databases__Edit_MenuItemClick
     end

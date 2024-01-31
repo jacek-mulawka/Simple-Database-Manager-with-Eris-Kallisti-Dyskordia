@@ -106,6 +106,7 @@ object Database__Informations_Modify_F_Frame: TDatabase__Informations_Modify_F_F
       ShowHint = True
       TabOrder = 0
       OnClick = Refresh_ButtonClick
+      OnKeyUp = Key_Up_Common
     end
     object Search_GroupBox: TGroupBox
       AlignWithMargins = True

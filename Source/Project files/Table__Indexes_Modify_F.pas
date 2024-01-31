@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -99,16 +100,17 @@ type
     procedure Finish__TIMF();
     procedure Options_Set__TIMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__TIMF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__TIMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
-  index__sql__description__drop__file_name_c : string = 'Table__Index__Description__Drop__sql.txt';
-  index__sql__description__set__file_name_c : string = 'Table__Index__Description__Set__sql.txt';
   indexes_list__file_name_c : string = 'Table__Indexes_List__sql.txt';
   indexes_list__parameter_additional__file_name_c : string = 'Table__Indexes__Parameter_Additional_List.txt';
   indexes_list__parameter_additional__name_c : string = 'PARAMETER_ADDITIONAL';
   indexes_list__column__column_name_c : string = 'COLUMN_NAME';
   indexes_list__column__index_name_c : string = 'INDEX_NAME';
+  indexes_list__sql__description__drop__file_name_c : string = 'Table__Index__Description__Drop__sql.txt';
+  indexes_list__sql__description__set__file_name_c : string = 'Table__Index__Description__Set__sql.txt';
   indexes_list__sql__index_create__file_name_c : string = 'Table__Index__Create__sql.txt';
   indexes_list__sql__index_drop__file_name_c : string = 'Table__Index__Drop__sql.txt';
   indexes_list__sql__default_name__index_prefix__file_name_c : string = 'Table__Index__Default_Name__Index_Prefix__sql.txt';
@@ -116,13 +118,11 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
   Vcl.ComCtrls,
 
   Shared,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
@@ -144,12 +144,12 @@ begin
 
   Screen.Cursor := crHourGlass;
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + indexes_list__sql__default_name__index_prefix__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__default_name__index_prefix__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + indexes_list__sql__default_name__index_prefix__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__default_name__index_prefix__file_name_c + ').' );
 
       word__default_name__index_prefix_g := 'IDX_';
 
@@ -170,12 +170,12 @@ begin
   if indexes_sdbm.Query__Active() then
     indexes_sdbm.Query__Close();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + indexes_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + indexes_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__file_name_c + ').' );
 
       zts :=
         //'select RDB$INDICES.RDB$INDEX_NAME as INDEX_NAME ' + // Single column indexes.
@@ -275,8 +275,6 @@ begin
         if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__column_name_c then
           begin
 
-            Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__columns;
-
             if Indexes_DBGrid.Columns.Items[ i ].Width > 500 then
               Indexes_DBGrid.Columns.Items[ i ].Width := 500;
 
@@ -284,8 +282,6 @@ begin
         else
         if Indexes_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
-
-            Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
 
             if Indexes_DBGrid.Columns.Items[ i ].Width > 500 then
               Indexes_DBGrid.Columns.Items[ i ].Width := 500;
@@ -295,8 +291,6 @@ begin
         if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__index_name_c then
           begin
 
-            Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__index__name;
-
             if Indexes_DBGrid.Columns.Items[ i ].Width < 300 then
               Indexes_DBGrid.Columns.Items[ i ].Width := 300;
 
@@ -304,15 +298,19 @@ begin
         else
           begin
 
-            Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Indexes_DBGrid.Columns.Items[ i ].Title.Caption );
-
             if Indexes_DBGrid.Columns.Items[ i ].Width > 200 then
               Indexes_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
 
 
-      Columns_List_Read( true );
+      Self.Translation__Apply__TIMF( Translation.tak_Grid );
+
+
+      Self.Columns_List_Read( true );
+
+
+      Common.Data_Value_Format__Set( indexes_sdbm, Log_Memo );
 
     end;
 
@@ -338,12 +336,12 @@ begin
   zt_sdbm := Common.TSDBM.Create( indexes_sdbm );
   zt_sdbm.Component_Type_Set( indexes_sdbm.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.table_columns_list__sql__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + Common.table_columns_list__sql__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.table_columns_list__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + Common.table_columns_list__sql__file_name_c + ').' );
 
       zts := Common.table_columns_list__sql_c;
 
@@ -489,20 +487,19 @@ procedure TTable__Indexes_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Ke
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -526,7 +523,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__TIMF( Translation.tak_Self );
 
 end;
 
@@ -593,18 +590,18 @@ begin
 
   indexes_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__TIMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
+  Self.Options_Set__TIMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
 
   Modify__Parameter_Additional_ComboBox.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + indexes_list__parameter_additional__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__parameter_additional__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + indexes_list__parameter_additional__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__parameter_additional__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -631,6 +628,30 @@ begin
     end
   else
     Result := '';
+
+end;
+
+procedure TTable__Indexes_Modify_F_Frame.Translation__Apply__TIMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Indexes_DBGrid.Columns.Count - 1 do
+      if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__column_name_c then
+        Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__columns
+      else
+      if Indexes_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+      if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__index_name_c then
+        Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__index__name
+      else
+        Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Indexes_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -779,7 +800,7 @@ begin
     or ( not indexes_sdbm.Query__Active() ) then
     begin
 
-      Data_Open__TIMF( true );
+      Self.Data_Open__TIMF( true );
 
       Exit;
 
@@ -806,7 +827,7 @@ begin
   indexes_sdbm.Query__Locate( indexes_list__column__index_name_c, primary_key_value_l, [ Data.DB.loCaseInsensitive ] );
 
 
-  Columns_List_Read();
+  Self.Columns_List_Read();
 
 end;
 
@@ -867,29 +888,29 @@ begin
     end;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + indexes_list__sql__index_create__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__index_create__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + indexes_list__sql__index_create__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__index_create__file_name_c + ').' );
 
       zts :=
         'create index ' +
-        Quotation_Sign__TIMF() + Modify__Name_Edit.Text + Quotation_Sign__TIMF() +
+        Self.Quotation_Sign__TIMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__TIMF() +
         ' on ' +
-        Quotation_Sign__TIMF() + table_name__timf_g + Quotation_Sign__TIMF() +
+        Self.Quotation_Sign__TIMF() + table_name__timf_g + Self.Quotation_Sign__TIMF() +
         ' ' +
-        Quotation_Sign__TIMF() + column_name_l + Quotation_Sign__TIMF() + ' ';
+        Self.Quotation_Sign__TIMF() + column_name_l + Self.Quotation_Sign__TIMF() + ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__column__column_name_c + Common.sql__word_replace_separator_c, Quotation_Sign__TIMF() + column_name_l + Quotation_Sign__TIMF(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__column__index_name_c + Common.sql__word_replace_separator_c, Quotation_Sign__TIMF() + Modify__Name_Edit.Text + Quotation_Sign__TIMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__column__column_name_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TIMF() + column_name_l + Self.Quotation_Sign__TIMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__column__index_name_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TIMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__TIMF(), [ rfReplaceAll ] );
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__parameter_additional__name_c + Common.sql__word_replace_separator_c, Modify__Parameter_Additional_ComboBox.Text, [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TIMF() + table_name__timf_g + Quotation_Sign__TIMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TIMF() + table_name__timf_g + Self.Quotation_Sign__TIMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -897,7 +918,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.add_index_on_columns__1 + ' ''' + Quotation_Sign__TIMF() + Modify__Name_Edit.Text + Quotation_Sign__TIMF() + ''' ' + Translation.translation__messages_r.add_index_on_columns__2 + ' ''' + Quotation_Sign__TIMF() + column_name_l + Quotation_Sign__TIMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.add_index_on_columns__1 + ' ''' + Self.Quotation_Sign__TIMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__TIMF() + ''' ' + Translation.translation__messages_r.add_index_on_columns__2 + ' ''' + Self.Quotation_Sign__TIMF() + column_name_l + Self.Quotation_Sign__TIMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -952,23 +973,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + indexes_list__sql__index_drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__index_drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + indexes_list__sql__index_drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__index_drop__file_name_c + ').' );
 
       zts :=
         'drop index ' +
-        Quotation_Sign__TIMF() + indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString + Quotation_Sign__TIMF() +
+        Self.Quotation_Sign__TIMF() + indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString + Self.Quotation_Sign__TIMF() +
         ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__column__index_name_c + Common.sql__word_replace_separator_c, Quotation_Sign__TIMF() + indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString + Quotation_Sign__TIMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + indexes_list__column__index_name_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TIMF() + indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString + Self.Quotation_Sign__TIMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -976,7 +997,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_index + ' ''' + Quotation_Sign__TIMF() + indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString + Quotation_Sign__TIMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_index + ' ''' + Self.Quotation_Sign__TIMF() + indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString + Self.Quotation_Sign__TIMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1064,18 +1085,17 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Columns_Name_CheckListBox.CheckAll( cbChecked, false, false )
   else
   // N.
   if    ( Key = 78 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Columns_Name_CheckListBox.CheckAll( cbUnchecked, false, false )
   else
   // I.
   if    ( Key = 73 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     for i := 0 to Modify__Columns_Name_CheckListBox.Items.Count - 1 do
       Modify__Columns_Name_CheckListBox.Checked[ i ] := not Modify__Columns_Name_CheckListBox.Checked[ i ];
 
@@ -1115,14 +1135,14 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  index_name_l := Quotation_Sign__TIMF() + Trim(  indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString  ) + Quotation_Sign__TIMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  index_name_l := Self.Quotation_Sign__TIMF() + Trim(  indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString  ) + Self.Quotation_Sign__TIMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + index__sql__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + index__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__description__set__file_name_c + ').' );
 
       zts :=
         'comment on index ' +
@@ -1188,14 +1208,14 @@ begin
     Exit;
 
 
-  index_name_l := Quotation_Sign__TIMF() + Trim(  indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString  ) + Quotation_Sign__TIMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  index_name_l := Self.Quotation_Sign__TIMF() + Trim(  indexes_sdbm.Query__Field_By_Name( indexes_list__column__index_name_c ).AsString  ) + Self.Quotation_Sign__TIMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__timf_g + System.IOUtils.TPath.DirectorySeparatorChar + index__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + index__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__timf_g ) + indexes_list__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on index ' +
@@ -1214,7 +1234,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_the_index_description + ' ''' + Quotation_Sign__TIMF() + index_name_l + Quotation_Sign__TIMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_the_index_description + ' ''' + Self.Quotation_Sign__TIMF() + index_name_l + Self.Quotation_Sign__TIMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1261,8 +1281,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

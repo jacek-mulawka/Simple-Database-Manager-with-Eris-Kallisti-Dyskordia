@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -110,15 +111,14 @@ type
     function Quotation_Sign__UMF() : string;
   public
     { Public declarations }
-    procedure Data_Open__UMF( const force_refresh_f : boolean = false );
+    procedure Data_Open__UMF();
     procedure Finish__UMF();
     procedure Options_Set__UMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__UMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__UMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
-  user_list__sql__description__drop__file_name_c : string = 'User__Description__Drop__sql.txt';
-  user_list__sql__description__set__file_name_c : string = 'User__Description__Set__sql.txt';
   users_list__file_name_c : string = 'Users_List__sql.txt';
   users_list__column__user__active_c : string = 'USER_ACTIVE';
   users_list__column__user__is_administrator_c : string = 'USER_IS_ADMINISTRATOR';
@@ -128,6 +128,8 @@ const
   //users_list__sql__active__file_name_c : string = 'User__Active__sql.txt';
   users_list__sql__administrator__grant__file_name_c : string = 'User__Administrator__Grant__sql.txt';
   users_list__sql__administrator__revoke__file_name_c : string = 'User__Administrator__Revoke__sql.txt';
+  users_list__sql__description__drop__file_name_c : string = 'User__Description__Drop__sql.txt';
+  users_list__sql__description__set__file_name_c : string = 'User__Description__Set__sql.txt';
   users_list__sql__name__first__file_name_c : string = 'User__Name__First__sql.txt';
   users_list__sql__name__last__file_name_c : string = 'User__Name__Last__sql.txt';
   users_list__sql__name__middle__file_name_c : string = 'User__Name__Middle__sql.txt';
@@ -139,16 +141,14 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
 
   Shared,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
-procedure TUsers_Modify_F_Frame.Data_Open__UMF( const force_refresh_f : boolean = false );
+procedure TUsers_Modify_F_Frame.Data_Open__UMF();
 var
   i : integer;
 
@@ -156,20 +156,16 @@ var
 begin
 
   if   ( users_sdbm = nil )
-    or ( users_sdbm.component_type__sdbm = Common.ct_none )
-    or (
-             ( not force_refresh_f )
-         and ( users_sdbm.Query__Active() )
-       ) then
+    or ( users_sdbm.component_type__sdbm = Common.ct_none ) then
     Exit;
 
 
-  //zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__active__file_name_c;
+  //zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__active__file_name_c;
   //
   //if not FileExists( zts ) then
   //  begin
   //
-  //    Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__active__file_name_c + ').' );
+  //    Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__active__file_name_c + ').' );
   //
   //    word__active_g := ' __USER_ACTIVE__ ';
   //
@@ -187,12 +183,12 @@ begin
   //Log_Memo.Lines.Add( 'Active: ' + word__active_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__administrator__grant__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__administrator__grant__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__administrator__grant__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__administrator__grant__file_name_c + ').' );
 
       word__administrator__grant_g := 'grant admin role ';
 
@@ -210,12 +206,12 @@ begin
   Log_Memo.Lines.Add( 'Administrator grant: ' + word__administrator__grant_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__administrator__revoke__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__administrator__revoke__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__administrator__revoke__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__administrator__revoke__file_name_c + ').' );
 
       word__administrator__revoke_g := 'revoke admin role ';
 
@@ -233,12 +229,12 @@ begin
   Log_Memo.Lines.Add( 'Administrator revoke: ' + word__administrator__revoke_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__name__first__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__name__first__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__name__first__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__name__first__file_name_c + ').' );
 
       word__name__first_g := 'firstname ''__USER__NAME__FIRST__'' ';
 
@@ -256,12 +252,12 @@ begin
   Log_Memo.Lines.Add( 'First name: ' + word__name__first_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__name__last__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__name__last__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__name__last__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__name__last__file_name_c + ').' );
 
       word__name__last_g := 'lastname ''__USER__NAME__LAST__'' ';
 
@@ -279,12 +275,12 @@ begin
   Log_Memo.Lines.Add( 'Last name: ' + word__name__last_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__name__middle__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__name__middle__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__name__middle__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__name__middle__file_name_c + ').' );
 
       word__name__middle_g := 'middlename ''__USER__NAME__MIDDLE__'' ';
 
@@ -302,12 +298,12 @@ begin
   Log_Memo.Lines.Add( 'Middle name: ' + word__name__middle_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__password__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__password__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__password__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__password__file_name_c + ').' );
 
       word__password_g := 'password ''__USER__PASSWORD__'' ';
 
@@ -325,12 +321,12 @@ begin
   Log_Memo.Lines.Add( 'Password: ' + word__password_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__user__alter__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__user__alter__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__user__alter__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__user__alter__file_name_c + ').' );
 
       word__user__alter_g := 'alter user ';
 
@@ -348,12 +344,12 @@ begin
   Log_Memo.Lines.Add( 'User alter: ' + word__user__alter_g + '.' );
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__user__create__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__user__create__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__user__create__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__user__create__file_name_c + ').' );
 
       word__user__create_g := 'create user ';
 
@@ -371,12 +367,12 @@ begin
   Log_Memo.Lines.Add( 'User create: ' + word__user__create_g + '.' );
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__file_name_c + ').' );
 
       zts :=
         'select SEC$USERS.SEC$USER_NAME as USER_NAME ' +
@@ -482,46 +478,27 @@ begin
 
 
       for i := 0 to Users_DBGrid.Columns.Count - 1 do
-        if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
-          Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__user_name
-        else
-        if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__first_c then
-          Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__first_name
-        else
-        if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__middle_c then
-          Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__middle_name
-        else
-        if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__last_c then
-          Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__last_name
-        else
-        if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__active_c then
-          Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__active
-        else
-        if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__is_administrator_c then
-          Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__administrator
-        else
-          begin
+        begin
 
-            if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
-              Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
+          if   ( Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value_c )
+            or ( Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c ) then
+            begin
+
+              if Users_DBGrid.Columns.Items[ i ].Width > 500 then
+                Users_DBGrid.Columns.Items[ i ].Width := 500;
+
+            end
+          else
+            if Users_DBGrid.Columns.Items[ i ].Width > 200 then
+              Users_DBGrid.Columns.Items[ i ].Width := 200;
+
+        end;
 
 
-            Users_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Users_DBGrid.Columns.Items[ i ].Title.Caption );
+      Self.Translation__Apply__UMF( Translation.tak_Grid );
 
 
-            if   ( Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value_c )
-              or ( Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c ) then
-              begin
-
-                if Users_DBGrid.Columns.Items[ i ].Width > 500 then
-                  Users_DBGrid.Columns.Items[ i ].Width := 500;
-
-              end
-            else
-              if Users_DBGrid.Columns.Items[ i ].Width > 200 then
-                Users_DBGrid.Columns.Items[ i ].Width := 200;
-
-          end;
+      Common.Data_Value_Format__Set( users_sdbm, Log_Memo );
 
     end;
 
@@ -565,7 +542,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__UMF( Translation.tak_Self );
 
 end;
 
@@ -581,10 +558,46 @@ begin
 
   users_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__UMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
+  Self.Options_Set__UMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+end;
+
+procedure TUsers_Modify_F_Frame.Translation__Apply__UMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Users_DBGrid.Columns.Count - 1 do
+      if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__user__name
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__first_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__first_name
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__middle_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__middle_name
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__last_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__last_name
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__active_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__active
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__is_administrator_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__administrator
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Users_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -849,7 +862,7 @@ begin
 
   zts :=
     word__user__create_g +
-    Quotation_Sign__UMF() + Modify__Name_Edit.Text + Quotation_Sign__UMF() + ' ' +
+    Self.Quotation_Sign__UMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__UMF() + ' ' +
     StringReplace( word__password_g, Common.sql__word_replace_separator_c + Common.name__user__password_c + Common.sql__word_replace_separator_c, Modify__Password_Edit.Text, [ rfReplaceAll ] );
 
   information_l := '';
@@ -917,7 +930,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.add_user + ' ''' + Quotation_Sign__UMF() + Modify__Name_Edit.Text + Quotation_Sign__UMF() + ''' ' + information_l + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.add_user + ' ''' + Self.Quotation_Sign__UMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__UMF() + ''' ' + information_l + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -980,7 +993,7 @@ begin
 
   zts :=
     word__user__alter_g +
-    Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Quotation_Sign__UMF() + ' ';
+    Self.Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Self.Quotation_Sign__UMF() + ' ';
 
   information_l := '';
 
@@ -1082,7 +1095,7 @@ begin
 
 
                                                                                                                              // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
-  if Application.MessageBox(  PChar(Translation.translation__messages_r.set_user_values__1 + ' ''' + Quotation_Sign__UMF() + Trim( users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString ) + Quotation_Sign__UMF() + ''' ' + Translation.translation__messages_r.set_user_values__2 + ' ' + information_l + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION  ) <> IDYES then
+  if Application.MessageBox(  PChar(Translation.translation__messages_r.set_user_values__1 + ' ''' + Self.Quotation_Sign__UMF() + Trim( users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString ) + Self.Quotation_Sign__UMF() + ''' ' + Translation.translation__messages_r.set_user_values__2 + ' ' + information_l + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION  ) <> IDYES then
     Exit;
 
 
@@ -1128,23 +1141,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + users_list__sql__user__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__user__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + users_list__sql__user__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__user__drop__file_name_c + ').' );
 
       zts :=
         'drop user ' +
-        Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Quotation_Sign__UMF() +
+        Self.Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Self.Quotation_Sign__UMF() +
         ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Quotation_Sign__UMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__user__name__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Self.Quotation_Sign__UMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -1152,7 +1165,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_user + ' ''' + Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Quotation_Sign__UMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_user + ' ''' + Self.Quotation_Sign__UMF() + users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString + Self.Quotation_Sign__UMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1221,15 +1234,15 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  user_name_l := Quotation_Sign__UMF() + Trim(  users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString  ) + Quotation_Sign__UMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  user_name_l := Self.Quotation_Sign__UMF() + Trim(  users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString  ) + Self.Quotation_Sign__UMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + user_list__sql__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + user_list__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__description__set__file_name_c + ').' );
 
       zts :=
         'comment on user ' +
@@ -1295,14 +1308,14 @@ begin
     Exit;
 
 
-  user_name_l := Quotation_Sign__UMF() + Trim(  users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString  ) + Quotation_Sign__UMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  user_name_l := Self.Quotation_Sign__UMF() + Trim(  users_sdbm.Query__Field_By_Name( Common.name__user__name__big_letters_c ).AsString  ) + Self.Quotation_Sign__UMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__umf_g + System.IOUtils.TPath.DirectorySeparatorChar + user_list__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + user_list__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__umf_g ) + users_list__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on user ' +
@@ -1368,8 +1381,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

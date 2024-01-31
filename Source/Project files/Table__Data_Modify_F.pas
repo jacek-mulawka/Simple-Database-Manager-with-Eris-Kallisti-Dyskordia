@@ -60,6 +60,8 @@ type
     Delete_Visible_Records_Button: TButton;
     Table_Column__Values_Distinct_Button: TButton;
     Editing_CheckBox: TCheckBox;
+    SaveDialog1: TSaveDialog;
+    Data_Value_Format__Disabled_CheckBox: TCheckBox;
 
     procedure Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 
@@ -89,6 +91,8 @@ type
     procedure Data_Filter__Add_ButtonClick( Sender: TObject );
     procedure Data_Filter__Deactivate__All_ButtonClick( Sender: TObject );
     procedure Data_Filter__Delete__All_ButtonClick( Sender: TObject );
+
+    procedure Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
 
     procedure Data_Preview_DBMemoChange( Sender: TObject );
     procedure Data_Preview_DBMemoClick( Sender: TObject );
@@ -131,14 +135,17 @@ type
 
     procedure Busy_Notification_Set( const busy_f : boolean );
     procedure Caret_Position_Display();
+    procedure Column__Values__Sum();
     procedure Data_Preview();
-    procedure Extract_Table_Data();
+    function Extract_Table_Data( const progres_show_f : boolean = false ) : string;
+    procedure Field_Name_Selected_From_Form_View__Set();
     procedure Form_View_Field__Free();
     procedure Free_All__Table_Column__Values_Distinct();
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Primary_Key_Find();
     procedure Query_Active_Notification_Set();
     function Quotation_Sign__TDMF() : string;
+    procedure Save_Table_Data_To_File( const table_data_f : string );
     procedure Table__Data_Filter__Free();
   public
     { Public declarations }
@@ -150,8 +157,10 @@ type
     function Finish__TDMF() : boolean;
     procedure Options_Set__TDMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__TDMF( const databases_r_f : Common.TDatabases_r; const table_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
-    function Table__Data_Modify_F__Data_Close__TDMF() : boolean;
+    function Table__Data_Modify_F__Data__Close__TDMF() : boolean;
+    procedure Table__Data_Modify_F__Data__Open_Refresh__TDMF();
     function Task_Running_Check__TDMF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__TDMF();
   end;
 
 const
@@ -164,7 +173,6 @@ const
 implementation
 
 uses
-  System.IOUtils,
   System.Threading,
   System.StrUtils,
   Vcl.Clipbrd,
@@ -231,6 +239,117 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.Column__Values__Sum();
+var
+  ztc : currency;
+
+  error_message_l : string;
+begin
+
+  if Self.Task_Running_Check__TDMF() then
+    Exit;
+
+
+  if   ( data__sdbm = nil )
+    or ( not data__sdbm.Query__Active() )
+    or ( data__sdbm.Query__Record_Count() <= 0 ) then
+    Exit;
+
+
+  //try
+  //  data__sdbm.Query__Field_By_Name( Sql_Editor_DBGrid.SelectedField.FieldName ).AsCurrency;
+  //except
+  //  on E : Exception do
+  //    begin
+  //
+  //      Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+  //      Exit;
+  //
+  //    end;
+  //end;
+
+
+  Field_Name_Selected_From_Form_View__Set();
+
+
+  if not queries_open_in_background_g then
+    begin
+
+      Screen.Cursor := crSQLWait;
+
+      Busy_Notification_Set( true );
+
+      Application.ProcessMessages();
+
+
+      ztc := Common.Column__Values__Sum__Processing( data__sdbm, Data_DBGrid, error_message_l, Data_ProgressBar, true );
+
+      if Grid_View_CheckBox.Checked then // Grid.
+        Data_DBGrid.SetFocus();
+
+
+      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+      Busy_Notification_Set( false );
+
+      Screen.Cursor := crDefault;
+
+
+      if Trim( error_message_l ) <> '' then
+        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+    end
+  else
+    begin
+
+      task_is_running_g := true;
+
+
+      Busy_Notification_Set( true );
+
+
+      System.Threading.TTask.Run
+        (
+          procedure
+            begin
+
+              ztc := Common.Column__Values__Sum__Processing( data__sdbm, Data_DBGrid, error_message_l, Data_ProgressBar );
+
+
+              TThread.Synchronize
+                (
+                  TThread.Current,
+                  procedure
+                    begin
+
+                      if Grid_View_CheckBox.Checked then // Grid.
+                        Data_DBGrid.SetFocus();
+
+
+                      Log_Memo.Lines.Add(  FloatToStr(  ztc )  );
+                      Log_Memo.Lines.Add(   Trim(  FormatFloat( '### ### ### ### ### ### ##0.##############', ztc )  )   );
+
+
+                      task_is_running_g := false;
+
+                      Busy_Notification_Set( false );
+
+
+                      if Trim( error_message_l ) <> '' then
+                        ShowMessage( Translation.translation__messages_r.failed_to_read_column_value_as_a_number + #13 + error_message_l + '.' );
+
+                    end
+                );
+
+            end
+        );
+
+    end;
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Data_Preview();
 begin
 
@@ -258,7 +377,7 @@ begin
 
 end;
 
-procedure TTable__Data_Modify_F_Frame.Extract_Table_Data();
+function TTable__Data_Modify_F_Frame.Extract_Table_Data( const progres_show_f : boolean = false ) : string;
 var
   i,
   progress_bar_step_distance
@@ -277,7 +396,8 @@ begin
   data__sdbm.Query__Disable_Controls();
 
 
-  Log_Memo.Lines.BeginUpdate();
+  //Log_Memo.Lines.BeginUpdate();
+  Result := '';
 
 
   if data__sdbm.component_type__sdbm = Common.TComponent_Type.ct_FireDAC then
@@ -290,22 +410,27 @@ begin
     end;
 
 
-  if data__sdbm.Query__Record_Count() <= 99 then
-    progress_bar_step_distance := 1
-  else
-  if data__sdbm.Query__Record_Count() <= 999 then
-    progress_bar_step_distance := 10
-  else
-  if data__sdbm.Query__Record_Count() <= 9999 then
-    progress_bar_step_distance := 100
-  else
-    progress_bar_step_distance := 1000;
+  if progres_show_f then
+    begin
+
+      if data__sdbm.Query__Record_Count() <= 99 then
+        progress_bar_step_distance := 1
+      else
+      if data__sdbm.Query__Record_Count() <= 999 then
+        progress_bar_step_distance := 10
+      else
+      if data__sdbm.Query__Record_Count() <= 9999 then
+        progress_bar_step_distance := 100
+      else
+        progress_bar_step_distance := 1000;
 
 
-  Data_ProgressBar.Position := 0;
-  Data_ProgressBar.Max := data__sdbm.Query__Record_Count();
-  Data_ProgressBar.Step := progress_bar_step_distance;
-  Data_ProgressBar.Visible := true;
+      Data_ProgressBar.Position := 0; // May case the application to freeze.
+      Data_ProgressBar.Max := data__sdbm.Query__Record_Count();
+      Data_ProgressBar.Step := progress_bar_step_distance;
+      Data_ProgressBar.Visible := true;
+
+    end;
 
 
   data__sdbm.Query__First();
@@ -315,12 +440,12 @@ begin
 
 
   {$region 'Files read.'}
-  insert_into_sql__a_l := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdmf_g + System.IOUtils.TPath.DirectorySeparatorChar + table__insert_into__a__file_name_c  );
+  insert_into_sql__a_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__a__file_name_c  );
 
   if Trim( insert_into_sql__a_l ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__insert_into__a__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__a__file_name_c + ').' );
 
       insert_into_sql__a_l := 'insert into ';
 
@@ -334,12 +459,12 @@ begin
     end;
 
 
-  insert_into_sql__b_l := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdmf_g + System.IOUtils.TPath.DirectorySeparatorChar + table__insert_into__b__file_name_c  );
+  insert_into_sql__b_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__b__file_name_c  );
 
   if Trim( insert_into_sql__b_l ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__insert_into__b__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__b__file_name_c + ').' );
 
       insert_into_sql__b_l := ' ) values ( ';
 
@@ -353,12 +478,12 @@ begin
     end;
 
 
-  insert_into_sql__c_l := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdmf_g + System.IOUtils.TPath.DirectorySeparatorChar + table__insert_into__c__file_name_c  );
+  insert_into_sql__c_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__c__file_name_c  );
 
   if Trim( insert_into_sql__c_l ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__insert_into__c__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__c__file_name_c + ').' );
 
       insert_into_sql__c_l := ', ';
 
@@ -372,12 +497,12 @@ begin
     end;
 
 
-  insert_into_sql__d_l := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdmf_g + System.IOUtils.TPath.DirectorySeparatorChar + table__insert_into__d__file_name_c  );
+  insert_into_sql__d_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__d__file_name_c  );
 
   if Trim( insert_into_sql__d_l ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__insert_into__d__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__insert_into__d__file_name_c + ').' );
 
       insert_into_sql__d_l := ' );';
 
@@ -393,7 +518,7 @@ begin
 
 
   insert_into_sql_l :=
-    insert_into_sql__a_l + Quotation_Sign__TDMF() + table_name__tdmf_g + Quotation_Sign__TDMF() + ' ( ';
+    insert_into_sql__a_l + Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF() + ' ( ';
 
 
   for i := 0 to data__sdbm.Query__Field_Count() - 1 do
@@ -404,7 +529,7 @@ begin
           insert_into_sql__c_l;
 
       insert_into_sql_l := insert_into_sql_l +
-        Quotation_Sign__TDMF() + data__sdbm.Query__Fields( i ).FieldName + Quotation_Sign__TDMF();
+        Self.Quotation_Sign__TDMF() + data__sdbm.Query__Fields( i ).FieldName + Self.Quotation_Sign__TDMF();
 
     end;
 
@@ -490,16 +615,28 @@ begin
         end;
 
 
-      Log_Memo.Lines.Add
-        (
-          insert_into_sql_l +
-          values_l +
-          insert_into_sql__d_l
-        );
+      //Log_Memo.Lines.Add
+      //  (
+      //    insert_into_sql_l +
+      //    values_l +
+      //    insert_into_sql__d_l
+      //  );
+      Result := Result +
+        insert_into_sql_l +
+        values_l +
+        insert_into_sql__d_l +
+        #13 + #10;
 
 
-      if data__sdbm.Query__Record_Number() mod progress_bar_step_distance = 0 then
-        Data_ProgressBar.StepIt();
+      if    ( progres_show_f )
+        and ( data__sdbm.Query__Record_Number() mod progress_bar_step_distance = 0 ) then
+        begin
+
+          Data_ProgressBar.StepIt();
+
+          Application.ProcessMessages();
+
+        end;
 
 
       data__sdbm.Query__Next();
@@ -507,22 +644,24 @@ begin
     end;
 
 
-  Data_ProgressBar.Position := Data_ProgressBar.Max;
+  if progres_show_f then
+    Data_ProgressBar.Position := Data_ProgressBar.Max;
 
 
   data__sdbm.Query__Enable_Controls();
 
 
-  Log_Memo.Lines.EndUpdate();
+  //Log_Memo.Lines.EndUpdate();
 
-  Data_ProgressBar.Visible := false;
+  if progres_show_f then
+    Data_ProgressBar.Visible := false;
 
 end;
 
 function TTable__Data_Modify_F_Frame.Finish__TDMF() : boolean;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     begin
 
       Result := false;
@@ -545,6 +684,25 @@ begin
   Form_View_Field__Free();
 
   Table__Data_Filter__Free();
+
+end;
+
+procedure TTable__Data_Modify_F_Frame.Field_Name_Selected_From_Form_View__Set();
+var
+  i : integer;
+begin
+
+  if    ( not Grid_View_CheckBox.Checked )
+    and (  Trim( field_name_selected_g ) <> ''  )
+    and ( Data_DBGrid.SelectedField.FieldName <> field_name_selected_g ) then
+    for i := 0 to Data_DBGrid.FieldCount - 1 do
+       if Data_DBGrid.Fields[ i ].FieldName = field_name_selected_g then
+         begin
+
+           Data_DBGrid.SelectedIndex := i;
+           Break;
+
+         end;
 
 end;
 
@@ -599,20 +757,19 @@ procedure TTable__Data_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key :
 begin
 
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     begin
 
-      Parent_Tab_Switch( true );
+      Self.Parent_Tab_Switch( true );
       Key := 0;
 
     end
   else
   if    ( Key = VK_TAB )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Parent_Tab_Switch();
+      Self.Parent_Tab_Switch();
       Key := 0;
 
     end;
@@ -639,7 +796,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__TDMF();
 
 
   Query_Active_Notification_Set();
@@ -715,7 +872,6 @@ begin
   Data_PageControl.ActivePage := Data_Filter_TabSheet;
   Data_PageControl.Height := 1;
 
-
   Log_Memo.Lines.Add( table_name__tdmf_g );
 
 
@@ -725,7 +881,7 @@ begin
 
   data__sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__TDMF( component_type_f, databases_r_f.sql__quotation_sign, additional_component_show_g, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
+  Self.Options_Set__TDMF( component_type_f, databases_r_f.sql__quotation_sign, additional_component_show_g, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
 
 
   editing_checkboxclick__block_g := true;
@@ -757,12 +913,12 @@ begin
   zt_sdbm := Common.TSDBM.Create( data__sdbm );
   zt_sdbm.Component_Type_Set( data__sdbm.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdmf_g + System.IOUtils.TPath.DirectorySeparatorChar + Common.primary_key__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + Common.primary_key__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.primary_key__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + Common.primary_key__file_name_c + ').' );
 
       zts :=
         'select RDB$INDEX_SEGMENTS.RDB$FIELD_NAME as PRIMARY_KEY_NAME ' +
@@ -910,6 +1066,37 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.Save_Table_Data_To_File( const table_data_f : string );
+var
+  zt_string_list : TStringList;
+begin
+
+  if   Trim( table_data_f ) = '' then
+    Exit;
+
+
+  if Trim( SaveDialog1.FileName ) = '' then
+    SaveDialog1.FileName := table_name__tdmf_g + '.txt';
+
+
+  if SaveDialog1.Execute() then
+    begin
+
+      zt_string_list := TStringList.Create();
+
+      zt_string_list.Add( table_data_f );
+
+      zt_string_list.SaveToFile( SaveDialog1.FileName, System.SysUtils.TEncoding.UTF8 );
+
+      FreeAndNil( zt_string_list );
+
+
+      Application.MessageBox( PChar(Translation.translation__messages_r.done), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
+
+    end;
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Table__Data_Filter__Free();
 var
   i : integer;
@@ -924,10 +1111,10 @@ begin
 
 end;
 
-function TTable__Data_Modify_F_Frame.Table__Data_Modify_F__Data_Close__TDMF() : boolean;
+function TTable__Data_Modify_F_Frame.Table__Data_Modify_F__Data__Close__TDMF() : boolean;
 begin
 
-  if Task_Running_Check__TDMF( false ) then
+  if Self.Task_Running_Check__TDMF( false ) then
     Result := false
   else
     begin
@@ -938,6 +1125,16 @@ begin
       Result := not data__sdbm.Query__Active();
 
     end;
+
+end;
+
+procedure TTable__Data_Modify_F_Frame.Table__Data_Modify_F__Data__Open_Refresh__TDMF();
+begin
+
+  if not data__sdbm.Query__Active() then
+    Open_Close_ButtonClick( nil )
+  else
+    Refresh_ButtonClick( nil );
 
 end;
 
@@ -968,10 +1165,25 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.Translation__Apply__TDMF();
+var
+  i : integer;
+begin
+
+  Translation.Translation__Apply( Self );
+
+  SaveDialog1.Filter := 'txt|*.txt|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+
+  for i := 0 to Data_Filter_ScrollBox.ControlCount - 1 do
+    if Data_Filter_ScrollBox.Controls[ i ].ClassType = Table__Data_Filter.TTable__Data_Filter then
+      Table__Data_Filter.TTable__Data_Filter(Data_Filter_ScrollBox.Controls[ i ]).Translation__Apply__TDF();
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Data_DBEditChange( Sender: TObject );
 begin
 
-  if Task_Running_Check__TDMF( false ) then
+  if Self.Task_Running_Check__TDMF( false ) then
     Exit;
 
 
@@ -992,7 +1204,7 @@ begin
     Exit;
 
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1002,21 +1214,21 @@ begin
   if not data__sdbm.Query__Active() then
     begin
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tdmf_g + System.IOUtils.TPath.DirectorySeparatorChar + table__select__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__select__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__select__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__select__file_name_c + ').' );
 
           zts :=
-            'select * from ' + Quotation_Sign__TDMF() + table_name__tdmf_g + Quotation_Sign__TDMF() + ' ';
+            'select * from ' + Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF() + ' ';
 
         end
       else
         begin
 
-          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TDMF() + table_name__tdmf_g + Quotation_Sign__TDMF(), [ rfReplaceAll ] );
+          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF(), [ rfReplaceAll ] );
 
         end;
 
@@ -1065,9 +1277,11 @@ begin
             data__sdbm.Query__Sort(  data__sort__column_name_g + Common.Sort_Direction_Symbol( data__sort__direction_ascending_g )  );
 
 
-          Busy_Notification_Set( false );
+          Data_Value_Format__Disabled_CheckBoxClick( Self );
 
           Grid_View_CheckBoxClick( Sender );
+
+          Busy_Notification_Set( false );
 
           Data_DBGrid.SelectedIndex := data_db_grid__selected_index_copy_g;
 
@@ -1133,6 +1347,8 @@ begin
                             data__sdbm.Query__Sort(  data__sort__column_name_g + Common.Sort_Direction_Symbol( data__sort__direction_ascending_g )  );
 
 
+                          Data_Value_Format__Disabled_CheckBoxClick( Self );
+
                           Data_DBGrid.Repaint();
 
                           Grid_View_CheckBoxClick( Sender );
@@ -1173,7 +1389,7 @@ var
     : string;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1278,7 +1494,7 @@ var
   fields_t : array of variant;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1315,9 +1531,13 @@ begin
 end;
 
 procedure TTable__Data_Modify_F_Frame.Extract_Table_Data_ButtonClick( Sender: TObject );
+var
+  zti : integer;
+
+  zts : string;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1337,7 +1557,17 @@ begin
       Application.ProcessMessages();
 
 
-      Extract_Table_Data();
+      zts := Extract_Table_Data( true );
+
+
+      zti := Application.MessageBox( PChar(Translation.translation__messages_r.save_table_data_to_file__no____display_in_log__), PChar(Translation.translation__messages_r.confirmation), MB_YESNOCANCEL + MB_DEFBUTTON1 + MB_ICONQUESTION );
+
+      if zti = ID_YES then
+        Save_Table_Data_To_File( zts )
+      else
+      if zti = ID_NO then
+        Log_Memo.Lines.Add( zts );
+
 
 
       Busy_Notification_Set( false );
@@ -1359,7 +1589,7 @@ begin
           procedure
             begin
 
-              Extract_Table_Data();
+              zts := Extract_Table_Data();
 
 
               TThread.Synchronize
@@ -1367,6 +1597,15 @@ begin
                   TThread.Current,
                   procedure
                     begin
+
+                      zti := Application.MessageBox( PChar(Translation.translation__messages_r.save_table_data_to_file__no____display_in_log__), PChar(Translation.translation__messages_r.confirmation), MB_YESNOCANCEL + MB_DEFBUTTON1 + MB_ICONQUESTION );
+
+                      if zti = ID_YES then
+                        Save_Table_Data_To_File( zts )
+                      else
+                      if zti = ID_NO then
+                        Log_Memo.Lines.Add( zts );
+
 
                       task_is_running_g := false;
 
@@ -1387,7 +1626,7 @@ var
   table_column__values_distinct_form_l : Table_Column__Values_Distinct.TTable_Column__Values_Distinct_Form;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1423,10 +1662,10 @@ begin
 
 end;
 
-procedure TTable__Data_Modify_F_Frame.Delete_Visible_Records_ButtonClick(Sender: TObject);
+procedure TTable__Data_Modify_F_Frame.Delete_Visible_Records_ButtonClick( Sender: TObject );
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1436,7 +1675,7 @@ begin
     Exit;
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_visible_records), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_visible_records_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -1528,7 +1767,7 @@ var
   locate_options : Data.DB.TLocateOptions;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1587,7 +1826,7 @@ end;
 procedure TTable__Data_Modify_F_Frame.Search__Next_ButtonClick( Sender: TObject );
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1630,7 +1869,7 @@ end;
 procedure TTable__Data_Modify_F_Frame.Search__Prior_ButtonClick( Sender: TObject );
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
@@ -1766,22 +2005,10 @@ end;
 
 procedure TTable__Data_Modify_F_Frame.Data_Filter__Add_ButtonClick( Sender: TObject );
 var
-  i : integer;
-
   zt_table__data_filter : Table__Data_Filter.TTable__Data_Filter;
 begin
 
-  if    ( not Grid_View_CheckBox.Checked )
-    and (  Trim( field_name_selected_g ) <> ''  )
-    and ( Data_DBGrid.SelectedField.FieldName <> field_name_selected_g ) then
-    for i := 0 to Data_DBGrid.FieldCount - 1 do
-       if Data_DBGrid.Fields[ i ].FieldName = field_name_selected_g then
-         begin
-
-           Data_DBGrid.SelectedIndex := i;
-           Break;
-
-         end;
+  Field_Name_Selected_From_Form_View__Set();
 
 
   zt_table__data_filter := Table__Data_Filter.TTable__Data_Filter.Create( Data_Filter_ScrollBox, database_type__tdmf_g, table_name__tdmf_g, sql__quotation_sign__tdmf_g, queries_open_in_background_g, Data_DBGrid.SelectedField, data__sdbm, Log_Memo );
@@ -1817,6 +2044,13 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
+begin
+
+  Common.Data_Value_Format__Set( data__sdbm, Log_Memo, Data_Value_Format__Disabled_CheckBox.Checked );
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Data_Preview_DBMemoChange( Sender: TObject );
 begin
 
@@ -1845,8 +2079,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -1861,7 +2094,7 @@ end;
 procedure TTable__Data_Modify_F_Frame.Data_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
 begin
 
-  if Task_Running_Check__TDMF( false ) then
+  if Self.Task_Running_Check__TDMF( false ) then
     Exit;
 
 
@@ -1870,25 +2103,39 @@ begin
 end;
 
 procedure TTable__Data_Modify_F_Frame.Data_DBGridKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+var
+  i : integer;
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 
+  // A.
+  if    ( Key = 65 )
+    and ( Shift = [ ssCtrl, ssShift ] )
+    and ( not Grid_View_CheckBox.Checked ) then // Form.
+    begin
+
+      for i := 0 to Data_ScrollBox.ControlCount - 1 do
+        if Data_ScrollBox.Controls[ i ].ClassType = Form_View_Field.TForm_View_Field then
+          Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).Align_Correct__FVF();
+    end
+  else
   if Key = VK_F5 then
-    Refresh_ButtonClick( Sender );
-
-
+    Refresh_ButtonClick( Sender )
+  else
   // D.
   if    ( Key = 68 )
-    and ( ssCtrl in Shift ) then
-    Table_Column__Values_Distinct_ButtonClick( Sender );
-
-
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Table_Column__Values_Distinct_ButtonClick( Sender )
+  else
   // F.
   if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Data_Filter__Add_ButtonClick( Sender );
@@ -1896,21 +2143,26 @@ begin
       if Data_PageControl.Height <= 1 then
         Data_PageControl.Height := 300;
 
-    end;
-
-
+    end
+  else
   // O.
   if    ( Key = 79 )
     and ( Shift = [ ssCtrl ] ) then
-    Open_Close_ButtonClick( Refresh_Button );
-
-
+    Open_Close_ButtonClick( Refresh_Button )
+  else
   // R.
   if    ( Key = 82 )
     and ( Shift = [ ssCtrl ] ) then
-    Refresh_ButtonClick( Refresh_Button );
-
-
+    Refresh_ButtonClick( Refresh_Button )
+  else
+  // S.
+  if    ( Key = 83 )
+    and (
+             ( Shift = [ ssCtrl ] )
+          or ( Shift = [ ssShift ] )
+        ) then
+    Column__Values__Sum()
+  else
   if Grid_View_CheckBox.Checked then
     // C.
     if    ( Key = 67 )
@@ -1939,7 +2191,7 @@ end;
 procedure TTable__Data_Modify_F_Frame.Data_DBGridTitleClick( Column: TColumn );
 begin
 
-  if Task_Running_Check__TDMF() then
+  if Self.Task_Running_Check__TDMF() then
     Exit;
 
 

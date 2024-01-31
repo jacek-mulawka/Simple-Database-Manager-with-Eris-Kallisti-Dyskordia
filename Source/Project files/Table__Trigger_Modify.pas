@@ -113,9 +113,7 @@ var
 implementation
 
 uses
-  System.IOUtils,
   System.StrUtils,
-  Vcl.Clipbrd,
 
   Shared,
   Translation;
@@ -202,12 +200,12 @@ begin
 
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + Common.trigger_modify__code_completion_list__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.trigger_modify__code_completion_list__file_name_c  );
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.trigger_modify__code_completion_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.trigger_modify__code_completion_list__file_name_c + ').' );
 
       zts_1 := Common.trigger_modify__code_completion_list_c
 
@@ -215,12 +213,12 @@ begin
 
   zts_1 := StringReplace( zts_1, Translation.translation__code_completion__trigger_c, Translation.translation__messages_r.code_completion__trigger, [ rfReplaceAll ] );
 
-  zts_2 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + Common.sql_editor__code_completion_list__file_name_c  );
+  zts_2 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.sql_editor__code_completion_list__file_name_c  );
 
   if Trim( zts_2 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.sql_editor__code_completion_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.sql_editor__code_completion_list__file_name_c + ').' );
 
 
       zts_2 := Common.sql_editor__code_completion_list_c;
@@ -262,12 +260,12 @@ begin
     end;
 
 
-  sql__recreate_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + table__trigger_modify__sql__trigger__recreate__file_name_c  );
+  sql__recreate_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__sql__trigger__recreate__file_name_c  );
 
   if Trim( sql__recreate_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__trigger_modify__sql__trigger__recreate__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__sql__trigger__recreate__file_name_c + ').' );
 
       sql__recreate_g :=
         'recreate trigger __TRIGGER_NAME__ for __TABLE_NAME__ ' +
@@ -288,12 +286,12 @@ begin
 
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + Common.trigger_modify__activity_list__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.trigger_modify__activity_list__file_name_c  );
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.trigger_modify__activity_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.trigger_modify__activity_list__file_name_c + ').' );
 
       zts_1 := Common.trigger_modify__activity_list_c;
 
@@ -306,12 +304,12 @@ begin
 
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + table__trigger_modify__events_list__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__events_list__file_name_c  );
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__trigger_modify__events_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__events_list__file_name_c + ').' );
 
       zts_1 :=
         'delete' + #13 + #10 +
@@ -327,12 +325,12 @@ begin
 
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + table__trigger_modify__types_list__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__types_list__file_name_c  );
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__trigger_modify__types_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__types_list__file_name_c + ').' );
 
       zts_1 :=
         'after' + #13 + #10 +
@@ -346,12 +344,12 @@ begin
     Trigger_Type_ComboBox.ItemIndex := 0;
 
 
-  zts_1 := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + table__trigger_modify__sql__or__file_name_c;
+  zts_1 := Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__sql__or__file_name_c;
 
   if not FileExists( zts_1 ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__trigger_modify__sql__or__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__sql__or__file_name_c + ').' );
 
       word__or_g := ' or ';
 
@@ -383,12 +381,12 @@ begin
       if trigger_modify_sdbm.Query__Active() then
         trigger_modify_sdbm.Query__Close();
 
-      zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + table__trigger_modify__sql__trigger__data__file_name_c  );
+      zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__sql__trigger__data__file_name_c  );
 
       if Trim( zts_1 ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table__trigger_modify__sql__trigger__data__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + table__trigger_modify__sql__trigger__data__file_name_c + ').' );
 
           zts_1 :=
             'select RDB$TRIGGERS.RDB$TRIGGER_NAME as TRIGGER_NAME ' +
@@ -679,14 +677,15 @@ begin
   Caret_Position_Display();
 
 
-  Trigger_Source__SynCompletionProposal.NbLinesInWindow := Common.sql_editor__code_completion_window__default__lines_in_window;
-  Trigger_Source__SynCompletionProposal.Width := Common.sql_editor__code_completion_window__default__width;
+  Common.Syn_Completion_Proposal__Parameters__Set( Trigger_Source__SynCompletionProposal );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Sql_Memo.Font, Common.sql_editor__font );
   //Common.Font__Set( Trigger_Source_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Trigger_Source_SynEdit.Font, Common.sql_editor__font );
+
+  Common.Syn_Edit__Parameters__Set( Trigger_Source_SynEdit );
 
 
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Trigger_Source_SynEdit );
@@ -793,8 +792,8 @@ begin
 
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + table__trigger_modify__events_c + Common.sql__word_replace_separator_c, events_list_l, [ rfReplaceAll ] );
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + table__trigger_modify__type_c + Common.sql__word_replace_separator_c, Trigger_Type_ComboBox.Text, [ rfReplaceAll ] );
-  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TTM() + table_name__ttm + Quotation_Sign__TTM(), [ rfReplaceAll ] );
-  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__name__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TTM() + Trigger_Name_Edit.Text + Quotation_Sign__TTM(), [ rfReplaceAll ] );
+  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TTM() + table_name__ttm + Self.Quotation_Sign__TTM(), [ rfReplaceAll ] );
+  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__name__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TTM() + Trigger_Name_Edit.Text + Self.Quotation_Sign__TTM(), [ rfReplaceAll ] );
   //zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__source_c + Common.sql__word_replace_separator_c, Trigger_Source_Memo.Lines.Text, [ rfReplaceAll ] );
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__source_c + Common.sql__word_replace_separator_c, Trigger_Source_SynEdit.Lines.Text, [ rfReplaceAll ] );
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.trigger_modify__activity_c + Common.sql__word_replace_separator_c, Trigger_Activity_ComboBox.Text, [ rfReplaceAll ] );
@@ -868,12 +867,12 @@ begin
 
   PageControl1.ActivePage := Log_TabSheet;
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__ttm + System.IOUtils.TPath.DirectorySeparatorChar + Common.trigger_modify__code_examples__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.trigger_modify__code_examples__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.trigger_modify__code_examples__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__ttm ) + Common.trigger_modify__code_examples__file_name_c + ').' );
 
       zts :=
         Translation.translation__messages_r.trigger_code_example + #13 + #10 +
@@ -897,18 +896,17 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Trigger_Events_CheckListBox.CheckAll( cbChecked, false, false )
   else
   // N.
   if    ( Key = 78 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Trigger_Events_CheckListBox.CheckAll( cbUnchecked, false, false )
   else
   // I.
   if    ( Key = 73 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     for i := 0 to Trigger_Events_CheckListBox.Items.Count - 1 do
       Trigger_Events_CheckListBox.Checked[ i ] := not Trigger_Events_CheckListBox.Checked[ i ];
 
@@ -919,8 +917,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -930,8 +927,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Memo.SelectAll();
 
 end;
@@ -947,23 +943,22 @@ procedure TTable__Trigger_Modify_Form.Trigger_Source_MemoKeyDown( Sender: TObjec
 begin
 
   if    ( Key = VK_ADD )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
      Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
   else
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Trigger_Source_Memo.SelectAll()
   else
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Execute_ButtonClick( Sender )
   else
   // P.
   if    ( Key = 80 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Prepare_ButtonClick( Sender );
 
 end;
@@ -996,55 +991,20 @@ end;
 procedure TTable__Trigger_Modify_Form.Trigger_Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( Trigger_Source_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( Trigger_Source_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  if    ( Key = VK_ADD )
-    and ( ssCtrl in Shift ) then
-     Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( Trigger_Source_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( Trigger_Source_SynEdit );
-    end
-  else
-  // E.
-  if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
-    Execute_ButtonClick( Sender )
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Trigger_Source_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Trigger_Source_SynEdit, text__search_replace_form, true )
-  else
-  // P.
-  if    ( Key = 80 )
-    and ( ssCtrl in Shift ) then
-    Sql_Prepare_ButtonClick( Sender );
+  if not Common.Syn_Edit_Key_Down( Trigger_Source_SynEdit, Sender, Key, Shift ) then
+    if    ( Key = VK_ADD )
+      and ( Shift = [ ssCtrl ] ) then
+       Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
+    else
+    // E.
+    if    ( Key = 69 )
+      and ( Shift = [ ssCtrl ] ) then
+      Execute_ButtonClick( Sender )
+    else
+    // P.
+    if    ( Key = 80 )
+      and ( Shift = [ ssCtrl ] ) then
+      Sql_Prepare_ButtonClick( Sender );
 
 end;
 

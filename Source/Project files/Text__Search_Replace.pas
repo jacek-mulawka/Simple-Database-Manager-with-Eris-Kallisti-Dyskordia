@@ -79,6 +79,7 @@ uses
 
   Common,
   Shared,
+  Text__Search_Replace__Prompt,
   Translation;
 
 {$R *.dfm}
@@ -165,8 +166,8 @@ begin
     Exit;
 
 
-  Replace_ComboBox.Items.SaveToFile(  ExtractFilePath( Application.ExeName ) + text__search_replace__history__replace__file_name_c, TEncoding.UTF8  );
-  Search_ComboBox.Items.SaveToFile(  ExtractFilePath( Application.ExeName ) + text__search_replace__history__search__file_name_c, TEncoding.UTF8  );
+  Replace_ComboBox.Items.SaveToFile(  ExtractFilePath( Application.ExeName ) + text__search_replace__history__replace__file_name_c, System.SysUtils.TEncoding.UTF8  );
+  Search_ComboBox.Items.SaveToFile(  ExtractFilePath( Application.ExeName ) + text__search_replace__history__search__file_name_c, System.SysUtils.TEncoding.UTF8  );
 
 end;
 
@@ -398,7 +399,7 @@ begin
 
           not_found_message_displayed_g := true;
 
-          Application.MessageBox( PChar(Translation.translation__messages_r.search_string_not_found__1  + ' ''' + Search_ComboBox.Text + ''' ' + Translation.translation__messages_r.search_string_not_found__2), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
+          Application.MessageBox( PChar(Translation.translation__messages_r.search_string_not_found__1 + ' ''' + Search_ComboBox.Text + ''' ' + Translation.translation__messages_r.search_string_not_found__2), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
 
         end
       else
@@ -406,7 +407,7 @@ begin
           begin
 
             if   ( first_search_g )
-              or (  Application.MessageBox( PChar(Translation.translation__messages_r.reset_search_from_the_end), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON1 + MB_ICONQUESTION ) = IDYES  ) then
+              or (  Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_end_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes  ) then
               begin
 
                 if not_found_message_displayed_g then
@@ -424,7 +425,7 @@ begin
           begin
 
             if   ( first_search_g )
-              or (  Application.MessageBox( PChar(Translation.translation__messages_r.reset_search_from_the_beginning), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON1 + MB_ICONQUESTION ) = IDYES  ) then
+              or (  Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_beginning_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes  ) then
               begin
 
                 if not_found_message_displayed_g then

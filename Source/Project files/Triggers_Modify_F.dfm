@@ -105,6 +105,7 @@ object Triggers_Modify_F_Frame: TTriggers_Modify_F_Frame
       ReadOnly = True
       TabOrder = 0
       OnChange = Trigger_Name_DBEditChange
+      OnKeyUp = Key_Up_Common
     end
     object Search_GroupBox: TGroupBox
       AlignWithMargins = True
@@ -411,6 +412,7 @@ object Triggers_Modify_F_Frame: TTriggers_Modify_F_Frame
         RightEdge = 255
         SelectedColor.Alpha = 0.400000005960464500
         TabWidth = 2
+        WantTabs = True
         OnReplaceText = Trigger_Source_SynEditReplaceText
       end
     end

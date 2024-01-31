@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -88,19 +89,20 @@ type
     function Quotation_Sign__RMF() : string;
   public
     { Public declarations }
-    procedure Data_Open__RMF( const force_refresh_f : boolean = false );
+    procedure Data_Open__RMF();
     procedure Finish__RMF();
     procedure Options_Set__RMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__RMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__RMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
-  role_list__sql__description__drop__file_name_c : string = 'Role__Description__Drop__sql.txt';
-  role_list__sql__description__set__file_name_c : string = 'Role__Description__Set__sql.txt';
   roles_list__file_name_c : string = 'Roles_List__sql.txt';
   roles_list__column__role_name__big_letter_c : string = 'ROLE_NAME';
   roles_list__privileges_list_c : string = 'PRIVILEGES_LIST';
   roles_list__privileges_list__file_name_c : string = 'Role__Permissions__Privileges_List.txt';
+  roles_list__sql__description__drop__file_name_c : string = 'Role__Description__Drop__sql.txt';
+  roles_list__sql__description__set__file_name_c : string = 'Role__Description__Set__sql.txt';
   roles_list__sql__role__alter__file_name_c : string = 'Role__Alter__sql.txt';
   roles_list__sql__role__alter__set_system_privileges_to__file_name_c : string = 'Role__Role__Alter__Set_System_Privileges_To__sql.txt';
   roles_list__sql__role__alter__drop_system_privileges__file_name_c : string = 'Role__Role__Alter__Drop_System_Privileges__sql.txt';
@@ -110,16 +112,14 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
 
   Shared,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
-procedure TRoles_Modify_F_Frame.Data_Open__RMF( const force_refresh_f : boolean = false );
+procedure TRoles_Modify_F_Frame.Data_Open__RMF();
 var
   i : integer;
 
@@ -127,20 +127,16 @@ var
 begin
 
   if   ( roles_sdbm = nil )
-    or ( roles_sdbm.component_type__sdbm = Common.ct_none )
-    or (
-             ( not force_refresh_f )
-         and ( roles_sdbm.Query__Active() )
-       ) then
+    or ( roles_sdbm.component_type__sdbm = Common.ct_none ) then
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__file_name_c + ').' );
 
       zts :=
         'select RDB$ROLES.RDB$ROLE_NAME as ROLE_NAME ' +
@@ -224,13 +220,8 @@ begin
 
 
       for i := 0 to Roles_DBGrid.Columns.Count - 1 do
-        if Roles_DBGrid.Columns.Items[ i ].FieldName = roles_list__column__role_name__big_letter_c then
-          Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__role_name
-        else
         if Roles_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
-
-            Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
 
             if Roles_DBGrid.Columns.Items[ i ].Width > 500 then
               Roles_DBGrid.Columns.Items[ i ].Width := 500;
@@ -239,13 +230,16 @@ begin
         else
           begin
 
-            Roles_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Roles_DBGrid.Columns.Items[ i ].Title.Caption );
-
-
             if Roles_DBGrid.Columns.Items[ i ].Width > 200 then
               Roles_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
+
+
+      Self.Translation__Apply__RMF( Translation.tak_Grid );
+
+
+      Common.Data_Value_Format__Set( roles_sdbm, Log_Memo );
 
     end;
 
@@ -289,7 +283,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__RMF( Translation.tak_Self );
 
 end;
 
@@ -307,15 +301,15 @@ begin
 
   roles_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__RMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
+  Self.Options_Set__RMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
 
 
-  sql__drop_system_privileges_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__sql__role__alter__drop_system_privileges__file_name_c  );
+  sql__drop_system_privileges_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__drop_system_privileges__file_name_c  );
 
   if Trim( sql__drop_system_privileges_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__sql__role__alter__drop_system_privileges__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__drop_system_privileges__file_name_c + ').' );
 
       sql__drop_system_privileges_g :=
         #13 + #10 +
@@ -333,12 +327,12 @@ begin
   Log_Memo.Lines.Add( 'Drop system privileges: ' + sql__drop_system_privileges_g + '.' );
 
 
-  sql__set_system_privileges_to_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__sql__role__alter__set_system_privileges_to__file_name_c  );
+  sql__set_system_privileges_to_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__set_system_privileges_to__file_name_c  );
 
   if Trim( sql__set_system_privileges_to_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__sql__role__alter__set_system_privileges_to__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__set_system_privileges_to__file_name_c + ').' );
 
       sql__set_system_privileges_to_g :=
         #13 + #10 +
@@ -358,12 +352,12 @@ begin
 
   Modify__Privileges_Name_CheckListBox.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__privileges_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__privileges_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__privileges_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__privileges_list__file_name_c + ').' );
 
       zts :=
         'DROP AUTO ADMIN MAPPING' + #13 + #10 +
@@ -401,6 +395,27 @@ begin
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+end;
+
+procedure TRoles_Modify_F_Frame.Translation__Apply__RMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Roles_DBGrid.Columns.Count - 1 do
+      if Roles_DBGrid.Columns.Items[ i ].FieldName = roles_list__column__role_name__big_letter_c then
+        Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__role_name
+      else
+      if Roles_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+        Roles_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Roles_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -627,16 +642,16 @@ begin
     privileges_list_l := sql__set_system_privileges_to_g + privileges_list_l;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__sql__role__create__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__create__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__sql__role__create__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__create__file_name_c + ').' );
 
       zts :=
         'create role ' +
-        Quotation_Sign__RMF() + Modify__Name_Edit.Text + Quotation_Sign__RMF() +
+        Self.Quotation_Sign__RMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__RMF() +
         privileges_list_l +
         ' ';
 
@@ -644,7 +659,7 @@ begin
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__RMF() + Modify__Name_Edit.Text + Quotation_Sign__RMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__RMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__RMF(), [ rfReplaceAll ] );
       zts := StringReplace(  zts, Common.sql__word_replace_separator_c + roles_list__privileges_list_c + Common.sql__word_replace_separator_c, privileges_list_l, [ rfReplaceAll ]  );
 
     end;
@@ -653,7 +668,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.add_role + ' ''' + Quotation_Sign__RMF() + Modify__Name_Edit.Text + Quotation_Sign__RMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.add_role + ' ''' + Self.Quotation_Sign__RMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__RMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -733,16 +748,16 @@ begin
     privileges_list_l := sql__set_system_privileges_to_g + privileges_list_l;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__sql__role__alter__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__sql__role__alter__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__file_name_c + ').' );
 
       zts :=
         'alter role ' +
-        Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF() +
+        Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF() +
         privileges_list_l +
         ' ';
 
@@ -750,7 +765,7 @@ begin
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF(), [ rfReplaceAll ] );
       zts := StringReplace(  zts, Common.sql__word_replace_separator_c + roles_list__privileges_list_c + Common.sql__word_replace_separator_c, privileges_list_l, [ rfReplaceAll ]  );
 
     end;
@@ -759,7 +774,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.set_role + ' ''' + Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF() + ''' privileges?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.set_role + ' ''' + Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF() + ''' privileges?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -805,16 +820,16 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__sql__role__alter__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__sql__role__alter__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__alter__file_name_c + ').' );
 
       zts :=
         'alter role ' +
-        Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF() +
+        Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF() +
         sql__drop_system_privileges_g +
         ' ';
 
@@ -822,7 +837,7 @@ begin
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF(), [ rfReplaceAll ] );
       zts := StringReplace(  zts, Common.sql__word_replace_separator_c + roles_list__privileges_list_c + Common.sql__word_replace_separator_c, sql__drop_system_privileges_g, [ rfReplaceAll ]  );
 
     end;
@@ -831,7 +846,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.drop_privileges_from_role + ' ''' + Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.drop_privileges_from_role + ' ''' + Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -876,23 +891,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + roles_list__sql__role__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + roles_list__sql__role__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__role__drop__file_name_c + ').' );
 
       zts :=
         'drop role ' +
-        Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF() +
+        Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF() +
         ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + roles_list__column__role_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -900,7 +915,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_role + ' ''' + Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Quotation_Sign__RMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_role + ' ''' + Self.Quotation_Sign__RMF() + roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString + Self.Quotation_Sign__RMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -942,18 +957,17 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Privileges_Name_CheckListBox.CheckAll( cbChecked, false, false )
   else
   // N.
   if    ( Key = 78 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Privileges_Name_CheckListBox.CheckAll( cbUnchecked, false, false )
   else
   // I.
   if    ( Key = 73 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     for i := 0 to Modify__Privileges_Name_CheckListBox.Items.Count - 1 do
       Modify__Privileges_Name_CheckListBox.Checked[ i ] := not Modify__Privileges_Name_CheckListBox.Checked[ i ];
 
@@ -993,15 +1007,15 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  role_name_l := Quotation_Sign__RMF() + Trim(  roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString  ) + Quotation_Sign__RMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  role_name_l := Self.Quotation_Sign__RMF() + Trim(  roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString  ) + Self.Quotation_Sign__RMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + role_list__sql__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + role_list__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__description__set__file_name_c + ').' );
 
       zts :=
         'comment on role ' +
@@ -1067,14 +1081,14 @@ begin
     Exit;
 
 
-  role_name_l := Quotation_Sign__RMF() + Trim(  roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString  ) + Quotation_Sign__RMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  role_name_l := Self.Quotation_Sign__RMF() + Trim(  roles_sdbm.Query__Field_By_Name( roles_list__column__role_name__big_letter_c ).AsString  ) + Self.Quotation_Sign__RMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__rmf_g + System.IOUtils.TPath.DirectorySeparatorChar + role_list__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + role_list__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__rmf_g ) + roles_list__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on role ' +
@@ -1140,8 +1154,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

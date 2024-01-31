@@ -126,6 +126,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         RightEdge = 255
         SelectedColor.Alpha = 0.400000005960464500
         TabWidth = 2
+        WantTabs = True
         OnReplaceText = Sql_Text_SynEditReplaceText
       end
     end
@@ -196,7 +197,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     TabOrder = 1
     object Buttons_Panel_Horizontal_Splitter: TSplitter
       Left = 1
-      Top = 291
+      Top = 276
       Width = 183
       Height = 6
       Cursor = crVSplit
@@ -210,7 +211,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     object Record_Number__Records_Count_Label: TLabel
       AlignWithMargins = True
       Left = 11
-      Top = 459
+      Top = 442
       Width = 163
       Height = 15
       Hint = 'Record number / records count.'
@@ -226,7 +227,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     end
     object Log_Horizontal_Splitter: TSplitter
       Left = 1
-      Top = 398
+      Top = 381
       Width = 183
       Height = 6
       Cursor = crVSplit
@@ -241,12 +242,12 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       Left = 1
       Top = 1
       Width = 183
-      Height = 290
+      Height = 275
       Align = alTop
       TabOrder = 0
       DesignSize = (
         183
-        290)
+        275)
       object Caret_Position_Label: TLabel
         AlignWithMargins = True
         Left = 11
@@ -268,7 +269,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       object Sql_Editor_Column_DBEdit: TDBEdit
         AlignWithMargins = True
         Left = 11
-        Top = 526
+        Top = 634
         Width = 161
         Height = 23
         Margins.Left = 10
@@ -278,7 +279,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Align = alTop
         DataSource = Sql_Editor_DataSource
         ReadOnly = True
-        TabOrder = 4
+        TabOrder = 7
         OnChange = Sql_Editor_Column_DBEditChange
       end
       object Search_GroupBox: TGroupBox
@@ -303,7 +304,9 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           Top = 17
           Width = 137
           Height = 23
-          Hint = 'Enter - add.'
+          Hint = 
+            'Enter - add column / table;'#13#10'Ctrl + Enter - add all columns sign' +
+            ' (*) and add table;'#13#10'Shift + Enter - add all columns.'
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10
@@ -354,7 +357,9 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           Top = 45
           Width = 25
           Height = 25
-          Hint = 'Search prior.'#13#10#13#10'[Ctrl + Enter - add]'
+          Hint = 
+            'Search prior.'#13#10#13#10'[Ctrl + Enter - add all columns sign (*) and ad' +
+            'd table]'#13#10'[Shift + Enter - add table]'
           Anchors = [akTop, akRight]
           ImageIndex = 13
           Images = Shared_DataModule.ImageList1
@@ -369,7 +374,9 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           Top = 70
           Width = 25
           Height = 25
-          Hint = 'Search next.'#13#10#13#10'[Ctrl + Enter - add]'
+          Hint = 
+            'Search next.'#13#10#13#10'[Ctrl + Enter - add all columns sign (*) and add' +
+            ' table]'#13#10'[Shift + Enter - add table]'
           Anchors = [akTop, akRight]
           ImageIndex = 14
           Images = Shared_DataModule.ImageList1
@@ -494,7 +501,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           TabOrder = 8
           OnClick = Sql__Prior_ButtonClick
         end
-        object Csv_File__Data_Separator_Edit: TEdit
+        object Csv__File__Data_Separator_Edit: TEdit
           Left = 70
           Top = 75
           Width = 20
@@ -505,7 +512,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           TabOrder = 12
           OnKeyDown = Query_Output_Save_Field_FormatKeyDown
         end
-        object Csv_File__Text_Qualifier_Edit: TEdit
+        object Csv__File__Text_Qualifier_Edit: TEdit
           Left = 100
           Top = 75
           Width = 20
@@ -641,29 +648,29 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 5
+        TabOrder = 8
         OnClick = Buttons_Panel__Hide_ButtonClick
       end
       object Tab_Name_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 11
-        Top = 476
+        Top = 594
         Width = 161
-        Height = 50
+        Height = 40
         Margins.Left = 10
         Margins.Top = 0
         Margins.Right = 10
         Margins.Bottom = 0
         Align = alTop
         Caption = 'Tab name'
-        TabOrder = 3
+        TabOrder = 6
         DesignSize = (
           161
-          50)
+          40)
         object Tab_Name_Edit: TEdit
           AlignWithMargins = True
           Left = 10
-          Top = 20
+          Top = 15
           Width = 108
           Height = 23
           Margins.Left = 10
@@ -692,16 +699,16 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       object Query_Output_Save_Field_Format_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 11
-        Top = 271
+        Top = 394
         Width = 161
         Height = 200
         Margins.Left = 10
-        Margins.Top = 0
+        Margins.Top = 5
         Margins.Right = 10
-        Margins.Bottom = 5
+        Margins.Bottom = 0
         Align = alTop
         Caption = 'Query output save field format'
-        TabOrder = 2
+        TabOrder = 5
         object Query_Output_Save_Field_Format__Date_GroupBox: TGroupBox
           AlignWithMargins = True
           Left = 3
@@ -918,11 +925,174 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           end
         end
       end
+      object Data_Value_Format__Disabled_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 11
+        Top = 276
+        Width = 161
+        Height = 17
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 0
+        Align = alTop
+        Caption = 'Data value format disabled'
+        TabOrder = 2
+        OnClick = Data_Value_Format__Disabled_CheckBoxClick
+      end
+      object Comments_Delete_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 11
+        Top = 298
+        Width = 161
+        Height = 17
+        Hint = 'Delete comments from SQL commands.'
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 0
+        Align = alTop
+        Caption = 'Delete comments'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+      end
+      object Text__File_GroupBox: TGroupBox
+        AlignWithMargins = True
+        Left = 11
+        Top = 320
+        Width = 161
+        Height = 69
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 0
+        Align = alTop
+        Caption = 'Text file'
+        ParentShowHint = False
+        ShowHint = False
+        TabOrder = 4
+        object Text__File__Buttons_Panel: TPanel
+          Left = 2
+          Top = 40
+          Width = 157
+          Height = 27
+          Align = alBottom
+          TabOrder = 1
+          object Text__File__Find_Button: TButton
+            AlignWithMargins = True
+            Left = 61
+            Top = 1
+            Width = 30
+            Height = 25
+            Hint = 'Find file.'#13#10#13#10'[Ctrl + O]'
+            Margins.Left = 5
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alRight
+            ImageAlignment = iaCenter
+            ImageIndex = 6
+            Images = Shared_DataModule.ImageList1
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 1
+            OnClick = Text__File__Find_ButtonClick
+          end
+          object Text__File__Load_Button: TButton
+            AlignWithMargins = True
+            Left = 96
+            Top = 1
+            Width = 30
+            Height = 25
+            Hint = 'Load file.'#13#10#13#10'[Ctrl + L]'
+            Margins.Left = 5
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alRight
+            ImageAlignment = iaCenter
+            ImageIndex = 9
+            Images = Shared_DataModule.ImageList1
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 2
+            OnClick = Text__File__Load_ButtonClick
+          end
+          object Text__File__Save_Button: TButton
+            AlignWithMargins = True
+            Left = 126
+            Top = 1
+            Width = 30
+            Height = 25
+            Hint = 
+              'Save file.'#13#10#13#10'To '#39'save file as'#39' change the '#39'file path'#39'.'#13#10#13#10'[Ctrl' +
+              ' + Shift + S]'
+            Margins.Left = 0
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alRight
+            ImageAlignment = iaCenter
+            ImageIndex = 8
+            Images = Shared_DataModule.ImageList1
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 3
+            OnClick = Text__File__Save_ButtonClick
+          end
+          object Text__File__Encoding_ComboBox: TComboBox
+            AlignWithMargins = True
+            Left = 1
+            Top = 1
+            Width = 50
+            Height = 21
+            Hint = 
+              'File encoding.'#13#10#13#10'If empty and file loaded while saving the file' +
+              ' will use encoding from the source file.'
+            Margins.Left = 0
+            Margins.Top = 0
+            Margins.Right = 5
+            Margins.Bottom = 5
+            Align = alClient
+            Style = csOwnerDrawFixed
+            DropDownCount = 40
+            ItemHeight = 15
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 0
+            OnKeyDown = Text__FileKeyDown
+            Items.Strings = (
+              ''
+              'ANSI'
+              'Unicode'
+              'UTF8')
+          end
+        end
+        object Text__File__Path_Edit: TEdit
+          AlignWithMargins = True
+          Left = 2
+          Top = 17
+          Width = 157
+          Height = 23
+          Hint = 'File path.'
+          Margins.Left = 0
+          Margins.Top = 0
+          Margins.Right = 0
+          Margins.Bottom = 0
+          Align = alClient
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          OnExit = File_Path_EditExit
+          OnKeyDown = Text__FileKeyDown
+        end
+      end
     end
     object Log_Memo: TMemo
       AlignWithMargins = True
       Left = 11
-      Top = 404
+      Top = 387
       Width = 163
       Height = 50
       Margins.Left = 10
@@ -939,9 +1109,9 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     end
     object Tables_Columns_List_Panel: TPanel
       Left = 1
-      Top = 297
+      Top = 282
       Width = 183
-      Height = 101
+      Height = 99
       Align = alClient
       TabOrder = 2
       object Tables_List_Horizontal_Splitter: TSplitter
@@ -973,7 +1143,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Left = 1
         Top = 37
         Width = 181
-        Height = 63
+        Height = 61
         Align = alClient
         ItemHeight = 15
         TabOrder = 1
@@ -982,6 +1152,16 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         OnKeyDown = Columns_List_ListBoxKeyDown
         OnKeyUp = Key_Up_Common
       end
+    end
+    object Sql_ProgressBar: TProgressBar
+      Left = 1
+      Top = 462
+      Width = 183
+      Height = 17
+      Align = alBottom
+      Step = 1
+      TabOrder = 3
+      Visible = False
     end
   end
   object Sql_Editor_DataSource: TDataSource
@@ -1021,5 +1201,11 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     OnCodeCompletion = Sql_Text__SynCompletionProposalCodeCompletion
     Left = 517
     Top = 241
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'Text files|*.txt|All files|*.*'
+    Options = [ofFileMustExist, ofEnableSizing]
+    Left = 460
+    Top = 106
   end
 end

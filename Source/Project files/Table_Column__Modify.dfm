@@ -16,6 +16,7 @@ object Table_Column__Modify_Form: TTable_Column__Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitHeight = 480
   PixelsPerInch = 96
   DesignSize = (
     624

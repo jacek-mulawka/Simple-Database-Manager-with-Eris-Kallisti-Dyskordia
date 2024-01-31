@@ -96,8 +96,6 @@ var
 implementation
 
 uses
-  System.IOUtils,
-
   Shared,
   Translation;
 
@@ -155,12 +153,12 @@ begin
   PageControl1.ActivePage := Log_TabSheet;
 
 
-  sql__add_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__column__add__file_name_c  );
+  sql__add_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__add__file_name_c  );
 
   if Trim( sql__add_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__column__add__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__add__file_name_c + ').' );
 
       sql__add_g :=
         'alter table __TABLE_NAME__ add __COLUMN_NAME__ ';
@@ -176,12 +174,12 @@ begin
 
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__column__collate__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__collate__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__column__collate__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__collate__file_name_c + ').' );
 
       word__collate__tcm_g := ' collate ';
 
@@ -200,12 +198,12 @@ begin
 
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__column__default__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__default__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__column__default__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__default__file_name_c + ').' );
 
       word__default__tcm_g := ' default ';
 
@@ -224,12 +222,12 @@ begin
 
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__column__not_null__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__not_null__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__column__not_null__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__not_null__file_name_c + ').' );
 
       word__not_null__tcm_g := ' not null ';
 
@@ -248,12 +246,12 @@ begin
 
 
 
-  sql__type_set_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__column__type_set__file_name_c  );
+  sql__type_set_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__type_set__file_name_c  );
 
   if Trim( sql__type_set_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__column__type_set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__type_set__file_name_c + ').' );
 
       sql__type_set_g :=
         'alter table __TABLE_NAME__ alter __COLUMN_NAME__ type ';
@@ -269,12 +267,12 @@ begin
 
 
 
-  zts := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__command_end_char__file_name_c;
+  zts := Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__command_end_char__file_name_c;
 
   if not FileExists( zts ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__command_end_char__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__command_end_char__file_name_c + ').' );
 
       word__command_end_char__tcm_g := ';';
 
@@ -293,12 +291,12 @@ begin
 
 
 
-  sql__position_set_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + Common.table_column__position_set__sql__file_name_c  );
+  sql__position_set_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + Common.table_column__position_set__sql__file_name_c  );
 
   if Trim( sql__position_set_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.table_column__position_set__sql__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + Common.table_column__position_set__sql__file_name_c + ').' );
 
       sql__position_set_g := Common.table_column__position_set__sql_c;
 
@@ -313,12 +311,12 @@ begin
 
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__column__types_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__column__types_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__column__types_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__column__types_list__file_name_c + ').' );
 
       zts :=
         #13 + #10 +
@@ -356,12 +354,12 @@ begin
       if table_column__modify_sdbm.Query__Active() then
         table_column__modify_sdbm.Query__Close();
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__tcm + System.IOUtils.TPath.DirectorySeparatorChar + table_column__modify__sql__column__collates_list__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__collates_list__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + table_column__modify__sql__column__collates_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcm ) + table_column__modify__sql__column__collates_list__file_name_c + ').' );
 
           zts :=
             'select RDB$COLLATIONS.RDB$COLLATION_NAME as COLLATION_NAME ' +
@@ -561,8 +559,8 @@ begin
   else
     zts := sql__add_g;
 
-  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCM() + Column_Name_Edit.Text + Quotation_Sign__TCM(), [ rfReplaceAll ] );
-  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCM() + table_name__tcm + Quotation_Sign__TCM(), [ rfReplaceAll ] );
+  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCM() + Column_Name_Edit.Text + Self.Quotation_Sign__TCM(), [ rfReplaceAll ] );
+  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCM() + table_name__tcm + Self.Quotation_Sign__TCM(), [ rfReplaceAll ] );
 
 
   zts := zts +
@@ -594,9 +592,9 @@ begin
 
       zts := sql__position_set_g;
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCM() + Column_Name_Edit.Text + Quotation_Sign__TCM(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCM() + Column_Name_Edit.Text + Self.Quotation_Sign__TCM(), [ rfReplaceAll ] );
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__position_value_c + Common.sql__word_replace_separator_c, Column_Position_JvSpinEdit.Value.ToString(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__TCM() + table_name__tcm + Quotation_Sign__TCM(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCM() + table_name__tcm + Self.Quotation_Sign__TCM(), [ rfReplaceAll ] );
 
       Sql_Memo.Lines.Add( zts );
 
@@ -734,8 +732,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -745,8 +742,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Memo.SelectAll();
 
 end;

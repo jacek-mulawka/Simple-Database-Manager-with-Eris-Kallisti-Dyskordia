@@ -236,6 +236,7 @@ object View__Edit_Execute_F_Frame: TView__Edit_Execute_F_Frame
           RightEdge = 255
           SelectedColor.Alpha = 0.400000005960464500
           TabWidth = 2
+          WantTabs = True
           OnReplaceText = View__Source_SynEditReplaceText
         end
       end

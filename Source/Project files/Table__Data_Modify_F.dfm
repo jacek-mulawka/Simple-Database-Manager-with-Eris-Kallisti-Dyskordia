@@ -55,7 +55,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 10
+      TabOrder = 11
       OnClick = Width_Keeper__Move_ButtonClick
     end
     object Width_Keeper__Move__Left_Button: TButton
@@ -69,7 +69,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 9
+      TabOrder = 10
       OnClick = Width_Keeper__Move_ButtonClick
     end
     object Open_Close_Button: TButton
@@ -123,7 +123,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       OnClick = Duplicate_Record_ButtonClick
     end
     object Grid_View_CheckBox: TCheckBox
-      Left = 560
+      Left = 770
       Top = 0
       Width = 130
       Height = 17
@@ -133,7 +133,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       ParentShowHint = False
       ShowHint = True
       State = cbChecked
-      TabOrder = 8
+      TabOrder = 9
       OnClick = Grid_View_CheckBoxClick
     end
     object Extract_Table_Data_Button: TButton
@@ -141,9 +141,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Top = 0
       Width = 25
       Height = 25
-      Hint = 
-        'Extract table data to log.'#13#10#13#10'Multiple extracts in background ma' +
-        'y case the application to freeze.'
+      Hint = 'Extract table data to log / file.'
       Enabled = False
       ImageIndex = 14
       Images = Shared_DataModule.ImageList1
@@ -171,7 +169,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Top = 0
       Width = 25
       Height = 25
-      Hint = 'Column distinct values.'
+      Hint = 'Column distinct values.'#13#10#13#10'[Ctrl + D, Shift + D]'
       Enabled = False
       ImageIndex = 34
       Images = Shared_DataModule.ImageList1
@@ -191,6 +189,15 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       ShowHint = True
       TabOrder = 7
       OnClick = Editing_CheckBoxClick
+    end
+    object Data_Value_Format__Disabled_CheckBox: TCheckBox
+      Left = 560
+      Top = 0
+      Width = 200
+      Height = 17
+      Caption = 'Data value format disabled'
+      TabOrder = 8
+      OnClick = Data_Value_Format__Disabled_CheckBoxClick
     end
   end
   object Buttons_Panel: TPanel
@@ -581,5 +588,12 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
   object Data_DataSource: TDataSource
     Left = 545
     Top = 45
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = 'txt'
+    Filter = 'txt|*.txt|All files|*.*'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 545
+    Top = 106
   end
 end

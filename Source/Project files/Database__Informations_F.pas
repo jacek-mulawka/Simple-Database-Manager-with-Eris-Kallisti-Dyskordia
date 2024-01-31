@@ -7,6 +7,7 @@ uses
 
   Common,
   Database__Informations_Modify_F,
+  Translation,
   Triggers_Modify_F,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
@@ -39,12 +40,10 @@ type
     procedure Finish__DIF();
     procedure Options_Set__DIF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__DIF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__DIF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 implementation
-
-uses
-  Translation;
 
 {$R *.dfm}
 
@@ -79,7 +78,7 @@ begin
     triggers_modify_f_frame_g.Options_Set__TrMF( component_type_f, sql__quotation_sign__dif_g, sql__quotation_sign__use__dif_g );
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__DIF();
 
 end;
 
@@ -102,15 +101,26 @@ begin
   database__informations_f_frame_g := Database__Informations_Modify_F.TDatabase__Informations_Modify_F_Frame.Create( Application );
   database__informations_f_frame_g.Parent := Informations_TabSheet;
   database__informations_f_frame_g.Align := alClient;
-  database__informations_f_frame_g.parent_supreme_tab_sheet := Self.Parent;
+  database__informations_f_frame_g.parent_supreme_tab_sheet__dimf := Informations_TabSheet;
   database__informations_f_frame_g.Prepare__DIMF( database_type__dif_g, sql__quotation_sign__dif_g, component_type_g, ado_connection_g, fd_connection_g, sql__quotation_sign__use__dif_g );
   database__informations_f_frame_g.Data_Open__DIMF();
 
 
   triggers_modify_f_frame_g := nil;
 
+end;
+
+procedure TDatabase__Informations_F_Frame.Translation__Apply__DIF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+begin
 
   Translation.Translation__Apply( Self );
+
+
+  database__informations_f_frame_g.Translation__Apply__DIMF( tak_f );
+
+
+  if triggers_modify_f_frame_g <> nil then
+    triggers_modify_f_frame_g.Translation__Apply__TrMF( tak_f );
 
 end;
 
@@ -124,9 +134,9 @@ begin
       triggers_modify_f_frame_g := Triggers_Modify_F.TTriggers_Modify_F_Frame.Create( Application );
       triggers_modify_f_frame_g.Parent := Triggers_TabSheet;
       triggers_modify_f_frame_g.Align := alClient;
-      triggers_modify_f_frame_g.parent_supreme_tab_sheet := Self.Parent;
+      triggers_modify_f_frame_g.parent_supreme_tab_sheet__trmf := Triggers_TabSheet;
       triggers_modify_f_frame_g.Prepare__TrMF( Triggers_Modify_F.tt_database, '', database_type__dif_g, sql__quotation_sign__dif_g, component_type_g, ado_connection_g, fd_connection_g, sql__quotation_sign__use__dif_g );
-      triggers_modify_f_frame_g.Data_Open__TrMF( true );
+      triggers_modify_f_frame_g.Data_Open__TrMF();
 
     end;
 

@@ -9,6 +9,7 @@ uses
   Dependencies_F,
   Permissions_Modify_F,
   Stored_Procedure__Edit_Execute_F,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls;
@@ -46,21 +47,20 @@ type
     function Finish__SPMF() : boolean;
     procedure Options_Set__SPMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__SPMF( const databases_r_f : Common.TDatabases_r; const stored_procedure_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
-    function Stored_Procedure_Name__Get__SPMF() : string;
+    procedure Stored_Procedure__Edit__SPMF();
+    function Stored_Procedure__Name__Get__SPMF() : string;
     function Task_Running_Check__SPMF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__SPMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 implementation
-
-uses
- Translation;
 
 {$R *.dfm}
 
 function TStored_Procedure_Modify_F_Frame.Finish__SPMF() : boolean;
 begin
 
-  if Task_Running_Check__SPMF() then
+  if Self.Task_Running_Check__SPMF() then
     begin
 
       Result := false;
@@ -113,7 +113,7 @@ begin
   stored_procedure__edit_execute_f_frame_g.Options_Set__SPEEF( component_type_f, sql__quotation_sign__spmf_g, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use__spmf_g );
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__SPMF();
 
 end;
 
@@ -148,11 +148,23 @@ begin
   stored_procedure__edit_execute_f_frame_g.Data_Open__SPEEF();
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__SPMF();
 
 end;
 
-function TStored_Procedure_Modify_F_Frame.Stored_Procedure_Name__Get__SPMF() : string;
+procedure TStored_Procedure_Modify_F_Frame.Stored_Procedure__Edit__SPMF();
+begin
+
+  Stored_Procedure_Modify_PageControl.ActivePage := Edit_Execute_TabSheet;
+
+  Stored_Procedure_Modify_PageControlChange( nil );
+
+  if stored_procedure__edit_execute_f_frame_g <> nil then
+    stored_procedure__edit_execute_f_frame_g.Stored_Procedure__Edit_Execute_F__Edit__SPEEF();
+
+end;
+
+function TStored_Procedure_Modify_F_Frame.Stored_Procedure__Name__Get__SPMF() : string;
 begin
 
   Result := stored_procedure_name__spmf__g;
@@ -166,6 +178,24 @@ begin
     Result := true
   else
     Result := false;
+
+end;
+
+procedure TStored_Procedure_Modify_F_Frame.Translation__Apply__SPMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+begin
+
+  Translation.Translation__Apply( Self );
+
+
+  if dependencies_f_frame_g <> nil then
+    dependencies_f_frame_g.Translation__Apply__DF();
+
+
+  if permissions_modify_f_frame_g <> nil then
+    permissions_modify_f_frame_g.Translation__Apply__PMF( tak_f );
+
+
+  stored_procedure__edit_execute_f_frame_g.Translation__Apply__SPEEF( tak_f );
 
 end;
 

@@ -68,8 +68,6 @@ uses
   Translation;
 
 constructor TForm_View_Field.Create( parent_f : Vcl.Controls.TWinControl; data_source_f : TDataSource; field_f : TField; const additional_component_show_f, editing_f, splitter_show_f : boolean; field_name_selected_pointer_f : Pointer; key_down_wsk_f : TKeyDown_wsk; key_up_wsk_f : TKey_Up_wsk );
-var
-  zti : integer;
 begin
 
   inherited Create( Vcl.Forms.Application );
@@ -386,8 +384,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and ( ssShift in Shift ) then
+    and ( Shift = [ ssCtrl, ssShift ] ) then
     Self.Align_Correct__FVF()
   else
   if    ( Sender <> nil )
@@ -395,11 +392,11 @@ begin
     begin
 
       if    ( Key = Winapi.Windows.VK_ADD )
-        and ( ssCtrl in Shift ) then
+        and ( Shift = [ ssCtrl ] ) then
         TWinControl(Sender).Parent.Height := TWinControl(Sender).Parent.Height * 2
       else
       if    ( Key = Winapi.Windows.VK_SUBTRACT )
-        and ( ssCtrl in Shift ) then
+        and ( Shift = [ ssCtrl ] ) then
         begin
 
           zti := Round( TWinControl(Sender).Parent.Height * 0.5 );

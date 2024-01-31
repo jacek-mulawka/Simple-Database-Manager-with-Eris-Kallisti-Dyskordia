@@ -12,6 +12,7 @@ uses
   Table__Data_Modify_F,
   Table__Indexes_Modify_F,
   Table__Metadata_F,
+  Translation,
   Triggers_Modify_F,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
@@ -65,21 +66,20 @@ type
     function Finish__TMoF() : boolean;
     procedure Options_Set__TMoF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__TMoF( const databases_r_f : Common.TDatabases_r; const table_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
-    function Table_Name__Get__TMoF() : string;
+    procedure Table__Data_Open__TMoF();
+    function Table__Name__Get__TMoF() : string;
     function Task_Running_Check__TMoF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__TMoF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 implementation
-
-uses
- Translation;
 
 {$R *.dfm}
 
 function TTable_Modify_F_Frame.Finish__TMoF() : boolean;
 begin
 
-  if Task_Running_Check__TMoF() then
+  if Self.Task_Running_Check__TMoF() then
     begin
 
       Result := false;
@@ -190,7 +190,7 @@ begin
     triggers_modify_f_frame_g.Options_Set__TrMF( component_type_f, sql__quotation_sign__tmof_g, sql__quotation_sign__use__tmof_g );
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__TMoF();
 
 end;
 
@@ -238,7 +238,7 @@ begin
   Table_Modify_PageControlChange( nil );
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__TMoF();
 
 end;
 
@@ -251,7 +251,7 @@ begin
       if table__data_modify_f_frame_g.Task_Running_Check__TDMF() then
         Result := false
       else
-        Result := table__data_modify_f_frame_g.Table__Data_Modify_F__Data_Close__TDMF();
+        Result := table__data_modify_f_frame_g.Table__Data_Modify_F__Data__Close__TDMF();
 
     end
   else
@@ -259,7 +259,19 @@ begin
 
 end;
 
-function TTable_Modify_F_Frame.Table_Name__Get__TMoF() : string;
+procedure TTable_Modify_F_Frame.Table__Data_Open__TMoF();
+begin
+
+  Table_Modify_PageControl.ActivePage := Data_TabSheet;
+
+  Table_Modify_PageControlChange( nil );
+
+  if table__data_modify_f_frame_g <> nil then
+    table__data_modify_f_frame_g.Table__Data_Modify_F__Data__Open_Refresh__TDMF();
+
+end;
+
+function TTable_Modify_F_Frame.Table__Name__Get__TMoF() : string;
 begin
 
   Result := table_name__tmof_g;
@@ -279,6 +291,41 @@ begin
   if    ( table__metadata_f_frame_g <> nil )
     and (  table__metadata_f_frame_g.Task_Running_Check__TMeF( message_show_f )  ) then
     Result := true;
+
+end;
+
+procedure TTable_Modify_F_Frame.Translation__Apply__TMoF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+begin
+
+  Translation.Translation__Apply( Self );
+
+
+  if dependencies_f_frame_g <> nil then
+    dependencies_f_frame_g.Translation__Apply__DF();
+
+
+  if permissions_modify_f_frame_g <> nil then
+    permissions_modify_f_frame_g.Translation__Apply__PMF( tak_f );
+
+
+  if table__columns_sort_f_frame_g <> nil then
+    table__columns_sort_f_frame_g.Translation__Apply__TCSF();
+
+
+  if table__data_modify_f_frame_g <> nil then
+    table__data_modify_f_frame_g.Translation__Apply__TDMF();
+
+
+  if table__indexes_modify_f_frame_g <> nil then
+    table__indexes_modify_f_frame_g.Translation__Apply__TIMF( tak_f );
+
+
+  if table__metadata_f_frame_g <> nil then
+    table__metadata_f_frame_g.Translation__Apply__TMeF( tak_f );
+
+
+  if triggers_modify_f_frame_g <> nil then
+    triggers_modify_f_frame_g.Translation__Apply__TrMF( tak_f );
 
 end;
 
@@ -371,9 +418,9 @@ begin
       triggers_modify_f_frame_g := Triggers_Modify_F.TTriggers_Modify_F_Frame.Create( Application );
       triggers_modify_f_frame_g.Parent := Triggers_TabSheet;
       triggers_modify_f_frame_g.Align := alClient;
-      triggers_modify_f_frame_g.parent_supreme_tab_sheet := Self.Parent;
+      triggers_modify_f_frame_g.parent_supreme_tab_sheet__trmf := Self.Parent;
       triggers_modify_f_frame_g.Prepare__TrMF( Triggers_Modify_F.tt_table, table_name__tmof_g, databases__tmof_g.database_type, sql__quotation_sign__tmof_g, component_type_g, ado_connection_g, fd_connection_g, sql__quotation_sign__use__tmof_g );
-      triggers_modify_f_frame_g.Data_Open__TrMF( true );
+      triggers_modify_f_frame_g.Data_Open__TrMF();
 
     end;
 

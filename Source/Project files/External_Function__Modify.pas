@@ -118,8 +118,6 @@ var
 implementation
 
 uses
-  System.IOUtils,
-
   External_Function__Parameter,
   Shared,
   Translation;
@@ -240,9 +238,7 @@ procedure TExternal_Function__Modify_Form.FormShow( Sender: TObject );
 var
   i : integer;
 
-  zts,
-  parameter_default_value_l
-    : string;
+  zts : string;
 begin
 
   PageControl1.ActivePage := Log_TabSheet;
@@ -257,12 +253,12 @@ begin
     end;
 
 
-  data_types_list_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__parameters__types_list__file_name_c  );
+  data_types_list_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__parameters__types_list__file_name_c  );
 
   if Trim( data_types_list_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__parameters__types_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__parameters__types_list__file_name_c + ').' );
 
       data_types_list_g :=
         #13 + #10 +
@@ -283,12 +279,12 @@ begin
     end;
 
 
-  parameter_by_list_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__parameters__parameter_by_list__file_name_c  );
+  parameter_by_list_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__parameters__parameter_by_list__file_name_c  );
 
   if Trim( parameter_by_list_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__parameters__parameter_by_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__parameters__parameter_by_list__file_name_c + ').' );
 
       parameter_by_list_g :=
         #13 + #10 +
@@ -300,12 +296,12 @@ begin
     end;
 
 
-  sql__entry_point_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__external_function__declare__entry_point__file_name_c  );
+  sql__entry_point_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__entry_point__file_name_c  );
 
   if Trim( sql__entry_point_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__external_function__declare__entry_point__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__entry_point__file_name_c + ').' );
 
       sql__entry_point_g :=
         #13 + #10 +
@@ -323,12 +319,12 @@ begin
   Log_Memo.Lines.Add( 'Entry point: ' + sql__entry_point_g + '.' );
 
 
-  sql__module_name_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__external_function__declare__module_name__file_name_c  );
+  sql__module_name_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__module_name__file_name_c  );
 
   if Trim( sql__module_name_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__external_function__declare__module_name__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__module_name__file_name_c + ').' );
 
       sql__module_name_g :=
         ' module_name ';
@@ -345,12 +341,12 @@ begin
   Log_Memo.Lines.Add( 'Module name: ' + sql__module_name_g + '.' );
 
 
-  sql__returns_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__external_function__declare__returns__file_name_c  );
+  sql__returns_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__returns__file_name_c  );
 
   if Trim( sql__returns_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__external_function__declare__returns__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__returns__file_name_c + ').' );
 
       sql__returns_g :=
         #13 + #10 +
@@ -368,12 +364,12 @@ begin
   Log_Memo.Lines.Add( 'Returns: ' + sql__returns_g + '.' );
 
 
-  sql__declare_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__external_function__declare__file_name_c  );
+  sql__declare_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__file_name_c  );
 
   if Trim( sql__declare_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__external_function__declare__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__file_name_c + ').' );
 
       sql__declare_g :=
         'declare external function __EXTERNAL_FUNCTION_NAME__ ' +
@@ -393,12 +389,12 @@ begin
 
   External_Function_Entry_Point_ComboBox.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__external_function__declare__entry_point_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__entry_point_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__external_function__declare__entry_point_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__entry_point_list__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -449,12 +445,12 @@ begin
 
   External_Function_Module_Name_ComboBox.Items.Clear();
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__external_function__declare__module_name_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__module_name_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__external_function__declare__module_name_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__external_function__declare__module_name_list__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -477,12 +473,12 @@ begin
       if external_function_modify_sdbm.Query__Active() then
         external_function_modify_sdbm.Query__Close();
 
-      zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + external_function__modify__sql__parameters_list__file_name_c  );
+      zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__parameters_list__file_name_c  );
 
       if Trim( zts ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + external_function__modify__sql__parameters_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + external_function__modify__sql__parameters_list__file_name_c + ').' );
 
           zts :=
             'select RDB$FUNCTION_ARGUMENTS.RDB$ARGUMENT_POSITION ' +
@@ -780,7 +776,7 @@ begin
 
   zts_1 := sql__declare_g;
 
-  zts_1 := StringReplace( zts_1, Common.sql__word_replace_separator_c + Common.external_function__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EFM() + External_Function_Name_Edit.Text + Quotation_Sign__EFM(), [ rfReplaceAll ] );
+  zts_1 := StringReplace( zts_1, Common.sql__word_replace_separator_c + Common.external_functions__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EFM() + External_Function_Name_Edit.Text + Quotation_Sign__EFM(), [ rfReplaceAll ] );
 
 
   zts_2 := '';
@@ -847,12 +843,9 @@ procedure TExternal_Function__Modify_Form.Execute_ButtonClick( Sender: TObject )
 var
   ztb : boolean;
 
-  i : integer;
-
   zts,
   description_value_l,
-  error_message_l,
-  external_function__parameter_name_l
+  error_message_l
     : string;
 begin
 
@@ -900,18 +893,18 @@ begin
           description_value_l := Common.Sql_Special_Characters_Protect( external_function__description_value__efm );
 
 
-          zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__efm + System.IOUtils.TPath.DirectorySeparatorChar + Common.external_function__sql__description__set__file_name_c  );
+          zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__efm ) + Common.external_functions__sql__description__set__file_name_c  );
 
           if Trim( zts ) = '' then
             begin
 
-              Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.external_function__sql__description__set__file_name_c + ').' );
+              Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__efm ) + Common.external_functions__sql__description__set__file_name_c + ').' );
 
-              zts := Common.external_function__sql__description__set_c;
+              zts := Common.external_functions__sql__description__set_c;
 
             end;
 
-          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_function__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EFM() + External_Function_Name_Edit.Text + Quotation_Sign__EFM(), [ rfReplaceAll ] );
+          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.external_functions__column__external_functions_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EFM() + External_Function_Name_Edit.Text + Quotation_Sign__EFM(), [ rfReplaceAll ] );
           zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__description_value_c + Common.sql__word_replace_separator_c, description_value_l, [ rfReplaceAll ] );
 
 
@@ -1038,8 +1031,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -1049,8 +1041,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Memo.SelectAll();
 
 end;

@@ -140,9 +140,7 @@ var
 implementation
 
 uses
-  System.IOUtils,
   System.StrUtils,
-  Vcl.Clipbrd,
 
   Shared,
   Stored_Procedure__Parameter,
@@ -324,12 +322,12 @@ begin
 
 
 
-  zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__code_completion_list__file_name_c  );
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__code_completion_list__file_name_c  );
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__code_completion_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__code_completion_list__file_name_c + ').' );
 
       {$region 'Code completion list.'}
       zts_1 :=
@@ -349,12 +347,12 @@ begin
 
   zts_1 := StringReplace( zts_1, Translation.translation__code_completion__stored_procedure_c, Translation.translation__messages_r.code_completion__stored_procedure, [ rfReplaceAll ] );
 
-  zts_2 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + Common.sql_editor__code_completion_list__file_name_c  );
+  zts_2 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.sql_editor__code_completion_list__file_name_c  );
 
   if Trim( zts_2 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.sql_editor__code_completion_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.sql_editor__code_completion_list__file_name_c + ').' );
 
 
       zts_2 := Common.sql_editor__code_completion_list_c;
@@ -396,12 +394,12 @@ begin
     end;
 
 
-  data_types_list_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__parameters__types_list__file_name_c  );
+  data_types_list_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__parameters__types_list__file_name_c  );
 
   if Trim( data_types_list_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__parameters__types_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__parameters__types_list__file_name_c + ').' );
 
       data_types_list_g :=
         #13 + #10 +
@@ -422,12 +420,12 @@ begin
     end;
 
 
-  zts_1 := ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__parameter__default_replace__file_name_c;
+  zts_1 := Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__parameter__default_replace__file_name_c;
 
   if not FileExists( zts_1 ) then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__parameter__default_replace__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__parameter__default_replace__file_name_c + ').' );
 
       default_replace_g := 'default ';
 
@@ -445,12 +443,12 @@ begin
   Log_Memo.Lines.Add( 'Default replace: ' + default_replace_g + '.' );
 
 
-  sql__as_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__sql__stored_procedure__recreate__as__file_name_c  );
+  sql__as_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__as__file_name_c  );
 
   if Trim( sql__as_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__sql__stored_procedure__recreate__as__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__as__file_name_c + ').' );
 
       sql__as_g :=
         #13 + #10 +
@@ -469,12 +467,12 @@ begin
   Log_Memo.Lines.Add( 'As: ' + sql__as_g + '.' );
 
 
-  sql__default_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__sql__stored_procedure__recreate__default__file_name_c  );
+  sql__default_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__default__file_name_c  );
 
   if Trim( sql__default_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__sql__stored_procedure__recreate__default__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__default__file_name_c + ').' );
 
       sql__default_g :=
         ' default ';
@@ -491,12 +489,12 @@ begin
   Log_Memo.Lines.Add( 'Default: ' + sql__default_g + '.' );
 
 
-  sql__returns_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__sql__stored_procedure__recreate__returns__file_name_c  );
+  sql__returns_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__returns__file_name_c  );
 
   if Trim( sql__returns_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__sql__stored_procedure__recreate__returns__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__returns__file_name_c + ').' );
 
       sql__returns_g :=
         #13 + #10 +
@@ -514,12 +512,12 @@ begin
   Log_Memo.Lines.Add( 'Returns: ' + sql__returns_g + '.' );
 
 
-  sql__recreate_g := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__sql__stored_procedure__recreate__file_name_c  );
+  sql__recreate_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__file_name_c  );
 
   if Trim( sql__recreate_g ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__sql__stored_procedure__recreate__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__stored_procedure__recreate__file_name_c + ').' );
 
       sql__recreate_g :=
         'recreate procedure __STORED_PROCEDURE_NAME__ ' +
@@ -547,12 +545,12 @@ begin
       if stored_procedure_modify_sdbm.Query__Active() then
         stored_procedure_modify_sdbm.Query__Close();
 
-      zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__sql__metadata__file_name_c  );
+      zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__sql__metadata__file_name_c  );
 
       if Trim( zts_1 ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__sql__metadata__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__sql__metadata__file_name_c + ').' );
 
           zts_1 := Common.stored_procedure__sql__metadata_c;
 
@@ -638,12 +636,12 @@ begin
       if stored_procedure_modify_sdbm.Query__Active() then
         stored_procedure_modify_sdbm.Query__Close();
 
-      zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__sql__parameters_list__file_name_c  );
+      zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__parameters_list__file_name_c  );
 
       if Trim( zts_1 ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__sql__parameters_list__file_name_c + ').' );
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__sql__parameters_list__file_name_c + ').' );
 
           zts_1 :=
             'select RDB$PROCEDURE_PARAMETERS.RDB$PARAMETER_NAME as PARAMETER_NAME ' +
@@ -833,14 +831,15 @@ begin
   Caret_Position_Display();
 
 
-  Stored_Procedure__Source__SynCompletionProposal.NbLinesInWindow := Common.sql_editor__code_completion_window__default__lines_in_window;
-  Stored_Procedure__Source__SynCompletionProposal.Width := Common.sql_editor__code_completion_window__default__width;
+  Common.Syn_Completion_Proposal__Parameters__Set( Stored_Procedure__Source__SynCompletionProposal );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Sql_Memo.Font, Common.sql_editor__font );
   //Common.Font__Set( Stored_Procedure__Source_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Stored_Procedure__Source_SynEdit.Font, Common.sql_editor__font );
+
+  Common.Syn_Edit__Parameters__Set( Stored_Procedure__Source_SynEdit );
 
 
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Stored_Procedure__Source_SynEdit );
@@ -914,7 +913,7 @@ begin
 
   zts_1 := sql__recreate_g;
 
-  zts_1 := StringReplace( zts_1, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__SPM() + Stored_Procedure__Name_Edit.Text + Quotation_Sign__SPM(), [ rfReplaceAll ] );
+  zts_1 := StringReplace( zts_1, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__SPM() + Stored_Procedure__Name_Edit.Text + Self.Quotation_Sign__SPM(), [ rfReplaceAll ] );
 
 
   zts_2 := '';
@@ -1038,19 +1037,19 @@ begin
           description_value_l := Common.Sql_Special_Characters_Protect( stored_procedure__description_value__spm );
 
 
-          zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__sql__description__set__file_name_c  );
+          zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__sql__description__set__file_name_c  );
 
           if Trim( zts ) = '' then
             begin
 
-              Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__sql__description__set__file_name_c + ').' );
+              Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__sql__description__set__file_name_c + ').' );
 
               zts := Common.stored_procedure__sql__description__set_c;
 
             end;
 
           zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__description_value_c + Common.sql__word_replace_separator_c, description_value_l, [ rfReplaceAll ] );
-          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Quotation_Sign__SPM() + Stored_Procedure__Name_Edit.Text + Quotation_Sign__SPM(), [ rfReplaceAll ] );
+          zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__stored_procedure__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__SPM() + Stored_Procedure__Name_Edit.Text + Self.Quotation_Sign__SPM(), [ rfReplaceAll ] );
 
 
           Log_Memo.Lines.Add( zts );
@@ -1079,14 +1078,14 @@ begin
             description_value_l := Stored_Procedure__Parameter.TStored_Procedure__Parameter(Stored_Procedure__Parameters__List_ScrollBox.Controls[ i ]).Description_Get__SPP();
             description_value_l := Common.Sql_Special_Characters_Protect( description_value_l );
 
-            stored_procedure__parameter_name_l := Quotation_Sign__SPM() + Stored_Procedure__Name_Edit.Text + Quotation_Sign__SPM() + Common.sql__names_separator + Quotation_Sign__SPM() + Stored_Procedure__Parameter.TStored_Procedure__Parameter(Stored_Procedure__Parameters__List_ScrollBox.Controls[ i ]).Name_Get__SPP() + Quotation_Sign__SPM();
+            stored_procedure__parameter_name_l := Self.Quotation_Sign__SPM() + Stored_Procedure__Name_Edit.Text + Self.Quotation_Sign__SPM() + Common.sql__names_separator + Self.Quotation_Sign__SPM() + Stored_Procedure__Parameter.TStored_Procedure__Parameter(Stored_Procedure__Parameters__List_ScrollBox.Controls[ i ]).Name_Get__SPP() + Self.Quotation_Sign__SPM();
 
-            zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + Common.stored_procedure__sql__parameter__description__set__file_name_c  );
+            zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__sql__parameter__description__set__file_name_c  );
 
             if Trim( zts ) = '' then
               begin
 
-                Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.stored_procedure__sql__parameter__description__set__file_name_c + ').' );
+                Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + Common.stored_procedure__sql__parameter__description__set__file_name_c + ').' );
 
                 zts := Common.stored_procedure__sql__parameter__description__set_c;
 
@@ -1133,12 +1132,12 @@ begin
 
   PageControl1.ActivePage := Log_TabSheet;
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__spm + System.IOUtils.TPath.DirectorySeparatorChar + stored_procedure__modify__code_examples__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__code_examples__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + stored_procedure__modify__code_examples__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__spm ) + stored_procedure__modify__code_examples__file_name_c + ').' );
 
       zts :=
         Translation.translation__messages_r.stored_procedure_code_example + #13 + #10 +
@@ -1338,8 +1337,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -1349,8 +1347,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Memo.SelectAll();
 
 end;
@@ -1366,23 +1363,22 @@ procedure TStored_Procedure__Modify_Form.Stored_Procedure__Source_MemoKeyDown( S
 begin
 
   if    ( Key = VK_ADD )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
      Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
   else
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Stored_Procedure__Source_Memo.SelectAll()
   else
   // E.
   if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Execute_ButtonClick( Sender )
   else
   // P.
   if    ( Key = 80 )
-    and ( ssCtrl in Shift ) then
+    and ( Shift = [ ssCtrl ] ) then
     Sql_Prepare_ButtonClick( Sender );
 
 end;
@@ -1415,55 +1411,20 @@ end;
 procedure TStored_Procedure__Modify_Form.Stored_Procedure__Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( Stored_Procedure__Source_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( Stored_Procedure__Source_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  if    ( Key = VK_ADD )
-    and ( ssCtrl in Shift ) then
-     Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( Stored_Procedure__Source_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( Stored_Procedure__Source_SynEdit );
-    end
-  else
-  // E.
-  if    ( Key = 69 )
-    and ( ssCtrl in Shift ) then
-    Execute_ButtonClick( Sender )
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Stored_Procedure__Source_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Stored_Procedure__Source_SynEdit, text__search_replace_form, true )
-  else
-  // P.
-  if    ( Key = 80 )
-    and ( ssCtrl in Shift ) then
-    Sql_Prepare_ButtonClick( Sender );
+  if not Common.Syn_Edit_Key_Down( Stored_Procedure__Source_SynEdit, Sender, Key, Shift ) then
+    if    ( Key = VK_ADD )
+      and ( Shift = [ ssCtrl ] ) then
+       Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
+    else
+    // E.
+    if    ( Key = 69 )
+      and ( Shift = [ ssCtrl ] ) then
+      Execute_ButtonClick( Sender )
+    else
+    // P.
+    if    ( Key = 80 )
+      and ( Shift = [ ssCtrl ] ) then
+      Sql_Prepare_ButtonClick( Sender );
 
 end;
 

@@ -135,7 +135,6 @@ uses
   System.IOUtils,
   System.TypInfo,
   System.UITypes,
-  Vcl.Clipbrd,
   //Winapi.ShellAPI,
 
   Database__Backup_Restore__Parameter,
@@ -187,7 +186,7 @@ begin
 
   Database_Type_ComboBox.Items.Clear();
 
-  if FindFirst(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + '\*.*', faDirectory, search_rec  ) = 0 then
+  if FindFirst(  Common.Databases_Type__Directory_Path__Get( '' ) + '*.*', faDirectory, search_rec  ) = 0 then
     begin
 
       repeat
@@ -243,6 +242,8 @@ begin
   //Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Log_SynEdit.Font, Common.sql_editor__font );
 
+  Common.Syn_Edit__Parameters__Set( Log_SynEdit );
+
 
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Log_SynEdit );
 
@@ -296,7 +297,7 @@ end;
 
 procedure TDatabase__Backup_Restore_Form.Command_Prepare_ButtonClick( Sender: TObject );
 
-  function Quotation_Sign__DBR() : string;
+  function Quotation_Sign__DBR_L() : string;
   begin
 
     if Quotation_Sign__Use_CheckBox.Checked then
@@ -381,8 +382,8 @@ begin
     begin
 
       zts_1 := zts_1 +
-        ' ' + Quotation_Sign__DBR() + Database__File_Path_Edit.Text + Quotation_Sign__DBR() +
-        ' ' + Quotation_Sign__DBR() + Database__Backup__File_Path_Edit.Text + Quotation_Sign__DBR();
+        ' ' + Quotation_Sign__DBR_L() + Database__File_Path_Edit.Text + Quotation_Sign__DBR_L() +
+        ' ' + Quotation_Sign__DBR_L() + Database__Backup__File_Path_Edit.Text + Quotation_Sign__DBR_L();
 
     end
   else
@@ -390,14 +391,14 @@ begin
     begin
 
       zts_1 := zts_1 +
-        ' ' + Quotation_Sign__DBR() + Database__Backup__File_Path_Edit.Text + Quotation_Sign__DBR() +
-        ' ' + Quotation_Sign__DBR() + Database__File_Path_Edit.Text + Quotation_Sign__DBR();
+        ' ' + Quotation_Sign__DBR_L() + Database__Backup__File_Path_Edit.Text + Quotation_Sign__DBR_L() +
+        ' ' + Quotation_Sign__DBR_L() + Database__File_Path_Edit.Text + Quotation_Sign__DBR_L();
 
     end;
 
 
   Command_Memo.Lines.Clear();
-  Command_Memo.Lines.Add( Quotation_Sign__DBR() + Database__Backup__Application__File_Path_Edit.Text + Quotation_Sign__DBR() );
+  Command_Memo.Lines.Add( Quotation_Sign__DBR_L() + Database__Backup__Application__File_Path_Edit.Text + Quotation_Sign__DBR_L() );
   Command_Memo.Lines.Add( zts_1 );
 
 
@@ -540,7 +541,7 @@ begin
 
 
   Database__Backup__File_Path_Edit.Text := Database__Backup__File_Path_Edit.Text +
-    Common.database__backup__file_default_extension;
+    Common.database__backup__file__default_extension;
 
 
   File_Path_EditExit( Database__Backup__File_Path_Edit );
@@ -578,14 +579,14 @@ procedure TDatabase__Backup_Restore_Form.Parameters__Refresh_ButtonClick( Sender
       : string;
   begin
 
-    zts_1 := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + Database_Type_ComboBox.Text + System.IOUtils.TPath.DirectorySeparatorChar + file_name_f  );
+    zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + file_name_f  );
 
 
     if Trim( zts_1 ) = '' then
       begin
 
-        //Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + file_name_f + ').' );
-        Log_SynEdit.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + file_name_f + ').' );
+        //Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + file_name_f + ').' );
+        Log_SynEdit.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Database_Type_ComboBox.Text ) + file_name_f + ').' );
 
         // checked_l|parameter__name_l|parameter__description_l|parameter__hint_l|parameter__values_l
         //
@@ -797,8 +798,8 @@ begin
 
           zt_edit := Database__Backup__Application__File_Path_Edit;
 
-          OpenDialog1.DefaultExt := Common.exe__file_default_extension;
-          OpenDialog1.Filter := Translation.translation__messages_r.application_files + '|*' + Common.exe__file_default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+          OpenDialog1.DefaultExt := Common.exe__file__default_extension;
+          OpenDialog1.Filter := Translation.translation__messages_r.application_files + '|*' + Common.exe__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
           OpenDialog1.Options := OpenDialog1.Options + [ System.UITypes.TOpenOption.ofFileMustExist ];
 
         end
@@ -810,8 +811,8 @@ begin
 
               zt_edit := Database__Backup__File_Path_Edit;
 
-              OpenDialog1.DefaultExt := Common.database__backup__file_default_extension;
-              OpenDialog1.Filter := Translation.translation__messages_r.firebird_backup_files + '|*' + Common.database__backup__file_default_extension + '|' + Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file_default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+              OpenDialog1.DefaultExt := Common.database__backup__file__default_extension;
+              OpenDialog1.Filter := Translation.translation__messages_r.firebird_backup_files + '|*' + Common.database__backup__file__default_extension + '|' + Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
 
             end
           else
@@ -819,8 +820,8 @@ begin
 
               zt_edit := Database__File_Path_Edit;
 
-              OpenDialog1.DefaultExt := Common.database__file_default_extension;
-              OpenDialog1.Filter := Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file_default_extension + '|' + Translation.translation__messages_r.firebird_backup_files + '|*' + Common.database__backup__file_default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
+              OpenDialog1.DefaultExt := Common.database__file__default_extension;
+              OpenDialog1.Filter := Translation.translation__messages_r.firebird_database_files + '|*' + Common.database__file__default_extension + '|' + Translation.translation__messages_r.firebird_backup_files + '|*' + Common.database__backup__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
 
             end;
 
@@ -996,41 +997,7 @@ end;
 procedure TDatabase__Backup_Restore_Form.Log_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  if Key = VK_F3 then
-    begin
-
-      if Common.Text__Search_Replace__Is_Nil( text__search_replace_form ) then
-        Common.Text__Search_Replace__Window_Show( Log_SynEdit, text__search_replace_form )
-      else
-        begin
-
-          if ssShift in Shift then
-            Common.Text__Search_Replace__Direction__Invert( text__search_replace_form );
-
-
-          Common.Text__Search_Replace__Do( Log_SynEdit, text__search_replace_form );
-
-        end;
-
-    end
-  else
-  // C.
-  if    ( Key = 67 )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( Log_SynEdit.SelText ) = ''  ) then
-    begin
-      Vcl.Clipbrd.Clipboard.AsText := Common.Syn_Edit__CharScan( Log_SynEdit );
-    end
-  else
-  // F.
-  if    ( Key = 70 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Log_SynEdit, text__search_replace_form )
-  else
-  // H.
-  if    ( Key = 72 )
-    and ( ssCtrl in Shift ) then
-    Common.Text__Search_Replace__Window_Show( Log_SynEdit, text__search_replace_form, true );
+  Common.Syn_Edit_Key_Down( Log_SynEdit, Sender, Key, Shift );
 
 end;
 
@@ -1063,8 +1030,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;
@@ -1074,8 +1040,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Command_Memo.SelectAll();
 
 end;

@@ -8,6 +8,7 @@ uses
   Common,
   Dependencies_F,
   Permissions_Modify_F,
+  Translation,
   View__Edit_Execute_F,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
@@ -46,21 +47,21 @@ type
     function Finish__VMF() : boolean;
     procedure Options_Set__VMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__VMF( const databases_r_f : Common.TDatabases_r; const view_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
-    function View_Name__Get__VMF() : string;
+    procedure View__Data_Open__VMF();
+    procedure View__Edit__VMF();
+    function View__Name__Get__VMF() : string;
     function Task_Running_Check__VMF( const message_show_f : boolean = true ) : boolean;
+    procedure Translation__Apply__VMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 implementation
-
-uses
- Translation;
 
 {$R *.dfm}
 
 function TView_Modify_F_Frame.Finish__VMF() : boolean;
 begin
 
-  if Task_Running_Check__VMF() then
+  if Self.Task_Running_Check__VMF() then
     begin
 
       Result := false;
@@ -113,7 +114,7 @@ begin
   view__edit_execute_f_frame_g.Options_Set__VEEF( component_type_f, sql__quotation_sign__vmf_g, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use__vmf_g );
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__VMF();
 
 end;
 
@@ -148,11 +149,35 @@ begin
   view__edit_execute_f_frame_g.Data_Open__VEEF();
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__VMF();
 
 end;
 
-function TView_Modify_F_Frame.View_Name__Get__VMF() : string;
+procedure TView_Modify_F_Frame.View__Data_Open__VMF();
+begin
+
+  Views_Modify_PageControl.ActivePage := Edit_Execute_TabSheet;
+
+  Views_Modify_PageControlChange( nil );
+
+  if view__edit_execute_f_frame_g <> nil then
+    view__edit_execute_f_frame_g.View__Edit_Execute_F__Data_Open__VEEF();
+
+end;
+
+procedure TView_Modify_F_Frame.View__Edit__VMF();
+begin
+
+  Views_Modify_PageControl.ActivePage := Edit_Execute_TabSheet;
+
+  Views_Modify_PageControlChange( nil );
+
+  if view__edit_execute_f_frame_g <> nil then
+    view__edit_execute_f_frame_g.View__Edit_Execute_F__Edit__VEEF();
+
+end;
+
+function TView_Modify_F_Frame.View__Name__Get__VMF() : string;
 begin
 
   Result := view_name__vmf__g;
@@ -166,6 +191,24 @@ begin
     Result := true
   else
     Result := false;
+
+end;
+
+procedure TView_Modify_F_Frame.Translation__Apply__VMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+begin
+
+  Translation.Translation__Apply( Self );
+
+
+  if dependencies_f_frame_g <> nil then
+    dependencies_f_frame_g.Translation__Apply__DF();
+
+
+  if permissions_modify_f_frame_g <> nil then
+    permissions_modify_f_frame_g.Translation__Apply__PMF( tak_f );
+
+
+  view__edit_execute_f_frame_g.Translation__Apply__VEEF( tak_f );
 
 end;
 

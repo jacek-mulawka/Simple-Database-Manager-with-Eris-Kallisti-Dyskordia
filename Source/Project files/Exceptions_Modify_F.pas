@@ -6,6 +6,7 @@ uses
   Data.Win.ADODB, FireDAC.Comp.Client,
 
   Common,
+  Translation,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
@@ -87,19 +88,20 @@ type
     function Quotation_Sign__EMF() : string;
   public
     { Public declarations }
-    procedure Data_Open__EMF( const force_refresh_f : boolean = false );
+    procedure Data_Open__EMF();
     procedure Finish__EMF();
     procedure Options_Set__EMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__EMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
+    procedure Translation__Apply__EMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
   end;
 
 const
-  exception_list__sql__description__drop__file_name_c : string = 'Exception__Description__Drop__sql.txt';
-  exception_list__sql__description__set__file_name_c : string = 'Exception__Description__Set__sql.txt';
   exceptions_list__file_name_c : string = 'Exceptions_List__sql.txt';
   exceptions_list__column__exception_message_c : string = 'EXCEPTION_MESSAGE_VALUE';
   exceptions_list__column__exception_message__cast_c : string = 'EXCEPTION_MESSAGE_VALUE__CAST';
   exceptions_list__column__exception_name__big_letter_c : string = 'EXCEPTION_NAME';
+  exceptions_list__sql__description__drop__file_name_c : string = 'Exception__Description__Drop__sql.txt';
+  exceptions_list__sql__description__set__file_name_c : string = 'Exception__Description__Set__sql.txt';
   exceptions_list__sql__exception__alter__file_name_c : string = 'Exception__Alter__sql.txt';
   exceptions_list__sql__exception__create__file_name_c : string = 'Exception__Create__sql.txt';
   exceptions_list__sql__exception__drop__file_name_c : string = 'Exception__Drop__sql.txt';
@@ -107,16 +109,14 @@ const
 implementation
 
 uses
-  System.IOUtils,
   Vcl.Clipbrd,
 
   Shared,
-  Text__Edit_Memo,
-  Translation;
+  Text__Edit_Memo;
 
 {$R *.dfm}
 
-procedure TExceptions_Modify_F_Frame.Data_Open__EMF( const force_refresh_f : boolean = false );
+procedure TExceptions_Modify_F_Frame.Data_Open__EMF();
 var
   i : integer;
 
@@ -124,20 +124,16 @@ var
 begin
 
   if   ( exceptions_sdbm = nil )
-    or ( exceptions_sdbm.component_type__sdbm = Common.ct_none )
-    or (
-             ( not force_refresh_f )
-         and ( exceptions_sdbm.Query__Active() )
-       ) then
+    or ( exceptions_sdbm.component_type__sdbm = Common.ct_none ) then
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__emf_g + System.IOUtils.TPath.DirectorySeparatorChar + exceptions_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + exceptions_list__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__file_name_c + ').' );
 
       zts :=
         'select RDB$EXCEPTIONS.RDB$EXCEPTION_NAME as EXCEPTION_NAME ' +
@@ -228,14 +224,8 @@ begin
 
 
       for i := 0 to Exceptions_DBGrid.Columns.Count - 1 do
-        if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_name__big_letter_c then
-          Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__name
-        else
         if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_message__cast_c then
           begin
-
-            Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__message__with_a_capital_letter;
-
 
             if Exceptions_DBGrid.Columns.Items[ i ].Width > 500 then
               Exceptions_DBGrid.Columns.Items[ i ].Width := 500;
@@ -245,8 +235,6 @@ begin
         if Exceptions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
 
-            Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description;
-
             if Exceptions_DBGrid.Columns.Items[ i ].Width > 500 then
               Exceptions_DBGrid.Columns.Items[ i ].Width := 500;
 
@@ -254,13 +242,16 @@ begin
         else
           begin
 
-            Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column_Name_To_Grid_Caption( Exceptions_DBGrid.Columns.Items[ i ].Title.Caption );
-
-
             if Exceptions_DBGrid.Columns.Items[ i ].Width > 200 then
               Exceptions_DBGrid.Columns.Items[ i ].Width := 200;
 
           end;
+
+
+      Self.Translation__Apply__EMF( Translation.tak_Grid );
+
+
+      Common.Data_Value_Format__Set( exceptions_sdbm, Log_Memo );
 
     end;
 
@@ -304,7 +295,7 @@ begin
     end;
 
 
-  Translation.Translation__Apply( Self );
+  Self.Translation__Apply__EMF( Translation.tak_Self );
 
 end;
 
@@ -320,11 +311,35 @@ begin
 
   exceptions_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
 
-  Options_Set__EMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
+  Self.Options_Set__EMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Modify__Message_Memo.Font, Common.sql_editor__font );
+
+end;
+
+procedure TExceptions_Modify_F_Frame.Translation__Apply__EMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
+var
+  i : integer;
+begin
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Self ] then
+    Translation.Translation__Apply( Self );
+
+
+  if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
+    for i := 0 to Exceptions_DBGrid.Columns.Count - 1 do
+      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_name__big_letter_c then
+        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__name
+      else
+      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_message__cast_c then
+        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__message__with_a_capital_letter
+      else
+      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Exceptions_DBGrid.Columns.Items[ i ].FieldName );
 
 end;
 
@@ -539,23 +554,23 @@ begin
     end;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__emf_g + System.IOUtils.TPath.DirectorySeparatorChar + exceptions_list__sql__exception__create__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__exception__create__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + exceptions_list__sql__exception__create__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__exception__create__file_name_c + ').' );
 
       zts :=
         'create exception ' +
-        Quotation_Sign__EMF() + Modify__Name_Edit.Text + Quotation_Sign__EMF() +
+        Self.Quotation_Sign__EMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__EMF() +
         ' ''' + Common.Sql_Special_Characters_Protect( Modify__Message_Memo.Lines.Text ) + ''' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EMF() + Modify__Name_Edit.Text + Quotation_Sign__EMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__EMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__EMF(), [ rfReplaceAll ] );
       zts := StringReplace(  zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_message_c + Common.sql__word_replace_separator_c, Common.Sql_Special_Characters_Protect( Modify__Message_Memo.Lines.Text ), [ rfReplaceAll ]  );
 
     end;
@@ -564,7 +579,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.add_exception + ' ''' + Quotation_Sign__EMF() + Modify__Name_Edit.Text + Quotation_Sign__EMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.add_exception + ' ''' + Self.Quotation_Sign__EMF() + Modify__Name_Edit.Text + Self.Quotation_Sign__EMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -624,23 +639,23 @@ begin
     end;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__emf_g + System.IOUtils.TPath.DirectorySeparatorChar + exceptions_list__sql__exception__alter__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__exception__alter__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + exceptions_list__sql__exception__alter__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__exception__alter__file_name_c + ').' );
 
       zts :=
         'alter exception ' +
-        Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Quotation_Sign__EMF() +
+        Self.Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Self.Quotation_Sign__EMF() +
         ' ''' + Common.Sql_Special_Characters_Protect( Modify__Message_Memo.Lines.Text ) + ''' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Quotation_Sign__EMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Self.Quotation_Sign__EMF(), [ rfReplaceAll ] );
       zts := StringReplace(  zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_message_c + Common.sql__word_replace_separator_c, Common.Sql_Special_Characters_Protect( Modify__Message_Memo.Lines.Text ), [ rfReplaceAll ]  );
 
     end;
@@ -649,7 +664,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.set_exception + ' ''' + Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Quotation_Sign__EMF() + ''' ' + Translation.translation__messages_r.word__message + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.set_exception + ' ''' + Self.Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Self.Quotation_Sign__EMF() + ''' ' + Translation.translation__messages_r.word__message + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -695,23 +710,23 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__emf_g + System.IOUtils.TPath.DirectorySeparatorChar + exceptions_list__sql__exception__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__exception__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + exceptions_list__sql__exception__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__exception__drop__file_name_c + ').' );
 
       zts :=
         'drop exception ' +
-        Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Quotation_Sign__EMF() +
+        Self.Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Self.Quotation_Sign__EMF() +
         ' ';
 
     end
   else
     begin
 
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_name__big_letter_c + Common.sql__word_replace_separator_c, Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Quotation_Sign__EMF(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + exceptions_list__column__exception_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Self.Quotation_Sign__EMF(), [ rfReplaceAll ] );
 
     end;
 
@@ -719,7 +734,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_exception + ' ''' + Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Quotation_Sign__EMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox( PChar(Translation.translation__messages_r.delete_exception + ' ''' + Self.Quotation_Sign__EMF() + exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString + Self.Quotation_Sign__EMF() + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
     Exit;
 
 
@@ -788,15 +803,15 @@ begin
   FreeAndNil( Text__Edit_Memo.Text__Edit_Memo_Form );
 
 
-  exception_name_l := Quotation_Sign__EMF() + Trim(  exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString  ) + Quotation_Sign__EMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  exception_name_l := Self.Quotation_Sign__EMF() + Trim(  exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString  ) + Self.Quotation_Sign__EMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__emf_g + System.IOUtils.TPath.DirectorySeparatorChar + exception_list__sql__description__set__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__description__set__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + exception_list__sql__description__set__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__description__set__file_name_c + ').' );
 
       zts :=
         'comment on exception ' +
@@ -862,14 +877,14 @@ begin
     Exit;
 
 
-  exception_name_l := Quotation_Sign__EMF() + Trim(  exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString  ) + Quotation_Sign__EMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
+  exception_name_l := Self.Quotation_Sign__EMF() + Trim(  exceptions_sdbm.Query__Field_By_Name( exceptions_list__column__exception_name__big_letter_c ).AsString  ) + Self.Quotation_Sign__EMF(); // ADO add spaces at the end to 32 characters e.g. 'COLUMN_NAME_1                  '.
 
-  zts := Common.Text__File_Load(  ExtractFilePath( Application.ExeName ) + Common.databases_type_directory_name_c + System.IOUtils.TPath.DirectorySeparatorChar + database_type__emf_g + System.IOUtils.TPath.DirectorySeparatorChar + exception_list__sql__description__drop__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__description__drop__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + exception_list__sql__description__drop__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__emf_g ) + exceptions_list__sql__description__drop__file_name_c + ').' );
 
       zts :=
         'comment on exception ' +
@@ -949,8 +964,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Modify__Message_Memo.SelectAll();
 
 end;
@@ -960,8 +974,7 @@ begin
 
   // A.
   if    ( Key = 65 )
-    and ( ssCtrl in Shift )
-    and (  not ( ssAlt in Shift )  ) then
+    and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
 
 end;

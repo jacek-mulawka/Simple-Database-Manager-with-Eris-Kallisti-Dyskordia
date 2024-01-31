@@ -257,6 +257,7 @@ object Stored_Procedure__Edit_Execute_F_Frame: TStored_Procedure__Edit_Execute_F
           RightEdge = 255
           SelectedColor.Alpha = 0.400000005960464500
           TabWidth = 2
+          WantTabs = True
           OnReplaceText = Stored_Procedure__Source_SynEditReplaceText
         end
       end

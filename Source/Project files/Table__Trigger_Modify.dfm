@@ -16,6 +16,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object Trigger_Name_Etiquette_Label: TLabel
@@ -431,6 +432,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
     RightEdge = 255
     SelectedColor.Alpha = 0.400000005960464500
     TabWidth = 2
+    WantTabs = True
     OnReplaceText = Trigger_Source_SynEditReplaceText
   end
   object Trigger_Source__SynCompletionProposal: TSynCompletionProposal

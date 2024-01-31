@@ -47,7 +47,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
     Align = alTop
     Caption = 'Database'
     TabOrder = 1
-    ExplicitWidth = 604
     object Database__Alias_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
@@ -122,7 +121,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       ParentShowHint = False
       ShowHint = True
       TabOrder = 1
-      ExplicitWidth = 580
       object Database__File_Path__Find_Button: TButton
         AlignWithMargins = True
         Left = 698
@@ -142,7 +140,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
         ShowHint = True
         TabOrder = 1
         OnClick = File_Path__Find_ButtonClick
-        ExplicitLeft = 538
       end
       object Database__File_Path_Edit: TEdit
         AlignWithMargins = True
@@ -157,7 +154,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
         Align = alClient
         TabOrder = 0
         OnExit = File_Path_EditExit
-        ExplicitWidth = 511
         ExplicitHeight = 23
       end
     end
@@ -177,7 +173,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
-      ExplicitWidth = 580
       object Database__Backup__File_Path__Top_Panel: TPanel
         Left = 2
         Top = 17
@@ -186,7 +181,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 576
         object Database__Backup__File_Name__Set_Button: TButton
           AlignWithMargins = True
           Left = 651
@@ -206,7 +200,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
           ShowHint = True
           TabOrder = 1
           OnClick = Database__Backup__File_Name__Set_ButtonClick
-          ExplicitLeft = 491
         end
         object Database__Backup__File_Path__Find_Button: TButton
           AlignWithMargins = True
@@ -227,7 +220,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
           ShowHint = True
           TabOrder = 2
           OnClick = File_Path__Find_ButtonClick
-          ExplicitLeft = 536
         end
         object Database__Backup__File_Path_Edit: TEdit
           AlignWithMargins = True
@@ -242,7 +234,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
           Align = alClient
           TabOrder = 0
           OnExit = File_Path_EditExit
-          ExplicitWidth = 466
           ExplicitHeight = 23
         end
       end
@@ -265,7 +256,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
           'date'
           'date time')
         TabOrder = 1
-        ExplicitWidth = 556
       end
     end
     object User_Name_Edit: TEdit
@@ -280,7 +270,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Margins.Bottom = 0
       Align = alTop
       TabOrder = 3
-      ExplicitWidth = 580
     end
     object Password_Edit: TEdit
       AlignWithMargins = True
@@ -295,7 +284,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Align = alTop
       PasswordChar = '*'
       TabOrder = 4
-      ExplicitWidth = 580
     end
     object Database_Type_GroupBox: TGroupBox
       AlignWithMargins = True
@@ -312,7 +300,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       ParentShowHint = False
       ShowHint = False
       TabOrder = 5
-      ExplicitWidth = 580
       object Parameters__Refresh_Button: TButton
         AlignWithMargins = True
         Left = 698
@@ -332,7 +319,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
         ShowHint = True
         TabOrder = 1
         OnClick = Parameters__Refresh_ButtonClick
-        ExplicitLeft = 538
       end
       object Database_Type_ComboBox: TComboBox
         AlignWithMargins = True
@@ -369,7 +355,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    ExplicitWidth = 604
     object Database__Backup__Application__File_Path__Find_Button: TButton
       AlignWithMargins = True
       Left = 722
@@ -389,7 +374,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       ShowHint = True
       TabOrder = 1
       OnClick = File_Path__Find_ButtonClick
-      ExplicitLeft = 562
     end
     object Database__Backup__Application__File_Path_Edit: TEdit
       AlignWithMargins = True
@@ -404,7 +388,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Align = alClient
       TabOrder = 0
       OnExit = File_Path_EditExit
-      ExplicitWidth = 535
       ExplicitHeight = 23
     end
   end
@@ -420,7 +403,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
     Margins.Bottom = 0
     Align = alClient
     TabOrder = 2
-    ExplicitWidth = 604
     object Log_Memo_Horizontal_Splitter: TSplitter
       Left = 1
       Top = 244
@@ -443,7 +425,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Align = alClient
       Caption = 'Parameters'
       TabOrder = 0
-      ExplicitWidth = 602
       object Parameters__General_Vertical_Splitter: TSplitter
         Left = 302
         Top = 17
@@ -483,7 +464,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
         Align = alClient
         TabOrder = 1
         OnChange = Parameters__Backup_Restore_PageControlChange
-        ExplicitWidth = 292
         object Parameters__Backup_TabSheet: TTabSheet
           Caption = 'Backup'
           object Parameters__Backup_ScrollBox: TScrollBox
@@ -493,7 +473,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
             Height = 194
             Align = alClient
             TabOrder = 0
-            ExplicitWidth = 284
           end
         end
         object Parameters__Restore_TabSheet: TTabSheet
@@ -521,7 +500,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       MultiLine = True
       TabOrder = 1
       TabPosition = tpLeft
-      ExplicitWidth = 602
       object Log_TabSheet: TTabSheet
         Caption = 'Log'
         object Log_Memo: TMemo
@@ -585,9 +563,8 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
           RightEdge = 255
           SelectedColor.Alpha = 0.400000005960464500
           TabWidth = 2
+          WantTabs = True
           OnReplaceText = Log_SynEditReplaceText
-          ExplicitWidth = 439
-          ExplicitHeight = 242
         end
       end
       object Command_TabSheet: TTabSheet
@@ -621,7 +598,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
     Margins.Bottom = 0
     Align = alBottom
     TabOrder = 3
-    ExplicitWidth = 604
     DesignSize = (
       764
       35)
@@ -711,7 +687,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       ShowHint = True
       TabOrder = 5
       OnClick = Parameter__Align_Correct_ButtonClick
-      ExplicitLeft = 575
     end
     object Log__Auto_Scroll__Seconds_SpinEdit: TSpinEdit
       Left = 645
@@ -728,7 +703,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       ShowHint = True
       TabOrder = 4
       Value = 5
-      ExplicitLeft = 545
     end
   end
   object OpenDialog1: TOpenDialog
