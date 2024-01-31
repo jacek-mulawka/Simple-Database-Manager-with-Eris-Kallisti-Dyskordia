@@ -1,8 +1,11 @@
-﻿execute block
+﻿execute block (  USER_NAMES__FILTER varchar( 5000 ) = :user_names__filter  )
 /* returns (  GENERATOR_NAME varchar( 100 ), GENERATOR_VALUE bigint, DESCRIPTION_VALUE varchar( 10000 )  ) */
 /* FireDAC limit default - FDConnection1.FormatOptions.MaxStringSize = 32767 bytes ( / 4 = 8191,75 ). */
-returns (  GENERATOR_NAME varchar( 100 ), GENERATOR_VALUE bigint, DESCRIPTION_VALUE varchar( 8191 )  )
+returns (  GENERATOR_NAME varchar( 100 ), GENERATOR_VALUE bigint, USER_NAMES varchar( 5000 ), DESCRIPTION_VALUE varchar( 8191 )  )
 as
+  declare variable ZTB boolean;
+
+  declare variable ZTS varchar( 1000 );
 begin
 
   for
@@ -10,17 +13,53 @@ begin
          , RDB$GENERATORS.RDB$DESCRIPTION
     from RDB$GENERATORS
     where RDB$GENERATORS.RDB$SYSTEM_FLAG is distinct from 1
-    /*order by RDB$GENERATORS.RDB$GENERATOR_NAME*/
     into GENERATOR_NAME
        , DESCRIPTION_VALUE
   do
-      begin
+    begin
 
+      execute statement
+        'select gen_id( "' || GENERATOR_NAME || '", 0 ) from RDB$DATABASE '
+        into GENERATOR_VALUE;
+
+
+      ZTB = false;
+      ZTS = '';
+      USER_NAMES = '';
+
+      for
         execute statement
-          'select gen_id( "' || GENERATOR_NAME || '", 0 ) from RDB$DATABASE '
-          into GENERATOR_VALUE;
+          'select RDB$USER_PRIVILEGES.RDB$USER
+           from RDB$USER_PRIVILEGES
+           where RDB$USER_PRIVILEGES.RDB$RELATION_NAME = '''||GENERATOR_NAME||'''
+           order by RDB$USER_PRIVILEGES.RDB$USER '
+        into ZTS
+      do
+        begin
 
+          if (  trim( USER_NAMES ) <> ''  ) then
+            USER_NAMES = USER_NAMES||', ';
+
+          USER_NAMES = USER_NAMES||trim( ZTS );
+
+
+
+          if (
+                   ( not ZTB )
+               and (  position( ', '||trim( ZTS )||',', ', '||USER_NAMES__FILTER||',' ) > 0  )
+             ) then
+            ZTB = true;
+
+        end
+
+
+      if (
+              (  trim( USER_NAMES__FILTER ) = ''  )
+           or ( USER_NAMES__FILTER is null )
+           or ( ZTB )
+         ) then
         suspend;
 
-      end
+    end
+
 end

@@ -1,18 +1,4 @@
-﻿select 'Default character set' as ATTRIBUTE_NAME
-     , RDB$DATABASE.RDB$CHARACTER_SET_NAME as ATTRIBUTE_VALUE
-from RDB$DATABASE
-
-union all
-
-select 'Description' as ATTRIBUTE_NAME
-     , RDB$DATABASE.RDB$DESCRIPTION as ATTRIBUTE_VALUE
-from RDB$DATABASE
-
-
-union all
-
-
-select 'Backup state' as ATTRIBUTE_NAME
+﻿select 'Backup state' as ATTRIBUTE_NAME
      , (case
          MON$DATABASE.MON$BACKUP_STATE
          when 0 then
@@ -29,49 +15,43 @@ select 'Backup state' as ATTRIBUTE_NAME
        end) as ATTRIBUTE_VALUE
 from MON$DATABASE
 
+
 union all
+
 
 select '(Re)creation date' as ATTRIBUTE_NAME
      , MON$DATABASE.MON$CREATION_DATE as ATTRIBUTE_VALUE
 from MON$DATABASE
 
+
 union all
 
-select 'Database name' as ATTRIBUTE_NAME
+
+select 'Database path or alias' as ATTRIBUTE_NAME
      , MON$DATABASE.MON$DATABASE_NAME as ATTRIBUTE_VALUE
 from MON$DATABASE
 
-union all
-
-select 'Owner' as ATTRIBUTE_NAME
-     , MON$DATABASE.MON$OWNER as ATTRIBUTE_VALUE
-from MON$DATABASE
 
 union all
 
-select 'Page size' as ATTRIBUTE_NAME
-     , MON$DATABASE.MON$PAGE_SIZE as ATTRIBUTE_VALUE
-from MON$DATABASE
+
+select 'Default character set' as ATTRIBUTE_NAME
+     , RDB$DATABASE.RDB$CHARACTER_SET_NAME as ATTRIBUTE_VALUE
+from RDB$DATABASE
+
 
 union all
 
-select 'Read only' as ATTRIBUTE_NAME
-     , (case
-         MON$DATABASE.MON$READ_ONLY
-         when 0 then
-           'Read write'
 
-         when 1 then
-           'Read only'
+select 'Description' as ATTRIBUTE_NAME
+     , RDB$DATABASE.RDB$DESCRIPTION as ATTRIBUTE_VALUE
+from RDB$DATABASE
 
-         else
-           MON$DATABASE.MON$READ_ONLY
-       end) as ATTRIBUTE_VALUE
-from MON$DATABASE
 
 union all
 
-select 'Reserve space' as ATTRIBUTE_NAME
+
+select 'Filling database pages' as ATTRIBUTE_NAME
      , (case
          MON$DATABASE.MON$RESERVE_SPACE
          when 0 then
@@ -85,7 +65,43 @@ select 'Reserve space' as ATTRIBUTE_NAME
        end) as ATTRIBUTE_VALUE
 from MON$DATABASE
 
+
 union all
+
+
+select 'Owner' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$OWNER as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+
+union all
+
+
+select 'Page size' as ATTRIBUTE_NAME
+     , MON$DATABASE.MON$PAGE_SIZE as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+
+union all
+
+
+select 'Reading mode' as ATTRIBUTE_NAME
+     , (case
+         MON$DATABASE.MON$READ_ONLY
+         when 0 then
+           'Read write'
+
+         when 1 then
+           'Read only'
+
+         else
+           MON$DATABASE.MON$READ_ONLY
+       end) as ATTRIBUTE_VALUE
+from MON$DATABASE
+
+
+union all
+
 
 select 'Shutdown mode' as ATTRIBUTE_NAME
      , (case
@@ -107,8 +123,10 @@ select 'Shutdown mode' as ATTRIBUTE_NAME
        end) as ATTRIBUTE_VALUE
 from MON$DATABASE
 
+
 union all
+
 
 select 'SQL dialect' as ATTRIBUTE_NAME
      , MON$DATABASE.MON$SQL_DIALECT as ATTRIBUTE_VALUE
-from MON$DATABASE
+from MON$DATABASE 

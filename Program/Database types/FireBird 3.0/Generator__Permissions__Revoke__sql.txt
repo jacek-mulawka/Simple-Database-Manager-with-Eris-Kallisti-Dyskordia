@@ -1,0 +1,1 @@
+﻿revoke USAGE on sequence __GENERATOR_NAME__ from user __USER_NAME__ 

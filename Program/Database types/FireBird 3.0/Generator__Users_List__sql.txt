@@ -1,0 +1,34 @@
+﻿select distinct tt.USER_NAME
+
+     , SEC$USERS.SEC$FIRST_NAME as USER__NAME__FIRST
+     , SEC$USERS.SEC$MIDDLE_NAME as USER__NAME__MIDDLE
+     , SEC$USERS.SEC$LAST_NAME as USER__NAME__LAST
+     , iif( SEC$USERS.SEC$ACTIVE = true, 'V', '' ) as USER_ACTIVE
+     , iif( SEC$USERS.SEC$ADMIN = true, 'V', '' ) as USER_IS_ADMINISTRATOR
+     , SEC$USERS.SEC$DESCRIPTION as DESCRIPTION_VALUE
+
+from
+  (
+
+    select SEC$USERS.SEC$USER_NAME as USER_NAME
+    from SEC$USERS
+
+    union all
+
+    select distinct RDB$USER_PRIVILEGES.RDB$USER as USER_NAME
+    from RDB$USER_PRIVILEGES
+    where RDB$USER_PRIVILEGES.RDB$RELATION_NAME in
+            (
+              select RDB$GENERATORS.RDB$GENERATOR_NAME
+              from RDB$GENERATORS
+              where RDB$GENERATORS.RDB$SYSTEM_FLAG is distinct from 1
+            )
+      and RDB$USER_PRIVILEGES.RDB$RELATION_NAME not in
+            (
+              select SEC$USERS.SEC$USER_NAME
+              from SEC$USERS
+            )
+
+  ) as tt
+left join SEC$USERS on SEC$USERS.SEC$USER_NAME = tt.USER_NAME
+order by tt.USER_NAME 

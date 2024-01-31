@@ -1,10 +1,13 @@
 ﻿\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}     , \style{-B}-->     , 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}#13#10\style{-B}-->#13#10
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}     , (case(...)\style{-B}-->case~#13#10     , (case#13#10         when ( T1.C1 > 3320 ) then#13#10           T1.C1#13#10         else#13#10           T1.C2#13#10       end) as ALIAS
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}abs( | )\style{-B}-->abs( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}ascii_char( 13 )||ascii_char( 10 )\style{-B}-->ascii_char( 13 )||ascii_char( 10 )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}boolean \style{-B}-->boolean 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast( 'NOW' as timestamp )\style{-B}-->cast( 'NOW' as timestamp )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast(  '13' as varchar( 3 )  )\style{-B}-->cast(  '13' as varchar( 3 )  )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast(  substring( | from 1 for 50 ) as varchar( 50 )  )\style{-B}-->cast(  substring( | from 1 for 50 ) as varchar( 50 )  )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}char \style{-B}-->char 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}char_length( | )\style{-B}-->char_length( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}ceil( | )\style{-B}-->ceil( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}character_length( | )\style{-B}-->character_length( | )
@@ -14,10 +17,13 @@
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}CURRENT_DATE\style{-B}-->CURRENT_DATE
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}CURRENT_TIME\style{-B}-->CURRENT_TIME
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}CURRENT_TIMESTAMP\style{-B}-->CURRENT_TIMESTAMP
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}date \style{-B}-->date 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}dateadd( 2 year to | )\style{-B}-->dateadd( 2 year to | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}dateadd: month, day, hour, minute, second, millisecond\style{-B}-->dateadd: month, day, hour, minute, second, millisecond
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}datediff( month, |, | )\style{-B}-->datediff( month, |, | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}datediff: year, month, week, day, hour, minute, second, millisecond\style{-B}-->datediff: year, month, week, day, hour, minute, second, millisecond
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}decimal( 12, 4 ); \style{-B}-->decimal( 12, 4 ) 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}declare variable \style{-B}-->declare variable 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}delete from \style{-B}-->delete from 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}distinct \style{-B}-->distinct 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract( year from | )\style{-B}-->extract( year from | )
@@ -29,30 +35,38 @@
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}iif( | = 'M', 'Yes', 'No' )\style{-B}-->iif( | = 'M', 'Yes', 'No' )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into  values \style{-B}-->insert into  values 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into table(...)\style{-B}-->insert into tabela#13#10    (#13#10        C1#13#10      , C2#13#10    )#13#10  values#13#10    (#13#10        v_c1#13#10      , ( select C2 from T2 where ... )#13#10    )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}integer \style{-B}-->integer 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}join\style{-B}-->join 
-\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on = \style{-B}-->left join | on = 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on  = \style{-B}-->left join | on  = 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (select)\style{-B}-->list~#13#10select cast#13#10         (#13#10           substring#13#10             (#13#10               list( '(id: ' || T1.C1 || '; name: ' || T1.C2 || ')' )#13#10               from 1 for 50#13#10             )#13#10           as varchar( 50 )#13#10         )#13#10from T1
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (     , )\style{-B}-->list~#13#10     , (#13#10         select cast#13#10                  (#13#10                    substring#13#10                      (#13#10                        list( T1.C1 || ' ' )#13#10                        /* list( T1.C1, ', ' )  // Or. */#13#10                        /* list(  all T1.C1, ascii_char( 13 )  )  // Or. */#13#10                        /* list( distinct T1.C1, ', ' )  // Or. */#13#10                        from 1 for 50#13#10                      )#13#10                    as varchar( 50 )#13#10                  )#13#10         from T1#13#10         where T1 = 1#13#10       )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}lower( | )\style{-B}-->lower( | )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}lpad( | , 6, 0 )\style{-B}-->lpad( | , 6, 0 )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}max( | )\style{-B}-->max( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min( | )\style{-B}-->min( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}order by\style{-B}-->order by 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}position( 'pattern', T1.C1 )\style{-B}-->position( 'pattern', T1.C1 )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}RDB$DATABASE\style{-B}-->RDB$DATABASE
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}replace( |, 'old_pattern', 'new_pattern' )\style{-B}-->replace( |, 'old_pattern', 'new_pattern' )
-\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}right join | on = \style{-B}-->right join | on = 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}right join | on  = \style{-B}-->right join | on  = 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}round( | )\style{-B}-->round( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}round( |, 0 )\style{-B}-->round( |, 0 )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}rpad( | , 6, 0 )\style{-B}-->rpad( | , 6, 0 )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}select \style{-B}-->select 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}smallint \style{-B}-->smallint 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}strlen( | )\style{-B}-->strlen( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substr( | , 6, 7 )\style{-B}-->substr( | , 6, 7 )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substring( | from 2 )\style{-B}-->substring( | from 2 )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substring( | from 1 for 2 )\style{-B}-->substring( | from 1 for 2 )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}sum( | )\style{-B}-->sum( | )
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}time \style{-B}-->time 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}timestamp \style{-B}-->timestamp 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trim( | )\style{-B}-->trim( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trunc( | )\style{-B}-->trunc( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union \style{-B}-->union 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}update \style{-B}-->update 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}upper( | )\style{-B}-->upper( | )
-\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}where\style{-B}-->where 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}varchar( 100 ) \style{-B}-->varchar( 100 ) 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}where \style{-B}-->where 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}/*\style{-B}-->/*
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}*/\style{-B}-->*/
