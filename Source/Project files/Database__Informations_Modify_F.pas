@@ -66,6 +66,7 @@ type
 
     procedure Data_Open__DIMF();
     procedure Finish__DIMF();
+    procedure Highlight__Font__Set__DIMF();
     procedure Options_Set__DIMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__DIMF( const database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
@@ -634,6 +635,17 @@ begin
 
 end;
 
+procedure TDatabase__Informations_Modify_F_Frame.Highlight__Font__Set__DIMF();
+begin
+
+  Common.Font__Set( Database_Description_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Metadata_StringGrid.Font, Common.sql_editor__font );
+
+end;
+
 procedure TDatabase__Informations_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -742,8 +754,7 @@ begin
   Metadata_StringGrid.ColCount := 2;
 
 
-  Common.Font__Set( Database_Description_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__DIMF();
 
 end;
 

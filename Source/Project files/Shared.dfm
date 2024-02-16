@@ -2,7 +2,7 @@ object Shared_DataModule: TShared_DataModule
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
   Height = 480
-  Width = 640
+  Width = 1000
   PixelsPerInch = 96
   object ImageList1: TImageList
     Left = 25
@@ -1203,10 +1203,6 @@ object Shared_DataModule: TShared_DataModule
       FE7FFFFAFFFFF00FFE7FFFFDFFFFF81F00000000000000000000000000000000
       000000000000}
   end
-  object Sql_Text__SynSQLSyn: TSynSQLSyn
-    Left = 127
-    Top = 15
-  end
   object SynEditSearch1: TSynEditSearch
     Left = 365
     Top = 15
@@ -1214,5 +1210,300 @@ object Shared_DataModule: TShared_DataModule
   object SynEditRegexSearch1: TSynEditRegexSearch
     Left = 255
     Top = 15
+  end
+  object SynADSP21xxSyn1: TSynADSP21xxSyn
+    Left = 40
+    Top = 95
+  end
+  object SynAsmSyn1: TSynAsmSyn
+    Left = 135
+    Top = 95
+  end
+  object SynAWKSyn1: TSynAWKSyn
+    Left = 215
+    Top = 95
+  end
+  object SynBaanSyn1: TSynBaanSyn
+    Left = 295
+    Top = 95
+  end
+  object SynBatSyn1: TSynBatSyn
+    Left = 370
+    Top = 95
+  end
+  object SynCacheSyn1: TSynCacheSyn
+    Left = 450
+    Top = 95
+  end
+  object SynCACSyn1: TSynCACSyn
+    Left = 535
+    Top = 95
+  end
+  object SynCobolSyn1: TSynCobolSyn
+    AreaAStartPos = 7
+    AreaBStartPos = 11
+    CodeEndPos = 71
+    Left = 620
+    Top = 95
+  end
+  object SynCPMSyn1: TSynCPMSyn
+    Left = 705
+    Top = 95
+  end
+  object SynCppSyn1: TSynCppSyn
+    Left = 785
+    Top = 95
+  end
+  object SynCssSyn1: TSynCssSyn
+    Left = 860
+    Top = 95
+  end
+  object SynCSSyn1: TSynCSSyn
+    Left = 930
+    Top = 95
+  end
+  object SynDfmSyn1: TSynDfmSyn
+    Left = 25
+    Top = 155
+  end
+  object SynDmlSyn1: TSynDmlSyn
+    Left = 103
+    Top = 155
+  end
+  object SynDOTSyn1: TSynDOTSyn
+    Left = 180
+    Top = 155
+  end
+  object SynDWSSyn1: TSynDWSSyn
+    DefaultFilter = 'DWScript Files (*.dws;*.pas;*.inc)|*.dws;*.pas;*.inc'
+    Left = 260
+    Top = 155
+  end
+  object SynEiffelSyn1: TSynEiffelSyn
+    Left = 338
+    Top = 155
+  end
+  object SynFortranSyn1: TSynFortranSyn
+    Left = 423
+    Top = 155
+  end
+  object SynFoxproSyn1: TSynFoxproSyn
+    Left = 513
+    Top = 155
+  end
+  object SynGalaxySyn1: TSynGalaxySyn
+    KeyWords.Strings = (
+      '#end'
+      '#galaxy'
+      'a'
+      'anonymous'
+      'autounload'
+      'b'
+      'battleprotocol'
+      'c'
+      'cap'
+      'cargo'
+      'col'
+      'compress'
+      'd'
+      'drive'
+      'e'
+      'emp'
+      'f'
+      'fleet'
+      'fleettables'
+      'g'
+      'galaxytv'
+      'gplus'
+      'groupforecast'
+      'h'
+      'i'
+      'j'
+      'l'
+      'm'
+      'machinereport'
+      'mat'
+      'n'
+      'namecase'
+      'no'
+      'o'
+      'options'
+      'p'
+      'planetforecast'
+      'prodtable'
+      'produce'
+      'q'
+      'r'
+      'routesforecast'
+      's'
+      'send'
+      'shields'
+      'shiptypeforecast'
+      'sortgroups'
+      't'
+      'twocol'
+      'u'
+      'underscores'
+      'v'
+      'w'
+      'war'
+      'weapons'
+      'x'
+      'y'
+      'z')
+    Left = 603
+    Top = 155
+  end
+  object SynGeneralSyn1: TSynGeneralSyn
+    DetectPreprocessor = False
+    Left = 693
+    Top = 155
+  end
+  object SynGWScriptSyn1: TSynGWScriptSyn
+    Left = 790
+    Top = 155
+  end
+  object SynHaskellSyn1: TSynHaskellSyn
+    Left = 885
+    Top = 155
+  end
+  object SynHC11Syn1: TSynHC11Syn
+    Left = 25
+    Top = 215
+  end
+  object SynHTMLSyn1: TSynHTMLSyn
+    Left = 190
+    Top = 215
+  end
+  object SynIdlSyn1: TSynIdlSyn
+    Left = 265
+    Top = 215
+  end
+  object SynIniSyn1: TSynIniSyn
+    Left = 330
+    Top = 215
+  end
+  object SynInnoSyn1: TSynInnoSyn
+    Left = 400
+    Top = 215
+  end
+  object SynJavaSyn1: TSynJavaSyn
+    Left = 475
+    Top = 215
+  end
+  object SynJScriptSyn1: TSynJScriptSyn
+    Left = 555
+    Top = 215
+  end
+  object SynJSONSyn1: TSynJSONSyn
+    Left = 640
+    Top = 215
+  end
+  object SynKixSyn1: TSynKixSyn
+    Left = 715
+    Top = 215
+  end
+  object SynLDRSyn1: TSynLDRSyn
+    Left = 785
+    Top = 215
+  end
+  object SynM3Syn1: TSynM3Syn
+    Left = 855
+    Top = 215
+  end
+  object SynModelicaSyn1: TSynModelicaSyn
+    Left = 35
+    Top = 275
+  end
+  object SynMsgSyn1: TSynMsgSyn
+    Left = 125
+    Top = 275
+  end
+  object SynPasSyn1: TSynPasSyn
+    Left = 200
+    Top = 275
+  end
+  object SynPerlSyn1: TSynPerlSyn
+    Left = 273
+    Top = 275
+  end
+  object SynPHPSyn1: TSynPHPSyn
+    Left = 348
+    Top = 275
+  end
+  object SynProgressSyn1: TSynProgressSyn
+    Left = 438
+    Top = 275
+  end
+  object SynPythonSyn1: TSynPythonSyn
+    Left = 533
+    Top = 275
+  end
+  object SynRCSyn1: TSynRCSyn
+    Left = 613
+    Top = 275
+  end
+  object SynRubySyn1: TSynRubySyn
+    Left = 688
+    Top = 275
+  end
+  object SynSDDSyn1: TSynSDDSyn
+    Left = 765
+    Top = 275
+  end
+  object SynSMLSyn1: TSynSMLSyn
+    Left = 840
+    Top = 275
+  end
+  object SynSQLSyn1: TSynSQLSyn
+    Left = 912
+    Top = 275
+  end
+  object SynSTSyn1: TSynSTSyn
+    Left = 15
+    Top = 335
+  end
+  object SynTclTkSyn1: TSynTclTkSyn
+    OptionsAttri.Background = clNone
+    OptionsAttri.Foreground = clNone
+    PathAttri.Background = clNone
+    PathAttri.Foreground = clNone
+    VariableAttri.Background = clNone
+    VariableAttri.Foreground = clNone
+    Left = 90
+    Top = 335
+  end
+  object SynTeXSyn1: TSynTeXSyn
+    Left = 170
+    Top = 335
+  end
+  object SynUNIXShellScriptSyn1: TSynUNIXShellScriptSyn
+    Left = 275
+    Top = 335
+  end
+  object SynUnrealSyn1: TSynUnrealSyn
+    Left = 385
+    Top = 335
+  end
+  object SynURISyn1: TSynURISyn
+    Left = 465
+    Top = 335
+  end
+  object SynVBSyn1: TSynVBSyn
+    Left = 630
+    Top = 335
+  end
+  object SynVBScriptSyn1: TSynVBScriptSyn
+    Left = 550
+    Top = 335
+  end
+  object SynVrml97Syn1: TSynVrml97Syn
+    Left = 710
+    Top = 335
+  end
+  object SynXMLSyn1: TSynXMLSyn
+    WantBracesParsed = False
+    Left = 795
+    Top = 335
   end
 end

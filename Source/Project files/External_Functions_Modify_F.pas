@@ -82,8 +82,10 @@ type
     function Quotation_Sign__EFMF() : string;
   public
     { Public declarations }
+    function Data_Active__EFMF() : boolean;
     procedure Data_Open__EFMF();
     procedure Finish__EFMF();
+    procedure Highlight__Font__Set__EFMF();
     procedure Options_Set__EFMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__EFMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__EFMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -105,6 +107,15 @@ uses
   Text__Edit_Memo;
 
 {$R *.dfm}
+
+function TExternal_Functions_Modify_F_Frame.Data_Active__EFMF() : boolean;
+begin
+
+  Result :=
+        ( external_functions__modify_sdbm <> nil )
+    and ( external_functions__modify_sdbm.Query__Active() );
+
+end;
 
 procedure TExternal_Functions_Modify_F_Frame.Data_Open__EFMF();
 var
@@ -448,6 +459,16 @@ begin
 
 end;
 
+procedure TExternal_Functions_Modify_F_Frame.Highlight__Font__Set__EFMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( External_Functions_DBGrid.Font, Common.sql_editor__font );
+
+end;
+
 function TExternal_Functions_Modify_F_Frame.Quotation_Sign__EFMF() : string;
 begin
 
@@ -499,7 +520,7 @@ begin
   Self.Options_Set__EFMF( component_type_f, databases_r_f.sql__quotation_sign, splitter_show_f, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__EFMF();
 
 end;
 
@@ -676,7 +697,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Refresh_Button.Name ) then
+    and ( Sender = Refresh_Button ) then
     begin
 
       Log_Memo.Lines.Add( external_functions__modify_sdbm.Operation_Duration_Get() );

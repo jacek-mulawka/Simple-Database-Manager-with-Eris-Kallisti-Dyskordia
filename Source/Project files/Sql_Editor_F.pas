@@ -63,11 +63,11 @@ type
     Data_Preview_DBMemo: TDBMemo;
     Sql_Parameters_Vertical_Splitter: TSplitter;
     Sql_Parameters_ScrollBox: TScrollBox;
-    Sql_Text_PopupMenu: TPopupMenu;
+    Sql_Text__Code_Completion_PopupMenu: TPopupMenu;
     Execute_Button: TButton;
     Search_In_RadioGroup: TRadioGroup;
     Ado_Command_Param_Check_CheckBox: TCheckBox;
-    Execute_Automatic_Detection_CheckBox: TCheckBox;
+    Execute__Automatic_Detection_CheckBox: TCheckBox;
     Transactions_Automatic_CheckBox: TCheckBox;
     Query_Output_Save_Field_Format_GroupBox: TGroupBox;
     Query_Output_Save_Field_Format__Date_GroupBox: TGroupBox;
@@ -97,6 +97,56 @@ type
     Text__File__Path_Edit: TEdit;
     Text__File__Save_Button: TButton;
     OpenDialog1: TOpenDialog;
+    Sql_Text_PopupMenu: TPopupMenu;
+    Open_MenuItem: TMenuItem;
+    Execute_MenuItem: TMenuItem;
+    Refresh_MenuItem: TMenuItem;
+    Close_MenuItem: TMenuItem;
+    N1: TMenuItem;
+    Transaction__Begin_MenuItem: TMenuItem;
+    Transaction__Commit_MenuItem: TMenuItem;
+    Transaction__Rollback_MenuItem: TMenuItem;
+    N2: TMenuItem;
+    Sql__Prior_MenuItem: TMenuItem;
+    Sql__Next_MenuItem: TMenuItem;
+    N3: TMenuItem;
+    Find_MenuItem: TMenuItem;
+    Replace_MenuItem: TMenuItem;
+    N4: TMenuItem;
+    Bookmarks__Toggle_MenuItem: TMenuItem;
+    Bookmarks__Go_To_MenuItem: TMenuItem;
+    Bookmarks__Clear_MenuItem: TMenuItem;
+    N5: TMenuItem;
+    Highlights__Brackets_MenuItem: TMenuItem;
+    Highlights__Brackets__All_Pairs_MenuItem: TMenuItem;
+    Highlights__Brackets__Angle_MenuItem: TMenuItem;
+    Highlights__Brackets__Curly_MenuItem: TMenuItem;
+    Highlights__Brackets__Round_MenuItem: TMenuItem;
+    Highlights__Brackets__Square_MenuItem: TMenuItem;
+    Highlighter__Syntax_MenuItem: TMenuItem;
+    N6: TMenuItem;
+    Comment_Uncomment_MenuItem: TMenuItem;
+    Comment_Uncomment_Alternatively_MenuItem: TMenuItem;
+    Comment_Invert_Alternatively_MenuItem: TMenuItem;
+    N7: TMenuItem;
+    Output_Save_MenuItem: TMenuItem;
+    N8: TMenuItem;
+    Text__File__Find_MenuItem: TMenuItem;
+    Text__File__Load_MenuItem: TMenuItem;
+    Text__File__Save_MenuItem: TMenuItem;
+    N9: TMenuItem;
+    Cut_MenuItem: TMenuItem;
+    Copy_MenuItem: TMenuItem;
+    Paste_MenuItem: TMenuItem;
+    Select_All_MenuItem: TMenuItem;
+    N10: TMenuItem;
+    Execute__Automatic_Detection_MenuItem: TMenuItem;
+    Transactions_Automatic_MenuItem: TMenuItem;
+    Data_Value_Format__Disabled_MenuItem: TMenuItem;
+    Comments_Delete_MenuItem: TMenuItem;
+    Execute__Selected_MenuItem: TMenuItem;
+    Ado_Command_Param_Check_MenuItem: TMenuItem;
+    Queries_Open_In_Background_MenuItem: TMenuItem;
 
     procedure Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 
@@ -125,11 +175,16 @@ type
     procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search_ButtonKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
+    procedure Ado_Command_Param_Check_CheckBoxClick( Sender: TObject );
+    procedure Comments_Delete_CheckBoxClick( Sender: TObject );
     procedure Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
+    procedure Execute__Automatic_Detection_CheckBoxClick( Sender: TObject );
+    procedure Transactions_Automatic_CheckBoxClick( Sender: TObject );
 
     procedure Tab_Name__Set_ButtonClick( Sender: TObject );
     procedure Tab_Name_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Buttons_Panel__Hide_ButtonClick( Sender: TObject );
+    procedure Bookmarks__Clear_MenuItemClick( Sender: TObject );
 
     procedure File_Path_EditExit( Sender: TObject );
 
@@ -149,8 +204,13 @@ type
     procedure Sql_Text_SynEditKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Sql_Text_SynEditReplaceText( Sender: TObject; const ASearch, AReplace: string; Line, Column: Integer; var Action: TSynReplaceAction );
 
+    procedure Sql_Text__Highlighter__Syntax__SetMenuItemClick( Sender: TObject );
+    procedure Sql_Text__Highlights__Brackets__SetMenuItemClick( Sender: TObject );
+
     procedure Sql_Text__SynCompletionProposalCodeCompletion( Sender: TObject; var Value: string; Shift: TShiftState; Index: Integer; EndToken: Char );
     procedure Sql_Text__SynCompletionProposalAfterCodeCompletion( Sender: TObject; const Value: string; Shift: TShiftState; Index: Integer; EndToken: Char );
+
+    procedure Sql_Text_PopupMenu__MenuItemClick_Common( Sender: TObject );
 
     procedure Query_Output_Save_Field_FormatKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
@@ -166,7 +226,6 @@ type
   private
     { Private declarations }
     busy_g,
-    queries_open_in_background_g,
     sql__quotation_sign__use__sef_g,
     sort__direction_ascending_g,
     task_is_running_g
@@ -200,7 +259,7 @@ type
     text__file__text_copy_g
       : string;
 
-    sql_editor__sql_special_word__execute_automatic_detection__list_g_t,
+    sql_editor__sql_special_word__execute__automatic_detection__list_g_t,
     sql_editor__sql_special_word__transactions_automatic__list_g_t,
     sql_text_history_g_t
       : array of string;
@@ -235,8 +294,9 @@ type
   public
     { Public declarations }
     function Finish__SEF( var modal_result_f : TModalResult ) : boolean;
+    procedure Highlight__Font__Set__SEF();
     procedure Options_Set__SEF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
-    procedure Prepare__SEF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
+    procedure Prepare__SEF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const database_connection__separated_f, queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
     function Task_Running_Check__SEF( const message_show_f : boolean = true ) : boolean;
     procedure Translation__Apply__SEF();
   end;
@@ -249,7 +309,7 @@ const
   sql_editor__column_name_add_text__2__file_name_c : string = 'Sql_Editor__Column_Name_Add_Text__2.txt';
   sql_editor__notification__sign__file_changed_c : string = '*';
   sql_editor__select_all_columns_text__file_name_c : string = 'Sql_Editor__Select_All_Columns_Text.txt';
-  sql_editor__sql_special_word__execute_automatic_detection__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Execute_Automatic_Detection_List.txt';
+  sql_editor__sql_special_word__execute__automatic_detection__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Execute__Automatic_Detection_List.txt';
   sql_editor__sql_special_word__transactions_automatic__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Transactions_Automatic_List.txt';
   sql_editor__table_name_add_text__1__file_name_c : string = 'Sql_Editor__Table_Name_Add_Text__1.txt';
   sql_editor__table_name_add_text__2__a__file_name_c : string = 'Sql_Editor__Table_Name_Add_Text__2__A.txt';
@@ -406,7 +466,7 @@ begin
     Exit;
 
 
-  if not queries_open_in_background_g then
+  if not Queries_Open_In_Background_MenuItem.Checked then
     begin
 
       Screen.Cursor := crSQLWait;
@@ -511,7 +571,7 @@ begin
   //end;
 
 
-  if not queries_open_in_background_g then
+  if not Queries_Open_In_Background_MenuItem.Checked then
     begin
 
       Screen.Cursor := crSQLWait;
@@ -675,6 +735,36 @@ begin
 
 
   Sql__Parameters__Free();
+
+end;
+
+procedure TSql_Editor_F_Frame.Highlight__Font__Set__SEF();
+begin
+
+  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  //Common.Font__Set( Sql_Text_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Sql_Text_SynEdit.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Columns_List_ListBox.Font, Common.sql_editor__font );
+      Common.Font__Set( Sql_Editor_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( Tables_List_ListBox.Font, Common.sql_editor__font );
+
+    end;
+
+  Common.Syn_Edit__Parameters__Set( Sql_Text_SynEdit );
+
+  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Sql_Text_SynEdit );
+
+
+  Highlights__Brackets__All_Pairs_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__all_pairs;
+  Highlights__Brackets__Angle_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__angle;
+  Highlights__Brackets__Curly_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__curly;
+  Highlights__Brackets__Round_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__round;
+  Highlights__Brackets__Square_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__square;
 
 end;
 
@@ -1278,11 +1368,12 @@ var
   zt_sdbm : Common.TSDBM;
 begin
 
-  queries_open_in_background_g := queries_open_in_background_f;
   sql__quotation_sign__use__sef_g := sql__quotation_sign__use_f;
   sql__quotation_sign__sef_g := sql__quotation_sign_f;
 
   Ado_Command_Param_Check_CheckBox.Visible := component_type_f = Common.ct_ADO;
+  Ado_Command_Param_Check_MenuItem.Visible := Ado_Command_Param_Check_CheckBox.Visible;
+  Queries_Open_In_Background_MenuItem.Checked := queries_open_in_background_f;
 
 
   if sql_editor_sdbm <> nil then
@@ -1484,7 +1575,7 @@ begin
 
 end;
 
-procedure TSql_Editor_F_Frame.Prepare__SEF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
+procedure TSql_Editor_F_Frame.Prepare__SEF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const database_connection__separated_f, queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
 
   function Newline_Characters_Delete( const text_f : string ) : string;
   begin
@@ -1513,7 +1604,9 @@ var
   zts_2
     : string;
 
-  //zt_menu_item : TMenuItem;
+  zt_string_list : TStringList;
+
+  zt_menu_item : TMenuItem;
 begin
 
   Self.Name := '';
@@ -1524,11 +1617,10 @@ begin
   id_search__tablse_list_g := -1;
   database_type__sef_g := databases_r_f.database_type;
   busy_g := false;
-  queries_open_in_background_g := queries_open_in_background_f;
   sort__column_name_g := '';
   sort__direction_ascending_g := true;
   sql_editor_db_grid__selected_index_copy_g := 0;
-  SetLength( sql_editor__sql_special_word__execute_automatic_detection__list_g_t, 0 );
+  SetLength( sql_editor__sql_special_word__execute__automatic_detection__list_g_t, 0 );
   SetLength( sql_editor__sql_special_word__transactions_automatic__list_g_t, 0 );
   SetLength( sql_text_history_g_t, 0 );
   sql_text_history__index_current_g := -1;
@@ -1542,13 +1634,18 @@ begin
 
 
   Comments_Delete_CheckBox.Checked := Common.sql_editor__comments_delete;
+  Comments_Delete_MenuItem.Checked := Comments_Delete_CheckBox.Checked;
   Csv__File__Data_Separator_Edit.Text := Common.csv__file__data_separator;
   Csv__File__Text_Qualifier_Edit.Text := Common.csv__file__text_qualifier;
   Data_Preview_DBMemo.Height := 1;
+  Queries_Open_In_Background_MenuItem.Checked := queries_open_in_background_f;
   Sql_Parameters_ScrollBox.Width := 1;
   Tables_List_ListBox.Height := Round( Tables_Columns_List_Panel.Height * 0.5 ) - Tables_List_Horizontal_Splitter.Height;
 
-  Execute_Automatic_Detection_CheckBox.Checked := Common.sql_editor__execute_automatic_detection;
+  Ado_Command_Param_Check_MenuItem.Checked := Ado_Command_Param_Check_CheckBox.Checked;
+  Execute__Automatic_Detection_CheckBox.Checked := Common.sql_editor__execute__automatic_detection;
+  Execute__Automatic_Detection_MenuItem.Checked := Execute__Automatic_Detection_CheckBox.Checked;
+  Execute__Selected_MenuItem.Checked := Common.sql_editor__execute__selected;
   Query_Output_Save_Field_Format__Date_Edit.Text := Common.sql_editor__query_output_save_field_format__date;
   Query_Output_Save_Field_Format__Date__Use_CheckBox.Checked := Trim( Query_Output_Save_Field_Format__Date_Edit.Text ) <> '';
   Query_Output_Save_Field_Format__Real_Numbers_Edit.Text := Common.sql_editor__query_output_save_field_format__real_numbers;
@@ -1558,11 +1655,16 @@ begin
   Query_Output_Save_Field_Format__Time_Edit.Text := Common.sql_editor__query_output_save_field_format__time;
   Query_Output_Save_Field_Format__Time__Use_CheckBox.Checked := Trim( Query_Output_Save_Field_Format__Time_Edit.Text ) <> '';
   Transactions_Automatic_CheckBox.Checked := Common.sql_editor__transactions_automatic;
+  Transactions_Automatic_MenuItem.Checked := Transactions_Automatic_CheckBox.Checked;
 
 
   busy_notification__knight_rider_equalizer := Migawka_Prostokat_Tabela_2_SDBM.TMigawka_Prostokat_Tabela_2.Create( Self );
 
-  sql_editor_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f );
+
+  sql_editor_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f, database_connection__separated_f );
+
+  if database_connection__separated_f then
+    sql_editor_sdbm.Connection__Open( databases_r_f, Log_Memo, component_type_f );
 
 
   sql_editor__select_all_columns_text_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__select_all_columns_text__file_name_c  );
@@ -1584,16 +1686,37 @@ begin
   Tab_Name_Edit.Text := parent_caption_copy_g;
 
 
-  Self.Options_Set__SEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, sql__quotation_sign__use_f );
+
+  for zti_1 := 0 to 9 do
+    begin
+
+      zt_menu_item := TMenuItem.Create( Application );
+      zt_menu_item.Caption := zti_1.ToString();
+      zt_menu_item.OnClick := Sql_Text_PopupMenu__MenuItemClick_Common;
+
+      Bookmarks__Toggle_MenuItem.Add( zt_menu_item );
 
 
-  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute_automatic_detection__file_name_c  );
+      zt_menu_item := TMenuItem.Create( Application );
+      zt_menu_item.Caption := zti_1.ToString();
+      zt_menu_item.OnClick := Sql_Text_PopupMenu__MenuItemClick_Common;
+
+      Bookmarks__Go_To_MenuItem.Add( zt_menu_item );
+
+    end;
+
+
+
+  Self.Options_Set__SEF( component_type_f, databases_r_f.sql__quotation_sign, Queries_Open_In_Background_MenuItem.Checked, sql__quotation_sign__use_f );
+
+
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute__automatic_detection__file_name_c  );
 
 
   if Trim( zts_1 ) = '' then
     begin
 
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute_automatic_detection__file_name_c + ').' );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute__automatic_detection__file_name_c + ').' );
 
       zts_1 :=
         'alter ' + #13 + #10 +
@@ -1628,11 +1751,11 @@ begin
       if Trim( zts_2 ) <> '' then
         begin
 
-          zti_2 := Length( sql_editor__sql_special_word__execute_automatic_detection__list_g_t );
-          SetLength( sql_editor__sql_special_word__execute_automatic_detection__list_g_t, zti_2 + 1 );
-          sql_editor__sql_special_word__execute_automatic_detection__list_g_t[ zti_2 ] := zts_2;
+          zti_2 := Length( sql_editor__sql_special_word__execute__automatic_detection__list_g_t );
+          SetLength( sql_editor__sql_special_word__execute__automatic_detection__list_g_t, zti_2 + 1 );
+          sql_editor__sql_special_word__execute__automatic_detection__list_g_t[ zti_2 ] := zts_2;
 
-          Log_Memo.Lines.Add( sql_editor__sql_special_word__execute_automatic_detection__list_g_t[ zti_2 ] );
+          Log_Memo.Lines.Add( sql_editor__sql_special_word__execute__automatic_detection__list_g_t[ zti_2 ] );
 
         end;
 
@@ -1769,7 +1892,7 @@ begin
       //zt_menu_item.Caption := StringReplace( zt_menu_item.Caption, Common.newline_symbol_c, '\n', [ rfReplaceAll ] );
       //zt_menu_item.OnClick := sql__text_popup_menuClick;
       //
-      //Sql_Text_PopupMenu.Items.Add( zt_menu_item );
+      //Sql_Text__Code_Completion_PopupMenu.Items.Add( zt_menu_item );
       //---// For TMemo.
 
       zti_2 := Pos( Common.code_completion__caption_value_separator_c, zts_1 );
@@ -1869,12 +1992,52 @@ begin
   Common.Syn_Completion_Proposal__Parameters__Set( Sql_Text__SynCompletionProposal );
 
 
-  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  //Common.Font__Set( Sql_Text_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Sql_Text_SynEdit.Font, Common.sql_editor__font );
+  Highlight__Font__Set__SEF();
 
-  Common.Syn_Edit__Parameters__Set( Sql_Text_SynEdit );
+
+
+  zt_string_list := TStringList.Create();
+
+  Shared.Shared_DataModule.Syn_Edit__Highlight__Manager_Names__Get( zt_string_list );
+
+
+  zt_menu_item := TMenuItem.Create( Application );
+  zt_menu_item.AutoCheck := true;
+  zt_menu_item.Caption := Translation.translation__messages_r.word__none;
+  zt_menu_item.Hint := Shared.sql_editor__highlights__syntax__none_c;
+  zt_menu_item.RadioItem := true;
+  zt_menu_item.OnClick := Sql_Text__Highlighter__Syntax__SetMenuItemClick;
+
+  if Sql_Text_SynEdit.Highlighter = nil then
+    zt_menu_item.Checked := true;
+
+  Highlighter__Syntax_MenuItem.Add( zt_menu_item );
+
+
+  zti_1 := 0;
+
+  while zti_1 <= zt_string_list.Count - 2 do
+    begin
+
+      zt_menu_item := TMenuItem.Create( Application );
+      zt_menu_item.AutoCheck := true;
+      zt_menu_item.Caption := zt_string_list[ zti_1 ];
+      zt_menu_item.Hint := zt_string_list[ zti_1 + 1 ];
+      zt_menu_item.RadioItem := true;
+      zt_menu_item.OnClick := Sql_Text__Highlighter__Syntax__SetMenuItemClick;
+
+      if    ( Sql_Text_SynEdit.Highlighter <> nil )
+        and ( Sql_Text_SynEdit.Highlighter.Name = zt_menu_item.Hint ) then
+        zt_menu_item.Checked := true;
+
+      Highlighter__Syntax_MenuItem.Add( zt_menu_item );
+
+      zti_1 := zti_1 + 2;
+
+    end;
+
+  zt_string_list.Clear();
+  FreeAndNil( zt_string_list );
 
 
   for zti_1 := 0 to Tables_List_ListBox.Items.Count - 1 do
@@ -1886,9 +2049,6 @@ begin
     end;
 
   Tables_List_ListBoxClick( nil ); // To correct code completion (columns list).
-
-
-  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Sql_Text_SynEdit );
 
 end;
 
@@ -1970,6 +2130,10 @@ begin
       sort__direction_ascending_g := true;
 
     end;
+
+
+  Close_MenuItem.Enabled := Close_Button.Enabled;
+  Refresh_MenuItem.Enabled := Refresh_Button.Enabled;
 
 
   Caret_Position_Display();
@@ -2084,7 +2248,9 @@ begin
     end;
 
 
+  Transaction__Commit_MenuItem.Enabled := Transaction__Commit_Button.Enabled;
   Transaction__Rollback_Button.Enabled := Transaction__Commit_Button.Enabled;
+  Transaction__Rollback_MenuItem.Enabled := Transaction__Commit_Button.Enabled;
 
   Transactions_Count_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', transactions_count_g )  );
 
@@ -2506,7 +2672,7 @@ begin
   // R.
   if    ( Key = 82 )
     and ( Shift = [ ssCtrl ] ) then
-    Self.Options_Set__SEF( sql_editor_sdbm.component_type__sdbm, sql__quotation_sign__sef_g, queries_open_in_background_g, sql__quotation_sign__use__sef_g )
+    Self.Options_Set__SEF( sql_editor_sdbm.component_type__sdbm, sql__quotation_sign__sef_g, Queries_Open_In_Background_MenuItem.Checked, sql__quotation_sign__use__sef_g )
   else
     Key_Down_Common( Sender, Key, Shift );
 
@@ -2572,8 +2738,8 @@ procedure TSql_Editor_F_Frame.Open_ButtonClick( Sender: TObject );
 
       end
     else
-      for i_l := 0 to Length( sql_editor__sql_special_word__execute_automatic_detection__list_g_t ) - 1 do
-        if Pos( sql_editor__sql_special_word__execute_automatic_detection__list_g_t[ i_l ], sql_text_f ) > 0 then
+      for i_l := 0 to Length( sql_editor__sql_special_word__execute__automatic_detection__list_g_t ) - 1 do
+        if Pos( sql_editor__sql_special_word__execute__automatic_detection__list_g_t[ i_l ], sql_text_f ) > 0 then
           begin
 
             Result := true;
@@ -2595,7 +2761,9 @@ var
   k
     : integer;
 
-  history_text_l : string;
+  history_text_l,
+  sql_text_l
+    : string;
 
   command_execute_parameters_t : array of string;
   //command_execute_parameters_var_rec_t : array of TVarRec; //????
@@ -2622,14 +2790,26 @@ begin
   Data_Preview_DBMemo.DataField := '';
 
 
+  if    ( Execute__Selected_MenuItem.Checked )
+    //and ( Sql_Text_Memo.SelText <> '' ) then
+    and ( Sql_Text_SynEdit.SelText <> '' ) then
+    //sql_text_l := Sql_Text_Memo.SelText
+    sql_text_l := Sql_Text_SynEdit.SelText
+  else
+    //sql_text_l := Sql_Text_Memo.Lines.Text;
+    sql_text_l := Sql_Text_SynEdit.Lines.Text;
+
+
   if   (
              ( Sender <> nil )
-         and ( TComponent(Sender).Name = Execute_Button.Name )
+         and (
+                  ( Sender = Execute_Button )
+               or ( Sender = Execute_MenuItem )
+             )
        )
     or (
-             ( Execute_Automatic_Detection_CheckBox.Checked )
-         //and (  Sql__Special_Word_Check( Sql_Text_Memo.Lines.Text, false )  )
-         and (  Sql__Special_Word_Check( Sql_Text_SynEdit.Lines.Text, false )  )
+             ( Execute__Automatic_Detection_CheckBox.Checked )
+         and (  Sql__Special_Word_Check( sql_text_l, false )  )
        ) then
     command_execute_l := true
   else
@@ -2699,8 +2879,7 @@ begin
             end;
 
 
-          //sql_editor_sdbm.Query__Sql__Set( Sql_Text_Memo.Lines.Text );
-          sql_editor_sdbm.Query__Sql__Set( Sql_Text_SynEdit.Lines.Text );
+          sql_editor_sdbm.Query__Sql__Set( sql_text_l );
 
 
           for i := 0 to sql_editor_sdbm.Query__Parameters_Count() - 1 do
@@ -2785,8 +2964,7 @@ begin
       else
         begin
 
-          //sql_editor_sdbm.Query__Sql__Set( Sql_Text_Memo.Lines.Text );
-          sql_editor_sdbm.Query__Sql__Set( Sql_Text_SynEdit.Lines.Text );
+          sql_editor_sdbm.Query__Sql__Set( sql_text_l );
 
           for i := Sql_Parameters_ScrollBox.ControlCount - 1 downto 0 do
             if Sql_Parameters_ScrollBox.Controls[ i ].ClassType = Common.TSql_Parameter then
@@ -2794,6 +2972,9 @@ begin
 
         end;
 
+
+      sql_parameters__new_string_list.Clear();
+      sql_parameters__old_string_list.Clear();
 
       FreeAndNil( sql_parameters__new_string_list );
       FreeAndNil( sql_parameters__old_string_list );
@@ -2886,7 +3067,7 @@ begin
 
       ztb := true; // False = error occurred.
 
-      if not queries_open_in_background_g then
+      if not Queries_Open_In_Background_MenuItem.Checked then
         begin
 
           Screen.Cursor := crSQLWait;
@@ -2898,8 +3079,7 @@ begin
 
           if    ( Transactions_Automatic_CheckBox.Checked )
             and ( not sql_editor_sdbm.Transaction__In() )
-            //and (  Sql__Special_Word_Check( Sql_Text_Memo.Lines.Text, true )  ) then
-            and (  Sql__Special_Word_Check( Sql_Text_SynEdit.Lines.Text, true )  ) then
+            and (  Sql__Special_Word_Check( sql_text_l, true )  ) then
             Transaction__Begin_ButtonClick( Sender );
 
 
@@ -2956,8 +3136,7 @@ begin
 
           if    ( Transactions_Automatic_CheckBox.Checked )
             and ( not sql_editor_sdbm.Transaction__In() )
-            //and (  Sql__Special_Word_Check( Sql_Text_Memo.Lines.Text, true )  ) then
-            and (  Sql__Special_Word_Check( Sql_Text_SynEdit.Lines.Text, true )  ) then
+            and (  Sql__Special_Word_Check( sql_text_l, true )  ) then
             Transaction__Begin_ButtonClick( Sender );
 
 
@@ -3066,7 +3245,10 @@ begin
       if   ( Sender = nil )
         or (
                 ( Sender <> nil )
-            and ( TComponent(Sender).Name = Close_Button.Name )
+            and (
+                     ( Sender = Close_Button )
+                  or ( Sender = Close_MenuItem )
+                )
           ) then
         Sql__Parameters__Free();
 
@@ -3112,7 +3294,7 @@ begin
     primary_key_name_l := '';
 
 
-  if not queries_open_in_background_g then
+  if not Queries_Open_In_Background_MenuItem.Checked then
     begin
 
       Screen.Cursor := crSQLWait;
@@ -3367,6 +3549,7 @@ begin
 
       zt_string_list.SaveToFile( SaveDialog1.FileName, TEncoding.UTF8 );
 
+      zt_string_list.Clear();
       FreeAndNil( zt_string_list );
 
     end;
@@ -3852,10 +4035,101 @@ begin
 
 end;
 
+procedure TSql_Editor_F_Frame.Ado_Command_Param_Check_CheckBoxClick( Sender: TObject );
+begin
+
+  if    ( Sender <> nil )
+    and ( Sender = Ado_Command_Param_Check_MenuItem ) then
+    begin
+
+      Ado_Command_Param_Check_CheckBox.OnClick := nil; // To avoid double function call.
+
+      Ado_Command_Param_Check_CheckBox.Checked := Ado_Command_Param_Check_MenuItem.Checked;
+
+      Ado_Command_Param_Check_CheckBox.OnClick := Ado_Command_Param_Check_CheckBoxClick;
+
+    end
+  else
+    Ado_Command_Param_Check_MenuItem.Checked := Ado_Command_Param_Check_CheckBox.Checked;
+
+end;
+
+procedure TSql_Editor_F_Frame.Comments_Delete_CheckBoxClick( Sender: TObject );
+begin
+
+  if    ( Sender <> nil )
+    and ( Sender = Comments_Delete_MenuItem ) then
+    begin
+
+      Comments_Delete_CheckBox.OnClick := nil; // To avoid double function call.
+
+      Comments_Delete_CheckBox.Checked := Comments_Delete_MenuItem.Checked;
+
+      Comments_Delete_CheckBox.OnClick := Comments_Delete_CheckBoxClick;
+
+    end
+  else
+    Comments_Delete_MenuItem.Checked := Comments_Delete_CheckBox.Checked;
+
+end;
+
 procedure TSql_Editor_F_Frame.Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
 begin
 
+  if    ( Sender <> nil )
+    and ( Sender = Data_Value_Format__Disabled_MenuItem ) then
+    begin
+
+      Data_Value_Format__Disabled_CheckBox.OnClick := nil; // To avoid double function call.
+
+      Data_Value_Format__Disabled_CheckBox.Checked := Data_Value_Format__Disabled_MenuItem.Checked;
+
+      Data_Value_Format__Disabled_CheckBox.OnClick := Data_Value_Format__Disabled_CheckBoxClick;
+
+    end
+  else
+    Data_Value_Format__Disabled_MenuItem.Checked := Data_Value_Format__Disabled_CheckBox.Checked;
+
+
   Common.Data_Value_Format__Set( sql_editor_sdbm, Log_Memo, Data_Value_Format__Disabled_CheckBox.Checked );
+
+end;
+
+procedure TSql_Editor_F_Frame.Execute__Automatic_Detection_CheckBoxClick( Sender: TObject );
+begin
+
+  if    ( Sender <> nil )
+    and ( Sender = Execute__Automatic_Detection_MenuItem ) then
+    begin
+
+      Execute__Automatic_Detection_CheckBox.OnClick := nil; // To avoid double function call.
+
+      Execute__Automatic_Detection_CheckBox.Checked := Execute__Automatic_Detection_MenuItem.Checked;
+
+      Execute__Automatic_Detection_CheckBox.OnClick := Execute__Automatic_Detection_CheckBoxClick;
+
+    end
+  else
+    Execute__Automatic_Detection_MenuItem.Checked := Execute__Automatic_Detection_CheckBox.Checked;
+
+end;
+
+procedure TSql_Editor_F_Frame.Transactions_Automatic_CheckBoxClick( Sender: TObject );
+begin
+
+  if    ( Sender <> nil )
+    and ( Sender = Transactions_Automatic_MenuItem ) then
+    begin
+
+      Transactions_Automatic_CheckBox.OnClick := nil; // To avoid double function call.
+
+      Transactions_Automatic_CheckBox.Checked := Transactions_Automatic_MenuItem.Checked;
+
+      Transactions_Automatic_CheckBox.OnClick := Transactions_Automatic_CheckBoxClick;
+
+    end
+  else
+    Transactions_Automatic_MenuItem.Checked := Transactions_Automatic_CheckBox.Checked;
 
 end;
 
@@ -3886,6 +4160,17 @@ begin
 
 
   Caret_Position_Display();
+
+end;
+
+procedure TSql_Editor_F_Frame.Bookmarks__Clear_MenuItemClick( Sender: TObject );
+var
+  i : integer;
+begin
+
+  for i := 0 to 9 do
+    if Sql_Text_SynEdit.IsBookmark( i ) then
+      Sql_Text_SynEdit.ClearBookMark( i );
 
 end;
 
@@ -4076,7 +4361,7 @@ begin
     and ( Shift = [ ssCtrl ] ) then
     begin
 
-      Sql_Text_PopupMenu.Popup( 0, 0 );
+      Sql_Text__Code_Completion_PopupMenu.Popup( 0, 0 );
 
       Key := 0;
 
@@ -4105,7 +4390,7 @@ begin
 
   if    ( Button = mbRight )
     and ( Shift = [ ssCtrl ] ) then
-    Sql_Text_PopupMenu.Popup( 0, 0 );
+    Sql_Text__Code_Completion_PopupMenu.Popup( 0, 0 );
 
 end;
 
@@ -4121,7 +4406,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Sql_Text_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Sql_Text_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
 
@@ -4142,7 +4427,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Sql_Text_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Sql_Text_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
 
@@ -4157,6 +4442,71 @@ begin
 
 end;
 
+procedure TSql_Editor_F_Frame.Sql_Text__Highlighter__Syntax__SetMenuItemClick( Sender: TObject );
+var
+  i : integer;
+begin
+
+  if    ( Sender <> nil )
+    and ( Sender is TMenuItem )
+    and ( TMenuItem(Sender).GetParentComponent = Highlighter__Syntax_MenuItem ) then
+    begin
+
+      Sql_Text_SynEdit.Highlighter := Shared.Shared_DataModule.Syn_Edit__Highlighter__Get( TMenuItem(Sender).Hint );
+
+
+      if   (
+                 ( TMenuItem(Sender).Hint <> Shared.sql_editor__highlights__syntax__none_c )
+             and ( Sql_Text_SynEdit.Highlighter = nil )
+           )
+        or (
+                 ( TMenuItem(Sender).Hint <> Shared.sql_editor__highlights__syntax__none_c )
+             and ( Sql_Text_SynEdit.Highlighter <> nil )
+             and ( Sql_Text_SynEdit.Highlighter.Name <> TMenuItem(Sender).Hint )
+           ) then
+        begin
+
+          TMenuItem(Sender).Checked := false;
+
+
+          if Sql_Text_SynEdit.Highlighter <> nil then
+            begin
+
+              for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
+                if Highlighter__Syntax_MenuItem.Items[ i ].Hint = Sql_Text_SynEdit.Highlighter.Name then
+                  begin
+
+                    Highlighter__Syntax_MenuItem.Items[ i ].Checked := true;
+
+                    Break;
+
+                  end;
+
+            end
+          else
+            if Highlighter__Syntax_MenuItem.Count > 0 then
+              Highlighter__Syntax_MenuItem.Items[ 0 ].Checked := true;
+
+        end;
+
+    end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Sql_Text__Highlights__Brackets__SetMenuItemClick( Sender: TObject );
+begin
+
+  Sql_Text_SynEdit.Plugin__Search_Highlighter__Brackets__Set
+    (
+      Highlights__Brackets__All_Pairs_MenuItem.Checked,
+      Highlights__Brackets__Angle_MenuItem.Checked,
+      Highlights__Brackets__Curly_MenuItem.Checked,
+      Highlights__Brackets__Round_MenuItem.Checked,
+      Highlights__Brackets__Square_MenuItem.Checked
+    );
+
+end;
+
 procedure TSql_Editor_F_Frame.Sql_Text__SynCompletionProposalCodeCompletion( Sender: TObject; var Value: string; Shift: TShiftState; Index: Integer; EndToken: Char );
 begin
 
@@ -4168,6 +4518,91 @@ procedure TSql_Editor_F_Frame.Sql_Text__SynCompletionProposalAfterCodeCompletion
 begin
 
   Common.Syn_Completion_Proposal_After_Code_Completion( Sql_Text_SynEdit, code_completion__cursor_position_g );
+
+end;
+
+procedure TSql_Editor_F_Frame.Sql_Text_PopupMenu__MenuItemClick_Common( Sender: TObject );
+var
+  key_l : Word;
+  shift_state_l : TShiftState;
+begin
+
+  key_l := 0;
+
+  if Sender <> nil then
+    begin
+
+      shift_state_l := [ ssCtrl ];
+
+
+      if Sender = Comment_Invert_Alternatively_MenuItem then
+        begin
+
+          shift_state_l := [ ssCtrl, ssShift ];
+
+          key_l := VK_OEM_5; // \.
+
+        end
+      else
+      if Sender = Comment_Uncomment_MenuItem then
+        key_l := VK_OEM_2 // /.
+      else
+      if Sender = Comment_Uncomment_Alternatively_MenuItem then
+        key_l := VK_OEM_5 // \.
+      else
+      if Sender = Copy_MenuItem then
+        begin
+
+          if Sql_Text_SynEdit.SelText <> '' then
+            Sql_Text_SynEdit.CopyToClipboard()
+          else
+            key_l := 67; // C.
+
+        end
+      else
+      if Sender = Cut_MenuItem then
+        begin
+
+          if Sql_Text_SynEdit.SelText <> '' then
+            Sql_Text_SynEdit.CutToClipboard()
+          else
+            key_l := 88; // X.
+
+        end
+      else
+      if Sender = Find_MenuItem then
+        key_l := 70 // F.
+      else
+      if Sender = Paste_MenuItem then
+        Sql_Text_SynEdit.PasteFromClipboard()
+      else
+      if Sender = Replace_MenuItem then
+        key_l := 72 // H.
+      else
+      if Sender = Select_All_MenuItem then
+        key_l := 65 // A.
+      else
+        if    ( Sender is TMenuItem )
+          and ( TMenuItem(Sender).GetParentComponent = Bookmarks__Go_To_MenuItem )
+          and (  Length( TMenuItem(Sender).MenuIndex.ToString() ) > 0  ) then
+          key_l := Ord( TMenuItem(Sender).MenuIndex.ToString()[ 1 ] )
+        else
+        if    ( Sender is TMenuItem )
+          and ( TMenuItem(Sender).GetParentComponent = Bookmarks__Toggle_MenuItem )
+          and (  Length( TMenuItem(Sender).MenuIndex.ToString() ) > 0  )  then
+          begin
+
+            shift_state_l := [ ssCtrl, ssShift ];
+
+            key_l := Ord( TMenuItem(Sender).MenuIndex.ToString()[ 1 ] );
+
+          end;
+
+    end;
+
+
+  if key_l <> 0 then
+    Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, key_l, shift_state_l );
 
 end;
 

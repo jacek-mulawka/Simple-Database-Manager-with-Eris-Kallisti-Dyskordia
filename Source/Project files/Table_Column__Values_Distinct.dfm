@@ -4,7 +4,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
   Anchors = [akLeft, akTop, akRight, akBottom]
   Caption = 'Column distinct values'
   ClientHeight = 562
-  ClientWidth = 299
+  ClientWidth = 329
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
   object Log_Horizontal_Splitter: TSplitter
     Left = 0
     Top = 506
-    Width = 299
+    Width = 329
     Height = 6
     Cursor = crVSplit
     Align = alBottom
@@ -35,7 +35,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
   object Value_DBEdit: TDBEdit
     Left = 0
     Top = 0
-    Width = 299
+    Width = 329
     Height = 23
     Margins.Left = 10
     Margins.Top = 0
@@ -51,7 +51,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
   object Search_GroupBox: TGroupBox
     Left = 0
     Top = 23
-    Width = 299
+    Width = 329
     Height = 75
     Margins.Left = 10
     Margins.Top = 5
@@ -61,7 +61,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
     Caption = 'Search'
     TabOrder = 3
     DesignSize = (
-      299
+      329
       75)
     object Record_Number__Records_Count_Label: TLabel
       AlignWithMargins = True
@@ -82,7 +82,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       AlignWithMargins = True
       Left = 2
       Top = 17
-      Width = 295
+      Width = 325
       Height = 23
       Margins.Left = 0
       Margins.Top = 0
@@ -125,7 +125,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       OnClick = Search_Change
     end
     object Search__Prior_Button: TButton
-      Left = 215
+      Left = 245
       Top = 45
       Width = 25
       Height = 25
@@ -135,11 +135,11 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 4
+      TabOrder = 5
       OnClick = Search__Prior_ButtonClick
     end
     object Search__Next_Button: TButton
-      Left = 240
+      Left = 270
       Top = 45
       Width = 25
       Height = 25
@@ -149,11 +149,11 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 6
       OnClick = Search__Next_ButtonClick
     end
     object Refresh_Button: TButton
-      Left = 270
+      Left = 300
       Top = 45
       Width = 25
       Height = 25
@@ -163,7 +163,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 6
+      TabOrder = 7
       OnClick = Refresh_ButtonClick
     end
     object Ok_Button: TButton
@@ -173,6 +173,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Height = 25
       Hint = 'Select value.'#13#10#13#10'[Enter]'
       Anchors = [akTop, akRight]
+      Default = True
       ImageIndex = 4
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
@@ -180,11 +181,27 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       TabOrder = 3
       OnClick = Ok_ButtonClick
     end
+    object Close_Button: TButton
+      Left = 215
+      Top = 45
+      Width = 25
+      Height = 25
+      Hint = 'Close.'#13#10#13#10'[Esc]'
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Default = True
+      ImageIndex = 10
+      Images = Shared_DataModule.ImageList1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 4
+      OnClick = Close_ButtonClick
+    end
   end
   object Log_Memo: TMemo
     Left = 0
     Top = 512
-    Width = 299
+    Width = 329
     Height = 50
     Margins.Left = 10
     Margins.Right = 10
@@ -198,7 +215,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
   object Table_Column__Values_Distinct_DBGrid: TDBGrid
     Left = 0
     Top = 98
-    Width = 299
+    Width = 329
     Height = 408
     Margins.Left = 10
     Margins.Top = 0

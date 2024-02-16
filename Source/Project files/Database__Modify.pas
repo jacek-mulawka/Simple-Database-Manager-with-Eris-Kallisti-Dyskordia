@@ -85,6 +85,7 @@ type
     N3: TMenuItem;
     Tables_List__Close__One_MenuItem: TMenuItem;
     Tables_List__Close__All_MenuItem: TMenuItem;
+    Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox;
     Sql_Editor_TabSheet: TTabSheet;
     Sql_Editor__Vertical_Splitter: TSplitter;
     Sql_Editor__PageControl: TPageControl;
@@ -282,8 +283,9 @@ type
     function Close_Can__Checked__Get() : boolean;
     procedure Close_Can__Checked__Set( const close_can__checked_f : boolean );
     function Connection_Test__DM( const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : boolean;
+    procedure Highlight__Font__Set__DM();
     procedure Options_Set__DM();
-    procedure Prepare__DM();
+    procedure Prepare__DM( const connect_f : boolean = true );
     function Sql_Editor__Page__Close__All( const modal_result_f : TModalResult = mrNone ) : TModalResult;
     function Sql_Editor__Page__Count__Get() : integer;
     function Task_Running_Check__DM( var task_is_running_f : boolean ) : boolean;
@@ -306,7 +308,6 @@ uses
   Vcl.Clipbrd,
 
   Database__Informations_F,
-  Database__List_Modify,
   Exceptions_Modify_F,
   External_Functions_Modify_F,
   Generators_Modify_F,
@@ -373,18 +374,6 @@ begin
 end;
 
 function TDatabase__Modify_Form.Connection__Open( const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : boolean;
-var
-  zti : integer;
-
-  modal_result_l : TModalResult;
-
-  zts_1,
-  zts_2,
-  user_name_l,
-  password_l
-    : string;
-
-  database__list_modify_form_l : Database__List_Modify.TDatabase__List_Modify_Form;
 begin
 
   Result := false;
@@ -396,34 +385,9 @@ begin
   sdbm.component_type__sdbm := component_type_f;
 
 
-  password_l := databases_r__dm_g.password;
-  user_name_l := databases_r__dm_g.user_name;
 
-
-  if databases_r__dm_g.login_prompt then
-    begin
-
-      database__list_modify_form_l := Database__List_Modify.TDatabase__List_Modify_Form.Create( Application );
-      database__list_modify_form_l.login_prompt_input := true;
-      database__list_modify_form_l.databases_r__lm_g := databases_r__dm_g;
-
-      modal_result_l := database__list_modify_form_l.ShowModal();
-
-      if modal_result_l = mrOk then
-        begin
-
-          password_l := database__list_modify_form_l.Password_Edit.Text;
-          user_name_l := database__list_modify_form_l.User_Name_Edit.Text;
-
-        end;
-
-      FreeAndNil( database__list_modify_form_l );
-
-
-      if modal_result_l <> mrOk then
-        Exit;
-
-    end;
+  if Common.Database__Connection__Open( ADOConnection1, FDConnection1, databases_r__dm_g, Log_Memo, component_type_f ) = mrCancel then
+    Exit;
 
 
   Result := true;
@@ -432,37 +396,21 @@ begin
   if component_type_f = Common.ct_ADO then
     begin
 
-      ADOConnection1.ConnectionString := databases_r__dm_g.ado__connection_string;
-
-      try
-        if databases_r__dm_g.login_prompt then
-          ADOConnection1.Open( user_name_l, password_l )
-        else
-          ADOConnection1.Open();
-      except
-        on E : Exception do
-          begin
-
-            Result := false;
-
-            //Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
-            connection_status_caption_g := csc_Error;
-            Connection_Status_Label.Font.Color := clRed;
-
-            Log_Memo.Lines.Add( E.Message );
-
-            Application.MessageBox( PChar(Translation.translation__messages_r.failed_to_open_database_connection__ADO_ + #13 + #13 + E.Message + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
-
-          end;
-      end;
-
-
       if ADOConnection1.Connected then
         begin
 
-          //Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
           connection_status_caption_g := csc_Connected;
           Connection_Status_Label.Font.Color := clGreen;
+
+        end
+      else
+        begin
+
+          Result := false;
+
+
+          connection_status_caption_g := csc_Error;
+          Connection_Status_Label.Font.Color := clRed;
 
         end;
 
@@ -471,61 +419,21 @@ begin
   if component_type_f = Common.ct_FireDAC then
     begin
 
-      FDConnection1.Params.Clear();
-      FDConnection1.Params.Add( 'DriverID=' + databases_r__dm_g.fire_dac__driver_id );
-      FDConnection1.Params.Add( 'Database=' + databases_r__dm_g.fire_dac__file_path );
-      FDConnection1.Params.Add( 'User_Name=' + user_name_l );
-      FDConnection1.Params.Add( 'Password=' + password_l );
-
-      zts_1 := databases_r__dm_g.fire_dac__parameters;
-      zts_1 := StringReplace( zts_1, #13, '', [ rfReplaceAll ] );
-
-      if    (  Length( zts_1 ) > 0  )
-        and (  zts_1[ Length( zts_1 ) ] <> #10  ) then
-        zts_1 := zts_1 + #10;
-
-      zti := Pos( #10 , zts_1 );
-
-      while zti > 0 do
-        begin
-
-          zts_2 := Copy( zts_1, 1, zti - 1 );
-          Delete( zts_1, 1, zti );
-
-          if Trim( zts_2 ) <> '' then
-            FDConnection1.Params.Add( zts_2 );
-
-          zti := Pos( #10 , zts_1 );
-
-        end;
-
-
-      try
-        FDConnection1.Open();
-      except
-        on E : Exception do
-          begin
-
-            Result := false;
-
-            //Connection_Status_Label.Caption := Translation.translation__messages_r.word__error;
-            connection_status_caption_g := csc_Error;
-            Connection_Status_Label.Font.Color := clRed;
-
-            Log_Memo.Lines.Add( E.Message );
-
-            Application.MessageBox( PChar(Translation.translation__messages_r.failed_to_open_database_connection__FireDAC__ + #13 + #13 + E.Message + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
-
-          end;
-      end;
-
-
       if FDConnection1.Connected then
         begin
 
-          //Connection_Status_Label.Caption := Translation.translation__messages_r.word__connected;
           connection_status_caption_g := csc_Connected;
           Connection_Status_Label.Font.Color := clGreen;
+
+        end
+      else
+        begin
+
+          Result := false;
+
+
+          connection_status_caption_g := csc_Error;
+          Connection_Status_Label.Font.Color := clRed;
 
         end;
 
@@ -539,30 +447,9 @@ end;
 procedure TDatabase__Modify_Form.Connections__Close();
 begin
 
-  if ADOConnection1.Connected then
-    begin
-
-      while ADOConnection1.InTransaction do
-        ADOConnection1.RollbackTrans();
-
-      ADOConnection1.Close();
-
-    end;
+  Common.Database__Connections__Close( ADOConnection1, FDConnection1 );
 
 
-  if FDConnection1.Connected then
-    begin
-
-      if FDConnection1.Transaction <> nil then
-        while FDConnection1.Transaction.Active do
-          FDConnection1.Transaction.Rollback();
-
-      FDConnection1.Close();
-
-    end;
-
-
-  //Connection_Status_Label.Caption := Translation.translation__messages_r.word__disconnected;
   connection_status_caption_g := csc_Disconnected;
   Connection_Status_Label.Font.Color := clWindowText;
 
@@ -637,7 +524,8 @@ begin
         end;
 
       if    ( Exceptions_TabSheet.ControlCount > 0 )
-        and ( Exceptions_TabSheet.Controls[ 0 ].ClassType = Exceptions_Modify_F.TExceptions_Modify_F_Frame ) then
+        and ( Exceptions_TabSheet.Controls[ 0 ].ClassType = Exceptions_Modify_F.TExceptions_Modify_F_Frame )
+        and ( not Exceptions_Modify_F.TExceptions_Modify_F_Frame(Exceptions_TabSheet.Controls[ 0 ]).Data_Active__EMF() ) then
         Exceptions_Modify_F.TExceptions_Modify_F_Frame(Exceptions_TabSheet.Controls[ 0 ]).Data_Open__EMF();
 
     end
@@ -656,7 +544,8 @@ begin
         end;
 
       if    ( External_Functions_TabSheet.ControlCount > 0 )
-        and ( External_Functions_TabSheet.Controls[ 0 ].ClassType = External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame ) then
+        and ( External_Functions_TabSheet.Controls[ 0 ].ClassType = External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame )
+        and ( not External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame(External_Functions_TabSheet.Controls[ 0 ]).Data_Active__EFMF() ) then
         External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame(External_Functions_TabSheet.Controls[ 0 ]).Data_Open__EFMF();
 
     end
@@ -675,7 +564,8 @@ begin
         end;
 
       if    ( Generators_List_TabSheet.ControlCount > 0 )
-        and ( Generators_List_TabSheet.Controls[ 0 ].ClassType = Generators_Modify_F.TGenerators_Modify_F_Frame ) then
+        and ( Generators_List_TabSheet.Controls[ 0 ].ClassType = Generators_Modify_F.TGenerators_Modify_F_Frame )
+        and ( not Generators_Modify_F.TGenerators_Modify_F_Frame(Generators_List_TabSheet.Controls[ 0 ]).Data_Active__GMF() ) then
         Generators_Modify_F.TGenerators_Modify_F_Frame(Generators_List_TabSheet.Controls[ 0 ]).Data_Open__GMF();
 
     end
@@ -694,7 +584,8 @@ begin
         end;
 
       if    ( Roles_List_TabSheet.ControlCount > 0 )
-        and ( Roles_List_TabSheet.Controls[ 0 ].ClassType = Roles_Modify_F.TRoles_Modify_F_Frame ) then
+        and ( Roles_List_TabSheet.Controls[ 0 ].ClassType = Roles_Modify_F.TRoles_Modify_F_Frame )
+        and ( not Roles_Modify_F.TRoles_Modify_F_Frame(Roles_List_TabSheet.Controls[ 0 ]).Data_Active__RMF() ) then
         Roles_Modify_F.TRoles_Modify_F_Frame(Roles_List_TabSheet.Controls[ 0 ]).Data_Open__RMF();
 
     end
@@ -979,7 +870,8 @@ begin
         end;
 
       if    ( Users_List_TabSheet.ControlCount > 0 )
-        and ( Users_List_TabSheet.Controls[ 0 ].ClassType = Users_Modify_F.TUsers_Modify_F_Frame ) then
+        and ( Users_List_TabSheet.Controls[ 0 ].ClassType = Users_Modify_F.TUsers_Modify_F_Frame )
+        and ( not Users_Modify_F.TUsers_Modify_F_Frame(Users_List_TabSheet.Controls[ 0 ]).Data_Active__UMF() ) then
         Users_Modify_F.TUsers_Modify_F_Frame(Users_List_TabSheet.Controls[ 0 ]).Data_Open__UMF();
 
     end
@@ -1127,6 +1019,22 @@ begin
 
 end;
 
+procedure TDatabase__Modify_Form.Highlight__Font__Set__DM();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Stored_Procedures_List__ListBox.Font, Common.sql_editor__font );
+      Common.Font__Set( Tables_List__ListBox.Font, Common.sql_editor__font );
+      Common.Font__Set( Views_List__ListBox.Font, Common.sql_editor__font );
+
+    end;
+
+end;
+
 procedure TDatabase__Modify_Form.Options_Set__DM();
 begin
 
@@ -1138,11 +1046,17 @@ begin
   Translation.Translation__Apply( Self );
 
   Self.Caption := Self.Caption + ' - ' + databases_r__dm_g.alias;
-  Component_Type_Default_Label.Caption := translation__messages_r.default__with_a_capital_letter + ': ' + StringReplace(  System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(databases_r__dm_g.component_type) ), 'ct_', '', [ rfReplaceAll ]  );
+  Component_Type_Default_Label.Caption := Translation.translation__messages_r.default__with_a_capital_letter + ': ' + StringReplace(  System.TypInfo.GetEnumName( System.TypeInfo(Common.TComponent_Type), integer(databases_r__dm_g.component_type) ), 'ct_', '', [ rfReplaceAll ]  );
   Database_Name_Label.Caption := Database_Name_Label.Caption + ' ' + databases_r__dm_g.alias;
+  Sql_Editor__Database_Connection__Separated_CheckBox.Checked := Common.sql_editor__database_connection__separated;
 
   Connection_Status_Label__Translation__Apply();
 
+
+  Highlight__Font__Set__DM();
+
+
+  Page_Control_Children_Find( Main_PageControl, Common.pccff_Highlight_Font_Set );
 
   Page_Control_Children_Find( Main_PageControl, Common.pccff_Translation__Apply );
 
@@ -1172,6 +1086,41 @@ begin
         end
       else
         case pccff_f of
+            Common.pccff_Highlight_Font_Set :
+              begin
+
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Database__Informations_F.TDatabase__Informations_F_Frame then
+                  Database__Informations_F.TDatabase__Informations_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__DIF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Exceptions_Modify_F.TExceptions_Modify_F_Frame then
+                  Exceptions_Modify_F.TExceptions_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__EMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame then
+                  External_Functions_Modify_F.TExternal_Functions_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__EFMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Generators_Modify_F.TGenerators_Modify_F_Frame then
+                  Generators_Modify_F.TGenerators_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__GMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Roles_Modify_F.TRoles_Modify_F_Frame then
+                  Roles_Modify_F.TRoles_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__RMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Sql_Editor_F.TSql_Editor_F_Frame then
+                  Sql_Editor_F.TSql_Editor_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__SEF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame then
+                  Stored_Procedure_Modify_F.TStored_Procedure_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__SPMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Table_Modify_F.TTable_Modify_F_Frame then
+                  Table_Modify_F.TTable_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__TMoF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = Users_Modify_F.TUsers_Modify_F_Frame then
+                  Users_Modify_F.TUsers_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__UMF()
+                else
+                if page_control_f.Pages[ i ].Controls[ j ].ClassType = View_Modify_F.TView_Modify_F_Frame then
+                  View_Modify_F.TView_Modify_F_Frame(page_control_f.Pages[ i ].Controls[ j ]).Highlight__Font__Set__VMF();
+
+              end;
+
             Common.pccff_Options_Set :
               begin
 
@@ -1273,7 +1222,7 @@ begin
 
 end;
 
-procedure TDatabase__Modify_Form.Prepare__DM();
+procedure TDatabase__Modify_Form.Prepare__DM( const connect_f : boolean = true );
 var
   component_type_l : Common.TComponent_Type;
 begin
@@ -1306,7 +1255,8 @@ begin
   Sql__Quotation_Sign__Use_CheckBox.Checked := Common.sql__quotation_sign__use;
 
 
-  Connection__Open( Component_Type_Get() );
+  if connect_f then
+    Connection__Open( Component_Type_Get() );
 
 
   //???
@@ -1577,9 +1527,6 @@ begin
   Main_PageControl.Align := alClient;
   Main_PageControl.ActivePage := Component_Type_TabSheet;
 
-
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-
 end;
 
 procedure TDatabase__Modify_Form.FormClose( Sender: TObject; var Action: TCloseAction );
@@ -1741,7 +1688,7 @@ begin
   sql_editor_f_frame_l := Sql_Editor_F.TSql_Editor_F_Frame.Create( Application );
   sql_editor_f_frame_l.Parent := tab_sheet_l;
   sql_editor_f_frame_l.Align := alClient;
-  sql_editor_f_frame_l.Prepare__SEF( databases_r__dm_g, Component_Type_Get(), ADOConnection1, FDConnection1, Queries_Open_In_Background_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+  sql_editor_f_frame_l.Prepare__SEF( databases_r__dm_g, Component_Type_Get(), ADOConnection1, FDConnection1, Sql_Editor__Database_Connection__Separated_CheckBox.Checked, Queries_Open_In_Background_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
 
 end;
 
@@ -2141,7 +2088,7 @@ begin
   stored_procedure__modify_form_l.sql__quotation_sign__use__spm := Sql__Quotation_Sign__Use_CheckBox.Checked;
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Stored_Procedures_List__Stored_Procedure__Add__MenuItem.Name ) then
+    and ( Sender = Stored_Procedures_List__Stored_Procedure__Add__MenuItem ) then
     begin
 
       stored_procedure__modify_form_l.show_modal__spm := false;
@@ -3152,7 +3099,7 @@ begin
   view__modify_form_l.sql__quotation_sign__use__vm := Sql__Quotation_Sign__Use_CheckBox.Checked;
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Views_List__View__Add__MenuItem.Name ) then
+    and ( Sender = Views_List__View__Add__MenuItem ) then
     begin
 
       view__modify_form_l.show_modal__vm := false;

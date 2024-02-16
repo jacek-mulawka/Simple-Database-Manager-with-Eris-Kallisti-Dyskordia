@@ -115,6 +115,7 @@ type
 
     procedure Data_Open__TrMF();
     procedure Finish__TrMF();
+    procedure Highlight__Font__Set__TrMF();
     procedure Options_Set__TrMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__TrMF( const triggers_type_f : TTriggers_Type; const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__TrMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -484,6 +485,23 @@ begin
 
 end;
 
+procedure TTriggers_Modify_F_Frame.Highlight__Font__Set__TrMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  //Common.Font__Set( Trigger_Source_DBMemo.Font, Common.sql_editor__font );
+  Common.Font__Set( Trigger_Source_SynEdit.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Triggers_DBGrid.Font, Common.sql_editor__font );
+
+  Common.Syn_Edit__Parameters__Set( Trigger_Source_SynEdit );
+
+
+  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Trigger_Source_SynEdit );
+
+end;
+
 procedure TTriggers_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -608,14 +626,7 @@ begin
   Self.Options_Set__TrMF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  //Common.Font__Set( Trigger_Source_DBMemo.Font, Common.sql_editor__font );
-  Common.Font__Set( Trigger_Source_SynEdit.Font, Common.sql_editor__font );
-
-  Common.Syn_Edit__Parameters__Set( Trigger_Source_SynEdit );
-
-
-  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Trigger_Source_SynEdit );
+  Highlight__Font__Set__TrMF();
 
 end;
 
@@ -821,7 +832,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Refresh_Button.Name ) then
+    and ( Sender = Refresh_Button ) then
     begin
 
       Log_Memo.Lines.Add( triggers_sdbm.Operation_Duration_Get() );
@@ -875,8 +886,8 @@ begin
 
   if    ( Sender <> nil )
     and (
-             ( TComponent(Sender).Name = Modify__Edit_Button.Name )
-          or ( TComponent(Sender).Name = Trigger__Edit_MenuItem.Name )
+             ( Sender = Modify__Edit_Button )
+          or ( Sender = Trigger__Edit_MenuItem )
         ) then
     begin
 
@@ -1212,7 +1223,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Trigger_Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Trigger_Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Trigger_Source_SynEdit, text__search_replace_form );
 
@@ -1230,7 +1241,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Trigger_Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Trigger_Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Trigger_Source_SynEdit, text__search_replace_form );
 

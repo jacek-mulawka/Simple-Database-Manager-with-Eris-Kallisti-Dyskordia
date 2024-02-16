@@ -339,6 +339,7 @@ begin
   database__modify_form_l.databases_r__dm_g.sql__parameter_sign := Sql__Parameter_Sign_Edit.Text;
   database__modify_form_l.databases_r__dm_g.sql__quotation_sign := Sql__Quotation_Sign_Edit.Text;
   database__modify_form_l.databases_r__dm_g.user_name := User_Name_Edit.Text;
+  database__modify_form_l.Prepare__DM( false );
 
 
   case Connection__Test__Type_RadioGroup.ItemIndex of

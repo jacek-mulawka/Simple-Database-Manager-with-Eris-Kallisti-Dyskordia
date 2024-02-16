@@ -88,8 +88,10 @@ type
     function Quotation_Sign__EMF() : string;
   public
     { Public declarations }
+    function Data_Active__EMF() : boolean;
     procedure Data_Open__EMF();
     procedure Finish__EMF();
+    procedure Highlight__Font__Set__EMF();
     procedure Options_Set__EMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__EMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__EMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -115,6 +117,15 @@ uses
   Text__Edit_Memo;
 
 {$R *.dfm}
+
+function TExceptions_Modify_F_Frame.Data_Active__EMF() : boolean;
+begin
+
+  Result :=
+        ( exceptions_sdbm <> nil )
+    and ( exceptions_sdbm.Query__Active() );
+
+end;
 
 procedure TExceptions_Modify_F_Frame.Data_Open__EMF();
 var
@@ -264,6 +275,17 @@ begin
 
 end;
 
+procedure TExceptions_Modify_F_Frame.Highlight__Font__Set__EMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Modify__Message_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Exceptions_DBGrid.Font, Common.sql_editor__font );
+
+end;
+
 function TExceptions_Modify_F_Frame.Quotation_Sign__EMF() : string;
 begin
 
@@ -314,8 +336,7 @@ begin
   Self.Options_Set__EMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Modify__Message_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__EMF();
 
 end;
 
@@ -505,7 +526,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Refresh_Button.Name ) then
+    and ( Sender = Refresh_Button ) then
     begin
 
       Log_Memo.Lines.Add( exceptions_sdbm.Operation_Duration_Get() );

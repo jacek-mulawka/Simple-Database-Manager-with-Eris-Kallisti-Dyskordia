@@ -91,6 +91,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Font.Name = 'Consolas'
         Font.Style = []
         Font.Quality = fqClearTypeNatural
+        PopupMenu = Sql_Text_PopupMenu
         TabOrder = 2
         OnClick = Sql_Text_SynEditClick
         OnEnter = Sql_Text_SynEditEnter
@@ -121,7 +122,6 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
             Kind = gbkMargin
             Width = 3
           end>
-        Highlighter = Shared_DataModule.Sql_Text__SynSQLSyn
         Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
         RightEdge = 255
         SelectedColor.Alpha = 0.400000005960464500
@@ -602,8 +602,9 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           ShowHint = True
           State = cbChecked
           TabOrder = 11
+          OnClick = Ado_Command_Param_Check_CheckBoxClick
         end
-        object Execute_Automatic_Detection_CheckBox: TCheckBox
+        object Execute__Automatic_Detection_CheckBox: TCheckBox
           Left = 35
           Top = 45
           Width = 25
@@ -619,6 +620,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           ShowHint = True
           State = cbChecked
           TabOrder = 6
+          OnClick = Execute__Automatic_Detection_CheckBoxClick
         end
         object Transactions_Automatic_CheckBox: TCheckBox
           Left = 35
@@ -635,6 +637,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           ShowHint = True
           State = cbChecked
           TabOrder = 7
+          OnClick = Transactions_Automatic_CheckBoxClick
         end
       end
       object Buttons_Panel__Hide_Button: TButton
@@ -956,6 +959,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         ParentShowHint = False
         ShowHint = True
         TabOrder = 3
+        OnClick = Comments_Delete_CheckBoxClick
       end
       object Text__File_GroupBox: TGroupBox
         AlignWithMargins = True
@@ -1175,8 +1179,8 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     Left = 545
     Top = 106
   end
-  object Sql_Text_PopupMenu: TPopupMenu
-    Left = 545
+  object Sql_Text__Code_Completion_PopupMenu: TPopupMenu
+    Left = 505
     Top = 171
   end
   object Sql_Text__SynCompletionProposal: TSynCompletionProposal
@@ -1207,5 +1211,217 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     Options = [ofFileMustExist, ofEnableSizing]
     Left = 460
     Top = 106
+  end
+  object Sql_Text_PopupMenu: TPopupMenu
+    Images = Shared_DataModule.ImageList1
+    Left = 322
+    Top = 171
+    object Open_MenuItem: TMenuItem
+      Caption = 'Query execute [Ctrl + E]'
+      ImageIndex = 6
+      OnClick = Open_ButtonClick
+    end
+    object Execute_MenuItem: TMenuItem
+      Caption = 'Command execute [Ctrl + Shift + E]'
+      ImageIndex = 21
+      OnClick = Open_ButtonClick
+    end
+    object Refresh_MenuItem: TMenuItem
+      Caption = 'Refresh [Ctrl + R]'
+      ImageIndex = 3
+      OnClick = Refresh_ButtonClick
+    end
+    object Close_MenuItem: TMenuItem
+      Caption = 'Query close'
+      ImageIndex = 7
+      OnClick = Close_ButtonClick
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object Transaction__Begin_MenuItem: TMenuItem
+      Caption = 'Begin transaction'
+      ImageIndex = 0
+      OnClick = Transaction__Begin_ButtonClick
+    end
+    object Transaction__Commit_MenuItem: TMenuItem
+      Caption = 'Commit transaction'
+      Enabled = False
+      ImageIndex = 4
+      OnClick = Transaction__Commit_ButtonClick
+    end
+    object Transaction__Rollback_MenuItem: TMenuItem
+      Caption = 'Rollback transaction'
+      Enabled = False
+      ImageIndex = 5
+      OnClick = Transaction__Rollback_ButtonClick
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object Sql__Prior_MenuItem: TMenuItem
+      Caption = 'Prior SQL text [Ctrl + P]'
+      ImageIndex = 15
+      OnClick = Sql__Prior_ButtonClick
+    end
+    object Sql__Next_MenuItem: TMenuItem
+      Caption = 'Next SQL text [Ctrl + N]'
+      ImageIndex = 16
+      OnClick = Sql__Next_ButtonClick
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
+    object Find_MenuItem: TMenuItem
+      Caption = 'Find [Ctrl + F]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Replace_MenuItem: TMenuItem
+      Caption = 'Replace [Ctrl + H]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object Bookmarks__Toggle_MenuItem: TMenuItem
+      Caption = 'Toggle bookmark [Ctrl + Shift + 0 ... 9]'
+    end
+    object Bookmarks__Go_To_MenuItem: TMenuItem
+      Caption = 'Go to bookmark [Ctrl + 0 ... 9]'
+    end
+    object Bookmarks__Clear_MenuItem: TMenuItem
+      Caption = 'Clear bookmarks'
+      OnClick = Bookmarks__Clear_MenuItemClick
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object Highlights__Brackets_MenuItem: TMenuItem
+      Caption = 'Brackets highlights'
+      object Highlights__Brackets__All_Pairs_MenuItem: TMenuItem
+        AutoCheck = True
+        Caption = 'All pairs'
+        OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+      object Highlights__Brackets__Angle_MenuItem: TMenuItem
+        AutoCheck = True
+        Caption = '< >'
+        OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+      object Highlights__Brackets__Curly_MenuItem: TMenuItem
+        AutoCheck = True
+        Caption = '{ }'
+        OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+      object Highlights__Brackets__Round_MenuItem: TMenuItem
+        AutoCheck = True
+        Caption = '( )'
+        OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+      object Highlights__Brackets__Square_MenuItem: TMenuItem
+        AutoCheck = True
+        Caption = '[ ]'
+        OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+    end
+    object Highlighter__Syntax_MenuItem: TMenuItem
+      Caption = 'Syntax highlighter'
+    end
+    object N6: TMenuItem
+      Caption = '-'
+    end
+    object Comment_Uncomment_MenuItem: TMenuItem
+      Caption = 'Comment / uncomment [Ctrl + /, Ctrl + Shift + /]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Comment_Uncomment_Alternatively_MenuItem: TMenuItem
+      Caption = 'Comment / uncomment alternatively [Ctrl + \, Ctrl + Shift + \]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Comment_Invert_Alternatively_MenuItem: TMenuItem
+      Caption = 'Comment invert alternatively [Ctrl + Shift + \]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object N7: TMenuItem
+      Caption = '-'
+    end
+    object Output_Save_MenuItem: TMenuItem
+      Caption = 'Save query output as csv [Ctrl + S]'
+      ImageIndex = 8
+      OnClick = Output_Save_ButtonClick
+    end
+    object N8: TMenuItem
+      Caption = '-'
+    end
+    object Text__File__Find_MenuItem: TMenuItem
+      Caption = 'Find file [Ctrl + O]'
+      ImageIndex = 6
+      OnClick = Text__File__Find_ButtonClick
+    end
+    object Text__File__Load_MenuItem: TMenuItem
+      Caption = 'Load file [Ctrl + L]'
+      ImageIndex = 9
+      OnClick = Text__File__Load_ButtonClick
+    end
+    object Text__File__Save_MenuItem: TMenuItem
+      Caption = 'Save file [Ctrl + Shift + S]'
+      ImageIndex = 8
+      OnClick = Text__File__Save_ButtonClick
+    end
+    object N9: TMenuItem
+      Caption = '-'
+    end
+    object Cut_MenuItem: TMenuItem
+      Caption = 'Cut [Ctrl + X]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Copy_MenuItem: TMenuItem
+      Caption = 'Copy [Ctrl + C]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Paste_MenuItem: TMenuItem
+      Caption = 'Paste [Ctrl + V]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Select_All_MenuItem: TMenuItem
+      Caption = 'Select all [Ctrl + A]'
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object N10: TMenuItem
+      Caption = '-'
+    end
+    object Execute__Automatic_Detection_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Automatically detect '#39'Query'#39' or '#39'Command'#39' execute'
+      OnClick = Execute__Automatic_Detection_CheckBoxClick
+    end
+    object Transactions_Automatic_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Automatically begin transaction'
+      OnClick = Transactions_Automatic_CheckBoxClick
+    end
+    object Data_Value_Format__Disabled_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Data value format disabled'
+      OnClick = Data_Value_Format__Disabled_CheckBoxClick
+    end
+    object Comments_Delete_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Delete comments'
+      OnClick = Comments_Delete_CheckBoxClick
+    end
+    object Execute__Selected_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Execute selected SQL only'
+    end
+    object Ado_Command_Param_Check_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Query parameters check (ADO command)'
+      OnClick = Ado_Command_Param_Check_CheckBoxClick
+    end
+    object Queries_Open_In_Background_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Queries (some) open in the background'
+    end
   end
 end

@@ -26,7 +26,7 @@ uses
 type
   TComponent_Type = ( ct_none, ct_ADO, ct_FireDAC );
   TOperation_Duration_Calculating_Type = ( odct_multi_command, odct_multi_command__initialization, odct_single_command );
-  TPage_Control_Children_Find_Function = ( pccff_none, pccff_Options_Set, pccff_Task_Running_Check, pccff_Translation__Apply );
+  TPage_Control_Children_Find_Function = ( pccff_none, pccff_Highlight_Font_Set, pccff_Options_Set, pccff_Task_Running_Check, pccff_Translation__Apply );
 
   TKey_Down_wsk = procedure( Sender : TObject; var Key : Word; Shift : TShiftState ) of object;
 
@@ -48,6 +48,11 @@ type
     component_type : TComponent_Type;
   end;
 
+  TCustomSynEdit_Helper = class helper for SynEdit.TCustomSynEdit
+    procedure Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean );
+    procedure Plugin__Search_Highlighter__Destroy();
+  end;
+
   TObject_Id_Caption = class
     id : integer;
 
@@ -59,8 +64,9 @@ type
   TSDBM = class
   private
     { Private declarations }
-    ado_query_manage, // Whether create and free.
-    fd_query_manage // Whether create and free.
+    ado_query__manage, // Whether create and free.
+    database_connection__manage, // Whether create and free.
+    fd_query__manage // Whether create and free.
       : boolean;
 
     ado_connection__sdbm : Data.Win.ADODB.TADOConnection;
@@ -81,8 +87,8 @@ type
     component_type__sdbm : TComponent_Type;
 
     constructor Create( sdbm_f : TSDBM ); overload;
-    constructor Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection ); overload;
-    constructor Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; ado_query_f : TADOQuery; fd_query_f : TFDQuery ); overload;
+    constructor Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const database_connection__separated_f : boolean = false ); overload;
+    constructor Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; ado_query_f : TADOQuery; fd_query_f : TFDQuery; const database_connection__separated_f : boolean = false ); overload;
     destructor Destroy(); override;
 
     procedure Component_Type_Set( const component_type_f : TComponent_Type; const fire_dac__fetch_options__mode_f : TFDFetchMode; const fire_dac__fetch_options__record_count_mode_f : TFDRecordCountMode; const fire_dac__fetch_options__rowset_size_f : integer );
@@ -90,6 +96,7 @@ type
     //procedure Connections_Assign_To( sdbm_f : TSDBM );
 
     function Connected() : boolean;
+    procedure Connection__Open( const databases_r_f : TDatabases_r; log_memo_f : TMemo; const component_type_f : Common.TComponent_Type = Common.ct_ADO );
 
     procedure Data_Source__Data_Set__Set( data_source_f : TDataSource );
 
@@ -172,7 +179,10 @@ function Column__Name_To_Grid_Caption( const column_name_f : string ) : string;
 function Column__Values__Distinct__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var items_count_f : integer; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : string;
 function Column__Values__Sum__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var error_message_f : string; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : currency;
 procedure Comment__Uncomment_Line( syn_edit_f : TSynEdit; const go_up_f : boolean = false );
+procedure Comment__Uncomment_Line__Slash( syn_edit_f : TSynEdit; const go_up__or__invert_f : boolean = false );
 procedure Data_Value_Format__Set( sdbm_f : TSDBM; log_memo_f : TMemo; const display_format__disabled_f: boolean = false );
+function Database__Connection__Open( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const databases_r_f : TDatabases_r; log_memo_f : TMemo; const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : TModalResult;
+procedure Database__Connections__Close( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection );
 function Databases_Type__Directory_Path__Get( const database_type_f : string ) : string;
 procedure DB_Grid_Draw_Column_Cell( const sort__column_name_f : string; db_grid_f : Vcl.DBGrids.TDBGrid; const Rect : Winapi.Windows.TRect; DataCol : Integer; Column : Vcl.DBGrids.TColumn; State : Vcl.Grids.TGridDrawState );
 procedure DB_Grid_Select( db_grid_f : Vcl.DBGrids.TDBGrid; const selected_f : boolean; const invertf : boolean = false );
@@ -185,12 +195,12 @@ procedure Syn_Completion_Proposal_After_Code_Completion( syn_edit_f : TSynEdit; 
 procedure Syn_Completion_Proposal_Code_Completion( var code_completion__cursor_position_f : integer; var value_f : string );
 procedure Syn_Completion_Proposal__Parameters__Set( syn_completion_proposal_f : SynCompletionProposal.TSynCompletionProposal );
 function Syn_Edit__CharScan( syn_edit_f : TSynEdit; const do_delete_f : boolean = false ) : string;
+procedure Syn_Edit__Highlight__Text( syn_edit_f : TSynEdit );
 function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean;
 procedure Syn_Edit__On_Replace_Text( syn_edit_f : TSynEdit; ASearch, AReplace : string; Line, Column : Integer; var Action : TSynReplaceAction; AClientRect : TRect );
 procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit ); overload;
-procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__background_f, color__border_f : integer ); overload;
-procedure Syn_Edit__Words_Highlight( syn_edit_f : TSynEdit );
+procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean ); overload;
 function Text__File_Load( const file_path_f : string ) : string;
 function Text__Search_Replace__Is_Nil( text__search_replace_form_f : Text__Search_Replace.TText__Search_Replace_Form ) : boolean;
 procedure Text__Search_Replace__Direction__Invert( text__search_replace_form_f : Text__Search_Replace.TText__Search_Replace_Form );
@@ -521,6 +531,9 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}#13#10\style{-B}-->#13#10' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}     , (case(...)\style{-B}-->case~#13#10     , (case#13#10         when ( T1.C1 > 3320 ) then#13#10           T1.C1#13#10         else#13#10           T1.C2#13#10       end) as ALIAS' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}abs( | )\style{-B}-->abs( | )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}and \style{-B}-->and ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}as \style{-B}-->as ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}asc\style{-B}-->asc' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}ascii_char( 13 )||ascii_char( 10 )\style{-B}-->ascii_char( 13 )||ascii_char( 10 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}boolean \style{-B}-->boolean ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}cast( ''NOW'' as timestamp )\style{-B}-->cast( ''NOW'' as timestamp )' + #13 + #10 +
@@ -544,6 +557,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}decimal( 12, 4 ); \style{-B}-->decimal( 12, 4 ) ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}declare variable \style{-B}-->declare variable ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}delete from \style{-B}-->delete from ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}desc\style{-B}-->desc' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}distinct \style{-B}-->distinct ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract( year from | )\style{-B}-->extract( year from | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract: month, day, hour, minute, second, millisecond\style{-B}-->extract: month, day, hour, minute, second, millisecond' + #13 + #10 +
@@ -568,6 +582,8 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}lpad( | , 6, 0 )\style{-B}-->lpad( | , 6, 0 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}max( | )\style{-B}-->max( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min( | )\style{-B}-->min( | )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not \style{-B}-->not ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}or \style{-B}-->or ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}order by\style{-B}-->order by ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}position( ''pattern'', T1.C1 )\style{-B}-->position( ''pattern'', T1.C1 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}RDB$DATABASE\style{-B}-->RDB$DATABASE' + #13 + #10 +
@@ -576,6 +592,8 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}round( | )\style{-B}-->round( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}round( |, 0 )\style{-B}-->round( |, 0 )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}rpad( | , 6, 0 )\style{-B}-->rpad( | , 6, 0 )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}select \style{-B}-->select ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}set \style{-B}-->set ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}smallint \style{-B}-->smallint ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}strlen( | )\style{-B}-->strlen( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}substr( | , 6, 7 )\style{-B}-->substr( | , 6, 7 )' + #13 + #10 +
@@ -589,6 +607,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union \style{-B}-->union ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}update \style{-B}-->update ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}upper( | )\style{-B}-->upper( | )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}values \style{-B}-->values ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}varchar( 100 ) \style{-B}-->varchar( 100 ) ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}where \style{-B}-->where ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}/*\style{-B}-->/*' + #13 + #10 +
@@ -712,7 +731,15 @@ var
   queries_open_in_background,
   sql_editor__close_prompt,
   sql_editor__comments_delete,
-  sql_editor__execute_automatic_detection,
+  sql_editor__database_connection__separated,
+  sql_editor__execute__automatic_detection,
+  sql_editor__execute__selected,
+  sql_editor__font__use_in_other_components,
+  sql_editor__highlights__syntax__brackets__all_pairs,
+  sql_editor__highlights__syntax__brackets__angle,
+  sql_editor__highlights__syntax__brackets__curly,
+  sql_editor__highlights__syntax__brackets__round,
+  sql_editor__highlights__syntax__brackets__square,
   sql_editor__transactions_automatic,
   sql__quotation_sign__use,
   splitter_show,
@@ -729,8 +756,11 @@ var
   sql_editor__code__completion_window__default__lines_in_window,
   sql_editor__code__completion_window__default__width,
   sql_editor__code__dent_width,
-  sql_editor__words_highlight__color__background,
-  sql_editor__words_highlight__color__border,
+  sql_editor__highlights__brackets__color__background,
+  sql_editor__highlights__brackets__color__border,
+  sql_editor__highlights__lines__active__color,
+  sql_editor__highlights__words__color__background,
+  sql_editor__highlights__words__color__border,
   //fd_connection__format_options__max_string_size, // Do not work. //????
   table__data_modify__filter__height_keeper__top,
   text__search__history_save_to_file__items_count
@@ -754,6 +784,7 @@ var
   database__file__default_extension,
   exe__file__default_extension,
   language__selected,
+  sql_editor__highlights__syntax,
   sql_editor__query_output_save_field_format__date,
   sql_editor__query_output_save_field_format__real_numbers,
   sql_editor__query_output_save_field_format__separator__date_time,
@@ -792,9 +823,57 @@ uses
 
   plgSearchHighlighter,
 
+  Database__List_Modify,
   Shared,
   Text__Search_Replace__Prompt,
   Translation;
+
+procedure TCustomSynEdit_Helper.Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean );
+var
+  i : integer;
+begin
+
+  //if Self.fPlugins <> nil then // Do not work - cannot access private symbol TCustomSynEdit.fPlugins
+
+  with Self do // But it works.
+    begin
+
+      if fPlugins <> nil then
+        for i := 0 to fPlugins.Count - 1 do
+          if SynEdit.TSynEditPlugin(fPlugins[ i ]) is plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets then
+            begin
+
+              plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__all_pairs := brackets__all_pairs_f;
+              plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__angle := brackets__angle_f;
+              plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__curly := brackets__curly_f;
+              plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__round := brackets__round_f;
+              plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__squareg := brackets__square_f;
+
+            end;
+
+    end;
+
+end;
+
+procedure TCustomSynEdit_Helper.Plugin__Search_Highlighter__Destroy();
+var
+  i : integer;
+begin
+
+  //if Self.fPlugins <> nil then // Do not work - cannot access private symbol TCustomSynEdit.fPlugins
+
+  with Self do // But it works.
+    begin
+
+      if fPlugins <> nil then
+        for i := fPlugins.Count - 1 downto 0 do
+          if   ( SynEdit.TSynEditPlugin(fPlugins[ i ]) is plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin )
+            or ( SynEdit.TSynEditPlugin(fPlugins[ i ]) is plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets ) then
+            SynEdit.TSynEditPlugin(fPlugins[ i ]).Destroy();
+
+    end;
+
+end;
 
 constructor TSDBM.Create( sdbm_f : TSDBM );
 begin
@@ -806,26 +885,45 @@ begin
 
 end;
 
-constructor TSDBM.Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection );
+constructor TSDBM.Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const database_connection__separated_f : boolean = false );
 begin
 
-  Self.Create( ado_connection_f, fd_connection_f, nil, nil );
+  Self.Create( ado_connection_f, fd_connection_f, nil, nil, database_connection__separated_f );
 
 end;
 
-constructor TSDBM.Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; ado_query_f : TADOQuery; fd_query_f : TFDQuery );
+constructor TSDBM.Create( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; ado_query_f : TADOQuery; fd_query_f : TFDQuery; const database_connection__separated_f : boolean = false );
 begin
 
   Self.component_type__sdbm := ct_none;
 
-  Self.ado_connection__sdbm := ado_connection_f;
-  Self.fd_connection__sdbm := fd_connection_f;
+
+  Self.database_connection__manage := database_connection__separated_f;
+
+  if not Self.database_connection__manage then
+    begin
+
+      Self.ado_connection__sdbm := ado_connection_f;
+      Self.fd_connection__sdbm := fd_connection_f;
+
+    end
+  else
+    begin
+
+      Self.ado_connection__sdbm := Data.Win.ADODB.TADOConnection.Create( Application );
+      Self.ado_connection__sdbm.LoginPrompt := false;
+
+      Self.fd_connection__sdbm := FireDAC.Comp.Client.TFDConnection.Create( Application );
+      Self.fd_connection__sdbm.LoginPrompt := false;
+
+    end;
+
 
   Self.ado_query__sdbm := ado_query_f;
   Self.fd_query__sdbm := fd_query_f;
 
-  Self.ado_query_manage := Self.ado_query__sdbm = nil;
-  Self.fd_query_manage := Self.fd_query__sdbm = nil;
+  Self.ado_query__manage := Self.ado_query__sdbm = nil;
+  Self.fd_query__manage := Self.fd_query__sdbm = nil;
 
   Self.operation_duration__calculating_type := odct_single_command;
 
@@ -838,6 +936,23 @@ destructor TSDBM.Destroy();
 begin
 
   Queries__Manage( false );
+
+
+  if Self.database_connection__manage then
+    begin
+
+      Database__Connections__Close( Self.ado_connection__sdbm, Self.fd_connection__sdbm );
+
+
+      if Self.ado_connection__sdbm <> nil then
+        FreeAndNil( Self.ado_connection__sdbm );
+
+
+      if Self.fd_connection__sdbm <> nil then
+        FreeAndNil( Self.fd_connection__sdbm );
+
+    end;
+
 
   inherited;
 
@@ -890,6 +1005,13 @@ begin
   else
   if Self.component_type__sdbm = ct_FireDAC then
     Result := Self.fd_connection__sdbm.Connected;
+
+end;
+
+procedure TSDBM.Connection__Open( const databases_r_f : TDatabases_r; log_memo_f : TMemo; const component_type_f : Common.TComponent_Type = Common.ct_ADO );
+begin
+
+  Database__Connection__Open( Self.ado_connection__sdbm, Self.fd_connection__sdbm, databases_r_f, log_memo_f, component_type_f );
 
 end;
 
@@ -1033,7 +1155,7 @@ begin
     begin
 
       if    ( Self.component_type__sdbm = ct_ADO )
-        and ( Self.ado_query_manage )
+        and ( Self.ado_query__manage )
         and ( Self.ado_query__sdbm = nil ) then
         begin
 
@@ -1044,7 +1166,7 @@ begin
 
 
       if    ( Self.component_type__sdbm = ct_FireDAC )
-        and ( Self.fd_query_manage )
+        and ( Self.fd_query__manage )
         and ( Self.fd_query__sdbm = nil ) then
         begin
 
@@ -1057,7 +1179,7 @@ begin
   else
     begin
 
-      if    ( Self.ado_query_manage )
+      if    ( Self.ado_query__manage )
         and ( Self.ado_query__sdbm <> nil ) then
         begin
 
@@ -1070,7 +1192,7 @@ begin
         end;
 
 
-      if    ( Self.fd_query_manage )
+      if    ( Self.fd_query__manage )
         and ( Self.fd_query__sdbm <> nil ) then
         begin
 
@@ -2449,66 +2571,274 @@ end;
 
 procedure Comment__Uncomment_Line( syn_edit_f : TSynEdit; const go_up_f : boolean = false );
 var
-  line_number_l : integer;
+  block__comment_l : boolean;
+
+  line__number_l,
+  line__number__start_l,
+  line__number__end_l
+    : integer;
+
+  zt_buffer_coord : SynEditTypes.TBufferCoord;
 begin
 
   if syn_edit_f = nil then
     Exit;
 
 
-  //line_number_l := memo_f.CaretPos.Y;
-  line_number_l := syn_edit_f.CaretY - 1;
+  block__comment_l := false;
 
 
-  if   ( syn_edit_f.Lines.Count < 0 )
-    or ( syn_edit_f.Lines.Count < line_number_l )
-    or ( line_number_l < 0 ) then
-    //or (  Trim( syn_edit_f.Lines[ line_number_l ] ) = ''  ) then
-    Exit;
-
-
-  if Pos(  Common.sql__comment__begin, Trim( syn_edit_f.Lines[ line_number_l ] )  ) = 1 then
+  if    ( syn_edit_f.Lines.Count > 0 )
+    and ( syn_edit_f.SelStart < syn_edit_f.SelEnd ) then
     begin
 
-      // Uncomment.
+      zt_buffer_coord := syn_edit_f.CharIndexToRowCol( syn_edit_f.SelStart );
 
-      syn_edit_f.Lines[ line_number_l ] := StringReplace( syn_edit_f.Lines[ line_number_l ], Common.sql__comment__begin, '', [] );
-      syn_edit_f.Lines[ line_number_l ] := StringReplace( syn_edit_f.Lines[ line_number_l ], Common.sql__comment__end, '', [] );
+      line__number__start_l := zt_buffer_coord.Line - 1;
 
-    end
-  else
-    begin
 
-      // Comment.
+      zt_buffer_coord := syn_edit_f.CharIndexToRowCol( syn_edit_f.SelEnd );
 
-      syn_edit_f.Lines[ line_number_l ] :=
-        Common.sql__comment__begin +
-        syn_edit_f.Lines[ line_number_l ] +
-        Common.sql__comment__end;
+      line__number__end_l := zt_buffer_coord.Line - 1;
+
+
+      line__number_l := line__number__end_l - line__number__start_l;
+
+      if line__number_l > 0 then
+        block__comment_l := true;
 
     end;
 
 
-  if not go_up_f then
+  if not block__comment_l then
     begin
 
-      // Go to the next line.
+      // Line comment.
 
-      //if line_number_l < memo_f.Lines.Count then
-      //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y + 1 );
-      if line_number_l < syn_edit_f.Lines.Count - 1 then
-        syn_edit_f.CaretY := syn_edit_f.CaretY + 1;
+      //line__number_l := memo_f.CaretPos.Y;
+      line__number_l := syn_edit_f.CaretY - 1;
+
+
+      if   ( syn_edit_f.Lines.Count < 0 )
+        or ( syn_edit_f.Lines.Count < line__number_l )
+        or ( line__number_l < 0 ) then
+        //or (  Trim( syn_edit_f.Lines[ line__number_l ] ) = ''  ) then
+        Exit;
+
+
+      if Pos(  Common.sql__comment__begin, Trim( syn_edit_f.Lines[ line__number_l ] )  ) = 1 then
+        begin
+
+          // Uncomment.
+
+          syn_edit_f.Lines[ line__number_l ] := StringReplace( syn_edit_f.Lines[ line__number_l ], Common.sql__comment__begin, '', [] );
+          syn_edit_f.Lines[ line__number_l ] := StringReplace( syn_edit_f.Lines[ line__number_l ], Common.sql__comment__end, '', [] );
+
+        end
+      else
+        begin
+
+          // Comment.
+
+          syn_edit_f.Lines[ line__number_l ] :=
+            Common.sql__comment__begin +
+            syn_edit_f.Lines[ line__number_l ] +
+            Common.sql__comment__end;
+
+        end;
+
+
+      if not go_up_f then
+        begin
+
+          // Go to the next line.
+
+          //if line__number_l < memo_f.Lines.Count then
+          //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y + 1 );
+          if line__number_l < syn_edit_f.Lines.Count - 1 then
+            syn_edit_f.CaretY := syn_edit_f.CaretY + 1;
+
+        end
+      else
+        begin
+
+          // Go to the previous line.
+
+          //if line__number_l > 0 then
+          //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y - 1 );
+          if line__number_l > 0 then
+            syn_edit_f.CaretY := syn_edit_f.CaretY - 1;
+
+        end;
 
     end
   else
     begin
 
-      // Go to the previous line.
+      // Block comment.
 
-      //if line_number_l > 0 then
-      //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y - 1 );
-      if line_number_l > 0 then
-        syn_edit_f.CaretY := syn_edit_f.CaretY - 1;
+      if Pos(  Common.sql__comment__begin, Trim( syn_edit_f.Lines[ line__number__start_l ] )  ) = 1 then
+        begin
+
+          // Uncomment.
+
+          syn_edit_f.Lines[ line__number__start_l ] := StringReplace( syn_edit_f.Lines[ line__number__start_l ], Common.sql__comment__begin, '', [] );
+          syn_edit_f.Lines[ line__number__end_l ] := StringReplace( syn_edit_f.Lines[ line__number__end_l ], Common.sql__comment__end, '', [] );
+
+        end
+      else
+        begin
+
+          // Comment.
+
+          syn_edit_f.Lines[ line__number__start_l ] :=
+            Common.sql__comment__begin +
+            syn_edit_f.Lines[ line__number__start_l ];
+
+          syn_edit_f.Lines[ line__number__end_l ] :=
+            syn_edit_f.Lines[ line__number__end_l ] +
+            Common.sql__comment__end;
+
+        end;
+
+    end;
+
+end;
+
+procedure Comment__Uncomment_Line__Slash( syn_edit_f : TSynEdit; const go_up__or__invert_f : boolean = false );
+
+  function Apply_Comment( text_f : string; const do__comment_f : boolean ) : string;
+  begin
+
+    if do__comment_f then
+      Result := // Comment.
+        Common.sql__comment__line +
+        text_f
+    else
+      Result := StringReplace( text_f, Common.sql__comment__line, '', [] ); // Uncomment.
+
+  end;
+
+var
+  block__comment_l,
+  do__uncomment_l
+    : boolean;
+
+  line__number_l,
+  line__number__start_l,
+  line__number__end_l
+    : integer;
+
+  zt_buffer_coord : SynEditTypes.TBufferCoord;
+begin
+
+  if syn_edit_f = nil then
+    Exit;
+
+
+  block__comment_l := false;
+
+
+  if    ( syn_edit_f.Lines.Count > 0 )
+    and ( syn_edit_f.SelStart < syn_edit_f.SelEnd ) then
+    begin
+
+      zt_buffer_coord := syn_edit_f.CharIndexToRowCol( syn_edit_f.SelStart );
+
+      line__number__start_l := zt_buffer_coord.Line - 1;
+
+
+      zt_buffer_coord := syn_edit_f.CharIndexToRowCol( syn_edit_f.SelEnd );
+
+      line__number__end_l := zt_buffer_coord.Line - 1;
+
+
+      line__number_l := line__number__end_l - line__number__start_l;
+
+      if line__number_l > 0 then
+        block__comment_l := true;
+
+    end;
+
+
+  if not block__comment_l then
+    begin
+
+      // Line comment.
+
+      //line__number_l := memo_f.CaretPos.Y;
+      line__number_l := syn_edit_f.CaretY - 1;
+
+
+      if   ( syn_edit_f.Lines.Count < 0 )
+        or ( syn_edit_f.Lines.Count < line__number_l )
+        or ( line__number_l < 0 ) then
+        //or (  Trim( syn_edit_f.Lines[ line__number_l ] ) = ''  ) then
+        Exit;
+
+
+      if Pos(  Common.sql__comment__line, Trim( syn_edit_f.Lines[ line__number_l ] )  ) = 1 then
+        syn_edit_f.Lines[ line__number_l ] := Apply_Comment( syn_edit_f.Lines[ line__number_l ], false ) // Uncomment.
+      else
+        syn_edit_f.Lines[ line__number_l ] := Apply_Comment( syn_edit_f.Lines[ line__number_l ], true ); // Comment.
+
+
+      if not go_up__or__invert_f then
+        begin
+
+          // Go to the next line.
+
+          //if line__number_l < memo_f.Lines.Count then
+          //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y + 1 );
+          if line__number_l < syn_edit_f.Lines.Count - 1 then
+            syn_edit_f.CaretY := syn_edit_f.CaretY + 1;
+
+        end
+      else
+        begin
+
+          // Go to the previous line.
+
+          //if line__number_l > 0 then
+          //  memo_f.CaretPos := Point( 0,  memo_f.CaretPos.Y - 1 );
+          if line__number_l > 0 then
+            syn_edit_f.CaretY := syn_edit_f.CaretY - 1;
+
+        end;
+
+    end
+  else
+    begin
+
+      // Block comment.
+
+      if not go_up__or__invert_f then
+        begin
+
+          // Not invert.
+
+          do__uncomment_l := Pos(  Common.sql__comment__line, Trim( syn_edit_f.Lines[ line__number__start_l ] )  ) = 1;
+
+
+          for line__number_l := line__number__start_l to line__number__end_l do
+            if do__uncomment_l then
+              syn_edit_f.Lines[ line__number_l ] := Apply_Comment( syn_edit_f.Lines[ line__number_l ], false ) // Uncomment.
+            else
+              syn_edit_f.Lines[ line__number_l ] := Apply_Comment( syn_edit_f.Lines[ line__number_l ], true ); // Comment.
+
+        end
+      else
+        begin
+
+          // Invert.
+
+          for line__number_l := line__number__start_l to line__number__end_l do
+            if Pos(  Common.sql__comment__line, Trim( syn_edit_f.Lines[ line__number_l ] )  ) = 1 then
+              syn_edit_f.Lines[ line__number_l ] := Apply_Comment( syn_edit_f.Lines[ line__number_l ], false ) // Uncomment.
+            else
+              syn_edit_f.Lines[ line__number_l ] := Apply_Comment( syn_edit_f.Lines[ line__number_l ], true ); // Comment.
+
+        end;
 
     end;
 
@@ -2562,6 +2892,179 @@ begin
       if    ( data_presentation__data_value_format__time__use )
         and ( sdbm_f.Query__Fields( i ).DataType in [ ftTime ] ) then
         Format__Set( sdbm_f.Query__Fields( i ).FieldName, data_presentation__data_value_format__time, log_memo_f, display_format__disabled_f );
+
+end;
+
+function Database__Connection__Open( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const databases_r_f : TDatabases_r; log_memo_f : TMemo; const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : TModalResult;
+var
+  zti : integer;
+
+  modal_result_l : TModalResult;
+
+  zts_1,
+  zts_2,
+  user_name_l,
+  password_l
+    : string;
+
+  database__list_modify_form_l : Database__List_Modify.TDatabase__List_Modify_Form;
+begin
+
+  // mrCancel = connection attempt aborted.
+  // mrNo = error, not connected.
+  // mrYes = connected.
+
+
+  Result := mrNone;
+
+
+  if component_type_f = Common.ct_none then
+    Exit;
+
+
+  password_l := databases_r_f.password;
+  user_name_l := databases_r_f.user_name;
+
+
+  if databases_r_f.login_prompt then
+    begin
+
+      database__list_modify_form_l := Database__List_Modify.TDatabase__List_Modify_Form.Create( Application );
+      database__list_modify_form_l.login_prompt_input := true;
+      database__list_modify_form_l.databases_r__lm_g := databases_r_f;
+
+      modal_result_l := database__list_modify_form_l.ShowModal();
+
+      if modal_result_l = mrOk then
+        begin
+
+          password_l := database__list_modify_form_l.Password_Edit.Text;
+          user_name_l := database__list_modify_form_l.User_Name_Edit.Text;
+
+        end;
+
+      FreeAndNil( database__list_modify_form_l );
+
+
+      if modal_result_l <> mrOk then
+        begin
+
+          Result := mrCancel;
+
+          Exit;
+
+        end;
+
+    end;
+
+
+  Result := mrYes;
+
+
+  if component_type_f = Common.ct_ADO then
+    begin
+
+      ado_connection_f.ConnectionString := databases_r_f.ado__connection_string;
+
+      try
+        if databases_r_f.login_prompt then
+          ado_connection_f.Open( user_name_l, password_l )
+        else
+          ado_connection_f.Open();
+      except
+        on E : Exception do
+          begin
+
+            Result := mrNo;
+
+            if log_memo_f <> nil then
+              log_memo_f.Lines.Add( E.Message );
+
+            Application.MessageBox( PChar(Translation.translation__messages_r.failed_to_open_database_connection__ADO_ + #13 + #13 + E.Message + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+
+          end;
+      end;
+
+    end
+  else
+  if component_type_f = Common.ct_FireDAC then
+    begin
+
+      fd_connection_f.Params.Clear();
+      fd_connection_f.Params.Add( 'DriverID=' + databases_r_f.fire_dac__driver_id );
+      fd_connection_f.Params.Add( 'Database=' + databases_r_f.fire_dac__file_path );
+      fd_connection_f.Params.Add( 'User_Name=' + user_name_l );
+      fd_connection_f.Params.Add( 'Password=' + password_l );
+
+      zts_1 := databases_r_f.fire_dac__parameters;
+      zts_1 := StringReplace( zts_1, #13, '', [ rfReplaceAll ] );
+
+      if    (  Length( zts_1 ) > 0  )
+        and (  zts_1[ Length( zts_1 ) ] <> #10  ) then
+        zts_1 := zts_1 + #10;
+
+      zti := Pos( #10 , zts_1 );
+
+      while zti > 0 do
+        begin
+
+          zts_2 := Copy( zts_1, 1, zti - 1 );
+          Delete( zts_1, 1, zti );
+
+          if Trim( zts_2 ) <> '' then
+            fd_connection_f.Params.Add( zts_2 );
+
+          zti := Pos( #10 , zts_1 );
+
+        end;
+
+
+      try
+        fd_connection_f.Open();
+      except
+        on E : Exception do
+          begin
+
+            Result := mrNo;
+
+            if log_memo_f <> nil then
+              log_memo_f.Lines.Add( E.Message );
+
+            Application.MessageBox( PChar(Translation.translation__messages_r.failed_to_open_database_connection__FireDAC__ + #13 + #13 + E.Message + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+
+          end;
+      end;
+
+    end;
+
+end;
+
+procedure Database__Connections__Close( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection );
+begin
+
+  if    ( ado_connection_f <> nil )
+    and ( ado_connection_f.Connected ) then
+    begin
+
+      while ado_connection_f.InTransaction do
+        ado_connection_f.RollbackTrans();
+
+      ado_connection_f.Close();
+
+    end;
+
+
+  if    ( fd_connection_f <> nil )
+    and ( fd_connection_f.Connected ) then
+    begin
+
+      if fd_connection_f.Transaction <> nil then
+        while fd_connection_f.Transaction.Active do
+          fd_connection_f.Transaction.Rollback();
+
+      fd_connection_f.Close();
+
+    end;
 
 end;
 
@@ -2890,6 +3393,63 @@ begin
 
 end;
 
+procedure Syn_Edit__Highlight__Text( syn_edit_f : TSynEdit );
+var
+  whole_word_l : boolean;
+
+  zts : string;
+
+  syn_search_options : SynEditTypes.TSynSearchOptions;
+begin
+
+  if syn_edit_f = nil then
+    Exit;
+
+
+  zts := syn_edit_f.SelText;
+
+  if Trim( zts ) = '' then
+    begin
+
+      whole_word_l := true;
+
+      zts := Syn_Edit__CharScan( syn_edit_f );
+
+    end
+  else
+    whole_word_l := false;
+
+
+  if syn_edit_f.SearchEngine <> Shared.Shared_DataModule.SynEditSearch1 then // To highlight brackets.
+    syn_edit_f.SearchEngine := Shared.Shared_DataModule.SynEditSearch1;
+
+
+  if Trim( zts ) <> '' then
+    begin
+
+      //if syn_edit_f.SearchEngine <> Shared.Shared_DataModule.SynEditSearch1 then
+      //  syn_edit_f.SearchEngine := Shared.Shared_DataModule.SynEditSearch1;
+
+      if whole_word_l then
+        syn_search_options := [ SynEditTypes.ssoWholeWord ]
+      else
+        syn_search_options := [];
+
+      syn_edit_f.SearchEngine.Pattern := zts;
+      syn_edit_f.SearchEngine.Options := syn_search_options;
+      syn_edit_f.SearchEngine.FindAll( zts );
+
+    end
+  else
+    if syn_edit_f.SearchEngine <> nil then
+      //syn_edit_f.SearchEngine := nil;
+      syn_edit_f.SearchEngine.Pattern := '';
+
+
+  syn_edit_f.Refresh();
+
+end;
+
 function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean;
 
   procedure Select_All_L( syn_edit_f_f : TSynEdit );
@@ -2935,8 +3495,7 @@ begin
 
   if    ( not syn_edit_f.ReadOnly )
     and ( Key = VK_DELETE )
-    and ( Shift = [ ssCtrl ] )
-    and (  Trim( syn_edit_f.SelText ) = ''  ) then
+    and ( Shift = [ ssCtrl ] ) then
     begin
 
       Common.Syn_Edit__CharScan( syn_edit_f, true );
@@ -3025,6 +3584,30 @@ begin
 
     end
   else
+  // \.
+  if    ( not syn_edit_f.ReadOnly )
+    and ( Key = VK_OEM_5 )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    begin
+
+      Common.Comment__Uncomment_Line__Slash( syn_edit_f, true );
+
+      Result := true;
+
+    end
+  else
+  // \.
+  if    ( not syn_edit_f.ReadOnly )
+    and ( Key = VK_OEM_5 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Common.Comment__Uncomment_Line__Slash( syn_edit_f );
+
+      Result := true;
+
+    end
+  else
   // A.
   if    ( Key = 65 )
     and ( Shift = [ ssCtrl ] ) then
@@ -3042,7 +3625,7 @@ begin
   // C.
   if    ( Key = 67 )
     and ( Shift = [ ssCtrl ] )
-    and (  Trim( syn_edit_f.SelText ) = ''  ) then
+    and ( syn_edit_f.SelText = '' ) then
     begin
 
       zts := Common.Syn_Edit__CharScan( syn_edit_f );
@@ -3081,7 +3664,7 @@ begin
   if    ( not syn_edit_f.ReadOnly )
     and ( Key = 88 )
     and ( Shift = [ ssCtrl ] )
-    and (  Trim( syn_edit_f.SelText ) = ''  ) then
+    and ( syn_edit_f.SelText = '' ) then
     begin
 
       zts := Common.Syn_Edit__CharScan( syn_edit_f, true );
@@ -3197,15 +3780,21 @@ end;
 procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
 begin
 
+  // The same in: Common.Syn_Edit__Parameters__Set(), TOptions_Form.Sql_Text_SynEditEnter().
+
+
   if syn_edit_f = nil then
     Exit;
 
 
-  if syn_edit_f.TabWidth <> Common.sql_editor__code__dent_width then
-    syn_edit_f.TabWidth := Common.sql_editor__code__dent_width;
+  syn_edit_f.ActiveLineColor := sql_editor__highlights__lines__active__color;
 
+  syn_edit_f.Highlighter := Shared.Shared_DataModule.Syn_Edit__Highlighter__Get( Common.sql_editor__highlights__syntax );
 
   syn_edit_f.Options := syn_editor_options;
+
+  if syn_edit_f.TabWidth <> Common.sql_editor__code__dent_width then
+    syn_edit_f.TabWidth := Common.sql_editor__code__dent_width;
 
 end;
 
@@ -3216,81 +3805,64 @@ begin
     Exit;
 
 
-  Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f, sql_editor__words_highlight__color__background, sql_editor__words_highlight__color__border );
+  Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create
+    (
+      syn_edit_f,
+      sql_editor__highlights__brackets__color__background, sql_editor__highlights__brackets__color__border,
+      sql_editor__highlights__words__color__background, sql_editor__highlights__words__color__border,
+      sql_editor__highlights__syntax__brackets__all_pairs,
+      sql_editor__highlights__syntax__brackets__angle,
+      sql_editor__highlights__syntax__brackets__curly,
+      sql_editor__highlights__syntax__brackets__round,
+      sql_editor__highlights__syntax__brackets__square
+    );
 
 end;
 
-procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__background_f, color__border_f : integer );
+procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean );
 begin
 
   if syn_edit_f = nil then
     Exit;
 
 
-  if    ( color__background_f = clNone )
-    and ( color__border_f = clNone ) then
-    Exit;
+  syn_edit_f.Plugin__Search_Highlighter__Destroy();
 
 
-  with plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin.Create( syn_edit_f ) do
-    begin
+  if   ( color__words__background_f <> clNone )
+    or ( color__words__border_f <> clNone ) then
+    with plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin.Create( syn_edit_f ) do
+      begin
 
-      Attribute.Background := color__background_f;
-      Attribute.Foreground := color__border_f;
+        Attribute.Background := color__words__background_f;
+        Attribute.Foreground := color__words__border_f;
 
-    end;
-
-end;
-
-procedure Syn_Edit__Words_Highlight( syn_edit_f : TSynEdit );
-var
-  whole_word_l : boolean;
-
-  zts : string;
-
-  syn_search_options : SynEditTypes.TSynSearchOptions;
-begin
-
-  if syn_edit_f = nil then
-    Exit;
+      end;
 
 
-  zts := syn_edit_f.SelText;
+  if    (
+             ( color__brackets__background_f <> clNone )
+          or ( color__brackets__border_f <> clNone )
+        )
+    and (
+             ( brackets__angle_f )
+          or ( brackets__curly_f )
+          or ( brackets__round_f )
+          or ( brackets__square_f )
+        ) then
+    with plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets.Create( syn_edit_f ) do
+      begin
 
-  if Trim( zts ) = '' then
-    begin
+        Attribute.Background := color__brackets__background_f;
+        Attribute.Foreground := color__brackets__border_f;
 
-      whole_word_l := true;
+        brackets__all_pairs := brackets__all_pairs_f;
+        brackets__angle := brackets__angle_f;
+        brackets__curly := brackets__curly_f;
+        brackets__round := brackets__round_f;
+        brackets__squareg := brackets__square_f;
 
-      zts := Syn_Edit__CharScan( syn_edit_f );
-
-    end
-  else
-    whole_word_l := false;
-
-
-  if Trim( zts ) <> '' then
-    begin
-
-      if syn_edit_f.SearchEngine <> Shared.Shared_DataModule.SynEditSearch1 then
-        syn_edit_f.SearchEngine := Shared.Shared_DataModule.SynEditSearch1;
-
-      if whole_word_l then
-        syn_search_options := [ SynEditTypes.ssoWholeWord ]
-      else
-        syn_search_options := [];
-
-      syn_edit_f.SearchEngine.Pattern := zts;
-      syn_edit_f.SearchEngine.Options := syn_search_options;
-      syn_edit_f.SearchEngine.FindAll( zts );
-
-    end
-  else
-    if syn_edit_f.SearchEngine <> nil then
-      syn_edit_f.SearchEngine := nil;
-
-
-  syn_edit_f.Refresh();
+      end;
 
 end;
 
@@ -3311,6 +3883,7 @@ begin
   zt_string_list.LoadFromFile( file_path_f, System.SysUtils.TEncoding.UTF8 );
   Result := zt_string_list.Text;
 
+  zt_string_list.Clear();
   FreeAndNil( zt_string_list );
 
 end;

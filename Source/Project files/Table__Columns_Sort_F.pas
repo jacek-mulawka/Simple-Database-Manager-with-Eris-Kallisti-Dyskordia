@@ -56,6 +56,7 @@ type
 
     procedure Data_Open__TCSF();
     procedure Finish__TCSF();
+    procedure Highlight__Font__Set__TCSF();
     procedure Options_Set__TCSF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__TCSF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean; table__data_modify_f__data_close__tcsf_wsk_f : TTable__Data_Modify_F__Data_Close__TCSF_wsk );
@@ -176,6 +177,16 @@ begin
 
 end;
 
+procedure TTable__Columns_Sort_F_Frame.Highlight__Font__Set__TCSF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Columns_Sort_ListView.Font, Common.sql_editor__font );
+
+end;
+
 procedure TTable__Columns_Sort_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -291,7 +302,7 @@ begin
   Self.Options_Set__TCSF( component_type_f, sql__quotation_sign_f, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__TCSF();
 
 end;
 

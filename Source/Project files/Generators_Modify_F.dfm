@@ -24,7 +24,6 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
     Height = 600
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 880
     DesignSize = (
       185
       600)
@@ -43,8 +42,7 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
       Caption = '<?> / <?>'
       ParentShowHint = False
       ShowHint = True
-      ExplicitLeft = 23
-      ExplicitTop = 849
+      ExplicitWidth = 53
     end
     object Generator_Name_Etiquette_Label: TLabel
       AlignWithMargins = True
@@ -338,8 +336,6 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
       ScrollBars = ssVertical
       TabOrder = 4
       OnKeyDown = Log_MemoKeyDown
-      ExplicitTop = 348
-      ExplicitHeight = 98
     end
     object Buttons_Panel__Hide_Button: TButton
       Left = 155
@@ -406,8 +402,6 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
         ShowHint = True
         TabOrder = 1
         OnKeyDown = Permissions__User_Names_CheckListBoxKeyDown
-        ExplicitTop = 17
-        ExplicitHeight = 155
       end
       object Permissions__Grant_Button: TButton
         Left = 10
@@ -422,7 +416,6 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
         ShowHint = True
         TabOrder = 2
         OnClick = Permissions__Grant_ButtonClick
-        ExplicitTop = 255
       end
       object Permissions__Revoke_Button: TButton
         Left = 45
@@ -437,7 +430,6 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
         ShowHint = True
         TabOrder = 3
         OnClick = Permissions__Revoke_ButtonClick
-        ExplicitTop = 200
       end
       object Permissions__Refresh_Button: TButton
         Left = 125

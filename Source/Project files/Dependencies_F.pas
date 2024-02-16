@@ -89,6 +89,7 @@ type
 
     procedure Data_Open__DF();
     procedure Finish__DF();
+    procedure Highlight__Font__Set__DF();
     procedure Options_Set__DF( const component_type_f : Common.TComponent_Type );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__DF( const table_name_f, database_type_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection );
@@ -584,6 +585,17 @@ begin
 
 end;
 
+procedure TDependencies_F_Frame.Highlight__Font__Set__DF();
+begin
+
+  Common.Font__Set( Dependencies_Description_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Dependencies_TreeView.Font, Common.sql_editor__font );
+
+end;
+
 procedure TDependencies_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -690,8 +702,7 @@ begin
   Self.Options_Set__DF( component_type_f );
 
 
-  Common.Font__Set( Dependencies_Description_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__DF();
 
 end;
 

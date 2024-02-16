@@ -16,8 +16,6 @@ object Table_Add_Form: TTable_Add_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ExplicitWidth = 640
-  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object Table_Name_Etiquette_Label: TLabel
@@ -195,7 +193,7 @@ object Table_Add_Form: TTable_Add_Form
       item
         Control = Table_Columns_ToolBar
         ImageIndex = -1
-        Width = 782
+        Width = 778
       end>
     object Table_Columns_ToolBar: TToolBar
       Left = 11

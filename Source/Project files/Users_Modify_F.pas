@@ -111,8 +111,10 @@ type
     function Quotation_Sign__UMF() : string;
   public
     { Public declarations }
+    function Data_Active__UMF() : boolean;
     procedure Data_Open__UMF();
     procedure Finish__UMF();
+    procedure Highlight__Font__Set__UMF();
     procedure Options_Set__UMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__UMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__UMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -147,6 +149,15 @@ uses
   Text__Edit_Memo;
 
 {$R *.dfm}
+
+function TUsers_Modify_F_Frame.Data_Active__UMF() : boolean;
+begin
+
+  Result :=
+        ( users_sdbm <> nil )
+    and ( users_sdbm.Query__Active() );
+
+end;
 
 procedure TUsers_Modify_F_Frame.Data_Open__UMF();
 var
@@ -511,6 +522,16 @@ begin
 
 end;
 
+procedure TUsers_Modify_F_Frame.Highlight__Font__Set__UMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Users_DBGrid.Font, Common.sql_editor__font );
+
+end;
+
 function TUsers_Modify_F_Frame.Quotation_Sign__UMF() : string;
 begin
 
@@ -561,7 +582,7 @@ begin
   Self.Options_Set__UMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__UMF();
 
 end;
 
@@ -787,7 +808,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Refresh_Button.Name ) then
+    and ( Sender = Refresh_Button ) then
     begin
 
       Log_Memo.Lines.Add( users_sdbm.Operation_Duration_Get() );
@@ -805,7 +826,7 @@ var
 begin
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Modify__Unselect_All_Button.Name ) then
+    and ( Sender = Modify__Unselect_All_Button ) then
     select_all_l := false
   else
     select_all_l := true;

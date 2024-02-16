@@ -251,7 +251,6 @@ object Stored_Procedure__Edit_Execute_F_Frame: TStored_Procedure__Edit_Execute_F
               Kind = gbkMargin
               Width = 3
             end>
-          Highlighter = Shared_DataModule.Sql_Text__SynSQLSyn
           Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
           ReadOnly = True
           RightEdge = 255

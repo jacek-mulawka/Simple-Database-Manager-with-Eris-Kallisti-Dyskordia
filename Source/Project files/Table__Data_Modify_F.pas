@@ -155,6 +155,7 @@ type
     Splitter_Show__Get_wsk : function() : boolean of object;
 
     function Finish__TDMF() : boolean;
+    procedure Highlight__Font__Set__TDMF();
     procedure Options_Set__TDMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__TDMF( const databases_r_f : Common.TDatabases_r; const table_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     function Table__Data_Modify_F__Data__Close__TDMF() : boolean;
@@ -687,6 +688,17 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.Highlight__Font__Set__TDMF();
+begin
+
+  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Data_DBGrid.Font, Common.sql_editor__font );
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Field_Name_Selected_From_Form_View__Set();
 var
   i : integer;
@@ -892,14 +904,11 @@ begin
   Editing_CheckBoxClick( nil );
 
 
-  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__TDMF();
 
 
   Height_Keeper_Label.Top := Common.table__data_modify__filter__height_keeper__top;
   Width_Keeper_Label.Left := Data_ScrollBox.Width - Width_Keeper_Label.Width;
-
-
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
 
 end;
 
@@ -1088,6 +1097,7 @@ begin
 
       zt_string_list.SaveToFile( SaveDialog1.FileName, System.SysUtils.TEncoding.UTF8 );
 
+      zt_string_list.Clear();
       FreeAndNil( zt_string_list );
 
 
@@ -1916,7 +1926,7 @@ var
 begin
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Width_Keeper__Move__Left_Button.Name ) then
+    and ( Sender = Width_Keeper__Move__Left_Button ) then
     zti := -1
   else
     zti := 1;
@@ -1980,7 +1990,7 @@ begin
   if   ( Sender = nil )
     or (
              ( Sender <> nil )
-         and ( TComponent(Sender).Name = Data_Filter__Show_Button.Name )
+         and ( Sender = Data_Filter__Show_Button )
        ) then
     begin
 

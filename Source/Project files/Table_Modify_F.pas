@@ -64,6 +64,7 @@ type
     Splitter_Show__Get_wsk : function() : boolean of object;
 
     function Finish__TMoF() : boolean;
+    procedure Highlight__Font__Set__TMoF();
     procedure Options_Set__TMoF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__TMoF( const databases_r_f : Common.TDatabases_r; const table_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const additional_component_show_f, queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Table__Data_Open__TMoF();
@@ -152,6 +153,38 @@ begin
       FreeAndNil( triggers_modify_f_frame_g );
 
     end;
+
+end;
+
+procedure TTable_Modify_F_Frame.Highlight__Font__Set__TMoF();
+begin
+
+  if dependencies_f_frame_g <> nil then
+    dependencies_f_frame_g.Highlight__Font__Set__DF();
+
+
+  if permissions_modify_f_frame_g <> nil then
+    permissions_modify_f_frame_g.Highlight__Font__Set__PMF();
+
+
+  if table__columns_sort_f_frame_g <> nil then
+    table__columns_sort_f_frame_g.Highlight__Font__Set__TCSF();
+
+
+  if table__data_modify_f_frame_g <> nil then
+    table__data_modify_f_frame_g.Highlight__Font__Set__TDMF();
+
+
+  if table__indexes_modify_f_frame_g <> nil then
+    table__indexes_modify_f_frame_g.Highlight__Font__Set__TIMF();
+
+
+  if table__metadata_f_frame_g <> nil then
+    table__metadata_f_frame_g.Highlight__Font__Set__TMeF();
+
+
+  if triggers_modify_f_frame_g <> nil then
+    triggers_modify_f_frame_g.Highlight__Font__Set__TrMF();
 
 end;
 

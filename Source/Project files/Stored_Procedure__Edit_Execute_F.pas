@@ -183,6 +183,7 @@ type
 
     procedure Data_Open__SPEEF();
     function Finish__SPEEF() : boolean;
+    procedure Highlight__Font__Set__SPEEF();
     procedure Options_Set__SPEEF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__SPEEF( const databases_r_f : Common.TDatabases_r; const stored_procedure_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Stored_Procedure__Edit_Execute_F__Edit__SPEEF();
@@ -1056,6 +1057,9 @@ begin
       //---// Correct sorting.
 
 
+      sql_parameters__new_string_list.Clear();
+      sql_parameters__old_string_list.Clear();
+
       FreeAndNil( sql_parameters__new_string_list );
       FreeAndNil( sql_parameters__old_string_list );
 
@@ -1156,6 +1160,31 @@ begin
 
 
   Stored_Procedure__Parameters__Free();
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Highlight__Font__Set__SPEEF();
+begin
+
+  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Stored_Procedure__Description_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Stored_Procedure__Parameters__Description_DBMemo.Font, Common.sql_editor__font );
+  //Common.Font__Set( Stored_Procedure__Source_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Stored_Procedure__Source_SynEdit.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Stored_Procedure__Output_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( Stored_Procedure__Parameters_DBGrid.Font, Common.sql_editor__font );
+
+    end;
+
+  Common.Syn_Edit__Parameters__Set( Stored_Procedure__Source_SynEdit );
+
+
+  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Stored_Procedure__Source_SynEdit );
 
 end;
 
@@ -1376,16 +1405,7 @@ begin
   Log_Memo.Lines.Add( 'Default replace: ' + default_replace_g + '.' );
 
 
-  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Stored_Procedure__Description_Memo.Font, Common.sql_editor__font );
-  //Common.Font__Set( Stored_Procedure__Source_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Stored_Procedure__Source_SynEdit.Font, Common.sql_editor__font );
-
-  Common.Syn_Edit__Parameters__Set( Stored_Procedure__Source_SynEdit );
-
-
-  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Stored_Procedure__Source_SynEdit );
+  Highlight__Font__Set__SPEEF();
 
 end;
 
@@ -2183,7 +2203,7 @@ begin
       if   ( Sender = nil )
         or (
                 ( Sender <> nil )
-            and ( TComponent(Sender).Name = Close_Button.Name )
+            and ( Sender = Close_Button )
           ) then
         Stored_Procedure__Parameters__Free();
 
@@ -2696,13 +2716,13 @@ begin
   if    ( Key = 65 )
     and ( Shift = [ ssCtrl ] )
     and ( Sender <> nil ) then
-    if TComponent(Sender).Name = Log_Memo.Name then
+    if Sender = Log_Memo then
       Log_Memo.SelectAll()
     else
-    if TComponent(Sender).Name = Stored_Procedure__Description_Memo.Name then
+    if Sender = Stored_Procedure__Description_Memo then
       Stored_Procedure__Description_Memo.SelectAll();
     //else
-    //if TComponent(Sender).Name = Stored_Procedure__Source_Memo.Name then
+    //if Sender = Stored_Procedure__Source_Memo then
     //  Stored_Procedure__Source_Memo.SelectAll();
 
 end;
@@ -2735,7 +2755,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Stored_Procedure__Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Stored_Procedure__Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Stored_Procedure__Source_SynEdit, text__search_replace_form );
 
@@ -2756,7 +2776,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Stored_Procedure__Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Stored_Procedure__Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Stored_Procedure__Source_SynEdit, text__search_replace_form );
 

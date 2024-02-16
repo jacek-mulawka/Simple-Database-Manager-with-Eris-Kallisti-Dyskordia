@@ -106,8 +106,10 @@ type
     function Quotation_Sign__GMF() : string;
   public
     { Public declarations }
+    function Data_Active__GMF() : boolean;
     procedure Data_Open__GMF( const filter_apply_f : boolean = false );
     procedure Finish__GMF();
+    procedure Highlight__Font__Set__GMF();
     procedure Options_Set__GMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__GMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__GMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -138,6 +140,15 @@ uses
   Text__Edit_Memo;
 
 {$R *.dfm}
+
+function TGenerators_Modify_F_Frame.Data_Active__GMF() : boolean;
+begin
+
+  Result :=
+        ( generators_sdbm <> nil )
+    and ( generators_sdbm.Query__Active() );
+
+end;
 
 procedure TGenerators_Modify_F_Frame.Data_Open__GMF( const filter_apply_f : boolean = false );
 var
@@ -444,6 +455,21 @@ begin
 
 end;
 
+procedure TGenerators_Modify_F_Frame.Highlight__Font__Set__GMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Generators_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( Permissions__User_Names_CheckListBox.Font, Common.sql_editor__font );
+
+    end;
+
+end;
+
 procedure TGenerators_Modify_F_Frame.Permissions__User_Names_Items_Free();
 var
   i : integer;
@@ -510,7 +536,7 @@ begin
   Self.Options_Set__GMF( component_type_f, databases_r_f.sql__quotation_sign, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__GMF();
 
 end;
 
@@ -700,7 +726,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Refresh_Button.Name ) then
+    and ( Sender = Refresh_Button ) then
     begin
 
       Log_Memo.Lines.Add( generators_sdbm.Operation_Duration_Get() );
@@ -1120,7 +1146,7 @@ begin
               end;
 
 
-              Permissions__User_Names_CheckListBox.Items.AddObject( zt_object_id_caption.caption, zt_object_id_caption);
+              Permissions__User_Names_CheckListBox.Items.AddObject( zt_object_id_caption.caption, zt_object_id_caption );
 
 
               zt_sdbm.Query__Next();

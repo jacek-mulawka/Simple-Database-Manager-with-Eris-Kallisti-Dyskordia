@@ -538,7 +538,7 @@ begin
       zt_edit := nil;
 
 
-      if TComponent(Sender).Name = Database__Create__Application__File_Path__Find_Button.Name then
+      if Sender = Database__Create__Application__File_Path__Find_Button then
         begin
 
           zt_edit := Database__Create__Application__File_Path_Edit;

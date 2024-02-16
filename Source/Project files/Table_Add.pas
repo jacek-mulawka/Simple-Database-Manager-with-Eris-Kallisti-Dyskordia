@@ -384,6 +384,9 @@ begin
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Sql_Memo.Font, Common.sql_editor__font );
 
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Table_Columns_StringGrid.Font, Common.sql_editor__font );
+
 end;
 
 procedure TTable_Add_Form.FormDestroy( Sender: TObject );

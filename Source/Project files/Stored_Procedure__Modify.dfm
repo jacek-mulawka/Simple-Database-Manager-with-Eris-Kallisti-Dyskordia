@@ -438,7 +438,6 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
             Kind = gbkMargin
             Width = 3
           end>
-        Highlighter = Shared_DataModule.Sql_Text__SynSQLSyn
         Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
         RightEdge = 255
         SelectedColor.Alpha = 0.400000005960464500

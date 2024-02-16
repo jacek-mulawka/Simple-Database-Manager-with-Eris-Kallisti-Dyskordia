@@ -98,6 +98,7 @@ type
 
     procedure Data_Open__TIMF( const force_refresh_f : boolean = false );
     procedure Finish__TIMF();
+    procedure Highlight__Font__Set__TIMF();
     procedure Options_Set__TIMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__TIMF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__TIMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -483,6 +484,21 @@ begin
 
 end;
 
+procedure TTable__Indexes_Modify_F_Frame.Highlight__Font__Set__TIMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Indexes_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( Modify__Columns_Name_CheckListBox.Font, Common.sql_editor__font );
+
+    end;
+
+end;
+
 procedure TTable__Indexes_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -613,7 +629,7 @@ begin
   Common.Items_From_Text_Add( Modify__Parameter_Additional_ComboBox.Items, zts );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__TIMF();
 
 end;
 
@@ -814,8 +830,8 @@ begin
 
   if    ( Sender <> nil )
     and (
-             ( TComponent(Sender).Name = Modify__Columns_Name__Hide_Indexed_CheckBox.Name )
-          or ( TComponent(Sender).Name = Refresh_Button.Name )
+             ( Sender = Modify__Columns_Name__Hide_Indexed_CheckBox )
+          or ( Sender = Refresh_Button )
         ) then
     begin
 

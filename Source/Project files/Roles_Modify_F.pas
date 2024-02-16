@@ -89,8 +89,10 @@ type
     function Quotation_Sign__RMF() : string;
   public
     { Public declarations }
+    function Data_Active__RMF() : boolean;
     procedure Data_Open__RMF();
     procedure Finish__RMF();
+    procedure Highlight__Font__Set__RMF();
     procedure Options_Set__RMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__RMF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__RMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -118,6 +120,15 @@ uses
   Text__Edit_Memo;
 
 {$R *.dfm}
+
+function TRoles_Modify_F_Frame.Data_Active__RMF() : boolean;
+begin
+
+  Result :=
+        ( roles_sdbm <> nil )
+    and ( roles_sdbm.Query__Active() );
+
+end;
 
 procedure TRoles_Modify_F_Frame.Data_Open__RMF();
 var
@@ -249,6 +260,21 @@ procedure TRoles_Modify_F_Frame.Finish__RMF();
 begin
 
   FreeAndNil( roles_sdbm );
+
+end;
+
+procedure TRoles_Modify_F_Frame.Highlight__Font__Set__RMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Roles_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( Modify__Privileges_Name_CheckListBox.Font, Common.sql_editor__font );
+
+    end;
 
 end;
 
@@ -394,7 +420,7 @@ begin
   Common.Items_From_Text_Add( Modify__Privileges_Name_CheckListBox.Items, zts );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__RMF();
 
 end;
 
@@ -571,7 +597,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Refresh_Button.Name ) then
+    and ( Sender = Refresh_Button ) then
     begin
 
       Log_Memo.Lines.Add( roles_sdbm.Operation_Duration_Get() );

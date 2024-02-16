@@ -269,8 +269,8 @@ begin
     replace_l := replace
   else
     replace_l :=
-         ( TComponent(Sender).Name = Replace_Button.Name )
-      or ( TComponent(Sender).Name = Replace__All_Button.Name );
+         ( Sender = Replace_Button )
+      or ( Sender = Replace__All_Button );
 
 
   if    ( replace_l )
@@ -341,7 +341,7 @@ begin
                  ( Sender = nil )
               or (
                        ( Sender <> nil )
-                   and ( TComponent(Sender).Name <> Replace__All_Button.Name )
+                   and ( Sender <> Replace__All_Button )
                  )
             ) then
         Include( syn_search_options_l, SynEditTypes.ssoPrompt );
@@ -350,7 +350,7 @@ begin
       if   ( Replace__Prompt_CheckBox.Checked )
         or (
                  ( Sender <> nil )
-             and ( TComponent(Sender).Name = Replace__All_Button.Name )
+             and ( Sender = Replace__All_Button )
            ) then
         Include( syn_search_options_l, SynEditTypes.ssoReplaceAll );
 
@@ -476,7 +476,7 @@ begin
 
   if Key = VK_RETURN then
     if    ( Sender <> nil )
-      and ( TComponent(Sender).Name = Replace_ComboBox.Name ) then
+      and ( Sender = Replace_ComboBox ) then
       Search_Replace_ButtonClick( Replace_Button  )
     else
       Search_Replace_ButtonClick( Search__Find_Next_Button  );

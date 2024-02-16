@@ -107,6 +107,8 @@ type
     procedure Databases_List_ListBoxDragOver( Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean );
   private
     { Private declarations }
+    databases__modified_g : boolean; // Translations overwrite the caption.
+
     syn_edit_keystrokes_list_g : string;
 
     databases_r_t : array of Common.TDatabases_r;
@@ -114,6 +116,7 @@ type
     databases_list_box__width_default_g : integer;
 
     procedure Databases__Modified_Notification_Set( modified_f : boolean );
+    procedure Highlight__Font__Set__DBM();
     function SQL_Editor__Close_Prompt__DBM( zt_database__modify_form_f : Database__Modify.TDatabase__Modify_Form = nil; const item_index_f : integer = -1 ) : boolean;
   public
     { Public declarations }
@@ -146,13 +149,24 @@ uses
 procedure TSimple_Database_Manager_Form.Databases__Modified_Notification_Set( modified_f : boolean );
 begin
 
-  if    ( modified_f )
+  databases__modified_g := modified_f;
+
+
+  if    ( databases__modified_g )
     and (  Pos( Common.notification__sign__modified_c, Databases_MenuItem.Caption ) <= 0  ) then
     Databases_MenuItem.Caption := Databases_MenuItem.Caption + Common.notification__sign__modified_c
   else
-  if    ( not modified_f )
+  if    ( not databases__modified_g )
     and (  Pos( Common.notification__sign__modified_c, Databases_MenuItem.Caption ) > 0  ) then
     Databases_MenuItem.Caption := StringReplace( Databases_MenuItem.Caption, Common.notification__sign__modified_c, '', [ rfReplaceAll ] );
+
+end;
+
+procedure TSimple_Database_Manager_Form.Highlight__Font__Set__DBM();
+begin
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Databases_List_ListBox.Font, Common.sql_editor__font );
 
 end;
 
@@ -299,15 +313,27 @@ begin
   Common.sql_editor__code__completion_window__default__width := 800;
   Common.sql_editor__code__dent_width := 2;
   Common.sql_editor__comments_delete := true;
-  Common.sql_editor__execute_automatic_detection := true;
+  Common.sql_editor__database_connection__separated := false;
+  Common.sql_editor__execute__automatic_detection := true;
+  Common.sql_editor__execute__selected := true;
+  Common.sql_editor__font__use_in_other_components := false;
+  Common.sql_editor__highlights__brackets__color__background := clMoneyGreen;
+  Common.sql_editor__highlights__brackets__color__border := clGreen;
+  Common.sql_editor__highlights__lines__active__color := $00E6FFFA; // Yellow light.
+  Common.sql_editor__highlights__syntax := 'SynSQLSyn1';
+  Common.sql_editor__highlights__syntax__brackets__all_pairs := false;
+  Common.sql_editor__highlights__syntax__brackets__angle := false;
+  Common.sql_editor__highlights__syntax__brackets__curly := false;
+  Common.sql_editor__highlights__syntax__brackets__round := true;
+  Common.sql_editor__highlights__syntax__brackets__square := false;
+  Common.sql_editor__highlights__words__color__background := $0080DDFF; // Yellow / orange.
+  Common.sql_editor__highlights__words__color__border := $00226DA8; // Brown.
   Common.sql_editor__transactions_automatic := true;
   Common.sql_editor__query_output_save_field_format__date := 'dd.mm.yyyy';
   Common.sql_editor__query_output_save_field_format__real_numbers := '0.##########';
   Common.sql_editor__query_output_save_field_format__separator__date_time := ' ';
   Common.sql_editor__query_output_save_field_format__separator__decimal := '.';
   Common.sql_editor__query_output_save_field_format__time := 'hh:mm:ss';
-  Common.sql_editor__words_highlight__color__background := $0080DDFF; // Yellow / orange.
-  Common.sql_editor__words_highlight__color__border := $00226DA8; // Brown.
   Common.sql__command_separator := ';';
   Common.sql__comment__begin := '/*';
   Common.sql__comment__end := '*/';
@@ -356,6 +382,7 @@ begin
   Common.Font__Set( Common.sql_editor__font, Self.Font );
 
   databases_list_box__width_default_g := Databases_List_ListBox.Width;
+  databases__modified_g := false;
 
 
   Shared.Shared_DataModule := Shared.TShared_DataModule.Create( Application );
@@ -366,6 +393,9 @@ begin
   Options.Options_Form.Ok_ButtonClick( Options.Options_Form.Ok_Button );
   syn_edit_keystrokes_list_g := Options.Options_Form.Syn_Edit_Keystrokes_Get();
   FreeAndNil( Options.Options_Form );
+
+
+  Highlight__Font__Set__DBM();
 
 
   Databases__Refresh_MenuItemClick( Sender );
@@ -381,7 +411,7 @@ end;
 procedure TSimple_Database_Manager_Form.FormClose( Sender: TObject; var Action: TCloseAction );
 begin
 
-  if Pos( '*', Databases_MenuItem.Caption ) > 0 then
+  if databases__modified_g then
     begin
 
       case Application.MessageBox( PChar(Translation.translation__messages_r.databases_list_changed__save_), PChar(Translation.translation__messages_r.confirmation), MB_YESNOCANCEL + MB_DEFBUTTON3 + MB_ICONQUESTION ) of
@@ -449,6 +479,9 @@ begin
   if modal_result = mrOk then
     begin
 
+      Highlight__Font__Set__DBM();
+
+
       for i := 0 to Self.MDIChildCount - 1  do
         if Self.MDIChildren[ i ] is Database__Modify.TDatabase__Modify_Form then
           Database__Modify.TDatabase__Modify_Form(Self.MDIChildren[ i ]).Options_Set__DM();
@@ -457,6 +490,9 @@ begin
       Translation.Translation__Apply( Self );
 
       syn_edit_keystrokes_list_g := syn_edit_keystrokes_list_l;
+
+
+      Databases__Modified_Notification_Set( databases__modified_g );
 
     end;
 
@@ -810,7 +846,7 @@ begin
   if   ( Sender = nil )
     or (
              ( Sender <> nil )
-         and ( TComponent(Sender).Name <> Self.Name )
+         and ( Sender <> Self )
        ) then
     if Application.MessageBox( PChar(Translation.translation__messages_r.save_the_list_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
       Exit;

@@ -3,7 +3,7 @@ object Options_Form: TOptions_Form
   Top = 0
   Margins.Bottom = 5
   Caption = 'Options'
-  ClientHeight = 612
+  ClientHeight = 762
   ClientWidth = 884
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object Options_Form: TOptions_Form
   object Bottom_Panel: TPanel
     AlignWithMargins = True
     Left = 10
-    Top = 547
+    Top = 697
     Width = 864
     Height = 60
     Margins.Left = 10
@@ -95,7 +95,7 @@ object Options_Form: TOptions_Form
     Left = 10
     Top = 5
     Width = 864
-    Height = 537
+    Height = 687
     Margins.Left = 10
     Margins.Top = 5
     Margins.Right = 10
@@ -300,6 +300,22 @@ object Options_Form: TOptions_Form
           TabOrder = 0
           Value = 5
         end
+      end
+      object Sql_Editor__Font__Use_In_Other_Components_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 10
+        Top = 447
+        Width = 836
+        Height = 17
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Use SQL editor font in other components'
+        ParentShowHint = False
+        ShowHint = False
+        TabOrder = 10
       end
     end
     object Data_Presentation_TabSheet: TTabSheet
@@ -879,18 +895,18 @@ object Options_Form: TOptions_Form
         Left = 0
         Top = 0
         Width = 601
-        Height = 507
+        Height = 657
         Align = alClient
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
         DesignSize = (
           601
-          507)
+          657)
         object Caret_Position_Label: TLabel
           AlignWithMargins = True
           Left = 11
-          Top = 222
+          Top = 276
           Width = 579
           Height = 15
           Hint = 'Caret position, text length.'
@@ -903,7 +919,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           Layout = tlCenter
-          ExplicitTop = 195
           ExplicitWidth = 83
         end
         object Sql_Editor__Code__Completion_Window_GroupBox: TGroupBox
@@ -980,7 +995,7 @@ object Options_Form: TOptions_Form
             end
           end
         end
-        object Sql_Editor__Execute_Automatic_Detection_CheckBox: TCheckBox
+        object Sql_Editor__Execute__Automatic_Detection_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
           Top = 6
@@ -1023,23 +1038,28 @@ object Options_Form: TOptions_Form
         end
         object Sql_Text_Memo: TMemo
           Left = 1
-          Top = 241
+          Top = 291
           Width = 200
           Height = 150
           Lines.Strings = (
             'select COUNTRY.COUNTRY'
             '     , COUNTRY.CURRENCY'
-            '     '
+            ''
             '     , CUSTOMER.CUST_NO'
             '     , CUSTOMER.CUSTOMER'
             '     , CUSTOMER.POSTAL_CODE'
             '     '
+            '     , ('
+            '         select count( COUNTRY.COUNTRY ) '
+            '         from COUNTRY'
+            '       ) as COUNTRY__COUNT'
+            ''
             'from COUNTRY'
             'left join CUSTOMER on CUSTOMER.COUNTRY = COUNTRY.COUNTRY'
             'where CUSTOMER.CUST_NO is not null'
             'order by CUSTOMER.POSTAL_CODE')
           ScrollBars = ssBoth
-          TabOrder = 7
+          TabOrder = 9
           Visible = False
           OnClick = Sql_Text_MemoClick
           OnKeyUp = Sql_Text_MemoKeyUp
@@ -1051,14 +1071,14 @@ object Options_Form: TOptions_Form
           Height = 25
           Anchors = [akTop, akRight]
           Caption = 'Font'
-          TabOrder = 6
+          TabOrder = 8
           OnClick = Sql_Editor__Font_ButtonClick
         end
         object Sql_Text_SynEdit: TSynEdit
           Left = 1
-          Top = 237
+          Top = 291
           Width = 599
-          Height = 269
+          Height = 365
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -1066,7 +1086,7 @@ object Options_Form: TOptions_Form
           Font.Name = 'Consolas'
           Font.Style = []
           Font.Quality = fqClearTypeNatural
-          TabOrder = 8
+          TabOrder = 10
           OnClick = Sql_Text_SynEditClick
           OnEnter = Sql_Text_SynEditEnter
           OnKeyDown = Sql_Text_SynEditKeyDown
@@ -1096,7 +1116,6 @@ object Options_Form: TOptions_Form
               Kind = gbkMargin
               Width = 3
             end>
-          Highlighter = Shared_DataModule.Sql_Text__SynSQLSyn
           Lines.Strings = (
             'select COUNTRY.COUNTRY'
             '     , COUNTRY.CURRENCY'
@@ -1104,6 +1123,11 @@ object Options_Form: TOptions_Form
             '     , CUSTOMER.CUST_NO'
             '     , CUSTOMER.CUSTOMER'
             '     , CUSTOMER.POSTAL_CODE'
+            '     '
+            '     , ('
+            '         select count( COUNTRY.COUNTRY ) '
+            '         from COUNTRY'
+            '       ) as COUNTRY__COUNT'
             ''
             'from COUNTRY'
             'left join CUSTOMER on CUSTOMER.COUNTRY = COUNTRY.COUNTRY'
@@ -1115,8 +1139,6 @@ object Options_Form: TOptions_Form
           TabWidth = 2
           WantTabs = True
           OnReplaceText = Sql_Text_SynEditReplaceText
-          ExplicitTop = 210
-          ExplicitHeight = 296
         end
         object Sql_Editor__Comments_Delete_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1134,7 +1156,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           TabOrder = 5
-          ExplicitTop = 173
         end
         object Sql_Editor__Code__Dent_Width_GroupBox: TGroupBox
           AlignWithMargins = True
@@ -1186,12 +1207,48 @@ object Options_Form: TOptions_Form
           ShowHint = True
           TabOrder = 4
         end
+        object Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 254
+          Width = 579
+          Height = 17
+          Hint = 'Every tab has own database connection.'
+          Margins.Left = 10
+          Margins.Top = 5
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Separated database connection'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 7
+        end
+        object Sql_Editor__Execute__Selected_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 227
+          Width = 579
+          Height = 17
+          Hint = 
+            'Execute only the selected part of the SQL command (if the select' +
+            'ion is not empty).'
+          Margins.Left = 10
+          Margins.Top = 5
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Execute selected SQL only'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 6
+        end
       end
       object Sql_Editor__Right_Panel: TPanel
         Left = 601
         Top = 0
         Width = 255
-        Height = 507
+        Height = 657
         Align = alRight
         TabOrder = 1
         object Sql_Editor__Query_Output_Save_Field_Format_GroupBox: TGroupBox
@@ -1372,76 +1429,280 @@ object Options_Form: TOptions_Form
             end
           end
         end
-        object Sql_Editor__Words_Highlight_GroupBox: TGroupBox
+        object Sql_Editor__Highlights_GroupBox: TGroupBox
           AlignWithMargins = True
           Left = 11
           Top = 290
           Width = 233
-          Height = 115
+          Height = 145
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
-          Caption = 'Words highlight'
+          Caption = 'Highlights'
           TabOrder = 2
-          object Sql_Editor__Words_Highlight__Color__Background_Etiquette_Label: TLabel
-            AlignWithMargins = True
-            Left = 12
-            Top = 22
-            Width = 209
-            Height = 15
-            Margins.Left = 10
-            Margins.Top = 5
-            Margins.Right = 10
-            Margins.Bottom = 0
-            Align = alTop
-            Caption = 'Background'
-            ParentShowHint = False
-            ShowHint = False
-            ExplicitWidth = 64
-          end
-          object Sql_Editor__Words_Highlight__Color__Border_Etiquette_Label: TLabel
-            AlignWithMargins = True
-            Left = 12
-            Top = 70
-            Width = 209
-            Height = 15
-            Margins.Left = 10
-            Margins.Top = 5
-            Margins.Right = 10
-            Margins.Bottom = 0
-            Align = alTop
-            Caption = 'Border'
-            ParentShowHint = False
-            ShowHint = False
-            ExplicitWidth = 35
-          end
-          object Sql_Editor__Words_Highlight__Color__Background_ColorBox: TColorBox
-            AlignWithMargins = True
-            Left = 12
-            Top = 40
-            Width = 209
-            Height = 22
-            Margins.Left = 10
-            Margins.Right = 10
-            Align = alTop
-            Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
-            DropDownCount = 40
+          object Sql_Editor__Highlights_PageControl: TPageControl
+            Left = 2
+            Top = 17
+            Width = 229
+            Height = 126
+            ActivePage = Sql_Editor__Highlights__Lines_TabSheet
+            Align = alClient
             TabOrder = 0
-          end
-          object Sql_Editor__Words_Highlight__Color__Border_ColorBox: TColorBox
-            AlignWithMargins = True
-            Left = 12
-            Top = 88
-            Width = 209
-            Height = 22
-            Margins.Left = 10
-            Margins.Right = 10
-            Align = alTop
-            Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
-            DropDownCount = 40
-            TabOrder = 1
+            object Sql_Editor__Highlights__Brackets_TabSheet: TTabSheet
+              Caption = 'Brackets'
+              ImageIndex = 1
+              object Sql_Editor__Highlights__Brackets__Color__Background_Etiquette_Label: TLabel
+                AlignWithMargins = True
+                Left = 10
+                Top = 5
+                Width = 201
+                Height = 15
+                Margins.Left = 10
+                Margins.Top = 5
+                Margins.Right = 10
+                Margins.Bottom = 0
+                Align = alTop
+                Caption = 'Background'
+                ParentShowHint = False
+                ShowHint = False
+                ExplicitWidth = 64
+              end
+              object Sql_Editor__Highlights__Brackets__Color__Border_Etiquette_Label: TLabel
+                AlignWithMargins = True
+                Left = 10
+                Top = 53
+                Width = 201
+                Height = 15
+                Margins.Left = 10
+                Margins.Top = 5
+                Margins.Right = 10
+                Margins.Bottom = 0
+                Align = alTop
+                Caption = 'Border'
+                ParentShowHint = False
+                ShowHint = False
+                ExplicitWidth = 35
+              end
+              object Sql_Editor__Highlights__Brackets__Color__Background_ColorBox: TColorBox
+                AlignWithMargins = True
+                Left = 10
+                Top = 23
+                Width = 201
+                Height = 22
+                Margins.Left = 10
+                Margins.Right = 10
+                Align = alTop
+                Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
+                DropDownCount = 40
+                TabOrder = 0
+              end
+              object Sql_Editor__Highlights__Brackets__Color__Border_ColorBox: TColorBox
+                AlignWithMargins = True
+                Left = 10
+                Top = 71
+                Width = 201
+                Height = 22
+                Margins.Left = 10
+                Margins.Right = 10
+                Align = alTop
+                Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
+                DropDownCount = 40
+                TabOrder = 1
+              end
+            end
+            object Sql_Editor__Highlights__Lines_TabSheet: TTabSheet
+              Caption = 'Lines'
+              ImageIndex = 3
+              object Sql_Editor__Highlights__Lines__Active__Color_Etiquette_Label: TLabel
+                AlignWithMargins = True
+                Left = 10
+                Top = 5
+                Width = 201
+                Height = 15
+                Margins.Left = 10
+                Margins.Top = 5
+                Margins.Right = 10
+                Margins.Bottom = 0
+                Align = alTop
+                Caption = 'Active line'
+                ParentShowHint = False
+                ShowHint = False
+                ExplicitWidth = 55
+              end
+              object Sql_Editor__Highlights__Lines__Active__Color__ColorBox: TColorBox
+                AlignWithMargins = True
+                Left = 10
+                Top = 23
+                Width = 201
+                Height = 22
+                Margins.Left = 10
+                Margins.Right = 10
+                Align = alTop
+                Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
+                DropDownCount = 40
+                TabOrder = 0
+                ExplicitLeft = 5
+                ExplicitTop = 21
+                ExplicitWidth = 615
+              end
+            end
+            object Sql_Editor__Highlights__Syntax_TabSheet: TTabSheet
+              Caption = 'Syntax'
+              ImageIndex = 2
+              object Sql_Editor__Highlights__Syntax_Etiquette_Label: TLabel
+                AlignWithMargins = True
+                Left = 10
+                Top = 5
+                Width = 201
+                Height = 15
+                Margins.Left = 10
+                Margins.Top = 5
+                Margins.Right = 10
+                Margins.Bottom = 5
+                Align = alTop
+                Caption = 'Syntax'
+                ParentShowHint = False
+                ShowHint = False
+                ExplicitWidth = 34
+              end
+              object Sql_Editor__Highlights__Syntax_ComboBox: TComboBox
+                AlignWithMargins = True
+                Left = 10
+                Top = 25
+                Width = 201
+                Height = 21
+                Margins.Left = 10
+                Margins.Top = 0
+                Margins.Right = 10
+                Margins.Bottom = 5
+                Align = alTop
+                Style = csOwnerDrawFixed
+                DropDownCount = 40
+                DropDownWidth = 400
+                ItemHeight = 15
+                TabOrder = 0
+              end
+              object Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox: TCheckBox
+                Left = 10
+                Top = 55
+                Width = 40
+                Height = 17
+                Hint = 'Highlight angle brackets.'
+                Caption = '< >'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 1
+              end
+              object Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox: TCheckBox
+                Left = 65
+                Top = 55
+                Width = 40
+                Height = 17
+                Hint = 'Highlight curly brackets.'
+                Caption = '{ }'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 2
+              end
+              object Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox: TCheckBox
+                Left = 115
+                Top = 55
+                Width = 40
+                Height = 17
+                Hint = 'Highlight round brackets.'
+                Caption = '( )'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 3
+              end
+              object Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox: TCheckBox
+                Left = 170
+                Top = 55
+                Width = 40
+                Height = 17
+                Hint = 'Highlight square brackets.'
+                Caption = '[ ]'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 4
+              end
+              object Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox: TCheckBox
+                Left = 10
+                Top = 75
+                Width = 120
+                Height = 17
+                Hint = 
+                  'Highlight all selected brackets pairs.'#13#10#13#10'When a text is long it' +
+                  ' may works slowly.'
+                Caption = 'All pairs'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 5
+              end
+            end
+            object Sql_Editor__Highlights__Words_TabSheet: TTabSheet
+              Caption = 'Words'
+              object Sql_Editor__Highlights__Words__Color__Background_Etiquette_Label: TLabel
+                AlignWithMargins = True
+                Left = 10
+                Top = 5
+                Width = 201
+                Height = 15
+                Margins.Left = 10
+                Margins.Top = 5
+                Margins.Right = 10
+                Margins.Bottom = 0
+                Align = alTop
+                Caption = 'Background'
+                ParentShowHint = False
+                ShowHint = False
+                ExplicitWidth = 64
+              end
+              object Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label: TLabel
+                AlignWithMargins = True
+                Left = 10
+                Top = 53
+                Width = 201
+                Height = 15
+                Margins.Left = 10
+                Margins.Top = 5
+                Margins.Right = 10
+                Margins.Bottom = 0
+                Align = alTop
+                Caption = 'Border'
+                ParentShowHint = False
+                ShowHint = False
+                ExplicitWidth = 35
+              end
+              object Sql_Editor__Highlights__Words__Color__Background_ColorBox: TColorBox
+                AlignWithMargins = True
+                Left = 10
+                Top = 23
+                Width = 201
+                Height = 22
+                Margins.Left = 10
+                Margins.Right = 10
+                Align = alTop
+                Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
+                DropDownCount = 40
+                TabOrder = 0
+              end
+              object Sql_Editor__Highlights__Words__Color__Border_ColorBox: TColorBox
+                AlignWithMargins = True
+                Left = 10
+                Top = 71
+                Width = 201
+                Height = 22
+                Margins.Left = 10
+                Margins.Right = 10
+                Align = alTop
+                Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
+                DropDownCount = 40
+                TabOrder = 1
+              end
+            end
           end
         end
         object Csv__File_GroupBox: TGroupBox
@@ -1527,9 +1788,9 @@ object Options_Form: TOptions_Form
         object Syn_Editor_Options_GroupBox: TGroupBox
           AlignWithMargins = True
           Left = 11
-          Top = 410
+          Top = 440
           Width = 233
-          Height = 96
+          Height = 216
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10
@@ -1541,7 +1802,7 @@ object Options_Form: TOptions_Form
             Left = 2
             Top = 17
             Width = 229
-            Height = 77
+            Height = 197
             Hint = 
               'Ctrl + A - select all'#13#10'Ctrl + I - invert selection'#13#10'Ctrl + N - u' +
               'nselect all'

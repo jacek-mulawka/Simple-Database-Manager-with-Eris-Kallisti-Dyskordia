@@ -47,7 +47,7 @@ object Text__Search_Replace__Prompt_Form: TText__Search_Replace__Prompt_Form
       OnKeyDown = ButtonKeyDown
     end
     object No_Button: TButton
-      Left = 145
+      Left = 80
       Top = 5
       Width = 50
       Height = 25
@@ -59,11 +59,11 @@ object Text__Search_Replace__Prompt_Form: TText__Search_Replace__Prompt_Form
       ModalResult = 7
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 2
+      TabOrder = 1
       OnKeyDown = ButtonKeyDown
     end
     object Cancel_Button: TButton
-      Left = 80
+      Left = 145
       Top = 5
       Width = 50
       Height = 25
@@ -74,7 +74,7 @@ object Text__Search_Replace__Prompt_Form: TText__Search_Replace__Prompt_Form
       ModalResult = 2
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 1
+      TabOrder = 2
       OnKeyDown = ButtonKeyDown
     end
     object Yes_To_All_Button: TButton

@@ -176,6 +176,7 @@ type
 
     procedure Data_Open__VEEF();
     function Finish__VEEF() : boolean;
+    procedure Highlight__Font__Set__VEEF();
     procedure Options_Set__VEEF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__VEEF( const databases_r_f : Common.TDatabases_r; const view_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     function Task_Running_Check__VEEF( const message_show_f : boolean = true ) : boolean;
@@ -938,6 +939,31 @@ begin
 
 end;
 
+procedure TView__Edit_Execute_F_Frame.Highlight__Font__Set__VEEF();
+begin
+
+  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( View__Description_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( View__Parameters__Description_DBMemo.Font, Common.sql_editor__font );
+  //Common.Font__Set( View__Source_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( View__Source_SynEdit.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( View__Output_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( View__Parameters_DBGrid.Font, Common.sql_editor__font );
+
+    end;
+
+  Common.Syn_Edit__Parameters__Set( View__Source_SynEdit );
+
+
+  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( View__Source_SynEdit );
+
+end;
+
 procedure TView__Edit_Execute_F_Frame.Key_Down_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -1129,17 +1155,7 @@ begin
   Self.Options_Set__VEEF( component_type_f, databases_r_f.sql__quotation_sign, queries_open_in_background_g, splitter_show_g, sql__quotation_sign__use_f );
 
 
-  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( View__Description_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( View__Parameters__Description_DBMemo.Font, Common.sql_editor__font );
-  //Common.Font__Set( View__Source_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( View__Source_SynEdit.Font, Common.sql_editor__font );
-
-  Common.Syn_Edit__Parameters__Set( View__Source_SynEdit );
-
-
-  Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( View__Source_SynEdit );
+  Highlight__Font__Set__VEEF();
 
 end;
 
@@ -2310,13 +2326,13 @@ begin
   if    ( Key = 65 )
     and ( Shift = [ ssCtrl ] )
     and ( Sender <> nil ) then
-    if TComponent(Sender).Name = Log_Memo.Name then
+    if Sender = Log_Memo then
       Log_Memo.SelectAll()
     else
-    if TComponent(Sender).Name = View__Description_Memo.Name then
+    if Sender = View__Description_Memo then
       View__Description_Memo.SelectAll();
     //else
-    //if TComponent(Sender).Name = View__Source_Memo.Name then
+    //if Sender = View__Source_Memo then
     //  View__Source_Memo.SelectAll();
 
 end;
@@ -2349,7 +2365,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( View__Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( View__Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( View__Source_SynEdit, text__search_replace_form );
 
@@ -2370,7 +2386,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( View__Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( View__Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( View__Source_SynEdit, text__search_replace_form );
 

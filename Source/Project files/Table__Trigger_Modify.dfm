@@ -16,7 +16,6 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object Trigger_Name_Etiquette_Label: TLabel
@@ -427,7 +426,6 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Kind = gbkMargin
         Width = 3
       end>
-    Highlighter = Shared_DataModule.Sql_Text__SynSQLSyn
     Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
     RightEdge = 255
     SelectedColor.Alpha = 0.400000005960464500

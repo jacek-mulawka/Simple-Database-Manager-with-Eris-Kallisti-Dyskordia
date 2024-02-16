@@ -96,6 +96,7 @@ type
 
     procedure Data_Open__PMF();
     procedure Finish__PMF();
+    procedure Highlight__Font__Set__PMF();
     procedure Options_Set__PMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__PMF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const permissions_object_type_f : TPermissions_Object_Type; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__PMF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -493,6 +494,21 @@ begin
 
 end;
 
+procedure TPermissions_Modify_F_Frame.Highlight__Font__Set__PMF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    begin
+
+      Common.Font__Set( Permissions_DBGrid.Font, Common.sql_editor__font );
+      Common.Font__Set( Modify__Privileges_Name_CheckListBox.Font, Common.sql_editor__font );
+
+    end;
+
+end;
+
 procedure TPermissions_Modify_F_Frame.Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -639,7 +655,7 @@ begin
   Common.Items_From_Text_Add( Modify__Privileges_Name_CheckListBox.Items, zts );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__PMF();
 
 end;
 
@@ -826,7 +842,7 @@ begin
              ( Sender = nil )
           or (
                     ( Sender <> nil )
-                and ( TComponent(Sender).Name <> Modify__Permissions__Row_One_CheckBox.Name )
+                and ( Sender <> Modify__Permissions__Row_One_CheckBox )
              )
         )
     and ( permissions_sdbm.Query__Active() ) then
@@ -865,8 +881,8 @@ begin
   if    ( permissions_sdbm.Query__Active() )
     and ( Sender <> nil )
     and (
-             ( TComponent(Sender).Name = Modify__Permissions__Row_One_CheckBox.Name )
-          or ( TComponent(Sender).Name = Refresh_Button.Name )
+             ( Sender = Modify__Permissions__Row_One_CheckBox )
+          or ( Sender = Refresh_Button )
         ) then
     begin
 

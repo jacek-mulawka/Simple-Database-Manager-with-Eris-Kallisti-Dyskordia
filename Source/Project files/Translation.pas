@@ -1,5 +1,7 @@
 unit Translation;{15.Lis.2023}
 
+  // Do not translate
+
   // Translation file format:
   //unit name
   //component name=caption
@@ -684,6 +686,7 @@ begin
     Translation__Component__Add( 'Roles_List_TabSheet', 'Roles' );
     Translation__Component__Add( 'Splitter_Show_CheckBox', 'Show splitters (e.g. form view, stored procedure parameters)' );
     Translation__Component__Add( 'Sql_Editor_TabSheet', 'SQL' );
+    Translation__Component__Add( 'Sql_Editor__Database_Connection__Separated_CheckBox', 'SQL editor - separated database connection', 'Every tab has own database connection.' );
     Translation__Component__Add( 'Sql_Editor__Hide_Button', '', 'Hide panel.' );
     Translation__Component__Add( 'Sql_Editor__Move__Left_Button', '', 'Move the tab left.' );
     Translation__Component__Add( 'Sql_Editor__Move__Right_Button', '', 'Move the tab right.' );
@@ -929,8 +932,27 @@ begin
     Translation__Component__Add( 'Sql_Editor__Code__Completion_Window_GroupBox', 'Code completion window' );
     Translation__Component__Add( 'Sql_Editor__Code__Dent_Width_GroupBox', 'Code dent width', 'Indents / outdents a selected code line or block by width (characters count).' );
     Translation__Component__Add( 'Sql_Editor__Comments_Delete_CheckBox', 'Delete comments', 'Delete comments from SQL commands.' );
-    Translation__Component__Add( 'Sql_Editor__Execute_Automatic_Detection_CheckBox', 'Automatically command execute detection', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
+    Translation__Component__Add( 'Sql_Editor__Database_Connection__Separated_CheckBox', 'Separated database connection', 'Every tab has own database connection.' );
+    Translation__Component__Add( 'Sql_Editor__Execute__Automatic_Detection_CheckBox', 'Automatically command execute detection', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
+    Translation__Component__Add( 'Sql_Editor__Execute__Selected_CheckBox', 'Execute selected SQL only', 'Execute only the selected part of the SQL command (if the selection is not empty).' );
     Translation__Component__Add( 'Sql_Editor__Font_Button', 'Font' );
+    Translation__Component__Add( 'Sql_Editor__Font__Use_In_Other_Components_CheckBox', 'Use SQL editor font in other components' );
+    Translation__Component__Add( 'Sql_Editor__Highlights_GroupBox', 'Highlights' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Brackets_TabSheet', 'Brackets' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Brackets__Color__Background_Etiquette_Label', 'Background' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Brackets__Color__Border_Etiquette_Label', 'Border' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Lines_TabSheet', 'Lines' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Lines__Active__Color_Etiquette_Label', 'Active line' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax_Etiquette_Label', 'Syntax' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax_TabSheet', 'Syntax' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox', 'All pairs', 'Highlight all selected brackets pairs.' + #13 + #10 + #13 + #10 + 'When a text is long it may work slowly.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox', '< >', 'Highlight angle brackets.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox', '{ }', 'Highlight curly brackets.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox', '( )', 'Highlight round brackets.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox', '[ ]', 'Highlight square brackets.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Words_TabSheet', 'Words' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Words__Color__Background_Etiquette_Label', 'Background' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label', 'Border' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Date_Etiquette_Label', 'Date', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy' + #13 + #10 + 'dd-mm-yyyy' + #13 + #10 + 'yyyy-mm-dd' + #13 + #10 + 'yy mmm ddd' + #13 + #10 + 'd dddd mmmm y' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Etiquette_Label', 'Real numbers', 'E.g.:' + #13 + #10 + '### ### ### ### ### ### ##0.###' + #13 + #10 + '0.##############' + #13 + #10 + '### ### ##0.### ### ###' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_GroupBox', 'Date time' );
@@ -939,9 +961,6 @@ begin
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Time_Etiquette_Label', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' + #13 + #10 + 'hh mm ss.zzz' + #13 + #10 + 'h m s am/pm' + #13 + #10 + 'hh-m a/p' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format_GroupBox', 'Query output save field format' );
     Translation__Component__Add( 'Sql_Editor__Transactions_Automatic_CheckBox', 'Automatically transaction begining', 'Automatically begin transaction (if there is no active transaction) when the SQL text contains words like: delete, insert, update etc.' );
-    Translation__Component__Add( 'Sql_Editor__Words_Highlight_GroupBox', 'Words highlight' );
-    Translation__Component__Add( 'Sql_Editor__Words_Highlight__Color__Background_Etiquette_Label', 'Background' );
-    Translation__Component__Add( 'Sql_Editor__Words_Highlight__Color__Border_Etiquette_Label', 'Border' );
     Translation__Component__Add( 'Syn_Editor_Options_GroupBox', 'Editor options' );
     Translation__Component__Add( 'Syn_Editor_Options_CheckListBox', '', 'Ctrl + A - select all' + #13 + #10 + 'Ctrl + I - invert selection' + #13 + #10 + 'Ctrl + N - unselect all' );
     Translation__Component__Add( 'System_Tables_Visible_CheckBox', 'System tables, roles visible' );
@@ -1048,16 +1067,42 @@ begin
 
   Translation__Unit__Add( 'TSql_Editor_F_Frame' );
     Translation__Component__Add( 'Ado_Command_Param_Check_CheckBox', 'P.', 'Query parameters check (ADO command).' );
+    Translation__Component__Add( 'Ado_Command_Param_Check_MenuItem', 'Query parameters check (ADO command)' );
+    Translation__Component__Add( 'Bookmarks__Clear_MenuItem', 'Clear bookmarks' );
+    Translation__Component__Add( 'Bookmarks__Go_To_MenuItem', 'Go to bookmark [Ctrl + 0 ... 9]' );
+    Translation__Component__Add( 'Bookmarks__Toggle_MenuItem', 'Toggle bookmark [Ctrl + Shift + 0 ... 9]' );
     Translation__Component__Add( 'Buttons_Panel__Hide_Button', '', 'Hide panel.' );
     Translation__Component__Add( 'Close_Button', '', 'Query close.' );
+    Translation__Component__Add( 'Close_MenuItem', 'Query close' );
+    Translation__Component__Add( 'Comment_Invert_Alternatively_MenuItem', 'Comment invert alternatively [Ctrl + Shift + \]' );
+    Translation__Component__Add( 'Comment_Uncomment_Alternatively_MenuItem', 'Comment / uncomment alternatively [Ctrl + \, Ctrl + Shift + \]' );
+    Translation__Component__Add( 'Comment_Uncomment_MenuItem', 'Comment / uncomment [Ctrl + /, Ctrl + Shift + /]' );
     Translation__Component__Add( 'Comments_Delete_CheckBox', 'Delete comments', 'Delete comments from SQL commands.' );
+    Translation__Component__Add( 'Comments_Delete_MenuItem', 'Delete comments' );
+    Translation__Component__Add( 'Copy_MenuItem', 'Copy [Ctrl + C]' );
+    Translation__Component__Add( 'Cut_MenuItem', 'Cut [Ctrl + X]' );
     Translation__Component__Add( 'Csv__File__Data_Separator_Edit', '', 'Csv data separator.' );
     Translation__Component__Add( 'Csv__File__Text_Qualifier_Edit', '', 'Csv text qualifier.' );
     Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled' );
-    Translation__Component__Add( 'Execute_Automatic_Detection_CheckBox', 'E.', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
+    Translation__Component__Add( 'Data_Value_Format__Disabled_MenuItem', 'Data value format disabled' );
     Translation__Component__Add( 'Execute_Button', '', 'Command execute.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + E]' );
+    Translation__Component__Add( 'Execute_MenuItem', 'Command execute [Ctrl + Shift + E]' );
+    Translation__Component__Add( 'Execute__Automatic_Detection_CheckBox', 'E.', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
+    Translation__Component__Add( 'Execute__Automatic_Detection_MenuItem', 'Automatically detect ''Query'' or ''Command'' execute' );
+    Translation__Component__Add( 'Execute__Selected_MenuItem', 'Execute selected SQL only' );
+    Translation__Component__Add( 'Find_MenuItem', 'Find [Ctrl + F]' );
+    Translation__Component__Add( 'Highlighter__Syntax_MenuItem', 'Syntax highlighter' );
+    Translation__Component__Add( 'Highlights__Brackets__All_Pairs_MenuItem', 'All pairs' );
+    Translation__Component__Add( 'Highlights__Brackets__Angle_MenuItem', '< >' );
+    Translation__Component__Add( 'Highlights__Brackets__Curly_MenuItem', '{ }' );
+    Translation__Component__Add( 'Highlights__Brackets__Round_MenuItem', '( )' );
+    Translation__Component__Add( 'Highlights__Brackets__Square_MenuItem', '[ ]' );
+    Translation__Component__Add( 'Highlights__Brackets_MenuItem', 'Brackets highlights' );
     Translation__Component__Add( 'Open_Button', '', 'Query execute.' + #13 + #10 + #13 + #10 + '[Ctrl + E]' );
+    Translation__Component__Add( 'Open_MenuItem', 'Query execute [Ctrl + E]' );
     Translation__Component__Add( 'Output_Save_Button', '', 'Save query output as csv.' + #13 + #10 + #13 + #10 + '[Ctrl + S]' );
+    Translation__Component__Add( 'Output_Save_MenuItem', 'Save query output as csv [Ctrl + S]' );
+    Translation__Component__Add( 'Paste_MenuItem', 'Paste [Ctrl + V]' );
     Translation__Component__Add( 'Query_Output_Save_Field_Format_GroupBox', 'Query output save field format' );
     Translation__Component__Add( 'Query_Output_Save_Field_Format__Date__Use_CheckBox', '', 'Use formatting.' );
     Translation__Component__Add( 'Query_Output_Save_Field_Format__Date_GroupBox', 'Date', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy' + #13 + #10 + 'dd-mm-yyyy' + #13 + #10 + 'yyyy-mm-dd' + #13 + #10 + 'yy mmm ddd' + #13 + #10 + 'd dddd mmmm y' );
@@ -1068,7 +1113,10 @@ begin
     Translation__Component__Add( 'Query_Output_Save_Field_Format__Separators_GroupBox', 'Separators' );
     Translation__Component__Add( 'Query_Output_Save_Field_Format__Time__Use_CheckBox', '', 'Use formatting.' );
     Translation__Component__Add( 'Query_Output_Save_Field_Format__Time_GroupBox', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' + #13 + #10 + 'hh mm ss.zzz' + #13 + #10 + 'h m s am/pm' + #13 + #10 + 'hh-m a/p' );
+    Translation__Component__Add( 'Queries_Open_In_Background_MenuItem', 'Queries (some) open in the background' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Refresh_MenuItem', 'Refresh [Ctrl + R]' );
+    Translation__Component__Add( 'Replace_MenuItem', 'Replace [Ctrl + H]' );
     Translation__Component__Add( 'Search_Edit', '', 'Enter - add column / table;' + #13 + #10 + 'Ctrl + Enter - add all columns sign (*) and add table;' + #13 + #10 + 'Shift + Enter - add all columns.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search_In_RadioGroup', 'Search in', 'Columns list' + #13 + #10 + 'Query output' + #13 + #10 + 'Tables list', 'Col;Que;Tbl;' );
@@ -1076,21 +1124,31 @@ begin
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' + #13 + #10 + #13 + #10 + '[Ctrl + Enter - add all columns sign (*) and add table]' + #13 + #10 + '[Shift + Enter - add table]' );
     Translation__Component__Add( 'Search__Partial_Key_CheckBox', 'Partial key' );
     Translation__Component__Add( 'Search__Prior_Button', '', 'Search prior.' + #13 + #10 + #13 + #10 + '[Ctrl + Enter - add all columns sign (*) and add table]' + #13 + #10 + '[Shift + Enter - add table]' );
+    Translation__Component__Add( 'Select_All_MenuItem', 'Select all [Ctrl + A]' );
     Translation__Component__Add( 'Sql__Next_Button', '', 'Next SQL text.' + #13 + #10 + #13 + #10 + '[Ctrl + N]' );
+    Translation__Component__Add( 'Sql__Next_MenuItem', 'Next SQL text [Ctrl + N]' );
     Translation__Component__Add( 'Sql__Prior_Button', '', 'Prior SQL text.' + #13 + #10 + #13 + #10 + '[Ctrl + P]' );
+    Translation__Component__Add( 'Sql__Prior_MenuItem', 'Prior SQL text [Ctrl + P]' );
     Translation__Component__Add( 'Sql_GroupBox', 'SQL' );
     Translation__Component__Add( 'Tab_Name__Set_Button', '', 'Set tab name.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Tab_Name_GroupBox', 'Tab name' );
     Translation__Component__Add( 'Text__File_GroupBox', 'Text file' );
     Translation__Component__Add( 'Text__File__Encoding_ComboBox', '', 'File encoding.' + #13 + #10 + #13 + #10 + 'If empty and file loaded while saving the file will use encoding from the source file.' );
     Translation__Component__Add( 'Text__File__Find_Button', '', 'Find file.' + #13 + #10 + #13 + #10 + '[Ctrl + O]' );
+    Translation__Component__Add( 'Text__File__Find_MenuItem', 'Find file [Ctrl + O]' );
     Translation__Component__Add( 'Text__File__Load_Button', '', 'Load file.' + #13 + #10 + #13 + #10 + '[Ctrl + L]' );
+    Translation__Component__Add( 'Text__File__Load_MenuItem', 'Load file [Ctrl + L]' );
     Translation__Component__Add( 'Text__File__Path_Edit', '', 'File path.' );
     Translation__Component__Add( 'Text__File__Save_Button', '', 'Save file.' + #13 + #10 + #13 + #10 + 'To ''save file as'' change the ''file path''.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + S]' );
+    Translation__Component__Add( 'Text__File__Save_MenuItem', 'Save file [Ctrl + Shift + S]' );
     Translation__Component__Add( 'Transaction__Begin_Button', '', 'Begin transaction.' );
+    Translation__Component__Add( 'Transaction__Begin_MenuItem', 'Begin transaction' );
     Translation__Component__Add( 'Transaction__Commit_Button', '', 'Commit transaction.' );
+    Translation__Component__Add( 'Transaction__Commit_MenuItem', 'Commit transaction' );
     Translation__Component__Add( 'Transaction__Rollback_Button', '', 'Rollback transaction.' );
+    Translation__Component__Add( 'Transaction__Rollback_MenuItem', 'Rollback transaction' );
     Translation__Component__Add( 'Transactions_Automatic_CheckBox', 'T.', 'Automatically begin transaction (if there is no active transaction) when the SQL text contains words like: delete, insert, update etc.' );
+    Translation__Component__Add( 'Transactions_Automatic_MenuItem', 'Automatically begin transaction' );
     Translation__Component__Add( 'Transactions_Count_Label', '<?>', 'Transactions count.' + #13 + #10 + #13 + #10 + 'Does not count the global value, there is only a common transaction.' );
 
   Translation__Unit__Add( 'TStored_Procedure_Modify_F_Frame' );
@@ -1189,6 +1247,7 @@ begin
 
   Translation__Unit__Add( 'TTable_Column__Values_Distinct_Form' );
     Translation__Component__Add( 'Caption', 'Column distinct values' );
+    Translation__Component__Add( 'Close_Button', '', 'Close.' + #13 + #10 + #13 + #10 + '[Esc]' );
     Translation__Component__Add( 'Ok_Button', '', 'Select value.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
@@ -1748,7 +1807,9 @@ begin
     '    Spacebar, Ctrl + Enter - edit' + #13 +
     '    Up arrow - move up' + #13 +
     'Others' + #13 +
-    '    Ctrl + /, Ctrl + Shift + / - comment / uncomment line' + #13 +
+    '    Ctrl + /, Ctrl + Shift + / - comment / uncomment line / block' + #13 +
+    '    Ctrl + \, Ctrl + Shift + \ - comment / uncomment line / block alternatively' + #13 +
+    '    Ctrl + Shift + \ - invert comment alternatively (block only)' + #13 +
     '    Ctrl + C - copy to clipboard (e.g. column name, query value, table name)' + #13 +
     '    Ctrl + D, Shift + D - show column distinct values' + #13 +
     '    Ctrl + Enter, Ctrl + Double-click - open table, view and open table, view data' + #13 +
@@ -2095,6 +2156,7 @@ begin
                                 (  Pos( 'Fire_Dac__Query__Fetch_Options__Mode_ComboBox', zts_1 ) > 0  )
                              or (  Pos( 'Fire_Dac__Query__Fetch_Options__Record_Count_Mode_ComboBox', zts_1 ) > 0  )
                              or (  Pos( 'Language_ComboBox', zts_1 ) > 0  )
+                             or (  Pos( 'Sql_Editor__Highlights__Syntax_ComboBox', zts_1 ) > 0  )
                            )
                     )
                )
@@ -2247,7 +2309,8 @@ begin
 
     end;
 
-  zt_string_list_l.Free();
+  zt_string_list_l.Clear();
+  FreeAndNil( zt_string_list_l );
 
 
   Vcl.Forms.Screen.Cursor := Vcl.Controls.crDefault;

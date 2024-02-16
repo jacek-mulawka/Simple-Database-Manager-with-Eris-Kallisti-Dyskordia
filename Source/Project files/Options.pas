@@ -81,6 +81,8 @@ type
     Sql__Quotation_Sign__Use_CheckBox: TCheckBox;
     Sql__View__Parameter_Separator_GroupBox: TGroupBox;
     Sql__View__Parameter_Separator_Memo: TMemo;
+    Syn_Editor_Options_GroupBox: TGroupBox;
+    Syn_Editor_Options_CheckListBox: TCheckListBox;
     Sql_Editor_TabSheet: TTabSheet;
     Sql_Editor__Close_Prompt_CheckBox: TCheckBox;
     Sql_Editor__Code__Completion_Window_GroupBox: TGroupBox;
@@ -91,8 +93,34 @@ type
     Sql_Editor__Code__Dent_Width_GroupBox: TGroupBox;
     Sql_Editor__Code__Dent_Width_SpinEdit: TSpinEdit;
     Sql_Editor__Comments_Delete_CheckBox: TCheckBox;
-    Sql_Editor__Execute_Automatic_Detection_CheckBox: TCheckBox;
+    Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox;
+    Sql_Editor__Execute__Automatic_Detection_CheckBox: TCheckBox;
+    Sql_Editor__Execute__Selected_CheckBox: TCheckBox;
     Sql_Editor__Font_Button: TButton;
+    Sql_Editor__Font__Use_In_Other_Components_CheckBox: TCheckBox;
+    Sql_Editor__Highlights_GroupBox: TGroupBox;
+    Sql_Editor__Highlights_PageControl: TPageControl;
+    Sql_Editor__Highlights__Brackets_TabSheet: TTabSheet;
+    Sql_Editor__Highlights__Brackets__Color__Background_ColorBox: TColorBox;
+    Sql_Editor__Highlights__Brackets__Color__Background_Etiquette_Label: TLabel;
+    Sql_Editor__Highlights__Brackets__Color__Border_Etiquette_Label: TLabel;
+    Sql_Editor__Highlights__Brackets__Color__Border_ColorBox: TColorBox;
+    Sql_Editor__Highlights__Lines_TabSheet: TTabSheet;
+    Sql_Editor__Highlights__Lines__Active__Color_Etiquette_Label: TLabel;
+    Sql_Editor__Highlights__Lines__Active__Color__ColorBox: TColorBox;
+    Sql_Editor__Highlights__Syntax_TabSheet: TTabSheet;
+    Sql_Editor__Highlights__Syntax_Etiquette_Label: TLabel;
+    Sql_Editor__Highlights__Syntax_ComboBox: TComboBox;
+    Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox: TCheckBox;
+    Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox: TCheckBox;
+    Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox: TCheckBox;
+    Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox: TCheckBox;
+    Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox: TCheckBox;
+    Sql_Editor__Highlights__Words_TabSheet: TTabSheet;
+    Sql_Editor__Highlights__Words__Color__Background_ColorBox: TColorBox;
+    Sql_Editor__Highlights__Words__Color__Background_Etiquette_Label: TLabel;
+    Sql_Editor__Highlights__Words__Color__Border_ColorBox: TColorBox;
+    Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label: TLabel;
     Sql_Editor__Left_Panel: TPanel;
     Sql_Editor__Query_Output_Save_Field_Format_GroupBox: TGroupBox;
     Sql_Editor__Query_Output_Save_Field_Format__Date_Edit: TEdit;
@@ -108,16 +136,9 @@ type
     Sql_Editor__Query_Output_Save_Field_Format__Time_Etiquette_Label: TLabel;
     Sql_Editor__Right_Panel: TPanel;
     Sql_Editor__Transactions_Automatic_CheckBox: TCheckBox;
-    Sql_Editor__Words_Highlight_GroupBox: TGroupBox;
-    Sql_Editor__Words_Highlight__Color__Background_ColorBox: TColorBox;
-    Sql_Editor__Words_Highlight__Color__Background_Etiquette_Label: TLabel;
-    Sql_Editor__Words_Highlight__Color__Border_ColorBox: TColorBox;
-    Sql_Editor__Words_Highlight__Color__Border_Etiquette_Label: TLabel;
     Sql_Text_Memo: TMemo;
     Sql_Text_SynEdit: TSynEdit;
     Sql_Text__SynCompletionProposal: TSynCompletionProposal;
-    Syn_Editor_Options_GroupBox: TGroupBox;
-    Syn_Editor_Options_CheckListBox: TCheckListBox;
     System_Tables_Visible_CheckBox: TCheckBox;
     Table__Data_Filter_TabSheet: TTabSheet;
     Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox: TCheckBox;
@@ -168,9 +189,18 @@ type
     function Syn_Edit_Keystrokes_Get() : string;
   private
     { Private declarations }
+    sql_editor__highlights__syntax__brackets__all_pairs__copy_g,
+    sql_editor__highlights__syntax__brackets__angle__copy_g,
+    sql_editor__highlights__syntax__brackets__curly__copy_g,
+    sql_editor__highlights__syntax__brackets__round__copy_g,
+    sql_editor__highlights__syntax__brackets__square__copy_g
+      : boolean;
+
     code_completion__cursor_position_g,
-    sql_editor__words_highlight__color__background__copy_g,
-    sql_editor__words_highlight__color__border__copy_g
+    sql_editor__highlights__brackets__color__background__copy_g,
+    sql_editor__highlights__brackets__color__border__copy_g,
+    sql_editor__highlights__words__color__background__copy_g,
+    sql_editor__highlights__words__color__border__copy_g
       : integer;
 
     text__search_replace_form : Text__Search_Replace.TText__Search_Replace_Form;
@@ -263,15 +293,44 @@ begin
   Sql_Editor__Code__Completion_Window__Default__Width_SpinEdit.Value := Common.sql_editor__code__completion_window__default__width;
   Sql_Editor__Code__Dent_Width_SpinEdit.Value := Common.sql_editor__code__dent_width;
   Sql_Editor__Comments_Delete_CheckBox.Checked := Common.sql_editor__comments_delete;
-  Sql_Editor__Execute_Automatic_Detection_CheckBox.Checked := Common.sql_editor__execute_automatic_detection;
+  Sql_Editor__Database_Connection__Separated_CheckBox.Checked := Common.sql_editor__database_connection__separated;
+  Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked := Common.sql_editor__execute__automatic_detection;
+  Sql_Editor__Execute__Selected_CheckBox.Checked := Common.sql_editor__execute__selected;
+  Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked := Common.sql_editor__font__use_in_other_components;
+  Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected := Common.sql_editor__highlights__brackets__color__background;
+  Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected := Common.sql_editor__highlights__brackets__color__border;
+  Sql_Editor__Highlights__Lines__Active__Color__ColorBox.Selected := Common.sql_editor__highlights__lines__active__color;
+
+
+  if Sql_Editor__Highlights__Syntax_ComboBox.Items.Count > 0 then
+    Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex := 0
+  else
+    Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex := -1;
+
+  for i := 0 to Sql_Editor__Highlights__Syntax_ComboBox.Items.Count - 1 do
+    if Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ i ]).name = Common.sql_editor__highlights__syntax then
+      begin
+
+        Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex := i;
+
+        Break;
+
+      end;
+
+
+  Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__all_pairs;
+  Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__angle;
+  Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__curly;
+  Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__round;
+  Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__square;
+  Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected := Common.sql_editor__highlights__words__color__background;
+  Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected := Common.sql_editor__highlights__words__color__border;
   Sql_Editor__Transactions_Automatic_CheckBox.Checked := Common.sql_editor__transactions_automatic;
   Sql_Editor__Query_Output_Save_Field_Format__Date_Edit.Text := Common.sql_editor__query_output_save_field_format__date;
   Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Edit.Text := Common.sql_editor__query_output_save_field_format__real_numbers;
   Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text := Common.sql_editor__query_output_save_field_format__separator__date_time;
   Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text := Common.sql_editor__query_output_save_field_format__separator__decimal;
   Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text := Common.sql_editor__query_output_save_field_format__time;
-  Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected := Common.sql_editor__words_highlight__color__background;
-  Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected := Common.sql_editor__words_highlight__color__border;
   //Common.Font__Set( Sql_Text_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Sql_Text_SynEdit.Font, Common.sql_editor__font );
   Common.Font__Set( FontDialog1.Font, Common.sql_editor__font );
@@ -479,6 +538,7 @@ begin
 
         end;
 
+      tekst_string_list.Clear();
       FreeAndNil( tekst_string_list );
 
     end;
@@ -522,7 +582,26 @@ begin
   Common.sql_editor__code__completion_window__default__width := Sql_Editor__Code__Completion_Window__Default__Width_SpinEdit.Value;
   Common.sql_editor__code__dent_width := Sql_Editor__Code__Dent_Width_SpinEdit.Value;
   Common.sql_editor__comments_delete := Sql_Editor__Comments_Delete_CheckBox.Checked;
-  Common.sql_editor__execute_automatic_detection := Sql_Editor__Execute_Automatic_Detection_CheckBox.Checked;
+  Common.sql_editor__database_connection__separated := Sql_Editor__Database_Connection__Separated_CheckBox.Checked;
+  Common.sql_editor__execute__automatic_detection := Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked;
+  Common.sql_editor__execute__selected := Sql_Editor__Execute__Selected_CheckBox.Checked;
+  Common.sql_editor__font__use_in_other_components := Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked;
+  Common.sql_editor__highlights__brackets__color__background := Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected;
+  Common.sql_editor__highlights__brackets__color__border := Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected;
+  Common.sql_editor__highlights__lines__active__color := Sql_Editor__Highlights__Lines__Active__Color__ColorBox.Selected;
+
+  if    ( Sql_Editor__Highlights__Syntax_ComboBox.Items.Count > 0 )
+    and ( Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex >= 0 )
+    and ( Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex < Sql_Editor__Highlights__Syntax_ComboBox.Items.Count ) then
+    Common.sql_editor__highlights__syntax := Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex ]).name;
+
+  Common.sql_editor__highlights__syntax__brackets__all_pairs := Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked;
+  Common.sql_editor__highlights__syntax__brackets__angle := Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked;
+  Common.sql_editor__highlights__syntax__brackets__curly := Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked;
+  Common.sql_editor__highlights__syntax__brackets__round := Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked;
+  Common.sql_editor__highlights__syntax__brackets__square := Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked;
+  Common.sql_editor__highlights__words__color__background := Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected;
+  Common.sql_editor__highlights__words__color__border := Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected;
   //Common.Font__Set( Common.sql_editor__font, Sql_Text_Memo.Font );
   Common.Font__Set( Common.sql_editor__font, Sql_Text_SynEdit.Font );
   Common.sql_editor__transactions_automatic := Sql_Editor__Transactions_Automatic_CheckBox.Checked;
@@ -531,8 +610,6 @@ begin
   Common.sql_editor__query_output_save_field_format__separator__date_time := Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text;
   Common.sql_editor__query_output_save_field_format__separator__decimal := Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text;
   Common.sql_editor__query_output_save_field_format__time := Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text;
-  Common.sql_editor__words_highlight__color__background := Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected;
-  Common.sql_editor__words_highlight__color__border := Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected;
   Common.sql__command_separator := Sql__Command_Separator_Edit.Text;
   Common.sql__external_function__parameter_separator := Sql__External_Function__Parameter_Separator_Memo.Lines.Text;
   Common.sql__quotation_sign__use := Sql__Quotation_Sign__Use_CheckBox.Checked;
@@ -574,14 +651,25 @@ var
   zts_2
     : string;
 
+  zt_string_list : TStringList;
+
   fetch_options__mode_l : TFDFetchMode;
   fetch_options__record_count_mode_l : TFDRecordCountMode;
   syn_editor_option_l : SynEdit.TSynEditorOption;
+
+  zt_object_id_caption : Common.TObject_Id_Caption;
 begin
 
   code_completion__cursor_position_g := -1;
-  sql_editor__words_highlight__color__background__copy_g := Common.sql_editor__words_highlight__color__background;
-  sql_editor__words_highlight__color__border__copy_g := Common.sql_editor__words_highlight__color__border;
+  sql_editor__highlights__brackets__color__background__copy_g := Common.sql_editor__highlights__brackets__color__background;
+  sql_editor__highlights__brackets__color__border__copy_g := Common.sql_editor__highlights__brackets__color__border;
+  sql_editor__highlights__syntax__brackets__all_pairs__copy_g := Common.sql_editor__highlights__syntax__brackets__all_pairs;
+  sql_editor__highlights__syntax__brackets__angle__copy_g := Common.sql_editor__highlights__syntax__brackets__angle;
+  sql_editor__highlights__syntax__brackets__curly__copy_g := Common.sql_editor__highlights__syntax__brackets__curly;
+  sql_editor__highlights__syntax__brackets__round__copy_g := Common.sql_editor__highlights__syntax__brackets__round;
+  sql_editor__highlights__syntax__brackets__square__copy_g := Common.sql_editor__highlights__syntax__brackets__square;
+  sql_editor__highlights__words__color__background__copy_g := Common.sql_editor__highlights__words__color__background;
+  sql_editor__highlights__words__color__border__copy_g := Common.sql_editor__highlights__words__color__border;
 
   text__search_replace_form := nil;
 
@@ -589,6 +677,7 @@ begin
   Apply_Hint_Label.Hint := Apply_Hint_Label.Caption;
 
   Options_PageControl.ActivePage := Basic_TabSheet;
+  Sql_Editor__Highlights_PageControl.ActivePage := Sql_Editor__Highlights__Syntax_TabSheet;
 
   OpenDialog1.Filter := Translation.translation__messages_r.application_files + '|*' + Common.exe__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
 
@@ -610,6 +699,41 @@ begin
     Syn_Editor_Options_CheckListBox.Items.Add(   System.TypInfo.GetEnumName(  System.TypeInfo(SynEdit.TSynEditorOption), Ord( syn_editor_option_l )  )   );
 
 
+
+  zt_string_list := TStringList.Create();
+
+  Shared.Shared_DataModule.Syn_Edit__Highlight__Manager_Names__Get( zt_string_list );
+
+
+  Sql_Editor__Highlights__Syntax_ComboBox.Items.Clear();
+
+  zt_object_id_caption := Common.TObject_Id_Caption.Create();
+  zt_object_id_caption.caption := Translation.translation__messages_r.word__none;
+  zt_object_id_caption.name := Shared.sql_editor__highlights__syntax__none_c;
+
+  Sql_Editor__Highlights__Syntax_ComboBox.Items.AddObject( zt_object_id_caption.caption, zt_object_id_caption );
+
+
+  zti_1 := 0;
+
+  while zti_1 <= zt_string_list.Count - 2 do
+    begin
+
+      zt_object_id_caption := Common.TObject_Id_Caption.Create();
+      zt_object_id_caption.caption := zt_string_list[ zti_1 ];
+      zt_object_id_caption.name := zt_string_list[ zti_1 + 1 ];
+
+      Sql_Editor__Highlights__Syntax_ComboBox.Items.AddObject( zt_object_id_caption.caption, zt_object_id_caption );
+
+      zti_1 := zti_1 + 2;
+
+    end;
+
+  zt_string_list.Clear();
+  FreeAndNil( zt_string_list );
+
+
+
   Translation__List_Load();
 
   Translation__Save_Load();
@@ -625,6 +749,8 @@ begin
   Common.Syn_Completion_Proposal__Parameters__Set( Sql_Text__SynCompletionProposal );
 
   Common.Syn_Edit__Parameters__Set( Sql_Text_SynEdit );
+
+  Common.Font__Set( Syn_Editor_Options_CheckListBox.Font, FontDialog1.Font );
 
 
   zts_1 := Common.sql_editor__code_completion_list_c;
@@ -655,11 +781,36 @@ begin
 
     end;
 
-  for zti_1 := 1 to 100 do
+
+  for zti_1 := 1 to 10 do
     begin
 
-      Sql_Text__SynCompletionProposal.InsertList.Add(   translation__messages_r.word__name + '_' + Trim(  FormatFloat( '000', zti_1 )  )   );
-      Sql_Text__SynCompletionProposal.ItemList.Add(   '\color{clHighlight}' + Translation.translation__messages_r.code_completion__table + ' \color{clWindowText}\column{}\style{+B}' + translation__messages_r.word__name + '_' + Trim(  FormatFloat( '000', zti_1 )  ) + '\style{-B}'   );
+      Sql_Text__SynCompletionProposal.InsertList.Add(   Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '000', zti_1 )  )   );
+      Sql_Text__SynCompletionProposal.ItemList.Add(   '\color{$000456FF}' + Translation.translation__messages_r.code_completion__column + ' \color{clWindowText}\column{}\style{+B}' + Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '00', zti_1 )  ) + '\style{-B}'   );
+
+    end;
+
+  for zti_1 := 1 to 10 do
+    begin
+
+      Sql_Text__SynCompletionProposal.InsertList.Add(   Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '000', zti_1 )  )   );
+      Sql_Text__SynCompletionProposal.ItemList.Add(   '\color{clHotLight}' + Translation.translation__messages_r.code_completion__stored_procedure + ' \color{clWindowText}\column{}\style{+B}' + Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '00', zti_1 )  ) + '\style{-B}'   );
+
+    end;
+
+  for zti_1 := 1 to 10 do
+    begin
+
+      Sql_Text__SynCompletionProposal.InsertList.Add(   Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '000', zti_1 )  )   );
+      Sql_Text__SynCompletionProposal.ItemList.Add(   '\color{clHighlight}' + Translation.translation__messages_r.code_completion__table + ' \color{clWindowText}\column{}\style{+B}' + Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '00', zti_1 )  ) + '\style{-B}'   );
+
+    end;
+
+  for zti_1 := 1 to 10 do
+    begin
+
+      Sql_Text__SynCompletionProposal.InsertList.Add(   Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '000', zti_1 )  )   );
+      Sql_Text__SynCompletionProposal.ItemList.Add(   '\color{$00004080}' + Translation.translation__messages_r.code_completion__trigger + ' \color{clWindowText}\column{}\style{+B}' + Translation.translation__messages_r.word__name + '_' + Trim(  FormatFloat( '00', zti_1 )  ) + '\style{-B}'   );
 
     end;
 
@@ -675,6 +826,8 @@ begin
 end;
 
 procedure TOptions_Form.FormDestroy( Sender: TObject );
+var
+  i : integer;
 begin
 
   Syn_Editor_Options_CheckListBox.Items.Clear();
@@ -686,6 +839,12 @@ begin
 
   if text__search_replace_form <> nil then
     FreeAndNil( text__search_replace_form );
+
+
+  for i := 0 to Sql_Editor__Highlights__Syntax_ComboBox.Items.Count - 1 do
+    Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ i ]).Free();
+
+  Sql_Editor__Highlights__Syntax_ComboBox.Items.Clear();
 
 end;
 
@@ -754,7 +913,7 @@ var
 begin
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Save_Button.Name ) then
+    and ( Sender = Save_Button ) then
     save_l := true
   else
     save_l := false;
@@ -766,98 +925,98 @@ begin
 
 
   {$region 'Ini file.'}
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'csv__file__data_separator' )  ) then
     file_ini.WriteString( 'Options', 'csv__file__data_separator', Csv__File__Data_Separator_Edit.Text )
   else
     Csv__File__Data_Separator_Edit.Text := file_ini.ReadString( 'Options', 'csv__file__data_separator', Csv__File__Data_Separator_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'csv__file__text_qualifier' )  ) then
     file_ini.WriteString( 'Options', 'csv__file__text_qualifier', Csv__File__Text_Qualifier_Edit.Text )
   else
     Csv__File__Text_Qualifier_Edit.Text := file_ini.ReadString( 'Options', 'csv__file__text_qualifier', Csv__File__Text_Qualifier_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__date' )  ) then
     file_ini.WriteString( 'Options', 'data_presentation__data_value_format__date', Data_Presentation__Data_Value_Format__Date_Edit.Text )
   else
     Data_Presentation__Data_Value_Format__Date_Edit.Text := file_ini.ReadString( 'Options', 'data_presentation__data_value_format__date', Data_Presentation__Data_Value_Format__Date_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__date__use' )  ) then
     file_ini.WriteBool( 'Options', 'data_presentation__data_value_format__date__use', Data_Presentation__Data_Value_Format__Date__Use_CheckBox.Checked )
   else
     Data_Presentation__Data_Value_Format__Date__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'data_presentation__data_value_format__date__use', Data_Presentation__Data_Value_Format__Date__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__date_time' )  ) then
     file_ini.WriteString( 'Options', 'data_presentation__data_value_format__date_time', Data_Presentation__Data_Value_Format__Date_Time_Edit.Text )
   else
     Data_Presentation__Data_Value_Format__Date_Time_Edit.Text := file_ini.ReadString( 'Options', 'data_presentation__data_value_format__date_time', Data_Presentation__Data_Value_Format__Date_Time_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__date_time__use' )  ) then
     file_ini.WriteBool( 'Options', 'data_presentation__data_value_format__date_time__use', Data_Presentation__Data_Value_Format__Date_Time__Use_CheckBox.Checked )
   else
     Data_Presentation__Data_Value_Format__Date_Time__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'data_presentation__data_value_format__date_time__use', Data_Presentation__Data_Value_Format__Date_Time__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__numbers' )  ) then
     file_ini.WriteString( 'Options', 'data_presentation__data_value_format__numbers', Data_Presentation__Data_Value_Format__Numbers_Edit.Text )
   else
     Data_Presentation__Data_Value_Format__Numbers_Edit.Text := file_ini.ReadString( 'Options', 'data_presentation__data_value_format__numbers', Data_Presentation__Data_Value_Format__Numbers_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__numbers__use' )  ) then
     file_ini.WriteBool( 'Options', 'data_presentation__data_value_format__numbers__use', Data_Presentation__Data_Value_Format__Numbers__Use_CheckBox.Checked )
   else
     Data_Presentation__Data_Value_Format__Numbers__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'data_presentation__data_value_format__numbers__use', Data_Presentation__Data_Value_Format__Numbers__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__real_numbers' )  ) then
     file_ini.WriteString( 'Options', 'data_presentation__data_value_format__real_numbers', Data_Presentation__Data_Value_Format__Real_Numbers_Edit.Text )
   else
     Data_Presentation__Data_Value_Format__Real_Numbers_Edit.Text := file_ini.ReadString( 'Options', 'data_presentation__data_value_format__real_numbers', Data_Presentation__Data_Value_Format__Real_Numbers_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__real_numbers__use' )  ) then
     file_ini.WriteBool( 'Options', 'data_presentation__data_value_format__real_numbers__use', Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox.Checked )
   else
     Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'data_presentation__data_value_format__real_numbers__use', Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__time' )  ) then
     file_ini.WriteString( 'Options', 'data_presentation__data_value_format__time', Data_Presentation__Data_Value_Format__Time_Edit.Text )
   else
     Data_Presentation__Data_Value_Format__Time_Edit.Text := file_ini.ReadString( 'Options', 'data_presentation__data_value_format__time', Data_Presentation__Data_Value_Format__Time_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'data_presentation__data_value_format__time__use' )  ) then
     file_ini.WriteBool( 'Options', 'data_presentation__data_value_format__time__use', Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked )
   else
     Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'data_presentation__data_value_format__time__use', Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'database__backup__application__file_path' )  ) then
     file_ini.WriteString( 'Options', 'database__backup__application__file_path', Database__Backup__Application__File_Path_Edit.Text )
   else
     Database__Backup__Application__File_Path_Edit.Text := file_ini.ReadString( 'Options', 'database__backup__application__file_path', Database__Backup__Application__File_Path_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'database__backup__file_name__suffix_default__item_index' )  ) then
     file_ini.WriteInteger( 'Options', 'database__backup__file_name__suffix_default__item_index', Database__Backup__File_Name__Suffix_Default_RadioGroup.ItemIndex )
   else
@@ -874,28 +1033,28 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'database__correctness_check_text__backup' )  ) then
     file_ini.WriteString( 'Options', 'database__correctness_check_text__backup', Database__Correctness_Check_Text__Backup_Edit.Text )
   else
     Database__Correctness_Check_Text__Backup_Edit.Text := file_ini.ReadString( 'Options', 'database__correctness_check_text__backup', Database__Correctness_Check_Text__Backup_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'database__correctness_check_text__restore' )  ) then
     file_ini.WriteString( 'Options', 'database__correctness_check_text__restore', Database__Correctness_Check_Text__Restore_Edit.Text )
   else
     Database__Correctness_Check_Text__Restore_Edit.Text := file_ini.ReadString( 'Options', 'database__correctness_check_text__restore', Database__Correctness_Check_Text__Restore_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'database__create__application__file_path' )  ) then
     file_ini.WriteString( 'Options', 'database__create__application__file_path', Database__Create__Application__File_Path_Edit.Text )
   else
     Database__Create__Application__File_Path_Edit.Text := file_ini.ReadString( 'Options', 'database__create__application__file_path', Database__Create__Application__File_Path_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'fire_dac__fetch_options__mode' )  ) then
     file_ini.WriteInteger( 'Options', 'fire_dac__fetch_options__mode', Fire_Dac__Query__Fetch_Options__Mode_ComboBox.ItemIndex )
   else
@@ -913,7 +1072,7 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'fire_dac__fetch_options__record_count_mode' )  ) then
     file_ini.WriteInteger( 'Options', 'fire_dac__fetch_options__record_count_mode', Fire_Dac__Query__Fetch_Options__Record_Count_Mode_ComboBox.ItemIndex )
   else
@@ -931,21 +1090,21 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'fire_dac__fetch_options__rowset_size' )  ) then
     file_ini.WriteInteger( 'Options', 'fire_dac__fetch_options__rowset_size', Fire_Dac__Query__Fetch_Options__Rowset_Size_SpinEdit.Value )
   else
     Fire_Dac__Query__Fetch_Options__Rowset_Size_SpinEdit.Value := file_ini.ReadInteger( 'Options', 'fire_dac__fetch_options__rowset_size', Fire_Dac__Query__Fetch_Options__Rowset_Size_SpinEdit.Value );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'form_view__additional_component_show' )  ) then
     file_ini.WriteBool( 'Options', 'form_view__additional_component_show', Form_View__Additional_Component_Show_CheckBox.Checked )
   else
     Form_View__Additional_Component_Show_CheckBox.Checked := file_ini.ReadBool( 'Options', 'form_view__additional_component_show', Form_View__Additional_Component_Show_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'log__auto_scroll__seconds' )  ) then
     file_ini.WriteInteger( 'Options', 'log__auto_scroll__seconds', Log__Auto_Scroll__Seconds_SpinEdit.Value )
   else
@@ -959,28 +1118,28 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'queries_open_in_background' )  ) then
     file_ini.WriteBool( 'Options', 'queries_open_in_background', Queries_Open_In_Background_CheckBox.Checked )
   else
     Queries_Open_In_Background_CheckBox.Checked := file_ini.ReadBool( 'Options', 'queries_open_in_background', Queries_Open_In_Background_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'splitter_show' )  ) then
     file_ini.WriteBool( 'Options', 'splitter_show', Splitter_Show_CheckBox.Checked )
   else
     Splitter_Show_CheckBox.Checked := file_ini.ReadBool( 'Options', 'splitter_show', Splitter_Show_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__close_prompt' )  ) then
     file_ini.WriteBool( 'Options', 'sql_editor__close_prompt', Sql_Editor__Close_Prompt_CheckBox.Checked )
   else
     Sql_Editor__Close_Prompt_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__close_prompt', Sql_Editor__Close_Prompt_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__code__completion_window__default__lines_in_window' )  ) then
     file_ini.WriteInteger( 'Options', 'sql_editor__code__completion_window__default__lines_in_window', Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_SpinEdit.Value )
   else
@@ -994,7 +1153,7 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__code__completion_window__default__width' )  ) then
     file_ini.WriteInteger( 'Options', 'sql_editor__code__completion_window__default__width', Sql_Editor__Code__Completion_Window__Default__Width_SpinEdit.Value )
   else
@@ -1008,7 +1167,7 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__code__dent_width' )  ) then
     file_ini.WriteInteger( 'Options', 'sql_editor__code__dent_width', Sql_Editor__Code__Dent_Width_SpinEdit.Value )
   else
@@ -1022,21 +1181,35 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__comments_delete' )  ) then
     file_ini.WriteBool( 'Options', 'sql_editor__comments_delete', Sql_Editor__Comments_Delete_CheckBox.Checked )
   else
     Sql_Editor__Comments_Delete_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__comments_delete', Sql_Editor__Comments_Delete_CheckBox.Checked );
 
 
-  if   (  save_l )
-    or (  not file_ini.ValueExists( 'Options', 'sql_editor__execute_automatic_detection' )  ) then
-    file_ini.WriteBool( 'Options', 'sql_editor__execute_automatic_detection', Sql_Editor__Execute_Automatic_Detection_CheckBox.Checked )
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__database_connection__separated' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__database_connection__separated', Sql_Editor__Database_Connection__Separated_CheckBox.Checked )
   else
-    Sql_Editor__Execute_Automatic_Detection_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__execute_automatic_detection', Sql_Editor__Execute_Automatic_Detection_CheckBox.Checked );
+    Sql_Editor__Database_Connection__Separated_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__database_connection__separated', Sql_Editor__Database_Connection__Separated_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__execute__automatic_detection' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__execute__automatic_detection', Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked )
+  else
+    Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__execute__automatic_detection', Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__execute__selected' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__execute__selected', Sql_Editor__Execute__Selected_CheckBox.Checked )
+  else
+    Sql_Editor__Execute__Selected_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__execute__selected', Sql_Editor__Execute__Selected_CheckBox.Checked );
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__font' )  ) then
     begin
 
@@ -1068,21 +1241,131 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__font__use_in_other_components' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__font__use_in_other_components', Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked )
+  else
+    Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__font__use_in_other_components', Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__brackets__color__background' )  ) then
+    file_ini.WriteString(  'Options', 'sql_editor__highlights__brackets__color__background', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected )  )
+  else
+    Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__highlights__brackets__color__background', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected )  )   );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__brackets__color__border' )  ) then
+    file_ini.WriteString(  'Options', 'sql_editor__highlights__brackets__color__border', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected )  )
+  else
+    Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__highlights__brackets__color__border', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected )  )   );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__lines__active__color' )  ) then
+    file_ini.WriteString(  'Options', 'sql_editor__highlights__lines__active__color', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Lines__Active__Color__ColorBox.Selected )  )
+  else
+    Sql_Editor__Highlights__Lines__Active__Color__ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__highlights__lines__active__color', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Lines__Active__Color__ColorBox.Selected )  )   );
+
+
+  if    ( Sql_Editor__Highlights__Syntax_ComboBox.Items.Count > 0 )
+    and ( Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex >= 0 )
+    and ( Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex < Sql_Editor__Highlights__Syntax_ComboBox.Items.Count ) then
+    zts := Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex ]).name
+  else
+    zts := Shared.sql_editor__highlights__syntax__none_c;
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax' )  ) then
+    file_ini.WriteString( 'Options', 'sql_editor__highlights__syntax', zts )
+  else
+    begin
+
+      zts := file_ini.ReadString( 'Options', 'sql_editor__highlights__syntax', zts );
+
+      if Sql_Editor__Highlights__Syntax_ComboBox.Items.Count > 0 then
+        Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex := 0
+      else
+        Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex := -1;
+
+      for zti := 0 to Sql_Editor__Highlights__Syntax_ComboBox.Items.Count - 1 do
+        if Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ zti ]).name = zts then
+          begin
+
+            Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex := zti;
+
+            Break;
+
+          end;
+
+    end;
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__all_pairs' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__all_pairs', Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked )
+  else
+    Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__highlights__syntax__brackets__all_pairs', Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__angle' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__angle', Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked )
+  else
+    Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__highlights__syntax__brackets__angle', Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__curly' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__curly', Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked )
+  else
+    Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__highlights__syntax__brackets__curly', Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__round' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__round', Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked )
+  else
+    Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__highlights__syntax__brackets__round', Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__square' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__square', Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked )
+  else
+    Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__highlights__syntax__brackets__square', Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__words__color__background' )  ) then
+    file_ini.WriteString(  'Options', 'sql_editor__highlights__words__color__background', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected )  )
+  else
+    Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__highlights__words__color__background', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected )  )   );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__words__color__border' )  ) then
+    file_ini.WriteString(  'Options', 'sql_editor__highlights__words__color__border', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected )  )
+  else
+    Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__highlights__words__color__border', Vcl.Graphics.ColorToString( Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected )  )   );
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__transactions_automatic' )  ) then
     file_ini.WriteBool( 'Options', 'sql_editor__transactions_automatic', Sql_Editor__Transactions_Automatic_CheckBox.Checked )
   else
     Sql_Editor__Transactions_Automatic_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__transactions_automatic', Sql_Editor__Transactions_Automatic_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__query_output_save_field_format__date' )  ) then
     file_ini.WriteString( 'Options', 'sql_editor__query_output_save_field_format__date', Sql_Editor__Query_Output_Save_Field_Format__Date_Edit.Text )
   else
     Sql_Editor__Query_Output_Save_Field_Format__Date_Edit.Text := file_ini.ReadString( 'Options', 'sql_editor__query_output_save_field_format__date', Sql_Editor__Query_Output_Save_Field_Format__Date_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__query_output_save_field_format__real_numbers' )  ) then
     file_ini.WriteString( 'Options', 'sql_editor__query_output_save_field_format__real_numbers', Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Edit.Text )
   else
@@ -1090,12 +1373,12 @@ begin
 
 
   // It seems ini file trim spaces (' ').
-  //if   (  save_l )
+  //if   ( save_l )
   //  or (  not file_ini.ValueExists( 'Options', 'sql_editor__query_output_save_field_format__separator__date_time' )  ) then
   //  file_ini.WriteString( 'Options', 'sql_editor__query_output_save_field_format__separator__date_time', Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text )
   //else
   //  Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text := file_ini.ReadString( 'Options', 'sql_editor__query_output_save_field_format__separator__date_time', Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text );
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__query_output_save_field_format__separator__date_time' )  ) then
     begin
 
@@ -1121,42 +1404,28 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__query_output_save_field_format__separator__decimal' )  ) then
     file_ini.WriteString( 'Options', 'sql_editor__query_output_save_field_format__separator__decimal', Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text )
   else
     Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text := file_ini.ReadString( 'Options', 'sql_editor__query_output_save_field_format__separator__decimal', Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__query_output_save_field_format__time' )  ) then
     file_ini.WriteString( 'Options', 'sql_editor__query_output_save_field_format__time', Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text )
   else
     Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text := file_ini.ReadString( 'Options', 'sql_editor__query_output_save_field_format__time', Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text );
 
 
-  if   (  save_l )
-    or (  not file_ini.ValueExists( 'Options', 'sql_editor__words_highlight__color__background' )  ) then
-    file_ini.WriteString(  'Options', 'sql_editor__words_highlight__color__background', Vcl.Graphics.ColorToString( Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected )  )
-  else
-    Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__words_highlight__color__background', Vcl.Graphics.ColorToString( Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected )  )   );
-
-
-  if   (  save_l )
-    or (  not file_ini.ValueExists( 'Options', 'sql_editor__words_highlight__color__border' )  ) then
-    file_ini.WriteString(  'Options', 'sql_editor__words_highlight__color__border', Vcl.Graphics.ColorToString( Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected )  )
-  else
-    Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected := Vcl.Graphics.StringToColor(   file_ini.ReadString(  'Options', 'sql_editor__words_highlight__color__border', Vcl.Graphics.ColorToString( Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected )  )   );
-
-
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql__command_separator' )  ) then
     file_ini.WriteString( 'Options', 'sql__command_separator', Sql__Command_Separator_Edit.Text )
   else
     Sql__Command_Separator_Edit.Text := file_ini.ReadString( 'Options', 'sql__command_separator', Sql__Command_Separator_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql__external_function__parameter_separator' )  ) then
     begin
 
@@ -1184,14 +1453,14 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql__quotation_sign__use' )  ) then
     file_ini.WriteBool( 'Options', 'sql__quotation_sign__use', Sql__Quotation_Sign__Use_CheckBox.Checked )
   else
     Sql__Quotation_Sign__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql__quotation_sign__use', Sql__Quotation_Sign__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql__view__parameter_separator' )  ) then
     begin
 
@@ -1234,7 +1503,7 @@ begin
 
       end;
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'syn_editor_options' )  ) then
     begin
 
@@ -1255,28 +1524,28 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'system_tables_visible' )  ) then
     file_ini.WriteBool( 'Options', 'system_tables_visible', System_Tables_Visible_CheckBox.Checked )
   else
     System_Tables_Visible_CheckBox.Checked := file_ini.ReadBool( 'Options', 'system_tables_visible', System_Tables_Visible_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__field_dedicated__default_use' )  ) then
     file_ini.WriteBool( 'Options', 'table__data_filter__field_dedicated__default_use', Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked )
   else
     Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'table__data_filter__field_dedicated__default_use', Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__date' )  ) then
     file_ini.WriteString( 'Options', 'table__data_filter__filter__dedicated_value_format__date', Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text )
   else
     Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text := file_ini.ReadString( 'Options', 'table__data_filter__filter__dedicated_value_format__date', Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__date_time' )  ) then
     begin
 
@@ -1302,42 +1571,42 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__decimal' )  ) then
     file_ini.WriteString( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__decimal', Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text )
   else
     Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text := file_ini.ReadString( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__decimal', Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__time' )  ) then
     file_ini.WriteString( 'Options', 'table__data_filter__filter__dedicated_value_format__time', Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Edit.Text )
   else
     Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Edit.Text := file_ini.ReadString( 'Options', 'table__data_filter__filter__dedicated_value_format__time', Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Edit.Text );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__quotation_sign__use' )  ) then
     file_ini.WriteBool( 'Options', 'table__data_filter__quotation_sign__use', Table__Data_Filter__Quotation_Sign__Use_CheckBox.Checked )
   else
     Table__Data_Filter__Quotation_Sign__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'table__data_filter__quotation_sign__use', Table__Data_Filter__Quotation_Sign__Use_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_modify__editing__default_state' )  ) then
     file_ini.WriteBool( 'Options', 'table__data_modify__editing__default_state', Table__Data_Modify__Editing__Default_State_CheckBox.Checked )
   else
     Table__Data_Modify__Editing__Default_State_CheckBox.Checked := file_ini.ReadBool( 'Options', 'table__data_modify__editing__default_state', Table__Data_Modify__Editing__Default_State_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'text__search__history_save_to_file' )  ) then
     file_ini.WriteBool( 'Options', 'text__search__history_save_to_file', Text__Search__History_Save_To_File_CheckBox.Checked )
   else
     Text__Search__History_Save_To_File_CheckBox.Checked := file_ini.ReadBool( 'Options', 'text__search__history_save_to_file', Text__Search__History_Save_To_File_CheckBox.Checked );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'text__search__history_save_to_file__items_count' )  ) then
     file_ini.WriteInteger( 'Options', 'text__search__history_save_to_file__items_count', Text__Search__History_Save_To_File__Items_Count_SpinEdit.Value )
   else
@@ -1351,7 +1620,7 @@ begin
     end;
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'text__search__window__one_common' )  ) then
     file_ini.WriteBool( 'Options', 'text__search__window__one_common', Text__Search__Window__One_Common_CheckBox.Checked )
   else
@@ -1359,98 +1628,98 @@ begin
 
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'all_files_find__filter' )  ) then
     file_ini.WriteString( 'Settings', 'all_files_find__filter', Common.all_files_find__filter )
   else
     Common.all_files_find__filter := file_ini.ReadString( 'Settings', 'all_files_find__filter', Common.all_files_find__filter );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'csv__file__default_extension' )  ) then
     file_ini.WriteString( 'Settings', 'csv__file__default_extension', Common.csv__file__default_extension )
   else
     Common.csv__file__default_extension := file_ini.ReadString( 'Settings', 'csv__file__default_extension', Common.csv__file__default_extension );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'database__backup_restore__quotation_sign' )  ) then
     file_ini.WriteString( 'Settings', 'database__backup_restore__quotation_sign', Common.database__backup_restore__quotation_sign )
   else
     Common.database__backup_restore__quotation_sign := file_ini.ReadString( 'Settings', 'database__backup_restore__quotation_sign', Common.database__backup_restore__quotation_sign );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'database__backup__file__default_extension' )  ) then
     file_ini.WriteString( 'Settings', 'database__backup__file__default_extension', Common.database__backup__file__default_extension )
   else
     Common.database__backup__file__default_extension := file_ini.ReadString( 'Settings', 'database__backup__file__default_extension', Common.database__backup__file__default_extension );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'database__file__default_extension' )  ) then
     file_ini.WriteString( 'Settings', 'database__file__default_extension', Common.database__file__default_extension )
   else
     Common.database__file__default_extension := file_ini.ReadString( 'Settings', 'database__file__default_extension', Common.database__file__default_extension );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'exe__file__default_extension' )  ) then
     file_ini.WriteString( 'Settings', 'exe__file__default_extension', Common.exe__file__default_extension )
   else
     Common.exe__file__default_extension := file_ini.ReadString( 'Settings', 'exe__file__default_extension', Common.exe__file__default_extension );
 
 
-  //if   (  save_l )
+  //if   ( save_l )
   //  or (  not file_ini.ValueExists( 'Settings', 'fd_connection__format_options__max_string_size' )  ) then
   //  file_ini.WriteInteger( 'Settings', 'fd_connection__format_options__max_string_size', Common.fd_connection__format_options__max_string_size )
   //else
   //  Common.fd_connection__format_options__max_string_size := file_ini.ReadInteger( 'Settings', 'fd_connection__format_options__max_string_size', Common.fd_connection__format_options__max_string_size );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'sql__comment__begin' )  ) then
     file_ini.WriteString( 'Settings', 'sql__comment__begin', Common.sql__comment__begin )
   else
     Common.sql__comment__begin := file_ini.ReadString( 'Settings', 'sql__comment__begin', Common.sql__comment__begin );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'sql__comment__end' )  ) then
     file_ini.WriteString( 'Settings', 'sql__comment__end', Common.sql__comment__end )
   else
     Common.sql__comment__end := file_ini.ReadString( 'Settings', 'sql__comment__end', Common.sql__comment__end );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'sql__comment__line' )  ) then
     file_ini.WriteString( 'Settings', 'sql__comment__line', Common.sql__comment__line )
   else
     Common.sql__comment__line := file_ini.ReadString( 'Settings', 'sql__comment__line', Common.sql__comment__line );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'sql__names_separator' )  ) then
     file_ini.WriteString( 'Settings', 'sql__names_separator', Common.sql__names_separator )
   else
     Common.sql__names_separator := file_ini.ReadString( 'Settings', 'sql__names_separator', Common.sql__names_separator );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'sql__text_separator' )  ) then
     file_ini.WriteString( 'Settings', 'sql__text_separator', Common.sql__text_separator )
   else
     Common.sql__text_separator := file_ini.ReadString( 'Settings', 'sql__text_separator', Common.sql__text_separator );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'table__data_modify__filter__height_keeper__top' )  ) then
     file_ini.WriteInteger( 'Settings', 'table__data_modify__filter__height_keeper__top', Common.table__data_modify__filter__height_keeper__top )
   else
     Common.table__data_modify__filter__height_keeper__top := file_ini.ReadInteger( 'Settings', 'table__data_modify__filter__height_keeper__top', Common.table__data_modify__filter__height_keeper__top );
 
 
-  if   (  save_l )
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Settings', 'txt__file__default_extension' )  ) then
     file_ini.WriteString( 'Settings', 'txt__file__default_extension', Common.txt__file__default_extension )
   else
@@ -1501,7 +1770,7 @@ begin
       zt_edit := nil;
 
 
-      if TComponent(Sender).Name = Database__Create__Application__File_Path__Find_Button.Name then
+      if Sender = Database__Create__Application__File_Path__Find_Button then
         begin
 
           zt_edit := Database__Create__Application__File_Path_Edit;
@@ -1542,6 +1811,7 @@ begin
 
       //Common.Font__Set( Sql_Text_Memo.Font, FontDialog1.Font );
       Common.Font__Set( Sql_Text_SynEdit.Font, FontDialog1.Font );
+      Common.Font__Set( Syn_Editor_Options_CheckListBox.Font, FontDialog1.Font );
 
     end;
 
@@ -1625,7 +1895,26 @@ var
   i : integer;
 begin
 
+  // The same in: Common.Syn_Edit__Parameters__Set(), TOptions_Form.Sql_Text_SynEditEnter().
+
+
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
+
+
+  Sql_Text_SynEdit.ActiveLineColor := Sql_Editor__Highlights__Lines__Active__Color__ColorBox.Selected;
+
+  Sql_Text_SynEdit.Highlighter := Shared.Shared_DataModule.Syn_Edit__Highlighter__Get( Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ Sql_Editor__Highlights__Syntax_ComboBox.ItemIndex ]).name );
+
+
+  Sql_Text_SynEdit.Options := [];
+
+  for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
+    if Syn_Editor_Options_CheckListBox.Checked[ i ] then
+      Sql_Text_SynEdit.Options := Sql_Text_SynEdit.Options + [ SynEdit.TSynEditorOption(i) ];
+
+
+  if Sql_Text_SynEdit.TabWidth <> Sql_Editor__Code__Dent_Width_SpinEdit.Value then
+    Sql_Text_SynEdit.TabWidth := Sql_Editor__Code__Dent_Width_SpinEdit.Value;
 
 
   if Sql_Text__SynCompletionProposal.NbLinesInWindow <> Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_SpinEdit.Value then
@@ -1635,30 +1924,45 @@ begin
     Sql_Text__SynCompletionProposal.Width := Sql_Editor__Code__Completion_Window__Default__Width_SpinEdit.Value;
 
 
-  if Sql_Text_SynEdit.TabWidth <> Sql_Editor__Code__Dent_Width_SpinEdit.Value then
-    Sql_Text_SynEdit.TabWidth := Sql_Editor__Code__Dent_Width_SpinEdit.Value;
-
-
-  if   ( sql_editor__words_highlight__color__background__copy_g <> Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected )
-    or ( sql_editor__words_highlight__color__border__copy_g <> Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected ) then
+  if   ( sql_editor__highlights__brackets__color__background__copy_g <> Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected )
+    or ( sql_editor__highlights__brackets__color__border__copy_g <> Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected )
+    or ( sql_editor__highlights__syntax__brackets__all_pairs__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked )
+    or ( sql_editor__highlights__syntax__brackets__angle__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked )
+    or ( sql_editor__highlights__syntax__brackets__curly__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked )
+    or ( sql_editor__highlights__syntax__brackets__round__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked )
+    or ( sql_editor__highlights__syntax__brackets__square__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked )
+    or ( sql_editor__highlights__words__color__background__copy_g <> Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected )
+    or ( sql_editor__highlights__words__color__border__copy_g <> Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected ) then
     begin
 
-      // Here probably should free TSearchTextHightlighterSynEditPlugin (do not know how). //???
+      sql_editor__highlights__brackets__color__background__copy_g := Sql_Editor__Highlights__Brackets__Color__Background_ColorBox.Selected;
+      sql_editor__highlights__brackets__color__border__copy_g := Sql_Editor__Highlights__Brackets__Color__Border_ColorBox.Selected;
+      sql_editor__highlights__syntax__brackets__all_pairs__copy_g := Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked;
+      sql_editor__highlights__syntax__brackets__angle__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked;
+      sql_editor__highlights__syntax__brackets__curly__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked;
+      sql_editor__highlights__syntax__brackets__round__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked;
+      sql_editor__highlights__syntax__brackets__square__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked;
+      sql_editor__highlights__words__color__background__copy_g := Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected;
+      sql_editor__highlights__words__color__border__copy_g := Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected;
 
-      sql_editor__words_highlight__color__background__copy_g := Sql_Editor__Words_Highlight__Color__Background_ColorBox.Selected;
-      sql_editor__words_highlight__color__border__copy_g := Sql_Editor__Words_Highlight__Color__Border_ColorBox.Selected;
 
+      Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create
+        (
+          Sql_Text_SynEdit,
 
-      Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Sql_Text_SynEdit, sql_editor__words_highlight__color__background__copy_g, sql_editor__words_highlight__color__border__copy_g );
+          sql_editor__highlights__brackets__color__background__copy_g,
+          sql_editor__highlights__brackets__color__border__copy_g,
+          sql_editor__highlights__words__color__background__copy_g,
+          sql_editor__highlights__words__color__border__copy_g,
+
+          sql_editor__highlights__syntax__brackets__all_pairs__copy_g,
+          sql_editor__highlights__syntax__brackets__angle__copy_g,
+          sql_editor__highlights__syntax__brackets__curly__copy_g,
+          sql_editor__highlights__syntax__brackets__round__copy_g,
+          sql_editor__highlights__syntax__brackets__square__copy_g
+        );
 
     end;
-
-
-  Sql_Text_SynEdit.Options := [];
-
-  for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
-    if Syn_Editor_Options_CheckListBox.Checked[ i ] then
-      Sql_Text_SynEdit.Options := Sql_Text_SynEdit.Options + [ SynEdit.TSynEditorOption(i) ];
 
 end;
 
@@ -1667,7 +1971,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Sql_Text_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Sql_Text_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
 
@@ -1685,7 +1989,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Sql_Text_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Sql_Text_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
 

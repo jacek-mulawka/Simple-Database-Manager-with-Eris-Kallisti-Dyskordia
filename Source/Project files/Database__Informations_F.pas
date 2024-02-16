@@ -38,6 +38,7 @@ type
   public
     { Public declarations }
     procedure Finish__DIF();
+    procedure Highlight__Font__Set__DIF();
     procedure Options_Set__DIF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const sql__quotation_sign__use_f : boolean );
     procedure Prepare__DIF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const sql__quotation_sign__use_f : boolean );
     procedure Translation__Apply__DIF( const tak_f : Translation.TTranslation_Apply_Kind = Translation.tak_All );
@@ -61,6 +62,17 @@ begin
       FreeAndNil( triggers_modify_f_frame_g );
 
     end;
+
+end;
+
+procedure TDatabase__Informations_F_Frame.Highlight__Font__Set__DIF();
+begin
+
+  database__informations_f_frame_g.Highlight__Font__Set__DIMF();
+
+
+  if triggers_modify_f_frame_g <> nil then
+    triggers_modify_f_frame_g.Highlight__Font__Set__TrMF();
 
 end;
 

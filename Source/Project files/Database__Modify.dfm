@@ -98,11 +98,11 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Component_Type_Default_Label: TLabel
           AlignWithMargins = True
           Left = 11
-          Top = 97
+          Top = 87
           Width = 504
           Height = 15
           Margins.Left = 10
-          Margins.Top = 10
+          Margins.Top = 0
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
@@ -112,13 +112,13 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Connection_Status_Etiquette_Label: TLabel
           AlignWithMargins = True
           Left = 11
-          Top = 127
+          Top = 117
           Width = 504
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
           Margins.Right = 10
-          Margins.Bottom = 5
+          Margins.Bottom = 0
           Align = alTop
           Caption = 'Connection status'
           ExplicitWidth = 96
@@ -126,13 +126,13 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Connection_Status_Label: TLabel
           AlignWithMargins = True
           Left = 11
-          Top = 157
+          Top = 137
           Width = 504
           Height = 15
           Margins.Left = 10
-          Margins.Top = 10
+          Margins.Top = 5
           Margins.Right = 10
-          Margins.Bottom = 5
+          Margins.Bottom = 10
           Align = alTop
           Caption = '<?>'
           Font.Charset = DEFAULT_CHARSET
@@ -145,14 +145,14 @@ object Database__Modify_Form: TDatabase__Modify_Form
         end
         object Stored_Procedures_List_Count_Etiquette_Label: TLabel
           Left = 10
-          Top = 370
+          Top = 355
           Width = 96
           Height = 15
           Caption = 'Stored procedures'
         end
         object Stored_Procedures_List_Count_Label: TLabel
           Left = 140
-          Top = 370
+          Top = 355
           Width = 21
           Height = 15
           Caption = '<?>'
@@ -165,14 +165,14 @@ object Database__Modify_Form: TDatabase__Modify_Form
         end
         object Tables_List_Count_Etiquette_Label: TLabel
           Left = 10
-          Top = 390
+          Top = 375
           Width = 34
           Height = 15
           Caption = 'Tables'
         end
         object Tables_List_Count_Label: TLabel
           Left = 140
-          Top = 390
+          Top = 375
           Width = 21
           Height = 15
           Caption = '<?>'
@@ -185,14 +185,14 @@ object Database__Modify_Form: TDatabase__Modify_Form
         end
         object Views_List_Count_Etiquette_Label: TLabel
           Left = 10
-          Top = 410
+          Top = 395
           Width = 30
           Height = 15
           Caption = 'Views'
         end
         object Views_List_Count_Label: TLabel
           Left = 140
-          Top = 410
+          Top = 395
           Width = 21
           Height = 15
           Caption = '<?>'
@@ -223,11 +223,11 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Form_View__Additional_Component_Show_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 187
+          Top = 167
           Width = 504
           Height = 17
           Margins.Left = 10
-          Margins.Top = 10
+          Margins.Top = 5
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
@@ -237,11 +237,11 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Queries_Open_In_Background_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 219
+          Top = 194
           Width = 504
           Height = 17
           Margins.Left = 10
-          Margins.Top = 10
+          Margins.Top = 5
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
@@ -251,11 +251,11 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Splitter_Show_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 251
+          Top = 221
           Width = 504
           Height = 17
           Margins.Left = 10
-          Margins.Top = 10
+          Margins.Top = 5
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
@@ -265,27 +265,44 @@ object Database__Modify_Form: TDatabase__Modify_Form
         object Sql__Quotation_Sign__Use_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 283
+          Top = 275
           Width = 504
           Height = 17
           Margins.Left = 10
-          Margins.Top = 10
+          Margins.Top = 5
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
           Caption = 'SQL quotation sign use'
-          TabOrder = 4
+          TabOrder = 5
         end
         object Connect_Button: TButton
           Left = 10
-          Top = 325
+          Top = 310
           Width = 100
           Height = 25
           Caption = '(Re)Connect'
           ImageIndex = 3
           Images = Shared_DataModule.ImageList1
-          TabOrder = 5
+          TabOrder = 6
           OnClick = Connect_ButtonClick
+        end
+        object Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 248
+          Width = 504
+          Height = 17
+          Hint = 'Every tab has own database connection.'
+          Margins.Left = 10
+          Margins.Top = 5
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'SQL editor - separated database connection'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 4
         end
       end
     end

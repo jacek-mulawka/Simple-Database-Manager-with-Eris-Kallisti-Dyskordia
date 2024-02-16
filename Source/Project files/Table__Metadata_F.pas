@@ -123,6 +123,7 @@ type
 
     procedure Data_Open__TMeF( const refresh_all_f : boolean = false );
     procedure Finish__TMeF();
+    procedure Highlight__Font__Set__TMeF();
     procedure Options_Set__TMeF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
     procedure Prepare__TMeF( const table_name_f, database_type_f, sql__quotation_sign_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
@@ -855,6 +856,17 @@ begin
 
 end;
 
+procedure TTable__Metadata_F_Frame.Highlight__Font__Set__TMeF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Table_Description_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Metadata_StringGrid.Font, Common.sql_editor__font );
+
+end;
+
 procedure TTable__Metadata_F_Frame.Free_All__Table_Column__Values_Distinct();
 var
   i : integer;
@@ -1041,8 +1053,7 @@ begin
   Log_Memo.Lines.Add( 'Columns separator: ' + word__columns_separator__tmef_g + '.' );
 
 
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Table_Description_Memo.Font, Common.sql_editor__font );
+  Highlight__Font__Set__TMeF();
 
 end;
 
@@ -1296,7 +1307,7 @@ begin
   Table_Column__Modify.Table_Column__Modify_Form.table_name__tcm := table_name__tmef_g;
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Column__Type_Edit_MenuItem.Name ) then
+    and ( Sender = Column__Type_Edit_MenuItem ) then
     begin
 
       Table_Column__Modify.Table_Column__Modify_Form.column_name__tcm := Metadata_StringGrid.Cells[ metadata__column_number__name_c, Metadata_StringGrid.Row ];

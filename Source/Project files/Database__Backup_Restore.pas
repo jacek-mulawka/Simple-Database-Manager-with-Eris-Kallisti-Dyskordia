@@ -793,7 +793,7 @@ begin
       zt_edit := nil;
 
 
-      if TComponent(Sender).Name = Database__Backup__Application__File_Path__Find_Button.Name then
+      if Sender = Database__Backup__Application__File_Path__Find_Button then
         begin
 
           zt_edit := Database__Backup__Application__File_Path_Edit;
@@ -806,7 +806,7 @@ begin
       else
         begin
 
-          if TComponent(Sender).Name = Database__Backup__File_Path__Find_Button.Name then
+          if Sender = Database__Backup__File_Path__Find_Button then
             begin
 
               zt_edit := Database__Backup__File_Path_Edit;
@@ -988,7 +988,7 @@ end;
 procedure TDatabase__Backup_Restore_Form.Log_SynEditClick( Sender: TObject );
 begin
 
-  Common.Syn_Edit__Words_Highlight( Log_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Log_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Log_SynEdit, text__search_replace_form );
 
@@ -1004,7 +1004,7 @@ end;
 procedure TDatabase__Backup_Restore_Form.Log_SynEditKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  Common.Syn_Edit__Words_Highlight( Log_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Log_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Log_SynEdit, text__search_replace_form );
 

@@ -1177,8 +1177,8 @@ begin
 
 
   if    ( Sender <> nil )
-    //and ( TComponent(Sender).Name = Stored_Procedure__Source_Memo.Name ) then
-    and ( TComponent(Sender).Name = Stored_Procedure__Source_SynEdit.Name ) then
+    //and ( Sender = Stored_Procedure__Source_Memo ) then
+    and ( Sender = Stored_Procedure__Source_SynEdit ) then
     //Stored_Procedure__Source_Memo.Lines.Text := zts
     Stored_Procedure__Source_SynEdit.Lines.Text := zts
   else
@@ -1402,7 +1402,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Stored_Procedure__Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Stored_Procedure__Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Stored_Procedure__Source_SynEdit, text__search_replace_form );
 
@@ -1433,7 +1433,7 @@ begin
 
   Caret_Position_Display();
 
-  Common.Syn_Edit__Words_Highlight( Stored_Procedure__Source_SynEdit );
+  Common.Syn_Edit__Highlight__Text( Stored_Procedure__Source_SynEdit );
 
   Common.Text__Search_Replace__Syn_Edit__Set( Stored_Procedure__Source_SynEdit, text__search_replace_form );
 

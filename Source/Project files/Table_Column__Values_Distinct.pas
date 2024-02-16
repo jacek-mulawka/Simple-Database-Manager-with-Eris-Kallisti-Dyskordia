@@ -27,6 +27,7 @@ type
     Table_Column__Values_Distinct_DataSource: TDataSource;
     No_Thread_Timer: TTimer;
     Ok_Button: TButton;
+    Close_Button: TButton;
     procedure FormCreate( Sender: TObject );
     procedure FormShow( Sender: TObject );
     procedure FormClose( Sender: TObject; var Action: TCloseAction );
@@ -39,6 +40,7 @@ type
 
     procedure Refresh_ButtonClick( Sender: TObject );
     procedure Ok_ButtonClick( Sender: TObject );
+    procedure Close_ButtonClick( Sender: TObject );
 
     procedure No_Thread_TimerTimer( Sender: TObject );
 
@@ -235,6 +237,9 @@ begin
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Table_Column__Values_Distinct_DBGrid.Font, Common.sql_editor__font );
 
 
   busy_notification__knight_rider_equalizer := Migawka_Prostokat_Tabela_2_SDBM.TMigawka_Prostokat_Tabela_2.Create( Self );
@@ -641,6 +646,14 @@ begin
 
 
   ModalResult :=  mrOk;
+
+end;
+
+procedure TTable_Column__Values_Distinct_Form.Close_ButtonClick( Sender: TObject );
+begin
+
+  ModalResult :=  mrClose;
+  Close();
 
 end;
 

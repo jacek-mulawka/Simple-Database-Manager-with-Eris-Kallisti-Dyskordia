@@ -45,6 +45,7 @@ type
     Splitter_Show__Get_wsk : function() : boolean of object;
 
     function Finish__SPMF() : boolean;
+    procedure Highlight__Font__Set__SPMF();
     procedure Options_Set__SPMF( const component_type_f : Common.TComponent_Type; const sql__quotation_sign_f : string; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Prepare__SPMF( const databases_r_f : Common.TDatabases_r; const stored_procedure_name_f : string; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const queries_open_in_background_f, splitter_show_f, sql__quotation_sign__use_f : boolean );
     procedure Stored_Procedure__Edit__SPMF();
@@ -92,6 +93,21 @@ begin
 
   stored_procedure__edit_execute_f_frame_g.Finish__SPEEF();
   FreeAndNil( stored_procedure__edit_execute_f_frame_g );
+
+end;
+
+procedure TStored_Procedure_Modify_F_Frame.Highlight__Font__Set__SPMF();
+begin
+
+  if dependencies_f_frame_g <> nil then
+    dependencies_f_frame_g.Highlight__Font__Set__DF();
+
+
+  if permissions_modify_f_frame_g <> nil then
+    permissions_modify_f_frame_g.Highlight__Font__Set__PMF();
+
+
+  stored_procedure__edit_execute_f_frame_g.Highlight__Font__Set__SPEEF();
 
 end;
 

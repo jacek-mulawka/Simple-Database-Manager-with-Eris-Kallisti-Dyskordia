@@ -542,7 +542,7 @@ begin
 
 
   if    ( Sender <> nil )
-    and ( TComponent(Sender).Name = Ok_Button.Name ) then
+    and ( Sender = Ok_Button ) then
     begin
 
       ModalResult := mrOk;
