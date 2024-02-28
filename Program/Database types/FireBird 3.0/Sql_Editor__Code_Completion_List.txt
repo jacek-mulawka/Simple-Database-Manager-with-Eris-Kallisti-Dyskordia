@@ -40,6 +40,8 @@
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into  values \style{-B}-->insert into  values 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into table(...)\style{-B}-->insert into tabela#13#10    (#13#10        C1#13#10      , C2#13#10    )#13#10  values#13#10    (#13#10        v_c1#13#10      , ( select C2 from T2 where ... )#13#10    )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}integer \style{-B}-->integer 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}is null \style{-B}-->is null 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}is not null \style{-B}-->is not null 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}join\style{-B}-->join 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on  = \style{-B}-->left join | on  = 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (select)\style{-B}-->list~#13#10select cast#13#10         (#13#10           substring#13#10             (#13#10               list( '(id: ' || T1.C1 || '; name: ' || T1.C2 || ')' )#13#10               from 1 for 50#13#10             )#13#10           as varchar( 50 )#13#10         )#13#10from T1
@@ -49,6 +51,8 @@
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}max( | )\style{-B}-->max( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min( | )\style{-B}-->min( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not \style{-B}-->not 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not null \style{-B}-->not null 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}null \style{-B}-->null 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}or \style{-B}-->or 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}order by\style{-B}-->order by 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}position( 'pattern', T1.C1 )\style{-B}-->position( 'pattern', T1.C1 )
