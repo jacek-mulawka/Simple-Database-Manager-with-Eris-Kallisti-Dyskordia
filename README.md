@@ -1,11 +1,11 @@
 # Simple-Database-Manager-with-Eris-Kallisti-Dyskordia
 
-A simple database manager dedicated to [FireBird](https://firebirdsql.org/) databases but can, to some extent, support other types of databases. Many parameters can be adjusted (to your own needs, changes in database servers) by editing text files. The SQL editor can be used as a fairly advanced text file editor (available functionalities: syntax highlighting of different languages, pointing to pairs of brackets, marking lines with bookmarks). The program includes translations into several language versions.
+A simple database manager dedicated to [FireBird](https://firebirdsql.org/) databases but can, to some extent, support other types of databases. Many parameters can be adjusted (to your own needs, changes in database servers) by editing text files. The SQL editor can be used as a fairly advanced text file editor (available functionalities: syntax highlighting of different languages, pointing to pairs of brackets, marking lines with bookmarks, colours). The program includes translations into several language versions.
 
 
 ## Polski
 
-Prosty menadżer baz danych dedykowany bazom [FireBird](https://firebirdsql.org/) ale może w jakimś zakresie obsługiwać inne typy baz danych. Bardzo wiele parametrów można dostosować (do własnych potrzeb, zmian w serwerach baz danych) poprzez edycję plików tekstowych. Edytora SQL można używać jako dosyć zaawansowanego edytora plików tekstowych (dostępne funkcjonalności: podświetlanie składni różnych języków, wskazywanie par nawiasów, oznaczanie linii zakładkami). Program zawiera tłumaczenia na kilka wersji językowych.
+Prosty menadżer baz danych dedykowany bazom [FireBird](https://firebirdsql.org/) ale może w jakimś zakresie obsługiwać inne typy baz danych. Bardzo wiele parametrów można dostosować (do własnych potrzeb, zmian w serwerach baz danych) poprzez edycję plików tekstowych. Edytora SQL można używać jako dosyć zaawansowanego edytora plików tekstowych (dostępne funkcjonalności: podświetlanie składni różnych języków, wskazywanie par nawiasów, oznaczanie linii zakładkami, kolorami). Program zawiera tłumaczenia na kilka wersji językowych.
 
 
 <a href="https://github.com/jacek-mulawka/Simple-Database-Manager-with-Eris-Kallisti-Dyskordia/blob/main/Gallery/Simple%20Database%20Manager%20with%20Eris%20Kallisti%20Dyskordia%2001.jpg">
