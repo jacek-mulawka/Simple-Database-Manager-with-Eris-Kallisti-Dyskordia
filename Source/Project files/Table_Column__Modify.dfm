@@ -16,7 +16,6 @@ object Table_Column__Modify_Form: TTable_Column__Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ExplicitHeight = 480
   PixelsPerInch = 96
   DesignSize = (
     624
@@ -218,7 +217,7 @@ object Table_Column__Modify_Form: TTable_Column__Modify_Form
     object Column_Position_CheckBox: TCheckBox
       AlignWithMargins = True
       Left = 12
-      Top = 50
+      Top = 51
       Width = 580
       Height = 17
       Margins.Left = 10
@@ -229,22 +228,21 @@ object Table_Column__Modify_Form: TTable_Column__Modify_Form
       Caption = 'Set'
       TabOrder = 1
     end
-    object Column_Position_JvSpinEdit: TJvSpinEdit
+    object Column_Position_SpinEdit: TSpinEdit
       AlignWithMargins = True
       Left = 12
       Top = 22
       Width = 580
-      Height = 23
+      Height = 24
       Margins.Left = 10
       Margins.Top = 5
       Margins.Right = 10
       Margins.Bottom = 5
-      CheckMaxValue = False
       Align = alTop
-      Thousands = True
-      MinValue = 1.000000000000000000
-      Value = 1.000000000000000000
+      MaxValue = 0
+      MinValue = 1
       TabOrder = 0
+      Value = 0
     end
   end
   object PageControl1: TPageControl

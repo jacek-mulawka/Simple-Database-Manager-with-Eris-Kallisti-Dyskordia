@@ -10,6 +10,8 @@ unit Translation;{15.Lis.2023}
   //translation__table__data_filter_r.name=
   //translation__messages_r.message name=
 
+{$I Definitions.inc}
+
 interface
 
 uses
@@ -41,6 +43,7 @@ type
     automatically_transaction_begining_words_list,
     backup_file_path_should_not_be_empty,
     caret_position_label__hint,
+    clear_all_lines_color_,
     close_all_connections_,
     code_completion__column,
     code_completion__sql,
@@ -515,9 +518,11 @@ var
 implementation
 
 uses
+  {$IFDEF JVCL__use}
   JvDBControls,
   JvDBDateTimePicker,
   JvDBSpinEdit,
+  {$ENDIF}
   System.Classes,
   System.IOUtils,
   System.Rtti,
@@ -926,6 +931,7 @@ begin
     Translation__Component__Add( 'Sql__Quotation_Sign__Use_CheckBox', 'SQL quotation sign use' );
     Translation__Component__Add( 'Sql__View__Parameter_Separator_GroupBox', 'SQL view parameter separator' );
     Translation__Component__Add( 'Sql_Editor_TabSheet', 'SQL editor' );
+    Translation__Component__Add( 'Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox', 'Toggle bookmarks with line color' );
     Translation__Component__Add( 'Sql_Editor__Close_Prompt_CheckBox', 'Close prompt', 'Prompt before closing SQL editor if text or data are not empty.' );
     Translation__Component__Add( 'Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_GroupBox', 'Lines in window' );
     Translation__Component__Add( 'Sql_Editor__Code__Completion_Window__Default__Width_GroupBox', 'Default width' );
@@ -948,11 +954,13 @@ begin
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox', 'All pairs', 'Highlight all selected brackets pairs.' + #13 + #10 + #13 + #10 + 'When a text is long it may work slowly.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox', '< >', 'Highlight angle brackets.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox', '{ }', 'Highlight curly brackets.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox', 'Marked only', 'Highlight only marked brackets.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox', '( )', 'Highlight round brackets.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox', '[ ]', 'Highlight square brackets.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Words_TabSheet', 'Words' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Words__Color__Background_Etiquette_Label', 'Background' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label', 'Border' );
+    Translation__Component__Add( 'Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox', 'Switch keyboard shortcuts ''Save query output as csv'' with ''Save file''' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Date_Etiquette_Label', 'Date', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy' + #13 + #10 + 'dd-mm-yyyy' + #13 + #10 + 'yyyy-mm-dd' + #13 + #10 + 'yy mmm ddd' + #13 + #10 + 'd dddd mmmm y' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Etiquette_Label', 'Real numbers', 'E.g.:' + #13 + #10 + '### ### ### ### ### ### ##0.###' + #13 + #10 + '0.##############' + #13 + #10 + '### ### ##0.### ### ###' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_GroupBox', 'Date time' );
@@ -1068,9 +1076,10 @@ begin
   Translation__Unit__Add( 'TSql_Editor_F_Frame' );
     Translation__Component__Add( 'Ado_Command_Param_Check_CheckBox', 'P.', 'Query parameters check (ADO command).' );
     Translation__Component__Add( 'Ado_Command_Param_Check_MenuItem', 'Query parameters check (ADO command)' );
-    Translation__Component__Add( 'Bookmarks__Clear_MenuItem', 'Clear bookmarks' );
+    Translation__Component__Add( 'Bookmarks__Clear__All_MenuItem', 'Clear bookmarks' );
     Translation__Component__Add( 'Bookmarks__Go_To_MenuItem', 'Go to bookmark [Ctrl + 0 ... 9]' );
     Translation__Component__Add( 'Bookmarks__Toggle_MenuItem', 'Toggle bookmark [Ctrl + Shift + 0 ... 9]' );
+    Translation__Component__Add( 'Bookmarks__Toggle__With__Line_Color_MenuItem', 'Toggle bookmarks with line color' );
     Translation__Component__Add( 'Buttons_Panel__Hide_Button', '', 'Hide panel.' );
     Translation__Component__Add( 'Close_Button', '', 'Query close.' );
     Translation__Component__Add( 'Close_MenuItem', 'Query close' );
@@ -1085,19 +1094,26 @@ begin
     Translation__Component__Add( 'Csv__File__Text_Qualifier_Edit', '', 'Csv text qualifier.' );
     Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled' );
     Translation__Component__Add( 'Data_Value_Format__Disabled_MenuItem', 'Data value format disabled' );
+    Translation__Component__Add( 'Database__Reconnect_MenuItem', 'Database reconnect' );
     Translation__Component__Add( 'Execute_Button', '', 'Command execute.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + E]' );
     Translation__Component__Add( 'Execute_MenuItem', 'Command execute [Ctrl + Shift + E]' );
     Translation__Component__Add( 'Execute__Automatic_Detection_CheckBox', 'E.', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
     Translation__Component__Add( 'Execute__Automatic_Detection_MenuItem', 'Automatically detect ''Query'' or ''Command'' execute' );
     Translation__Component__Add( 'Execute__Selected_MenuItem', 'Execute selected SQL only' );
     Translation__Component__Add( 'Find_MenuItem', 'Find [Ctrl + F]' );
-    Translation__Component__Add( 'Highlighter__Syntax_MenuItem', 'Syntax highlighter' );
+    Translation__Component__Add( 'Highlights__Brackets_MenuItem', 'Brackets highlights' );
     Translation__Component__Add( 'Highlights__Brackets__All_Pairs_MenuItem', 'All pairs' );
     Translation__Component__Add( 'Highlights__Brackets__Angle_MenuItem', '< >' );
     Translation__Component__Add( 'Highlights__Brackets__Curly_MenuItem', '{ }' );
+    Translation__Component__Add( 'Highlights__Brackets__Marked_Only_MenuItem', 'Marked only' );
     Translation__Component__Add( 'Highlights__Brackets__Round_MenuItem', '( )' );
     Translation__Component__Add( 'Highlights__Brackets__Square_MenuItem', '[ ]' );
-    Translation__Component__Add( 'Highlights__Brackets_MenuItem', 'Brackets highlights' );
+    Translation__Component__Add( 'Highlighter__Syntax_MenuItem', 'Syntax highlighter' );
+    Translation__Component__Add( 'Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem', 'Switch keyboard shortcuts ''Save query output as csv'' with ''Save file''' );
+    Translation__Component__Add( 'Lines_Color__Change_MenuItem', 'Change line color [F6]' );
+    Translation__Component__Add( 'Lines_Color__Choose_MenuItem', 'Choose line color [F7]' );
+    Translation__Component__Add( 'Lines_Color__Clear__All_MenuItem', 'Clear all lines color [Shift + F5]' );
+    Translation__Component__Add( 'Lines_Color__Toggle_MenuItem', 'Toggle line color [F5]' );
     Translation__Component__Add( 'Open_Button', '', 'Query execute.' + #13 + #10 + #13 + #10 + '[Ctrl + E]' );
     Translation__Component__Add( 'Open_MenuItem', 'Query execute [Ctrl + E]' );
     Translation__Component__Add( 'Output_Save_Button', '', 'Save query output as csv.' + #13 + #10 + #13 + #10 + '[Ctrl + S]' );
@@ -1523,6 +1539,7 @@ begin
   translation__messages_r.automatically_transaction_begining_words_list := 'Automatically transaction begining words list:';
   translation__messages_r.backup_file_path_should_not_be_empty := 'Backup file path should not be empty.';
   translation__messages_r.caret_position_label__hint := 'Caret position, text length.';
+  translation__messages_r.clear_all_lines_color_ := 'Clear all lines color?';
   translation__messages_r.close_all_connections_ := 'Close all connections?';
   translation__messages_r.code_completion__column := 'column';
   translation__messages_r.code_completion__sql := 'sql';
@@ -1834,7 +1851,11 @@ begin
     '    Ctrl + Spacebar - add all columns sign (*) in the SQL editor' + #13 +
     '    Enter, Double-click - add column / table in the SQL editor' + #13 +
     '    F3 - find (search) / replace text' + #13 +
+    '    F5 - set / clear line color' + #13 +
+    '    F6 - change line color' + #13 +
+    '    F7 - choose line color' + #13 +
     '    Shift + Enter - add all columns in the SQL editor' + #13 +
+    '    Shift + F5 - clear all lines color' + #13 +
     '    Shift + S - sum indicated column values';
   translation__messages_r.index_name_should_not_be_empty__set_default_index_name_ := 'Index name should not be empty.' + #13 + #10 + #13 + #10 + 'Set default index name?';
   translation__messages_r.information := 'Information';
@@ -2652,6 +2673,7 @@ begin
 
                       end
                     else
+                    {$IFDEF JVCL__use}
                     if Pos( '_JvDBDateEdit' + name_end_safeguard_c_l, name_l + name_end_safeguard_c_l ) > 0 then
                       begin
 
@@ -2700,6 +2722,7 @@ begin
 
                       end
                     else
+                    {$ENDIF}
                     if Pos( '_Label' + name_end_safeguard_c_l, name_l + name_end_safeguard_c_l ) > 0 then
                       begin
 

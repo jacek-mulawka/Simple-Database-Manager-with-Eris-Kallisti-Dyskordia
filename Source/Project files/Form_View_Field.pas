@@ -1,5 +1,7 @@
 unit Form_View_Field;{05.Lip.2023}
 
+{$I Definitions.inc}
+
 interface
 
 uses
@@ -14,12 +16,16 @@ uses
   Vcl.Forms,
   Vcl.Graphics,
   Vcl.StdCtrls,
-  Winapi.Windows,
+  Winapi.Windows
 
+ {$IFDEF JVCL__use}
+  ,
   //JvDBControls,
   JvDBDateTimePicker,
   JvDBSpinEdit,
-  JvSpin;
+  JvSpin
+  {$ENDIF}
+  ;
 
 type
   TKeyDown_wsk = procedure( Sender : TObject; var Key : Word; Shift : TShiftState ) of object;
@@ -203,6 +209,7 @@ begin
         //  Self.Height := 400;
 
       end
+    {$IFDEF JVCL__use}
     else
     //if field_f.DataType in [ ftDate, ftTime ] then
     //  begin
@@ -300,6 +307,9 @@ begin
         JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).DataField := field_f.FieldName;
 
       end;
+    {$ELSE JVCL__use}
+    ;
+    {$ENDIF}
     //else
     //  begin
     //
@@ -339,6 +349,7 @@ begin
   if Self.field_value__dedicated <> nil then
     if Self.field_dedicated__data_type = ftBlob then
       FreeAndNil( Vcl.DBCtrls.TDBMemo(Self.field_value__dedicated) )
+    {$IFDEF JVCL__use}
     //else
     //if Self.field_dedicated__data_type = ftDate then
     //  FreeAndNil( JvDBControls.TJvDBDateEdit(Self.field_value__dedicated) );
@@ -348,6 +359,9 @@ begin
     else
     if Self.field_dedicated__data_type = ftInteger then
       FreeAndNil( JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated) );
+    {$ELSE JVCL__use}
+    ;
+    {$ENDIF}
 
 
   //if Self.field_value__dedicated__horizontal_splitter <> nil then
@@ -468,6 +482,7 @@ begin
   if Self.field_value__dedicated <> nil then
     begin
 
+      {$IFDEF JVCL__use}
       //if Self.field_value__dedicated is JvDBControls.TJvDBDateEdit then
       //  JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).ReadOnly := not editing_f
       //else
@@ -477,6 +492,7 @@ begin
       if Self.field_value__dedicated is JvDBSpinEdit.TJvDBSpinEdit then
         JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).ReadOnly := not editing_f
       else
+     {$ENDIF}
       if Self.field_value__dedicated is Vcl.DBCtrls.TDBMemo then
         Vcl.DBCtrls.TDBMemo(Self.field_value__dedicated).ReadOnly := not editing_f;
 

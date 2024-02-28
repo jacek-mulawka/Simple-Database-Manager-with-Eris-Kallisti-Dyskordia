@@ -254,6 +254,7 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
         MinValue = 0
         TabOrder = 2
         Value = 0
+        OnKeyDown = Modify__Value_SpinEditKeyDown
       end
       object Modify__Add_Button: TButton
         Left = 10

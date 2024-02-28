@@ -7,8 +7,8 @@ uses
   Migawka_Prostokat_Tabela_2_SDBM,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.Mask, JvExMask,
-  Vcl.ComCtrls, Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Data.DB;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.DBCtrls, Vcl.Grids,
+  Vcl.DBGrids, Data.DB;
 
 type
   TTable_Column__Values_Distinct_Form = class( TForm )

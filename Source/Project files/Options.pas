@@ -9,7 +9,9 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ExtCtrls, Vcl.ComCtrls,
-  SynEdit, SynCompletionProposal, Vcl.CheckLst;
+  Vcl.CheckLst, SynEdit, SynCompletionProposal,
+
+  Interceptor__Syn_Edit;
 
 type
   TOptions_Form = class( TForm )
@@ -84,6 +86,7 @@ type
     Syn_Editor_Options_GroupBox: TGroupBox;
     Syn_Editor_Options_CheckListBox: TCheckListBox;
     Sql_Editor_TabSheet: TTabSheet;
+    Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox: TCheckBox;
     Sql_Editor__Close_Prompt_CheckBox: TCheckBox;
     Sql_Editor__Code__Completion_Window_GroupBox: TGroupBox;
     Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_GroupBox: TGroupBox;
@@ -114,6 +117,7 @@ type
     Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox: TCheckBox;
     Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox: TCheckBox;
     Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox: TCheckBox;
+    Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox: TCheckBox;
     Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox: TCheckBox;
     Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox: TCheckBox;
     Sql_Editor__Highlights__Words_TabSheet: TTabSheet;
@@ -121,6 +125,7 @@ type
     Sql_Editor__Highlights__Words__Color__Background_Etiquette_Label: TLabel;
     Sql_Editor__Highlights__Words__Color__Border_ColorBox: TColorBox;
     Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label: TLabel;
+    Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox: TCheckBox;
     Sql_Editor__Left_Panel: TPanel;
     Sql_Editor__Query_Output_Save_Field_Format_GroupBox: TGroupBox;
     Sql_Editor__Query_Output_Save_Field_Format__Date_Edit: TEdit;
@@ -192,6 +197,7 @@ type
     sql_editor__highlights__syntax__brackets__all_pairs__copy_g,
     sql_editor__highlights__syntax__brackets__angle__copy_g,
     sql_editor__highlights__syntax__brackets__curly__copy_g,
+    sql_editor__highlights__syntax__brackets__marked_only__copy_g,
     sql_editor__highlights__syntax__brackets__round__copy_g,
     sql_editor__highlights__syntax__brackets__square__copy_g
       : boolean;
@@ -288,6 +294,7 @@ begin
   Log__Auto_Scroll__Seconds_SpinEdit.Value := Common.log__auto_scroll__seconds;
 
   Queries_Open_In_Background_CheckBox.Checked := Common.queries_open_in_background;
+  Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked := Common.sql_editor__bookmarks__toggle__with__line_color;
   Sql_Editor__Close_Prompt_CheckBox.Checked := Common.sql_editor__close_prompt;
   Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_SpinEdit.Value := Common.sql_editor__code__completion_window__default__lines_in_window;
   Sql_Editor__Code__Completion_Window__Default__Width_SpinEdit.Value := Common.sql_editor__code__completion_window__default__width;
@@ -321,16 +328,18 @@ begin
   Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__all_pairs;
   Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__angle;
   Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__curly;
+  Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__marked_only;
   Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__round;
   Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked := Common.sql_editor__highlights__syntax__brackets__square;
   Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected := Common.sql_editor__highlights__words__color__background;
   Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected := Common.sql_editor__highlights__words__color__border;
-  Sql_Editor__Transactions_Automatic_CheckBox.Checked := Common.sql_editor__transactions_automatic;
+  Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox.Checked := Common.sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save;
   Sql_Editor__Query_Output_Save_Field_Format__Date_Edit.Text := Common.sql_editor__query_output_save_field_format__date;
   Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Edit.Text := Common.sql_editor__query_output_save_field_format__real_numbers;
   Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text := Common.sql_editor__query_output_save_field_format__separator__date_time;
   Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text := Common.sql_editor__query_output_save_field_format__separator__decimal;
   Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text := Common.sql_editor__query_output_save_field_format__time;
+  Sql_Editor__Transactions_Automatic_CheckBox.Checked := Common.sql_editor__transactions_automatic;
   //Common.Font__Set( Sql_Text_Memo.Font, Common.sql_editor__font );
   Common.Font__Set( Sql_Text_SynEdit.Font, Common.sql_editor__font );
   Common.Font__Set( FontDialog1.Font, Common.sql_editor__font );
@@ -577,6 +586,7 @@ begin
   Common.language__selected := Language_ComboBox.Text;
   Common.log__auto_scroll__seconds := Log__Auto_Scroll__Seconds_SpinEdit.Value;
   Common.queries_open_in_background := Queries_Open_In_Background_CheckBox.Checked;
+  Common.sql_editor__bookmarks__toggle__with__line_color := Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked;
   Common.sql_editor__close_prompt := Sql_Editor__Close_Prompt_CheckBox.Checked;
   Common.sql_editor__code__completion_window__default__lines_in_window := Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_SpinEdit.Value;
   Common.sql_editor__code__completion_window__default__width := Sql_Editor__Code__Completion_Window__Default__Width_SpinEdit.Value;
@@ -598,18 +608,20 @@ begin
   Common.sql_editor__highlights__syntax__brackets__all_pairs := Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked;
   Common.sql_editor__highlights__syntax__brackets__angle := Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked;
   Common.sql_editor__highlights__syntax__brackets__curly := Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked;
+  Common.sql_editor__highlights__syntax__brackets__marked_only := Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked;
   Common.sql_editor__highlights__syntax__brackets__round := Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked;
   Common.sql_editor__highlights__syntax__brackets__square := Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked;
   Common.sql_editor__highlights__words__color__background := Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected;
   Common.sql_editor__highlights__words__color__border := Sql_Editor__Highlights__Words__Color__Border_ColorBox.Selected;
+  Common.sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save := Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox.Checked;
   //Common.Font__Set( Common.sql_editor__font, Sql_Text_Memo.Font );
   Common.Font__Set( Common.sql_editor__font, Sql_Text_SynEdit.Font );
-  Common.sql_editor__transactions_automatic := Sql_Editor__Transactions_Automatic_CheckBox.Checked;
   Common.sql_editor__query_output_save_field_format__date := Sql_Editor__Query_Output_Save_Field_Format__Date_Edit.Text;
   Common.sql_editor__query_output_save_field_format__real_numbers := Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Edit.Text;
   Common.sql_editor__query_output_save_field_format__separator__date_time := Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_Edit.Text;
   Common.sql_editor__query_output_save_field_format__separator__decimal := Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_Edit.Text;
   Common.sql_editor__query_output_save_field_format__time := Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text;
+  Common.sql_editor__transactions_automatic := Sql_Editor__Transactions_Automatic_CheckBox.Checked;
   Common.sql__command_separator := Sql__Command_Separator_Edit.Text;
   Common.sql__external_function__parameter_separator := Sql__External_Function__Parameter_Separator_Memo.Lines.Text;
   Common.sql__quotation_sign__use := Sql__Quotation_Sign__Use_CheckBox.Checked;
@@ -666,6 +678,7 @@ begin
   sql_editor__highlights__syntax__brackets__all_pairs__copy_g := Common.sql_editor__highlights__syntax__brackets__all_pairs;
   sql_editor__highlights__syntax__brackets__angle__copy_g := Common.sql_editor__highlights__syntax__brackets__angle;
   sql_editor__highlights__syntax__brackets__curly__copy_g := Common.sql_editor__highlights__syntax__brackets__curly;
+  sql_editor__highlights__syntax__brackets__marked_only__copy_g := Common.sql_editor__highlights__syntax__brackets__marked_only;
   sql_editor__highlights__syntax__brackets__round__copy_g := Common.sql_editor__highlights__syntax__brackets__round;
   sql_editor__highlights__syntax__brackets__square__copy_g := Common.sql_editor__highlights__syntax__brackets__square;
   sql_editor__highlights__words__color__background__copy_g := Common.sql_editor__highlights__words__color__background;
@@ -1133,6 +1146,13 @@ begin
 
 
   if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__bookmarks__toggle__with__line_color' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__bookmarks__toggle__with__line_color', Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked )
+  else
+    Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__bookmarks__toggle__with__line_color', Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked );
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__close_prompt' )  ) then
     file_ini.WriteBool( 'Options', 'sql_editor__close_prompt', Sql_Editor__Close_Prompt_CheckBox.Checked )
   else
@@ -1324,6 +1344,13 @@ begin
 
 
   if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__marked_only' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__marked_only', Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked )
+  else
+    Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__highlights__syntax__brackets__marked_only', Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked );
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__highlights__syntax__brackets__round' )  ) then
     file_ini.WriteBool( 'Options', 'sql_editor__highlights__syntax__brackets__round', Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked )
   else
@@ -1352,10 +1379,10 @@ begin
 
 
   if   ( save_l )
-    or (  not file_ini.ValueExists( 'Options', 'sql_editor__transactions_automatic' )  ) then
-    file_ini.WriteBool( 'Options', 'sql_editor__transactions_automatic', Sql_Editor__Transactions_Automatic_CheckBox.Checked )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save', Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox.Checked )
   else
-    Sql_Editor__Transactions_Automatic_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__transactions_automatic', Sql_Editor__Transactions_Automatic_CheckBox.Checked );
+    Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save', Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox.Checked );
 
 
   if   ( save_l )
@@ -1416,6 +1443,13 @@ begin
     file_ini.WriteString( 'Options', 'sql_editor__query_output_save_field_format__time', Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text )
   else
     Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text := file_ini.ReadString( 'Options', 'sql_editor__query_output_save_field_format__time', Sql_Editor__Query_Output_Save_Field_Format__Time_Edit.Text );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__transactions_automatic' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__transactions_automatic', Sql_Editor__Transactions_Automatic_CheckBox.Checked )
+  else
+    Sql_Editor__Transactions_Automatic_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__transactions_automatic', Sql_Editor__Transactions_Automatic_CheckBox.Checked );
 
 
   if   ( save_l )
@@ -1929,6 +1963,7 @@ begin
     or ( sql_editor__highlights__syntax__brackets__all_pairs__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked )
     or ( sql_editor__highlights__syntax__brackets__angle__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked )
     or ( sql_editor__highlights__syntax__brackets__curly__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked )
+    or ( sql_editor__highlights__syntax__brackets__marked_only__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked )
     or ( sql_editor__highlights__syntax__brackets__round__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked )
     or ( sql_editor__highlights__syntax__brackets__square__copy_g <> Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked )
     or ( sql_editor__highlights__words__color__background__copy_g <> Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected )
@@ -1940,6 +1975,7 @@ begin
       sql_editor__highlights__syntax__brackets__all_pairs__copy_g := Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox.Checked;
       sql_editor__highlights__syntax__brackets__angle__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox.Checked;
       sql_editor__highlights__syntax__brackets__curly__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox.Checked;
+      sql_editor__highlights__syntax__brackets__marked_only__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox.Checked;
       sql_editor__highlights__syntax__brackets__round__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Round_CheckBox.Checked;
       sql_editor__highlights__syntax__brackets__square__copy_g := Sql_Editor__Highlights__Syntax__Brackets__Square_CheckBox.Checked;
       sql_editor__highlights__words__color__background__copy_g := Sql_Editor__Highlights__Words__Color__Background_ColorBox.Selected;
@@ -1958,6 +1994,7 @@ begin
           sql_editor__highlights__syntax__brackets__all_pairs__copy_g,
           sql_editor__highlights__syntax__brackets__angle__copy_g,
           sql_editor__highlights__syntax__brackets__curly__copy_g,
+          sql_editor__highlights__syntax__brackets__marked_only__copy_g,
           sql_editor__highlights__syntax__brackets__round__copy_g,
           sql_editor__highlights__syntax__brackets__square__copy_g
         );

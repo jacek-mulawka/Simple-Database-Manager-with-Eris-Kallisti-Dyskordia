@@ -10,7 +10,9 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, Vcl.DBCtrls, Vcl.Samples.Spin, Vcl.Menus, Vcl.CheckLst;
+  Vcl.Menus, Vcl.CheckLst, Vcl.Samples.Spin, Vcl.Mask, Vcl.DBCtrls,
+
+  Interceptor__Spin_Edit;
 
 type
   TGenerators_Modify_F_Frame = class( TFrame )
@@ -79,6 +81,7 @@ type
     procedure Generator__Description__Drop_MenuItemClick( Sender: TObject );
     procedure Generator__Description__Write_In_Log_MenuItemClick( Sender: TObject );
 
+    procedure Modify__Value_SpinEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Log_MemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
     procedure Generators_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
@@ -849,7 +852,7 @@ begin
         'set generator ' +
         Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF() +
         ' to ' +
-        IntToStr( Modify__Value_SpinEdit.Value ) +
+        IntToStr(  Trunc( Modify__Value_SpinEdit.Value )  ) +
         ' ';
 
     end
@@ -857,7 +860,7 @@ begin
     begin
 
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + generators_list__column__generator_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF(), [ rfReplaceAll ] );
-      zts := StringReplace(  zts, Common.sql__word_replace_separator_c + generators_list__column__generator_value_c + Common.sql__word_replace_separator_c, IntToStr( Modify__Value_SpinEdit.Value ), [ rfReplaceAll ]  );
+      zts := StringReplace(   zts, Common.sql__word_replace_separator_c + generators_list__column__generator_value_c + Common.sql__word_replace_separator_c, IntToStr(  Trunc( Modify__Value_SpinEdit.Value )  ), [ rfReplaceAll ]   );
 
     end;
 
@@ -865,7 +868,7 @@ begin
   Log_Memo.Lines.Add( zts );
 
 
-  if Application.MessageBox( PChar(Translation.translation__messages_r.set_generator + ' ''' + Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF() + ''' ' + Translation.translation__messages_r.word__value_to + ' ''' + IntToStr( Modify__Value_SpinEdit.Value ) + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+  if Application.MessageBox(   PChar(Translation.translation__messages_r.set_generator + ' ''' + Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF() + ''' ' + Translation.translation__messages_r.word__value_to + ' ''' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Modify__Value_SpinEdit.Value )  ) + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION   ) <> IDYES then
     Exit;
 
 
@@ -1330,7 +1333,7 @@ begin
             Log_Memo.Lines.Add( zts );
 
 
-            ztb := generators_sdbm.Sql_Command_Execute( zts, error_message_l, Translation.translation__messages_r.failed_to_grant_privileges );
+            ztb := generators_sdbm.Sql_Command_Execute(  zts, error_message_l, Translation.translation__messages_r.failed_to_grant_privileges + ' (' + Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString + ')'  );
 
             if    ( not ztb )
               and ( not error_occurred ) then
@@ -1338,7 +1341,12 @@ begin
 
 
             if Trim( error_message_l ) <> '' then
-              Log_Memo.Lines.Add( Translation.translation__messages_r.failed_to_grant_privileges + ': ' + error_message_l );
+              Log_Memo.Lines.Add
+                (
+                  Translation.translation__messages_r.failed_to_grant_privileges + ' (' +
+                  Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString + ') ' +
+                  error_message_l
+                );
 
           end;
 
@@ -1526,7 +1534,7 @@ begin
             Log_Memo.Lines.Add( zts );
 
 
-            ztb := generators_sdbm.Sql_Command_Execute( zts, error_message_l, Translation.translation__messages_r.failed_to_grant_privileges );
+            ztb := generators_sdbm.Sql_Command_Execute(  zts, error_message_l, Translation.translation__messages_r.failed_to_revoke_privileges + ' (' + Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString + ')'  );
 
             if    ( not ztb )
               and ( not error_occurred ) then
@@ -1534,7 +1542,12 @@ begin
 
 
             if Trim( error_message_l ) <> '' then
-              Log_Memo.Lines.Add( Translation.translation__messages_r.failed_to_grant_privileges + ': ' + error_message_l );
+              Log_Memo.Lines.Add
+                (
+                  Translation.translation__messages_r.failed_to_revoke_privileges + ' (' +
+                  Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString + ') ' +
+                  error_message_l
+                );
 
           end;
 
@@ -1837,6 +1850,14 @@ begin
 
 end;
 
+procedure TGenerators_Modify_F_Frame.Modify__Value_SpinEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_RETURN then
+    Modify__Edit_ButtonClick( Sender );
+
+end;
+
 procedure TGenerators_Modify_F_Frame.Log_MemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
@@ -1862,6 +1883,9 @@ begin
   else
   if Key = VK_RETURN then
     Modify__Edit_ButtonClick( Sender )
+  else
+  if Key = VK_SPACE then
+    Generators_DBGrid.SelectedRows.CurrentRowSelected := not Generators_DBGrid.SelectedRows.CurrentRowSelected
   else
   // A.
   if    ( Key = 65 )

@@ -21,7 +21,9 @@ uses
 
   SynCompletionProposal,
 
-  Text__Search_Replace;
+  Text__Search_Replace,
+
+  Interceptor__Syn_Edit;
 
 type
   TComponent_Type = ( ct_none, ct_ADO, ct_FireDAC );
@@ -49,7 +51,7 @@ type
   end;
 
   TCustomSynEdit_Helper = class helper for SynEdit.TCustomSynEdit
-    procedure Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean );
+    procedure Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__marked_only_f, brackets__round_f, brackets__square_f : boolean );
     procedure Plugin__Search_Highlighter__Destroy();
   end;
 
@@ -96,6 +98,7 @@ type
     //procedure Connections_Assign_To( sdbm_f : TSDBM );
 
     function Connected() : boolean;
+    procedure Connection__Close();
     procedure Connection__Open( const databases_r_f : TDatabases_r; log_memo_f : TMemo; const component_type_f : Common.TComponent_Type = Common.ct_ADO );
 
     procedure Data_Source__Data_Set__Set( data_source_f : TDataSource );
@@ -196,11 +199,12 @@ procedure Syn_Completion_Proposal_Code_Completion( var code_completion__cursor_p
 procedure Syn_Completion_Proposal__Parameters__Set( syn_completion_proposal_f : SynCompletionProposal.TSynCompletionProposal );
 function Syn_Edit__CharScan( syn_edit_f : TSynEdit; const do_delete_f : boolean = false ) : string;
 procedure Syn_Edit__Highlight__Text( syn_edit_f : TSynEdit );
-function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean;
+function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean; overload;
+function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState; const bookmarks__toggle__with__line_color_f : boolean ) : boolean; overload;
 procedure Syn_Edit__On_Replace_Text( syn_edit_f : TSynEdit; ASearch, AReplace : string; Line, Column : Integer; var Action : TSynReplaceAction; AClientRect : TRect );
 procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit ); overload;
-procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean ); overload;
+procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__marked_only_f, brackets__round_f, brackets__square_f : boolean ); overload;
 function Text__File_Load( const file_path_f : string ) : string;
 function Text__Search_Replace__Is_Nil( text__search_replace_form_f : Text__Search_Replace.TText__Search_Replace_Form ) : boolean;
 procedure Text__Search_Replace__Direction__Invert( text__search_replace_form_f : Text__Search_Replace.TText__Search_Replace_Form );
@@ -476,6 +480,8 @@ const
   languages__directory_name_c : string = 'Languages';
   languages__file__extension_c : string = '.txt';
 
+  minus_sign_s_c : string = '-';
+
   name__column__big_letters_c : string = 'COLUMN_NAME';
   name__description_value_c : string = 'DESCRIPTION_VALUE';
   name__description_value__cast_c : string = 'DESCRIPTION_VALUE__CAST';
@@ -570,6 +576,8 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into table(...)\style{-B}-->insert into tabela#13#10    (#13#10        C1#13#10      , C2#13#10    )#13#10  values#13#10    (#13#10        v_c1#13#10      ' +
       ', ( select C2 from T2 where ... )#13#10    )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}integer \style{-B}-->integer ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}is null \style{-B}-->is null ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}is not null \style{-B}-->is not null ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}join\style{-B}-->join ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on  = \style{-B}-->left join | on  = ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (select)\style{-B}-->list~#13#10select cast#13#10         (#13#10           substring#13#10             (#13#10               list( ''(id: '' || T1.C1 || ''; name: '' || T1.C2 || '')'' )' +
@@ -583,6 +591,8 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}max( | )\style{-B}-->max( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min( | )\style{-B}-->min( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not \style{-B}-->not ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not null \style{-B}-->not null ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}null \style{-B}-->null ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}or \style{-B}-->or ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}order by\style{-B}-->order by ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}position( ''pattern'', T1.C1 )\style{-B}-->position( ''pattern'', T1.C1 )' + #13 + #10 +
@@ -729,6 +739,7 @@ var
   data_presentation__data_value_format__time__use,
   form_view__additional_component_show,
   queries_open_in_background,
+  sql_editor__bookmarks__toggle__with__line_color,
   sql_editor__close_prompt,
   sql_editor__comments_delete,
   sql_editor__database_connection__separated,
@@ -738,8 +749,10 @@ var
   sql_editor__highlights__syntax__brackets__all_pairs,
   sql_editor__highlights__syntax__brackets__angle,
   sql_editor__highlights__syntax__brackets__curly,
+  sql_editor__highlights__syntax__brackets__marked_only,
   sql_editor__highlights__syntax__brackets__round,
   sql_editor__highlights__syntax__brackets__square,
+  sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save,
   sql_editor__transactions_automatic,
   sql__quotation_sign__use,
   splitter_show,
@@ -828,7 +841,7 @@ uses
   Text__Search_Replace__Prompt,
   Translation;
 
-procedure TCustomSynEdit_Helper.Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean );
+procedure TCustomSynEdit_Helper.Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__marked_only_f, brackets__round_f, brackets__square_f : boolean );
 var
   i : integer;
 begin
@@ -846,6 +859,7 @@ begin
               plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__all_pairs := brackets__all_pairs_f;
               plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__angle := brackets__angle_f;
               plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__curly := brackets__curly_f;
+              plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__marked_only := brackets__marked_only_f;
               plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__round := brackets__round_f;
               plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets(fPlugins[ i ]).brackets__squareg := brackets__square_f;
 
@@ -945,11 +959,11 @@ begin
 
 
       if Self.ado_connection__sdbm <> nil then
-        FreeAndNil( Self.ado_connection__sdbm );
+        System.SysUtils.FreeAndNil( Self.ado_connection__sdbm );
 
 
       if Self.fd_connection__sdbm <> nil then
-        FreeAndNil( Self.fd_connection__sdbm );
+        System.SysUtils.FreeAndNil( Self.fd_connection__sdbm );
 
     end;
 
@@ -1005,6 +1019,13 @@ begin
   else
   if Self.component_type__sdbm = ct_FireDAC then
     Result := Self.fd_connection__sdbm.Connected;
+
+end;
+
+procedure TSDBM.Connection__Close();
+begin
+
+  Database__Connections__Close( Self.ado_connection__sdbm, Self.fd_connection__sdbm );
 
 end;
 
@@ -1187,7 +1208,7 @@ begin
             Self.ado_query__sdbm.Close();
 
 
-          FreeAndNil( Self.ado_query__sdbm );
+          System.SysUtils.FreeAndNil( Self.ado_query__sdbm );
 
         end;
 
@@ -1200,7 +1221,7 @@ begin
             Self.fd_query__sdbm.Close();
 
 
-          FreeAndNil( Self.fd_query__sdbm );
+          System.SysUtils.FreeAndNil( Self.fd_query__sdbm );
 
         end;
 
@@ -1882,13 +1903,13 @@ begin
   if Self.component_type__sdbm = ct_ADO then
     begin
 
-      FreeAndNil( ado_command_l );
+      System.SysUtils.FreeAndNil( ado_command_l );
 
     end
   else
     begin
 
-      FreeAndNil( fd_command_l );
+      System.SysUtils.FreeAndNil( fd_command_l );
 
     end;
 
@@ -2053,13 +2074,13 @@ begin
   if Self.component_type__sdbm = ct_ADO then
     begin
 
-      FreeAndNil( ado_command_l );
+      System.SysUtils.FreeAndNil( ado_command_l );
 
     end
   else
     begin
 
-      FreeAndNil( fd_command_l );
+      System.SysUtils.FreeAndNil( fd_command_l );
 
     end;
 
@@ -2163,7 +2184,7 @@ end;
 destructor TSql_Parameter.Destroy();
 begin
 
-  FreeAndNil( Self.value_edit );
+  System.SysUtils.FreeAndNil( Self.value_edit );
 
 
   inherited;
@@ -2422,7 +2443,7 @@ begin
 
 
   zt_string_list.Clear();
-  FreeAndNil( zt_string_list );
+  System.SysUtils.FreeAndNil( zt_string_list );
 
 
   sdbm_f.Query__Record_Number__Set( query_record_number_copy_l );
@@ -2943,7 +2964,7 @@ begin
 
         end;
 
-      FreeAndNil( database__list_modify_form_l );
+      System.SysUtils.FreeAndNil( database__list_modify_form_l );
 
 
       if modal_result_l <> mrOk then
@@ -3451,6 +3472,13 @@ begin
 end;
 
 function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean;
+begin
+
+  Result := Syn_Edit_Key_Down( syn_edit_f, Sender, Key, Shift, sql_editor__bookmarks__toggle__with__line_color );
+
+end;
+
+function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState; const bookmarks__toggle__with__line_color_f : boolean ) : boolean;
 
   procedure Select_All_L( syn_edit_f_f : TSynEdit );
   var
@@ -3481,7 +3509,11 @@ function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Wor
   end;
 
 var
-  zti : integer;
+  i,
+  x,
+  y,
+  zti
+    : integer;
 
   zts : string;
 begin
@@ -3525,6 +3557,53 @@ begin
 
     end
   else
+  if    ( Key = VK_F5 )
+    and ( Shift = [ ssShift ] ) then
+    begin
+
+      if Application.MessageBox( PChar(Translation.translation__messages_r.clear_all_lines_color_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) = IDYES then
+        syn_edit_f.Lines_Color__Clear__All();
+
+      Result := true;
+
+    end
+  else
+  if Key = VK_F5 then
+    begin
+
+      if not syn_edit_f.Lines_Color__Check( syn_edit_f.CaretY ) then
+        syn_edit_f.Lines_Color__Add( syn_edit_f.CaretY )
+      else
+        syn_edit_f.Lines_Color__Clear( syn_edit_f.CaretY );
+
+
+      Result := true;
+
+    end
+  else
+  if Key = VK_F6 then
+    begin
+
+      if not syn_edit_f.Lines_Color__Check( syn_edit_f.CaretY ) then
+        syn_edit_f.Lines_Color__Add( syn_edit_f.CaretY );
+
+      syn_edit_f.Lines_Color__Change( syn_edit_f.CaretY );
+
+
+      Result := true;
+
+    end
+  else
+  if Key = VK_F7 then
+    begin
+
+      syn_edit_f.Lines_Color__Choose( syn_edit_f.CaretY );
+
+
+      Result := true;
+
+    end
+  else
   // 0 - 9.
   if    ( Key  in [ 48..57 ] )
     and ( Shift = [ ssCtrl, ssShift ] ) then
@@ -3535,9 +3614,57 @@ begin
 
 
       if not syn_edit_f.IsBookmark( zti ) then
-        syn_edit_f.SetBookMark( zti, syn_edit_f.CaretX, syn_edit_f.CaretY )
+        begin
+
+          syn_edit_f.SetBookMark( zti, syn_edit_f.CaretX, syn_edit_f.CaretY );
+
+
+          if bookmarks__toggle__with__line_color_f then
+            begin
+
+              if syn_edit_f.Lines_Color__Check( syn_edit_f.CaretY ) then
+                syn_edit_f.Lines_Color__Clear( syn_edit_f.CaretY );
+
+              syn_edit_f.Lines_Color__Add( syn_edit_f.CaretY );
+
+
+              for i := 0 to zti do
+                syn_edit_f.Lines_Color__Change( syn_edit_f.CaretY );
+
+            end;
+
+        end
       else
-        syn_edit_f.ClearBookMark( zti );
+        begin
+
+          syn_edit_f.ClearBookMark( zti );
+
+          if bookmarks__toggle__with__line_color_f then
+            begin
+
+              if syn_edit_f.Lines_Color__Check( syn_edit_f.CaretY ) then
+                syn_edit_f.Lines_Color__Clear( syn_edit_f.CaretY );
+
+
+              // When a line has a few bookmarks restore line color.
+              for i := 0 to 9 do
+                if    (  syn_edit_f.GetBookMark( i, x, y )  )
+                  and ( y = syn_edit_f.CaretY ) then
+                  begin
+
+                    syn_edit_f.Lines_Color__Add( syn_edit_f.CaretY );
+
+                    for x := 0 to i do
+                      syn_edit_f.Lines_Color__Change( syn_edit_f.CaretY );
+
+
+                    Break;
+
+                  end;
+
+            end;
+
+        end;
 
 
       Result := true;
@@ -3763,7 +3890,7 @@ begin
         text__search_replace__prompt_form_l.Top := Screen.Height - text__search_replace__prompt_form_l.Height * 2;
 
       modal_result := text__search_replace__prompt_form_l.ShowModal();
-      FreeAndNil( text__search_replace__prompt_form_l );
+      System.SysUtils.FreeAndNil( text__search_replace__prompt_form_l );
 
       case modal_result of
           mrYes : Action := raReplace;
@@ -3813,13 +3940,14 @@ begin
       sql_editor__highlights__syntax__brackets__all_pairs,
       sql_editor__highlights__syntax__brackets__angle,
       sql_editor__highlights__syntax__brackets__curly,
+      sql_editor__highlights__syntax__brackets__marked_only,
       sql_editor__highlights__syntax__brackets__round,
       sql_editor__highlights__syntax__brackets__square
     );
 
 end;
 
-procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__round_f, brackets__square_f : boolean );
+procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__marked_only_f, brackets__round_f, brackets__square_f : boolean );
 begin
 
   if syn_edit_f = nil then
@@ -3840,16 +3968,9 @@ begin
       end;
 
 
-  if    (
-             ( color__brackets__background_f <> clNone )
-          or ( color__brackets__border_f <> clNone )
-        )
-    and (
-             ( brackets__angle_f )
-          or ( brackets__curly_f )
-          or ( brackets__round_f )
-          or ( brackets__square_f )
-        ) then
+  // Create always (even if the global settings 'switch off' brackets highlights) so that can change the settings from a local context (e.g. SQL editor tabs).
+  if   ( color__brackets__background_f <> clNone )
+    or ( color__brackets__border_f <> clNone ) then
     with plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets.Create( syn_edit_f ) do
       begin
 
@@ -3859,6 +3980,7 @@ begin
         brackets__all_pairs := brackets__all_pairs_f;
         brackets__angle := brackets__angle_f;
         brackets__curly := brackets__curly_f;
+        brackets__marked_only := brackets__marked_only_f;
         brackets__round := brackets__round_f;
         brackets__squareg := brackets__square_f;
 
@@ -3884,7 +4006,7 @@ begin
   Result := zt_string_list.Text;
 
   zt_string_list.Clear();
-  FreeAndNil( zt_string_list );
+  System.SysUtils.FreeAndNil( zt_string_list );
 
 end;
 
@@ -4017,6 +4139,10 @@ begin
     if not text__search_replace_form_l.Focused then
       text__search_replace_form_l.SetFocus();
 
+
+  if text__search_replace_form_l.WindowState = TWindowState.wsMinimized then
+    text__search_replace_form_l.WindowState := TWindowState.wsNormal;
+
 end;
 
 function User_Role__Name_Unique( const name_f, database_type_f : string; sdbm_f : TSDBM; log_memo_f : TMemo ) : boolean;
@@ -4125,7 +4251,7 @@ begin
     end;
 
 
-  FreeAndNil( zt_sdbm );
+  System.SysUtils.FreeAndNil( zt_sdbm );
 
 end;
 

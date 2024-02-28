@@ -1293,7 +1293,13 @@ end;
 
 procedure TTable__Metadata_F_Frame.Column__Add_MenuItemClick( Sender: TObject );
 var
-  modified_l : boolean;
+  ztb,
+  modified_l
+    : boolean;
+
+  zti,
+  row_l
+    : integer;
 begin
 
   if Metadata_StringGrid.Row < 1 then
@@ -1310,28 +1316,65 @@ begin
     and ( Sender = Column__Type_Edit_MenuItem ) then
     begin
 
-      Table_Column__Modify.Table_Column__Modify_Form.column_name__tcm := Metadata_StringGrid.Cells[ metadata__column_number__name_c, Metadata_StringGrid.Row ];
-      Table_Column__Modify.Table_Column__Modify_Form.column_type__tcm := Metadata_StringGrid.Cells[ metadata__column_number__type_c, Metadata_StringGrid.Row ];
+      Table_Column__Modify.Table_Column__Modify_Form.column__name__tcm := Metadata_StringGrid.Cells[ metadata__column_number__name_c, Metadata_StringGrid.Row ];
+      Table_Column__Modify.Table_Column__Modify_Form.column__position__tcm := StrToIntDef( Metadata_StringGrid.Cells[ metadata__column_number__no_c, Metadata_StringGrid.Row ], 1 );
+      Table_Column__Modify.Table_Column__Modify_Form.column__type__tcm := Metadata_StringGrid.Cells[ metadata__column_number__type_c, Metadata_StringGrid.Row ];
 
       if Metadata_StringGrid.Cells[ metadata__column_number__length_c, Metadata_StringGrid.Row ] <> '0' then
-        Table_Column__Modify.Table_Column__Modify_Form.column_type__tcm := Table_Column__Modify.Table_Column__Modify_Form.column_type__tcm +
+        Table_Column__Modify.Table_Column__Modify_Form.column__type__tcm := Table_Column__Modify.Table_Column__Modify_Form.column__type__tcm +
           ' ( ' +
           Metadata_StringGrid.Cells[ metadata__column_number__length_c, Metadata_StringGrid.Row ] +
           ' )';
 
       Table_Column__Modify.Table_Column__Modify_Form.type_edit__tcm := true;
 
-    end;
+    end
+  else
+    Table_Column__Modify.Table_Column__Modify_Form.column__position__tcm := Metadata_StringGrid.RowCount;
 
   Table_Column__Modify.Table_Column__Modify_Form.ShowModal();
 
   modified_l := Table_Column__Modify.Table_Column__Modify_Form.modified__tcm;
 
+  if modified_l then
+    zti := Table_Column__Modify.Table_Column__Modify_Form.column__position__out__tcm
+  else
+    zti := -99;
+
   FreeAndNil( Table_Column__Modify.Table_Column__Modify_Form );
 
 
   if modified_l then
-    Refresh_ButtonClick( Sender );
+    begin
+
+      Refresh_ButtonClick( Sender );
+
+
+      if    ( zti <> -99 )
+        and (  IntToStr( zti ) <> Metadata_StringGrid.Cells[ metadata__column_number__no_c, Metadata_StringGrid.Row ]  ) then
+        begin
+
+          ztb := false;
+
+          for row_l := Metadata_StringGrid.FixedRows to Metadata_StringGrid.RowCount - 1 do
+            if IntToStr( zti ) = Metadata_StringGrid.Cells[ metadata__column_number__no_c, row_l ] then
+              begin
+
+                Metadata_StringGrid.Row := row_l;
+
+                ztb := true;
+
+                Break;
+
+              end;
+
+
+          if not ztb then
+            Metadata_StringGrid.Row := Metadata_StringGrid.RowCount - 1;
+
+        end;
+
+    end;
 
 end;
 

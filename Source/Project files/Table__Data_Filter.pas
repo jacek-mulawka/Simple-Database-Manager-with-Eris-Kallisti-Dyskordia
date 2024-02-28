@@ -1,5 +1,7 @@
 unit Table__Data_Filter;{11.Lip.2023}
 
+//{$I Definitions.inc}
+
 interface
 
 uses
@@ -20,7 +22,14 @@ uses
   Vcl.Graphics,
   Vcl.StdCtrls,
 
-  JvSpin;
+  {$IFDEF JVCL__use}
+  JvSpin
+  {$ELSE JVCL__use}
+  Vcl.Samples.Spin,
+
+  Interceptor__Spin_Edit
+  {$ENDIF}
+  ;
 
 type
   TTable__Data_Filter = class( Vcl.ExtCtrls.TPanel )
@@ -440,19 +449,35 @@ begin
         Self.field_value__dedicated__use_check_box.Visible := true;
 
 
+        {$IFDEF JVCL__use}
         Self.field_value__dedicated__1 := JvSpin.TJvSpinEdit.Create( Application );
-        Self.field_value__dedicated__1.Parent := Self;
         JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Thousands := true;
+        {$ELSE JVCL__use}
+        Self.field_value__dedicated__1 := Interceptor__Spin_Edit.TSpinEdit.Create( Application );
+        {$ENDIF}
+        Self.field_value__dedicated__1.Parent := Self;
 
         if field_f.DataType in [ ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes ] then
           begin
 
+            {$IFDEF JVCL__use}
             JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).ValueType := JvSpin.vtFloat;
             JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Decimal := field_f.Size;
+            {$ELSE JVCL__use}
+            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).value_type_float := true;
+            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value := 0; // To call Interceptor__Spin_Edit.TSpinEdit.SetValue() and set display format.
+            {$ENDIF}
 
           end
         else
-          JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).ValueType := JvSpin.vtInteger;
+          begin
+
+            {$IFDEF JVCL__use}
+            JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).ValueType := JvSpin.vtInteger;
+            {$ENDIF}
+
+          end;
+
 
         Self.field_value__dedicated__1.AlignWithMargins := true;
         Self.field_value__dedicated__1.Align := alBottom;
@@ -461,7 +486,11 @@ begin
         Self.field_value__dedicated__1.Margins.Left := margin_c * 2;
         Self.field_value__dedicated__1.Margins.Right := margin_c * 2;
         Self.field_value__dedicated__1.Margins.Top := margin_c;
+        {$IFDEF JVCL__use}
         JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
+        {$ELSE JVCL__use}
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
+        {$ENDIF}
 
       end
     else
@@ -642,7 +671,11 @@ begin
       end
     else
     if Self.field_dedicated__data_type = ftInteger then
+      {$IFDEF JVCL__use}
       FreeAndNil( JvSpin.TJvSpinEdit(Self.field_value__dedicated__1) );
+      {$ELSE JVCL__use}
+      FreeAndNil( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1) );
+      {$ENDIF}
 
 
   FreeAndNil( Self.align_correct_button );
@@ -850,9 +883,17 @@ begin
               zts := StringReplace( zts, '.', ',', [ rfReplaceAll ] ) ;
 
               try
+                {$IFDEF JVCL__use}
                 JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value := StrToFloat( zts );
+                {$ELSE JVCL__use}
+                Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value := StrToFloat( zts );
+                {$ENDIF}
               except
+                {$IFDEF JVCL__use}
                 JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value := 0;
+                {$ELSE JVCL__use}
+                Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value := 0;
+                {$ENDIF}
               end;
 
             end
@@ -885,8 +926,13 @@ begin
   begin
 
     try
+      //{$IFDEF JVCL__use}
       //if Sender is JvSpin.TJvSpinEdit then
       //  JvSpin.TJvSpinEdit(Sender).Value := StrToFloat( Vcl.Clipbrd.Clipboard.AsText ) // Do not work well.
+      //{$ELSE JVCL__use}
+      //if Sender is Interceptor__Spin_Edit.TSpinEdit then
+      //  StrToFloat( Vcl.Clipbrd.Clipboard.AsText ) // Do not work well.
+      //{$ENDIF}
       //else
       if Sender is TDateTimePicker then
         begin
@@ -1041,7 +1087,12 @@ begin
       if Self.field_dedicated__data_type = ftInteger then
         begin
 
+          {$IFDEF JVCL__use}
           zts_2 := FloatToStr( JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value );
+          {$ELSE JVCL__use}
+          zts_2 := FloatToStr( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value );
+          {$ENDIF}
+
           zts_2 := StringReplace( zts_2, ' ', '', [ rfReplaceAll ] );
 
 
@@ -1049,6 +1100,15 @@ begin
 
           for i := 1 to Length( zts_2 ) do
             try
+              if zts_2[ i ] = Common.minus_sign_s_c then
+                begin
+
+                  zts_1 := zts_1 + zts_2[ i ];
+
+                  Continue;
+
+                end;
+
               StrToInt( zts_2[ i ] );
               zts_1 := zts_1 + zts_2[ i ];
             except

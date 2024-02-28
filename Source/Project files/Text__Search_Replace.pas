@@ -6,7 +6,7 @@ uses
   SynEdit,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
   TText__Search_Replace_Form = class( TForm )
@@ -196,11 +196,11 @@ end;
 procedure TText__Search_Replace_Form.Syn_Edit__Set( syn_edit_f : TSynEdit );
 begin
 
-  if syn_edit <> syn_edit_f then
+  if Self.syn_edit <> syn_edit_f then
     search_text_found_g := false;
 
 
-  syn_edit := syn_edit_f;
+  Self.syn_edit := syn_edit_f;
 
 end;
 
@@ -249,7 +249,7 @@ var
   syn_search_options_l : SynEditTypes.TSynSearchOptions;
 begin
 
-  if syn_edit = nil then
+  if Self.syn_edit = nil then
     Exit;
 
 
@@ -274,7 +274,7 @@ begin
 
 
   if    ( replace_l )
-    and ( syn_edit.ReadOnly ) then
+    and ( Self.syn_edit.ReadOnly ) then
     begin
 
       Application.MessageBox( PChar(Translation.translation__messages_r.the_text_is_read_only), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
@@ -380,16 +380,16 @@ begin
   if Search__Regular_Expression_CheckBox.Checked then
     begin
 
-      if syn_edit.SearchEngine <> Shared.Shared_DataModule.SynEditRegexSearch1 then
-        syn_edit.SearchEngine := Shared.Shared_DataModule.SynEditRegexSearch1;
+      if Self.syn_edit.SearchEngine <> Shared.Shared_DataModule.SynEditRegexSearch1 then
+        Self.syn_edit.SearchEngine := Shared.Shared_DataModule.SynEditRegexSearch1;
 
     end
   else
-    if syn_edit.SearchEngine <> Shared.Shared_DataModule.SynEditSearch1 then
-      syn_edit.SearchEngine := Shared.Shared_DataModule.SynEditSearch1;
+    if Self.syn_edit.SearchEngine <> Shared.Shared_DataModule.SynEditSearch1 then
+      Self.syn_edit.SearchEngine := Shared.Shared_DataModule.SynEditSearch1;
 
 
-  if syn_edit.SearchReplace( Search_ComboBox.Text, Replace_ComboBox.Text, syn_search_options_l ) = 0 then
+  if Self.syn_edit.SearchReplace( Search_ComboBox.Text, Replace_ComboBox.Text, syn_search_options_l ) = 0 then
     begin
 
       if    ( not first_search_g )
@@ -413,8 +413,8 @@ begin
                 if not_found_message_displayed_g then
                   not_found_message_displayed_g := false;
 
-                syn_edit.CaretY := syn_edit.Lines.Count;
-                syn_edit.CaretX := Length( syn_edit.Lines[ syn_edit.Lines.Count - 1 ] ) + 1;
+                Self.syn_edit.CaretY := Self.syn_edit.Lines.Count;
+                Self.syn_edit.CaretX := Length( Self.syn_edit.Lines[ Self.syn_edit.Lines.Count - 1 ] ) + 1;
 
                 search_again_l := true;
 
@@ -431,8 +431,8 @@ begin
                 if not_found_message_displayed_g then
                   not_found_message_displayed_g := false;
 
-                syn_edit.CaretX := 1;
-                syn_edit.CaretY := 1;
+                Self.syn_edit.CaretX := 1;
+                Self.syn_edit.CaretY := 1;
 
                 search_again_l := true;
 
@@ -451,7 +451,7 @@ begin
     first_search_g := false;
 
 
-  syn_edit.Refresh();
+  Self.syn_edit.Refresh();
 
 
   if search_again_l then
@@ -475,11 +475,23 @@ procedure TText__Search_Replace_Form.Search_Replace_ComboBoxKeyDown( Sender: TOb
 begin
 
   if Key = VK_RETURN then
-    if    ( Sender <> nil )
-      and ( Sender = Replace_ComboBox ) then
-      Search_Replace_ButtonClick( Replace_Button  )
-    else
-      Search_Replace_ButtonClick( Search__Find_Next_Button  );
+    begin
+
+      Self.WindowState := TWindowState.wsMinimized;
+
+      try
+        Self.syn_edit.SetFocus();
+      except
+      end;
+
+
+      if    ( Sender <> nil )
+        and ( Sender = Replace_ComboBox ) then
+        Search_Replace_ButtonClick( Replace_Button  )
+      else
+        Search_Replace_ButtonClick( Search__Find_Next_Button  );
+
+    end;
 
 end;
 

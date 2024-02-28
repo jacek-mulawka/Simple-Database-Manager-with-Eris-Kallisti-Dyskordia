@@ -127,6 +127,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         SelectedColor.Alpha = 0.400000005960464500
         TabWidth = 2
         WantTabs = True
+        OnDropFiles = Sql_Text_SynEditDropFiles
         OnReplaceText = Sql_Text_SynEditReplaceText
       end
     end
@@ -158,6 +159,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Align = alClient
         DataSource = Sql_Editor_DataSource
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        PopupMenu = Sql_Text_PopupMenu
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -1214,6 +1216,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
   end
   object Sql_Text_PopupMenu: TPopupMenu
     Images = Shared_DataModule.ImageList1
+    OnPopup = Sql_Text_PopupMenuPopup
     Left = 322
     Top = 171
     object Open_MenuItem: TMenuItem
@@ -1274,10 +1277,12 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     end
     object Find_MenuItem: TMenuItem
       Caption = 'Find [Ctrl + F]'
+      ImageIndex = 35
       OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
     end
     object Replace_MenuItem: TMenuItem
       Caption = 'Replace [Ctrl + H]'
+      ImageIndex = 36
       OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
     end
     object N4: TMenuItem
@@ -1285,13 +1290,16 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     end
     object Bookmarks__Toggle_MenuItem: TMenuItem
       Caption = 'Toggle bookmark [Ctrl + Shift + 0 ... 9]'
+      ImageIndex = 37
     end
     object Bookmarks__Go_To_MenuItem: TMenuItem
       Caption = 'Go to bookmark [Ctrl + 0 ... 9]'
+      ImageIndex = 38
     end
-    object Bookmarks__Clear_MenuItem: TMenuItem
+    object Bookmarks__Clear__All_MenuItem: TMenuItem
       Caption = 'Clear bookmarks'
-      OnClick = Bookmarks__Clear_MenuItemClick
+      ImageIndex = 39
+      OnClick = Bookmarks__Clear__All_MenuItemClick
     end
     object N5: TMenuItem
       Caption = '-'
@@ -1302,6 +1310,14 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         AutoCheck = True
         Caption = 'All pairs'
         OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+      object Highlights__Brackets__Marked_Only_MenuItem: TMenuItem
+        AutoCheck = True
+        Caption = 'Marked only'
+        OnClick = Sql_Text__Highlights__Brackets__SetMenuItemClick
+      end
+      object N6: TMenuItem
+        Caption = '-'
       end
       object Highlights__Brackets__Angle_MenuItem: TMenuItem
         AutoCheck = True
@@ -1327,7 +1343,30 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     object Highlighter__Syntax_MenuItem: TMenuItem
       Caption = 'Syntax highlighter'
     end
-    object N6: TMenuItem
+    object N7: TMenuItem
+      Caption = '-'
+    end
+    object Lines_Color__Toggle_MenuItem: TMenuItem
+      Caption = 'Toggle lines color [F5]'
+      ImageIndex = 40
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Lines_Color__Change_MenuItem: TMenuItem
+      Caption = 'Change lines color [F6]'
+      ImageIndex = 41
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Lines_Color__Choose_MenuItem: TMenuItem
+      Caption = 'Choose lines color [F7]'
+      ImageIndex = 42
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object Lines_Color__Clear__All_MenuItem: TMenuItem
+      Caption = 'Clear all lines color [Shift + F5]'
+      ImageIndex = 43
+      OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
+    end
+    object N8: TMenuItem
       Caption = '-'
     end
     object Comment_Uncomment_MenuItem: TMenuItem
@@ -1342,7 +1381,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       Caption = 'Comment invert alternatively [Ctrl + Shift + \]'
       OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
     end
-    object N7: TMenuItem
+    object N9: TMenuItem
       Caption = '-'
     end
     object Output_Save_MenuItem: TMenuItem
@@ -1350,7 +1389,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       ImageIndex = 8
       OnClick = Output_Save_ButtonClick
     end
-    object N8: TMenuItem
+    object N10: TMenuItem
       Caption = '-'
     end
     object Text__File__Find_MenuItem: TMenuItem
@@ -1368,7 +1407,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       ImageIndex = 8
       OnClick = Text__File__Save_ButtonClick
     end
-    object N9: TMenuItem
+    object N11: TMenuItem
       Caption = '-'
     end
     object Cut_MenuItem: TMenuItem
@@ -1387,7 +1426,15 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       Caption = 'Select all [Ctrl + A]'
       OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
     end
-    object N10: TMenuItem
+    object N12: TMenuItem
+      Caption = '-'
+    end
+    object Database__Reconnect_MenuItem: TMenuItem
+      Caption = 'Database reconnect'
+      ImageIndex = 3
+      OnClick = Database__Reconnect_MenuItemClick
+    end
+    object N13: TMenuItem
       Caption = '-'
     end
     object Execute__Automatic_Detection_MenuItem: TMenuItem
@@ -1422,6 +1469,16 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     object Queries_Open_In_Background_MenuItem: TMenuItem
       AutoCheck = True
       Caption = 'Queries (some) open in the background'
+    end
+    object Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 
+        'Switch keyboard shortcuts '#39'Save query output as csv'#39' with '#39'Save ' +
+        'file'#39
+    end
+    object Bookmarks__Toggle__With__Line_Color_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Toggle bookmarks with line color'
     end
   end
 end

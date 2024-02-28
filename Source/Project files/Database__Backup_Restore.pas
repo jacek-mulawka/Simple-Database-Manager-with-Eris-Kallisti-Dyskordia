@@ -8,7 +8,9 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ExtCtrls, Vcl.ComCtrls,
-  DosCommand, SynEdit;
+  DosCommand, SynEdit,
+
+  Interceptor__Syn_Edit;
 
 type
   TDatabase__Backup_Restore_Form = class( TForm )
@@ -133,7 +135,6 @@ implementation
 uses
   System.DateUtils,
   System.IOUtils,
-  System.TypInfo,
   System.UITypes,
   //Winapi.ShellAPI,
 

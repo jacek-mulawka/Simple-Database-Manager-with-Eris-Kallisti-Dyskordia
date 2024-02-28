@@ -7,8 +7,11 @@ uses
   Text__Search_Replace,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.Mask, JvExMask,
-  JvSpin, Vcl.ComCtrls, Vcl.CheckLst, SynEdit, SynCompletionProposal;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Samples.Spin,
+  SynEdit, SynCompletionProposal,
+
+  Interceptor__Spin_Edit,
+  Interceptor__Syn_Edit;
 
 type
   TDatabase__Trigger_Modify_Form = class( TForm )
@@ -27,7 +30,6 @@ type
     Trigger_Activity_Etiquette_Label: TLabel;
     Trigger_Activity_ComboBox: TComboBox;
     Trigger_Sequence_Etiquette_Label: TLabel;
-    Trigger_Sequence_JvSpinEdit: TJvSpinEdit;
     Trigger_Source_Memo: TMemo;
     Trigger_Source_Etiquette_Label: TLabel;
     Type_Panel: TPanel;
@@ -39,6 +41,7 @@ type
     Trigger_Source__SynCompletionProposal: TSynCompletionProposal;
     Trigger_Source_SynEdit: TSynEdit;
     Caret_Position_Label: TLabel;
+    Trigger_Sequence_SpinEdit: TSpinEdit;
     procedure FormCreate( Sender: TObject );
     procedure FormShow( Sender: TObject );
     procedure FormDestroy( Sender: TObject );
@@ -103,8 +106,6 @@ var
 implementation
 
 uses
-  System.StrUtils,
-
   Shared,
   Translation;
 
@@ -158,6 +159,9 @@ begin
 
 
   Translation.Translation__Apply( Self );
+
+
+  Trigger_Sequence_SpinEdit.check_value__min := true;
 
 end;
 
@@ -545,7 +549,7 @@ begin
           try
             trigger_modify_sdbm.Query__Field_By_Name( Common.trigger_modify__sequence_c ).AsString;
 
-            Trigger_Sequence_JvSpinEdit.Value := trigger_modify_sdbm.Query__Field_By_Name( Common.trigger_modify__sequence_c ).AsInteger;
+            Trigger_Sequence_SpinEdit.Value := trigger_modify_sdbm.Query__Field_By_Name( Common.trigger_modify__sequence_c ).AsInteger;
           except
             on E : Exception do
               begin
@@ -686,7 +690,7 @@ begin
   //zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__source_c + Common.sql__word_replace_separator_c, Trigger_Source_Memo.Lines.Text, [ rfReplaceAll ] );
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__trigger__source_c + Common.sql__word_replace_separator_c, Trigger_Source_SynEdit.Lines.Text, [ rfReplaceAll ] );
   zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.trigger_modify__activity_c + Common.sql__word_replace_separator_c, Trigger_Activity_ComboBox.Text, [ rfReplaceAll ] );
-  zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.trigger_modify__sequence_c + Common.sql__word_replace_separator_c, Trigger_Sequence_JvSpinEdit.Value.ToString(), [ rfReplaceAll ] );
+  zts := StringReplace(   zts, Common.sql__word_replace_separator_c + Common.trigger_modify__sequence_c + Common.sql__word_replace_separator_c, IntToStr(  Trunc( Trigger_Sequence_SpinEdit.Value )  ), [ rfReplaceAll ]   );
 
 
   Sql_Memo.Lines.Clear();

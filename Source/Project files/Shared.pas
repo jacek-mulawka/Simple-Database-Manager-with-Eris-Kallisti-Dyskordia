@@ -165,7 +165,7 @@ procedure TShared_DataModule.DataModuleDestroy( Sender: TObject );
 begin
 
   if text__search_replace_form__shared <> nil then
-    FreeAndNil( text__search_replace_form__shared );
+    System.SysUtils.FreeAndNil( text__search_replace_form__shared );
 
 end;
 
@@ -262,7 +262,7 @@ begin
   //---// Sorting.
 
   zt_string_list.Clear();
-  FreeAndNil( zt_string_list );
+  System.SysUtils.FreeAndNil( zt_string_list );
 
 end;
 

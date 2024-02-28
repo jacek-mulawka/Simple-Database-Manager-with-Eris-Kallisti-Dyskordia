@@ -11,7 +11,9 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, Vcl.DBCtrls, Vcl.Samples.Spin, Vcl.CheckLst, Vcl.Menus, SynEdit;
+  Vcl.Mask, Vcl.DBCtrls, Vcl.Menus, SynEdit,
+
+  Interceptor__Syn_Edit;
 
 type
   TTriggers_Type = ( tt_none, tt_database, tt_table );

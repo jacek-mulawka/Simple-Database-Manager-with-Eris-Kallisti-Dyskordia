@@ -10,7 +10,7 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, Vcl.DBCtrls, Vcl.Samples.Spin, Vcl.ComCtrls;
+  Vcl.Mask, Vcl.DBCtrls, Vcl.ComCtrls;
 
 type
   TTable__Data_Modify_F_Frame = class( TFrame )
@@ -575,7 +575,7 @@ begin
               if data__sdbm.Query__Fields( i ).DataType in [ ftDate, ftDateTime, ftTime, ftTimeStamp, ftOraTimeStamp ] then
                 begin
 
-                  zts := StringReplace( zts, '-', '.', [ rfReplaceAll ] );
+                  zts := StringReplace( zts, Common.minus_sign_s_c, '.', [ rfReplaceAll ] );
 
                   zts := '''' + zts + '''';
 
@@ -2051,6 +2051,8 @@ procedure TTable__Data_Modify_F_Frame.Data_Filter__Delete__All_ButtonClick( Send
 begin
 
   Table__Data_Filter__Free();
+
+  Data_Filter__Deactivate__All_ButtonClick( Sender );
 
 end;
 

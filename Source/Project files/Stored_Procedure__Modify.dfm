@@ -17,7 +17,6 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object Stored_Procedure__Name_Etiquette_Label: TLabel

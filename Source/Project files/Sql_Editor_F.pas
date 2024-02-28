@@ -1,5 +1,7 @@
 unit Sql_Editor_F;{21.Lip.2023}
 
+  // Dynamically created menu items will not be translated because they have empty names (inside Highlighter__Syntax_MenuItem, Bookmarks__Go_To_MenuItem).
+
 interface
 
 uses
@@ -11,7 +13,9 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, Vcl.DBCtrls, Vcl.Samples.Spin, Vcl.Menus, SynEdit, SynCompletionProposal;
+  Vcl.Mask, Vcl.DBCtrls, Vcl.Menus, SynEdit, SynCompletionProposal,
+
+  Interceptor__Syn_Edit;
 
 type
   TSql_Editor_F_Frame = class( TFrame )
@@ -115,31 +119,40 @@ type
     N4: TMenuItem;
     Bookmarks__Toggle_MenuItem: TMenuItem;
     Bookmarks__Go_To_MenuItem: TMenuItem;
-    Bookmarks__Clear_MenuItem: TMenuItem;
+    Bookmarks__Clear__All_MenuItem: TMenuItem;
     N5: TMenuItem;
     Highlights__Brackets_MenuItem: TMenuItem;
     Highlights__Brackets__All_Pairs_MenuItem: TMenuItem;
+    Highlights__Brackets__Marked_Only_MenuItem: TMenuItem;
+    N6: TMenuItem;
     Highlights__Brackets__Angle_MenuItem: TMenuItem;
     Highlights__Brackets__Curly_MenuItem: TMenuItem;
     Highlights__Brackets__Round_MenuItem: TMenuItem;
     Highlights__Brackets__Square_MenuItem: TMenuItem;
     Highlighter__Syntax_MenuItem: TMenuItem;
-    N6: TMenuItem;
+    N7: TMenuItem;
+    Lines_Color__Toggle_MenuItem: TMenuItem;
+    Lines_Color__Change_MenuItem: TMenuItem;
+    Lines_Color__Choose_MenuItem: TMenuItem;
+    Lines_Color__Clear__All_MenuItem: TMenuItem;
+    N8: TMenuItem;
     Comment_Uncomment_MenuItem: TMenuItem;
     Comment_Uncomment_Alternatively_MenuItem: TMenuItem;
     Comment_Invert_Alternatively_MenuItem: TMenuItem;
-    N7: TMenuItem;
+    N9: TMenuItem;
     Output_Save_MenuItem: TMenuItem;
-    N8: TMenuItem;
+    N10: TMenuItem;
     Text__File__Find_MenuItem: TMenuItem;
     Text__File__Load_MenuItem: TMenuItem;
     Text__File__Save_MenuItem: TMenuItem;
-    N9: TMenuItem;
+    N11: TMenuItem;
     Cut_MenuItem: TMenuItem;
     Copy_MenuItem: TMenuItem;
     Paste_MenuItem: TMenuItem;
     Select_All_MenuItem: TMenuItem;
-    N10: TMenuItem;
+    N12: TMenuItem;
+    Database__Reconnect_MenuItem: TMenuItem;
+    N13: TMenuItem;
     Execute__Automatic_Detection_MenuItem: TMenuItem;
     Transactions_Automatic_MenuItem: TMenuItem;
     Data_Value_Format__Disabled_MenuItem: TMenuItem;
@@ -147,6 +160,8 @@ type
     Execute__Selected_MenuItem: TMenuItem;
     Ado_Command_Param_Check_MenuItem: TMenuItem;
     Queries_Open_In_Background_MenuItem: TMenuItem;
+    Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem: TMenuItem;
+    Bookmarks__Toggle__With__Line_Color_MenuItem: TMenuItem;
 
     procedure Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 
@@ -184,7 +199,8 @@ type
     procedure Tab_Name__Set_ButtonClick( Sender: TObject );
     procedure Tab_Name_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Buttons_Panel__Hide_ButtonClick( Sender: TObject );
-    procedure Bookmarks__Clear_MenuItemClick( Sender: TObject );
+    procedure Bookmarks__Clear__All_MenuItemClick( Sender: TObject );
+    procedure Database__Reconnect_MenuItemClick( Sender: TObject );
 
     procedure File_Path_EditExit( Sender: TObject );
 
@@ -200,6 +216,7 @@ type
 
     procedure Sql_Text_SynEditEnter( Sender: TObject );
     procedure Sql_Text_SynEditClick( Sender: TObject );
+    procedure Sql_Text_SynEditDropFiles( Sender: TObject; X, Y: Integer; AFiles: TStrings );
     procedure Sql_Text_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Sql_Text_SynEditKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Sql_Text_SynEditReplaceText( Sender: TObject; const ASearch, AReplace: string; Line, Column: Integer; var Action: TSynReplaceAction );
@@ -217,6 +234,8 @@ type
     procedure Data_Preview_DBMemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
     procedure Log_MemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+
+    procedure Sql_Text_PopupMenuPopup( Sender: TObject );
 
     procedure Sql_Editor_DBGridCellClick( Column: TColumn );
     procedure Sql_Editor_DBGridDrawColumnCell( Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState );
@@ -259,6 +278,8 @@ type
     text__file__text_copy_g
       : string;
 
+    databases_r_copy_g : Common.TDatabases_r;
+
     sql_editor__sql_special_word__execute__automatic_detection__list_g_t,
     sql_editor__sql_special_word__transactions_automatic__list_g_t,
     sql_text_history_g_t
@@ -279,6 +300,8 @@ type
     procedure Columns_List__Star( const shift_f : TShiftState );
     procedure Data_Preview();
     procedure Key_Down_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
+    procedure Highlights__Brackets_MenuItem__Enabled__Correct();
+    procedure Highlighter__Syntax_MenuItem__Check__Correct();
     function Open_Execute( const command_execute_f : boolean; var history_text_f : string; command_execute_parameters_t_f : array of string ) : boolean; overload;
     function Open_Execute( const command_execute_f : boolean; var history_text_f : string; command_execute_parameters_t_f : array of const ) : boolean; overload; //????
     function Parent_Caption__Get() : string;
@@ -320,7 +343,9 @@ implementation
 uses
   System.StrUtils,
   System.Threading,
+  System.TypInfo,
   Vcl.Clipbrd,
+  Winapi.ShellAPI,
 
   Shared,
   Text__Search_Replace__Prompt,
@@ -736,6 +761,9 @@ begin
 
   Sql__Parameters__Free();
 
+
+  Winapi.ShellAPI.DragAcceptFiles( Sql_Text_SynEdit.Handle, false );
+
 end;
 
 procedure TSql_Editor_F_Frame.Highlight__Font__Set__SEF();
@@ -763,8 +791,12 @@ begin
   Highlights__Brackets__All_Pairs_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__all_pairs;
   Highlights__Brackets__Angle_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__angle;
   Highlights__Brackets__Curly_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__curly;
+  Highlights__Brackets__Marked_Only_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__marked_only;
   Highlights__Brackets__Round_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__round;
   Highlights__Brackets__Square_MenuItem.Checked := Common.sql_editor__highlights__syntax__brackets__square;
+
+  Highlights__Brackets_MenuItem__Enabled__Correct();
+  Highlighter__Syntax_MenuItem__Check__Correct();
 
 end;
 
@@ -815,12 +847,26 @@ begin
   // S.
   if    ( Key = 83 )
     and ( Shift = [ ssCtrl, ssShift ] ) then
-    Text__File__Save_ButtonClick( Sender )
+    begin
+
+      if not Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem.Checked then
+        Text__File__Save_ButtonClick( Sender )
+      else
+        Output_Save_ButtonClick( Sender );
+
+    end
   else
   // S.
   if    ( Key = 83 )
     and ( Shift = [ ssCtrl ] ) then
-    Output_Save_ButtonClick( Sender );
+    begin
+
+      if not Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem.Checked then
+        Output_Save_ButtonClick( Sender )
+      else
+        Text__File__Save_ButtonClick( Sender );
+
+    end;
 
 end;
 
@@ -844,6 +890,46 @@ begin
       Key := 0;
 
     end;
+
+end;
+
+procedure TSql_Editor_F_Frame.Highlights__Brackets_MenuItem__Enabled__Correct();
+begin
+
+  Highlights__Brackets__All_Pairs_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Angle_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Curly_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Round_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Square_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+
+end;
+
+procedure TSql_Editor_F_Frame.Highlighter__Syntax_MenuItem__Check__Correct();
+var
+  i : integer;
+begin
+
+  for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
+    Highlighter__Syntax_MenuItem.Items[ i ].Checked := false;
+
+
+  if Sql_Text_SynEdit.Highlighter <> nil then
+    begin
+
+      for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
+        if Highlighter__Syntax_MenuItem.Items[ i ].Hint = Sql_Text_SynEdit.Highlighter.Name then
+          begin
+
+            Highlighter__Syntax_MenuItem.Items[ i ].Checked := true;
+
+            Break;
+
+          end;
+
+    end
+  else
+    if Highlighter__Syntax_MenuItem.Count > 0 then
+      Highlighter__Syntax_MenuItem.Items[ 0 ].Checked := true;
 
 end;
 
@@ -1384,11 +1470,16 @@ begin
       sql_editor_sdbm.Data_Source__Data_Set__Set( Sql_Editor_DataSource );
 
 
+      if not sql_editor_sdbm.Connected() then // E.g. when the connection type changes.
+        Database__Reconnect_MenuItemClick( nil );
+
+
       {$region 'Tables.'}
       Screen.Cursor := crHourGlass;
 
 
       Tables_List_ListBox.Items.Clear();
+      Columns_List_ListBox.Items.Clear();
 
       zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + Common.tables_list__file_name_c  );
 
@@ -1633,11 +1724,14 @@ begin
   transactions_count_g := 0;
 
 
+  Bookmarks__Toggle__With__Line_Color_MenuItem.Checked := Common.sql_editor__bookmarks__toggle__with__line_color;
   Comments_Delete_CheckBox.Checked := Common.sql_editor__comments_delete;
   Comments_Delete_MenuItem.Checked := Comments_Delete_CheckBox.Checked;
   Csv__File__Data_Separator_Edit.Text := Common.csv__file__data_separator;
   Csv__File__Text_Qualifier_Edit.Text := Common.csv__file__text_qualifier;
   Data_Preview_DBMemo.Height := 1;
+  Database__Reconnect_MenuItem.Visible := database_connection__separated_f;
+  Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem.Checked := Common.sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save;
   Queries_Open_In_Background_MenuItem.Checked := queries_open_in_background_f;
   Sql_Parameters_ScrollBox.Width := 1;
   Tables_List_ListBox.Height := Round( Tables_Columns_List_Panel.Height * 0.5 ) - Tables_List_Horizontal_Splitter.Height;
@@ -1664,7 +1758,13 @@ begin
   sql_editor_sdbm := Common.TSDBM.Create( ado_connection_f, fd_connection_f, database_connection__separated_f );
 
   if database_connection__separated_f then
-    sql_editor_sdbm.Connection__Open( databases_r_f, Log_Memo, component_type_f );
+    begin
+
+      sql_editor_sdbm.Connection__Open( databases_r_f, Log_Memo, component_type_f );
+
+      databases_r_copy_g := databases_r_f;
+
+    end;
 
 
   sql_editor__select_all_columns_text_g := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__select_all_columns_text__file_name_c  );
@@ -2049,6 +2149,9 @@ begin
     end;
 
   Tables_List_ListBoxClick( nil ); // To correct code completion (columns list).
+
+
+  Winapi.ShellAPI.DragAcceptFiles( Sql_Text_SynEdit.Handle, true );
 
 end;
 
@@ -3402,8 +3505,10 @@ procedure TSql_Editor_F_Frame.Output_Save_ButtonClick( Sender: TObject );
     else
       try
 
+        // Conflict between Data.DB and System.TypInfo.
+
         if    ( Query_Output_Save_Field_Format__Real_Numbers__Use_CheckBox.Checked )
-          and ( field_f.DataType in [ ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes ] ) then
+          and ( field_f.DataType in [ Data.DB.ftBCD, Data.DB.ftCurrency, Data.DB.ftExtended, Data.DB.ftFloat, Data.DB.ftFMTBcd, Data.DB.ftSingle, Data.DB.ftVarBytes ] ) then
           begin
 
             Result := FormatFloat( Query_Output_Save_Field_Format__Real_Numbers_Edit.Text, field_f.AsFloat );
@@ -3421,7 +3526,7 @@ procedure TSql_Editor_F_Frame.Output_Save_ButtonClick( Sender: TObject );
           end
         else
         if    ( Query_Output_Save_Field_Format__Date__Use_CheckBox.Checked )
-          and ( field_f.DataType in [ ftDate ] ) then
+          and ( field_f.DataType in [ Data.DB.ftDate ] ) then
           begin
 
             DateTimeToString( zts_l, Query_Output_Save_Field_Format__Date_Edit.Text, field_f.AsDateTime );
@@ -3430,7 +3535,7 @@ procedure TSql_Editor_F_Frame.Output_Save_ButtonClick( Sender: TObject );
           end
         else
         if    ( Query_Output_Save_Field_Format__Time__Use_CheckBox.Checked )
-          and ( field_f.DataType in [ ftTime ] ) then
+          and ( field_f.DataType in [ Data.DB.ftTime ] ) then
           begin
 
             DateTimeToString( zts_l, Query_Output_Save_Field_Format__Time_Edit.Text, field_f.AsDateTime );
@@ -3440,7 +3545,7 @@ procedure TSql_Editor_F_Frame.Output_Save_ButtonClick( Sender: TObject );
         else
         if    ( Query_Output_Save_Field_Format__Date__Use_CheckBox.Checked )
           and ( Query_Output_Save_Field_Format__Time__Use_CheckBox.Checked )
-          and ( field_f.DataType in [ ftDateTime, ftTimeStamp, ftTimeStampOffset, ftOraTimeStamp ] ) then
+          and ( field_f.DataType in [ Data.DB.ftDateTime, Data.DB.ftTimeStamp, Data.DB.ftTimeStampOffset, Data.DB.ftOraTimeStamp ] ) then
           begin
 
             DateTimeToString( zts_l, Query_Output_Save_Field_Format__Date_Edit.Text, field_f.AsDateTime );
@@ -4163,14 +4268,63 @@ begin
 
 end;
 
-procedure TSql_Editor_F_Frame.Bookmarks__Clear_MenuItemClick( Sender: TObject );
+procedure TSql_Editor_F_Frame.Bookmarks__Clear__All_MenuItemClick( Sender: TObject );
 var
-  i : integer;
+  i,
+  x,
+  y
+    : integer;
 begin
+
+  if Bookmarks__Toggle__With__Line_Color_MenuItem.Checked then
+    begin
+
+      for i := 0 to 9 do
+        if Sql_Text_SynEdit.GetBookMark( i, x, y ) then
+          Sql_Text_SynEdit.Lines_Color__Clear( y );
+
+
+      Sql_Text_SynEdit.Refresh();
+
+    end;
+
 
   for i := 0 to 9 do
     if Sql_Text_SynEdit.IsBookmark( i ) then
       Sql_Text_SynEdit.ClearBookMark( i );
+
+end;
+
+procedure TSql_Editor_F_Frame.Database__Reconnect_MenuItemClick( Sender: TObject );
+begin
+
+  if Sender <> nil then
+    begin
+
+      if    (  Self.Task_Running_Check__SEF( false )  )
+        and (  Application.MessageBox( PChar(Translation.translation__messages_r.task_is_still_running_wait_until_finish + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES  ) then
+        Exit;
+
+
+      if Application.MessageBox( PChar(Translation.translation__messages_r.close_all_connections_), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> IDYES then
+        Exit;
+
+    end;
+
+
+  if sql_editor_sdbm.Connected() then
+    sql_editor_sdbm.Connection__Close();
+
+
+  sql_editor_sdbm.Connection__Open( databases_r_copy_g, Log_Memo, sql_editor_sdbm.component_type__sdbm );
+
+
+  Log_Memo.Lines.Add(    StringReplace(   System.TypInfo.GetEnumName(  System.TypeInfo(Common.TComponent_Type), Ord( sql_editor_sdbm.component_type__sdbm )  ), 'ct_', '', [ rfReplaceAll ]   )    );
+
+
+  if    ( Sender <> nil )
+    and ( sql_editor_sdbm.Connected() ) then
+    Application.MessageBox( PChar(Translation.translation__messages_r.connection_successful), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
 
 end;
 
@@ -4209,6 +4363,9 @@ begin
 end;
 
 procedure TSql_Editor_F_Frame.Text__File__Load_ButtonClick( Sender: TObject );
+var
+  line_number_copy_l : integer;
+  file_name_copy_l : string;
 begin
 
   if Trim( Text__File__Path_Edit.Text ) = '' then
@@ -4238,13 +4395,24 @@ begin
     Exit;
 
 
+  line_number_copy_l := Sql_Text_SynEdit.CaretY;
+  file_name_copy_l := ExtractFileName( text__file__path_copy_g );
+
+
   Sql_Text_SynEdit.Lines.LoadFromFile( Text__File__Path_Edit.Text );
 
   text__file__path_copy_g := Text__File__Path_Edit.Text;
   text__file__text_copy_g := Sql_Text_SynEdit.Lines.Text;
 
 
-  Caret_Position_Display();
+  Tab_Name_Edit.Text := ExtractFileName( Text__File__Path_Edit.Text );
+
+  Tab_Name__Set_ButtonClick( Sender ); // Call Caret_Position_Display().
+
+
+  if    ( Sql_Text_SynEdit.Lines.Count >= line_number_copy_l )
+    and (  ExtractFileName( text__file__path_copy_g ) = file_name_copy_l  ) then
+    Sql_Text_SynEdit.GotoLineAndCenter( line_number_copy_l );
 
 end;
 
@@ -4314,6 +4482,11 @@ begin
       else
         zt_encoding := nil;
 
+
+      if Trim( Text__File__Path_Edit.Text ) = '' then
+        Text__File__Path_Edit.Text := text_file__path_copy_l;
+
+
       if    (  Trim( Text__File__Encoding_ComboBox.Text ) <> ''  )
         and ( zt_encoding <> nil ) then
         begin
@@ -4323,8 +4496,6 @@ begin
         end
       else
         Sql_Text_SynEdit.Lines.SaveToFile( Text__File__Path_Edit.Text );
-
-
 
 
       text__file__name_saved_g := ExtractFileName( text_file__path_copy_l );
@@ -4412,10 +4583,26 @@ begin
 
 end;
 
+procedure TSql_Editor_F_Frame.Sql_Text_SynEditDropFiles( Sender: TObject; X, Y: Integer; AFiles: TStrings );
+begin
+
+  if    ( AFiles <> nil  )
+    and ( AFiles.Count > 0  )
+    and (  FileExists( AFiles[ 0 ] )  ) then
+    begin
+
+      Text__File__Path_Edit.Text := AFiles[ 0 ];
+
+      Text__File__Load_ButtonClick( Sender );
+
+    end;
+
+end;
+
 procedure TSql_Editor_F_Frame.Sql_Text_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift );
+  Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift, Bookmarks__Toggle__With__Line_Color_MenuItem.Checked );
 
 
   Key_Down_Common( Sender, Key, Shift );
@@ -4443,8 +4630,6 @@ begin
 end;
 
 procedure TSql_Editor_F_Frame.Sql_Text__Highlighter__Syntax__SetMenuItemClick( Sender: TObject );
-var
-  i : integer;
 begin
 
   if    ( Sender <> nil )
@@ -4464,30 +4649,7 @@ begin
              and ( Sql_Text_SynEdit.Highlighter <> nil )
              and ( Sql_Text_SynEdit.Highlighter.Name <> TMenuItem(Sender).Hint )
            ) then
-        begin
-
-          TMenuItem(Sender).Checked := false;
-
-
-          if Sql_Text_SynEdit.Highlighter <> nil then
-            begin
-
-              for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
-                if Highlighter__Syntax_MenuItem.Items[ i ].Hint = Sql_Text_SynEdit.Highlighter.Name then
-                  begin
-
-                    Highlighter__Syntax_MenuItem.Items[ i ].Checked := true;
-
-                    Break;
-
-                  end;
-
-            end
-          else
-            if Highlighter__Syntax_MenuItem.Count > 0 then
-              Highlighter__Syntax_MenuItem.Items[ 0 ].Checked := true;
-
-        end;
+        Highlighter__Syntax_MenuItem__Check__Correct();
 
     end;
 
@@ -4496,14 +4658,21 @@ end;
 procedure TSql_Editor_F_Frame.Sql_Text__Highlights__Brackets__SetMenuItemClick( Sender: TObject );
 begin
 
+  Highlights__Brackets_MenuItem__Enabled__Correct();
+
+
   Sql_Text_SynEdit.Plugin__Search_Highlighter__Brackets__Set
     (
       Highlights__Brackets__All_Pairs_MenuItem.Checked,
       Highlights__Brackets__Angle_MenuItem.Checked,
       Highlights__Brackets__Curly_MenuItem.Checked,
+      Highlights__Brackets__Marked_Only_MenuItem.Checked,
       Highlights__Brackets__Round_MenuItem.Checked,
       Highlights__Brackets__Square_MenuItem.Checked
     );
+
+
+  Common.Syn_Edit__Highlight__Text( Sql_Text_SynEdit );
 
 end;
 
@@ -4523,17 +4692,20 @@ end;
 
 procedure TSql_Editor_F_Frame.Sql_Text_PopupMenu__MenuItemClick_Common( Sender: TObject );
 var
-  key_l : Word;
+  do_refresh_l : boolean;
+
+  key_l : word;
+
   shift_state_l : TShiftState;
 begin
 
+  do_refresh_l := false;
   key_l := 0;
+  shift_state_l := [];
+
 
   if Sender <> nil then
     begin
-
-      shift_state_l := [ ssCtrl ];
-
 
       if Sender = Comment_Invert_Alternatively_MenuItem then
         begin
@@ -4545,18 +4717,54 @@ begin
         end
       else
       if Sender = Comment_Uncomment_MenuItem then
-        key_l := VK_OEM_2 // /.
+        begin
+
+          shift_state_l := [ ssCtrl ];
+
+          key_l := VK_OEM_2; // /.
+
+
+        end
       else
       if Sender = Comment_Uncomment_Alternatively_MenuItem then
-        key_l := VK_OEM_5 // \.
+        begin
+
+          shift_state_l := [ ssCtrl ];
+
+          key_l := VK_OEM_5; // \.
+
+        end
       else
       if Sender = Copy_MenuItem then
         begin
 
-          if Sql_Text_SynEdit.SelText <> '' then
-            Sql_Text_SynEdit.CopyToClipboard()
+          if Sql_Text_PopupMenu.PopupComponent = Sql_Editor_DBGrid then
+            begin
+
+              shift_state_l := [ ssCtrl ];
+
+              key_l := 67; // C.
+
+              Sql_Editor_DBGridKeyDown( Sender, key_l, shift_state_l );
+
+              key_l := 0;
+
+            end
           else
-            key_l := 67; // C.
+            begin
+
+              if Sql_Text_SynEdit.SelText <> '' then
+                Sql_Text_SynEdit.CopyToClipboard()
+              else
+                begin
+
+                  shift_state_l := [ ssCtrl ];
+
+                  key_l := 67; // C.
+
+                end;
+
+            end;
 
         end
       else
@@ -4566,26 +4774,88 @@ begin
           if Sql_Text_SynEdit.SelText <> '' then
             Sql_Text_SynEdit.CutToClipboard()
           else
-            key_l := 88; // X.
+            begin
+
+              shift_state_l := [ ssCtrl ];
+
+              key_l := 88; // X.
+
+            end;
 
         end
       else
       if Sender = Find_MenuItem then
-        key_l := 70 // F.
+        begin
+
+          shift_state_l := [ ssCtrl ];
+
+          key_l := 70; // F.
+
+        end
+      else
+      if Sender = Lines_Color__Toggle_MenuItem then
+        begin
+
+          key_l := VK_F5;
+
+          do_refresh_l := true;
+
+        end
+      else
+      if Sender = Lines_Color__Change_MenuItem then
+        begin
+
+          key_l := VK_F6;
+
+          do_refresh_l := true;
+
+        end
+      else
+      if Sender = Lines_Color__Choose_MenuItem then
+        key_l := VK_F7
+      else
+      if Sender = Lines_Color__Clear__All_MenuItem then
+        begin
+
+          shift_state_l := [ ssShift ];
+
+          key_l := VK_F5;
+
+          do_refresh_l := true;
+
+        end
       else
       if Sender = Paste_MenuItem then
         Sql_Text_SynEdit.PasteFromClipboard()
       else
       if Sender = Replace_MenuItem then
-        key_l := 72 // H.
+        begin
+
+          shift_state_l := [ ssCtrl ];
+
+          key_l := 72; // H.
+
+        end
       else
       if Sender = Select_All_MenuItem then
-        key_l := 65 // A.
+        begin
+
+          shift_state_l := [ ssCtrl ];
+
+          key_l := 65; // A.
+
+        end
       else
         if    ( Sender is TMenuItem )
           and ( TMenuItem(Sender).GetParentComponent = Bookmarks__Go_To_MenuItem )
           and (  Length( TMenuItem(Sender).MenuIndex.ToString() ) > 0  ) then
-          key_l := Ord( TMenuItem(Sender).MenuIndex.ToString()[ 1 ] )
+          begin
+
+            shift_state_l := [ ssCtrl ];
+
+            key_l := Ord( TMenuItem(Sender).MenuIndex.ToString()[ 1 ] );
+
+          end
         else
         if    ( Sender is TMenuItem )
           and ( TMenuItem(Sender).GetParentComponent = Bookmarks__Toggle_MenuItem )
@@ -4602,7 +4872,11 @@ begin
 
 
   if key_l <> 0 then
-    Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, key_l, shift_state_l );
+    Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, key_l, shift_state_l, Bookmarks__Toggle__With__Line_Color_MenuItem.Checked );
+
+
+  if do_refresh_l then
+    Sql_Text_SynEdit.Refresh();
 
 end;
 
@@ -4627,6 +4901,30 @@ begin
   if    ( Key = 65 )
     and ( Shift = [ ssCtrl ] ) then
     Log_Memo.SelectAll();
+
+end;
+
+procedure TSql_Editor_F_Frame.Sql_Text_PopupMenuPopup( Sender: TObject );
+var
+  ztb : boolean;
+begin
+
+  if Sql_Text_PopupMenu.PopupComponent = Sql_Text_SynEdit then
+    ztb := true
+  else
+    ztb := false;
+
+
+  Bookmarks__Toggle_MenuItem.Enabled := ztb;
+  Comment_Invert_Alternatively_MenuItem.Enabled := ztb;
+  Comment_Uncomment_Alternatively_MenuItem.Enabled := ztb;
+  Comment_Uncomment_MenuItem.Enabled := ztb;
+  Cut_MenuItem.Enabled := ztb;
+  Lines_Color__Change_MenuItem.Enabled := ztb;
+  Lines_Color__Choose_MenuItem.Enabled := ztb;
+  Lines_Color__Toggle_MenuItem.Enabled := ztb;
+  Paste_MenuItem.Enabled := ztb;
+  Select_All_MenuItem.Enabled := ztb;
 
 end;
 

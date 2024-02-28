@@ -151,10 +151,6 @@ begin
   Table_Columns_StringGrid.Cells[ table_columns__column_number__name_c, row_f ] := table_column__modify_form_f.Column_Name_Edit.Text;
   Table_Columns_StringGrid.Cells[ table_columns__column_number__type_c, row_f ] := table_column__modify_form_f.Column_Type_ComboBox.Text;
 
-
-  if table_column__modify_form_f.Column_Position_CheckBox.Checked then
-    table_column__modify_form_f.Column_Position_JvSpinEdit.Value;
-
 end;
 
 function TTable_Add_Form.Quotation_Sign__TA() : string;
@@ -407,9 +403,9 @@ begin
   Table_Column__Modify.Table_Column__Modify_Form.from_table_add_tcm := true;
 
   if Trim( Table_Columns_StringGrid.Cells[ table_columns__column_number__name_c, 1 ] ) = '' then
-    Table_Column__Modify.Table_Column__Modify_Form.Column_Position_JvSpinEdit.Value := Table_Columns_StringGrid.RowCount - 1
+    Table_Column__Modify.Table_Column__Modify_Form.Column_Position_SpinEdit.Value := Table_Columns_StringGrid.RowCount - 1
   else
-    Table_Column__Modify.Table_Column__Modify_Form.Column_Position_JvSpinEdit.Value := Table_Columns_StringGrid.RowCount;
+    Table_Column__Modify.Table_Column__Modify_Form.Column_Position_SpinEdit.Value := Table_Columns_StringGrid.RowCount;
 
   modal_result := Table_Column__Modify.Table_Column__Modify_Form.ShowModal();
 
@@ -420,7 +416,7 @@ begin
 
       Table_Columns_StringGrid.Row := Table_Columns_StringGrid.RowCount - 1;
 
-      Row_Position_Adjust(  Table_Columns_StringGrid.Row, Round( Table_Column__Modify.Table_Column__Modify_Form.Column_Position_JvSpinEdit.Value )  );
+      Row_Position_Adjust(  Table_Columns_StringGrid.Row, Trunc( Table_Column__Modify.Table_Column__Modify_Form.Column_Position_SpinEdit.Value )  );
 
     end;
 
@@ -442,11 +438,11 @@ begin
   Table_Column__Modify.Table_Column__Modify_Form.database_type__tcm := database_type__ta;
   Table_Column__Modify.Table_Column__Modify_Form.from_table_add_tcm := true;
   Table_Column__Modify.Table_Column__Modify_Form.Not_Null_CheckBox.Checked := Table_Columns_StringGrid.Cells[ table_columns__column_number__allow_nulls_c, Table_Columns_StringGrid.Row ] <> Common.db_grid__positive_value_c;
-  Table_Column__Modify.Table_Column__Modify_Form.column_collate__tcm := Table_Columns_StringGrid.Cells[ table_columns__column_number__collation_c, Table_Columns_StringGrid.Row ];
+  Table_Column__Modify.Table_Column__Modify_Form.column__collate__tcm := Table_Columns_StringGrid.Cells[ table_columns__column_number__collation_c, Table_Columns_StringGrid.Row ];
   Table_Column__Modify.Table_Column__Modify_Form.Default_Value_Edit.Text := Table_Columns_StringGrid.Cells[ table_columns__column_number__default_c, Table_Columns_StringGrid.Row ];
   Table_Column__Modify.Table_Column__Modify_Form.Column_Name_Edit.Text := Table_Columns_StringGrid.Cells[ table_columns__column_number__name_c, Table_Columns_StringGrid.Row ];
-  Table_Column__Modify.Table_Column__Modify_Form.column_type__tcm := Table_Columns_StringGrid.Cells[ table_columns__column_number__type_c, Table_Columns_StringGrid.Row ];
-  Table_Column__Modify.Table_Column__Modify_Form.Column_Position_JvSpinEdit.Value := Table_Columns_StringGrid.Row;
+  Table_Column__Modify.Table_Column__Modify_Form.column__position__tcm := Table_Columns_StringGrid.Row;
+  Table_Column__Modify.Table_Column__Modify_Form.column__type__tcm := Table_Columns_StringGrid.Cells[ table_columns__column_number__type_c, Table_Columns_StringGrid.Row ];
   modal_result := Table_Column__Modify.Table_Column__Modify_Form.ShowModal();
 
   if modal_result = mrOk then
@@ -454,7 +450,7 @@ begin
 
       Grid_Values__Set( Table_Column__Modify.Table_Column__Modify_Form, Table_Columns_StringGrid.Row );
 
-      Row_Position_Adjust(  Table_Columns_StringGrid.Row, Round( Table_Column__Modify.Table_Column__Modify_Form.Column_Position_JvSpinEdit.Value )  );
+      Row_Position_Adjust(  Table_Columns_StringGrid.Row, Trunc( Table_Column__Modify.Table_Column__Modify_Form.Column_Position_SpinEdit.Value )  );
 
     end;
 

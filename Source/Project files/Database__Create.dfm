@@ -50,7 +50,7 @@ object Database__Create_Form: TDatabase__Create_Form
       AlignWithMargins = True
       Left = 12
       Top = 259
-      Width = 56
+      Width = 580
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -58,12 +58,13 @@ object Database__Create_Form: TDatabase__Create_Form
       Margins.Bottom = 5
       Align = alTop
       Caption = 'User name'
+      ExplicitWidth = 56
     end
     object Password_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 307
-      Width = 50
+      Width = 580
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -71,12 +72,13 @@ object Database__Create_Form: TDatabase__Create_Form
       Margins.Bottom = 5
       Align = alTop
       Caption = 'Password'
+      ExplicitWidth = 50
     end
     object Database__Default_Character_Set_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 115
-      Width = 108
+      Width = 580
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -86,12 +88,13 @@ object Database__Create_Form: TDatabase__Create_Form
       Caption = 'Default character set'
       ParentShowHint = False
       ShowHint = False
+      ExplicitWidth = 108
     end
     object Database__Page_Size_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 163
-      Width = 48
+      Width = 580
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -101,12 +104,13 @@ object Database__Create_Form: TDatabase__Create_Form
       Caption = 'Page size'
       ParentShowHint = False
       ShowHint = False
+      ExplicitWidth = 48
     end
     object Database__Sql_Dialect_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 211
-      Width = 59
+      Width = 580
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -116,12 +120,13 @@ object Database__Create_Form: TDatabase__Create_Form
       Caption = 'SQL dialect'
       ParentShowHint = False
       ShowHint = False
+      ExplicitWidth = 59
     end
     object Database__Collation_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 67
-      Width = 48
+      Width = 580
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -131,6 +136,7 @@ object Database__Create_Form: TDatabase__Create_Form
       Caption = 'Collation'
       ParentShowHint = False
       ShowHint = False
+      ExplicitWidth = 48
     end
     object Database__Default_Character_Set_ComboBox: TComboBox
       AlignWithMargins = True

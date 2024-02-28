@@ -906,7 +906,7 @@ object Options_Form: TOptions_Form
         object Caret_Position_Label: TLabel
           AlignWithMargins = True
           Left = 11
-          Top = 276
+          Top = 330
           Width = 579
           Height = 15
           Hint = 'Caret position, text length.'
@@ -933,7 +933,7 @@ object Options_Form: TOptions_Form
           Margins.Bottom = 0
           Align = alTop
           Caption = 'Code completion window'
-          TabOrder = 2
+          TabOrder = 3
           object Sql_Editor__Code__Completion_Window__Default__Width_GroupBox: TGroupBox
             AlignWithMargins = True
             Left = 427
@@ -1034,11 +1034,11 @@ object Options_Form: TOptions_Form
           Caption = 'Automatically transaction begining'
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 1
+          TabOrder = 2
         end
         object Sql_Text_Memo: TMemo
           Left = 1
-          Top = 291
+          Top = 346
           Width = 200
           Height = 150
           Lines.Strings = (
@@ -1059,7 +1059,7 @@ object Options_Form: TOptions_Form
             'where CUSTOMER.CUST_NO is not null'
             'order by CUSTOMER.POSTAL_CODE')
           ScrollBars = ssBoth
-          TabOrder = 9
+          TabOrder = 11
           Visible = False
           OnClick = Sql_Text_MemoClick
           OnKeyUp = Sql_Text_MemoKeyUp
@@ -1071,14 +1071,14 @@ object Options_Form: TOptions_Form
           Height = 25
           Anchors = [akTop, akRight]
           Caption = 'Font'
-          TabOrder = 8
+          TabOrder = 1
           OnClick = Sql_Editor__Font_ButtonClick
         end
         object Sql_Text_SynEdit: TSynEdit
           Left = 1
-          Top = 291
+          Top = 345
           Width = 599
-          Height = 365
+          Height = 311
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -1086,7 +1086,7 @@ object Options_Form: TOptions_Form
           Font.Name = 'Consolas'
           Font.Style = []
           Font.Quality = fqClearTypeNatural
-          TabOrder = 10
+          TabOrder = 12
           OnClick = Sql_Text_SynEditClick
           OnEnter = Sql_Text_SynEditEnter
           OnKeyDown = Sql_Text_SynEditKeyDown
@@ -1155,7 +1155,7 @@ object Options_Form: TOptions_Form
           Caption = 'Delete comments'
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 5
+          TabOrder = 6
         end
         object Sql_Editor__Code__Dent_Width_GroupBox: TGroupBox
           AlignWithMargins = True
@@ -1172,7 +1172,7 @@ object Options_Form: TOptions_Form
           Margins.Bottom = 0
           Align = alTop
           Caption = 'Code dent width'
-          TabOrder = 3
+          TabOrder = 4
           object Sql_Editor__Code__Dent_Width_SpinEdit: TSpinEdit
             AlignWithMargins = True
             Left = 7
@@ -1205,7 +1205,7 @@ object Options_Form: TOptions_Form
           Caption = 'Close prompt'
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 4
+          TabOrder = 5
         end
         object Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1222,7 +1222,7 @@ object Options_Form: TOptions_Form
           Caption = 'Separated database connection'
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 7
+          TabOrder = 8
         end
         object Sql_Editor__Execute__Selected_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1230,9 +1230,6 @@ object Options_Form: TOptions_Form
           Top = 227
           Width = 579
           Height = 17
-          Hint = 
-            'Execute only the selected part of the SQL command (if the select' +
-            'ion is not empty).'
           Margins.Left = 10
           Margins.Top = 5
           Margins.Right = 10
@@ -1240,8 +1237,42 @@ object Options_Form: TOptions_Form
           Align = alTop
           Caption = 'Execute selected SQL only'
           ParentShowHint = False
-          ShowHint = True
-          TabOrder = 6
+          ShowHint = False
+          TabOrder = 7
+        end
+        object Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 281
+          Width = 579
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 5
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 
+            'Switch keyboard shortcuts '#39'Save query output as csv'#39' with '#39'Save ' +
+            'file'#39
+          ParentShowHint = False
+          ShowHint = False
+          TabOrder = 9
+        end
+        object Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 308
+          Width = 579
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 5
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Toggle bookmarks with line color'
+          ParentShowHint = False
+          ShowHint = False
+          TabOrder = 10
         end
       end
       object Sql_Editor__Right_Panel: TPanel
@@ -1447,7 +1478,7 @@ object Options_Form: TOptions_Form
             Top = 17
             Width = 229
             Height = 126
-            ActivePage = Sql_Editor__Highlights__Lines_TabSheet
+            ActivePage = Sql_Editor__Highlights__Syntax_TabSheet
             Align = alClient
             TabOrder = 0
             object Sql_Editor__Highlights__Brackets_TabSheet: TTabSheet
@@ -1543,9 +1574,6 @@ object Options_Form: TOptions_Form
                 Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames, cbCustomColors]
                 DropDownCount = 40
                 TabOrder = 0
-                ExplicitLeft = 5
-                ExplicitTop = 21
-                ExplicitWidth = 615
               end
             end
             object Sql_Editor__Highlights__Syntax_TabSheet: TTabSheet
@@ -1629,9 +1657,9 @@ object Options_Form: TOptions_Form
                 TabOrder = 4
               end
               object Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox: TCheckBox
-                Left = 10
+                Left = 5
                 Top = 75
-                Width = 120
+                Width = 110
                 Height = 17
                 Hint = 
                   'Highlight all selected brackets pairs.'#13#10#13#10'When a text is long it' +
@@ -1640,6 +1668,17 @@ object Options_Form: TOptions_Form
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 5
+              end
+              object Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox: TCheckBox
+                Left = 120
+                Top = 75
+                Width = 100
+                Height = 17
+                Hint = 'Highlight only marked brackets.'
+                Caption = 'Marked only'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 6
               end
             end
             object Sql_Editor__Highlights__Words_TabSheet: TTabSheet

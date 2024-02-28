@@ -218,7 +218,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Width = 25
         Height = 25
         Hint = 'Find next.'
-        ImageIndex = 15
+        ImageIndex = 35
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True
@@ -231,7 +231,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Width = 25
         Height = 25
         Hint = 'Replace.'
-        ImageIndex = 4
+        ImageIndex = 36
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True

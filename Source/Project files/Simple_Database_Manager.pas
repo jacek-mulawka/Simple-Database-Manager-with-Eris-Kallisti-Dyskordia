@@ -17,7 +17,7 @@ uses
   Database__Modify,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls, System.ImageList, Vcl.ImgList;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls;
 
 type
   TSimple_Database_Manager_Form = class( TForm )
@@ -130,9 +130,9 @@ implementation
 uses
   FireDAC.Stan.Option,
 
+  System.TypInfo,
   Xml.XMLDoc,
   Xml.XMLIntf,
-  System.TypInfo,
 
   SynEdit,
 
@@ -172,9 +172,7 @@ end;
 
 function TSimple_Database_Manager_Form.SQL_Editor__Close_Prompt__DBM( zt_database__modify_form_f : Database__Modify.TDatabase__Modify_Form = nil; const item_index_f : integer = -1 ) : boolean;
 var
-  ztb,
-  task_is_running_l
-    : boolean;
+  ztb : boolean;
 
   i : integer;
 
@@ -308,6 +306,7 @@ begin
   Common.log__auto_scroll__seconds := 5;
   Common.queries_open_in_background := true;
   Common.splitter_show := true;
+  Common.sql_editor__bookmarks__toggle__with__line_color := false;
   Common.sql_editor__close_prompt := true;
   Common.sql_editor__code__completion_window__default__lines_in_window := 70;
   Common.sql_editor__code__completion_window__default__width := 800;
@@ -324,16 +323,18 @@ begin
   Common.sql_editor__highlights__syntax__brackets__all_pairs := false;
   Common.sql_editor__highlights__syntax__brackets__angle := false;
   Common.sql_editor__highlights__syntax__brackets__curly := false;
+  Common.sql_editor__highlights__syntax__brackets__marked_only := false;
   Common.sql_editor__highlights__syntax__brackets__round := true;
   Common.sql_editor__highlights__syntax__brackets__square := false;
   Common.sql_editor__highlights__words__color__background := $0080DDFF; // Yellow / orange.
   Common.sql_editor__highlights__words__color__border := $00226DA8; // Brown.
-  Common.sql_editor__transactions_automatic := true;
+  Common.sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save := false;
   Common.sql_editor__query_output_save_field_format__date := 'dd.mm.yyyy';
   Common.sql_editor__query_output_save_field_format__real_numbers := '0.##########';
   Common.sql_editor__query_output_save_field_format__separator__date_time := ' ';
   Common.sql_editor__query_output_save_field_format__separator__decimal := '.';
   Common.sql_editor__query_output_save_field_format__time := 'hh:mm:ss';
+  Common.sql_editor__transactions_automatic := true;
   Common.sql__command_separator := ';';
   Common.sql__comment__begin := '/*';
   Common.sql__comment__end := '*/';

@@ -6,8 +6,9 @@ uses
   Common,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.Mask, JvExMask,
-  JvSpin, Vcl.ComCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Samples.Spin,
+
+  Interceptor__Spin_Edit;
 
 type
   TTable_Column__Modify_Form = class( TForm )
@@ -27,13 +28,13 @@ type
     Collate_ComboBox: TComboBox;
     Column_Position_GroupBox: TGroupBox;
     Column_Position_CheckBox: TCheckBox;
-    Column_Position_JvSpinEdit: TJvSpinEdit;
     PageControl1: TPageControl;
     Log_TabSheet: TTabSheet;
     Sql_TabSheet: TTabSheet;
     Log_Memo: TMemo;
     Execute_Button_Works_As_Prepare_Execute_CheckBox: TCheckBox;
     Ok_Button: TButton;
+    Column_Position_SpinEdit: TSpinEdit;
     procedure FormCreate( Sender: TObject );
     procedure FormShow( Sender: TObject );
     procedure FormDestroy( Sender: TObject );
@@ -68,9 +69,13 @@ type
     type_edit__tcm // Only column type edit.
       : boolean;
 
-    column_collate__tcm,
-    column_name__tcm,
-    column_type__tcm,
+    column__position__tcm,
+    column__position__out__tcm
+      : integer;
+
+    column__collate__tcm,
+    column__name__tcm,
+    column__type__tcm,
     database_type__tcm,
     sql__quotation_sign__tcm,
     table_name__tcm
@@ -129,9 +134,11 @@ end;
 procedure TTable_Column__Modify_Form.FormCreate( Sender: TObject );
 begin
 
-  column_collate__tcm := '';
-  column_name__tcm := '';
-  column_type__tcm := '';
+  column__collate__tcm := '';
+  column__name__tcm := '';
+  column__position__tcm := 1;
+  column__position__out__tcm := -99;
+  column__type__tcm := '';
   database_type__tcm := '';
   from_table_add_tcm := false;
   modified__tcm := false;
@@ -141,6 +148,9 @@ begin
 
 
   Translation.Translation__Apply( Self );
+
+
+  Column_Position_SpinEdit.check_value__min := true;
 
 end;
 
@@ -473,10 +483,10 @@ begin
       Sql_Prepare_Button.Visible := false;
       Sql_TabSheet.TabVisible := false;
 
-      if  Trim( column_collate__tcm ) <> '' then
-        Collate_ComboBox.Text := column_collate__tcm;
+      if  Trim( column__collate__tcm ) <> '' then
+        Collate_ComboBox.Text := column__collate__tcm;
 
-      Column_Type_ComboBox.Text := column_type__tcm;
+      Column_Type_ComboBox.Text := column__type__tcm;
 
     end
   else
@@ -493,10 +503,13 @@ begin
         Vcl.Controls.TWinControl(Default_Value_GroupBox.Controls[ i ]).Enabled := false;
 
 
-      Column_Name_Edit.Text := column_name__tcm;
-      Column_Type_ComboBox.Text := column_type__tcm;
+      Column_Name_Edit.Text := column__name__tcm;
+      Column_Type_ComboBox.Text := column__type__tcm;
 
     end;
+
+
+  Column_Position_SpinEdit.Value := column__position__tcm;
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
@@ -593,7 +606,7 @@ begin
       zts := sql__position_set_g;
 
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCM() + Column_Name_Edit.Text + Self.Quotation_Sign__TCM(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__position_value_c + Common.sql__word_replace_separator_c, Column_Position_JvSpinEdit.Value.ToString(), [ rfReplaceAll ] );
+      zts := StringReplace(   zts, Common.sql__word_replace_separator_c + Common.name__position_value_c + Common.sql__word_replace_separator_c, IntToStr(  Trunc( Column_Position_SpinEdit.Value )  ), [ rfReplaceAll ]   );
       zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCM() + table_name__tcm + Self.Quotation_Sign__TCM(), [ rfReplaceAll ] );
 
       Sql_Memo.Lines.Add( zts );
@@ -698,7 +711,17 @@ begin
 
 
   if not error_occurred then
-    Application.MessageBox( PChar(Translation.translation__messages_r.done), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
+    begin
+
+      if Column_Position_CheckBox.Checked then
+        column__position__out__tcm := Trunc( Column_Position_SpinEdit.Value )
+      else
+        column__position__out__tcm := column__position__tcm;
+
+
+      Application.MessageBox( PChar(Translation.translation__messages_r.done), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
+
+    end;
 
 
   // It works to execute only one command at a time. //???

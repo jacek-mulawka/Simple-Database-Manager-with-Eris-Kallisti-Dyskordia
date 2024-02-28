@@ -4,7 +4,6 @@ interface
 
 uses
   System.SysUtils,
-  Vcl.Clipbrd,
   Vcl.Controls,
   Vcl.ExtCtrls,
   Vcl.Forms,

@@ -5,11 +5,10 @@ interface
 uses
   Common,
 
-  Data.DB, IBX.IBDatabase,
+  IBX.IBDatabase,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ExtCtrls, Vcl.ComCtrls,
-  DosCommand;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, DosCommand;
 
 type
   TDatabase__Create_Form = class( TForm )
@@ -134,7 +133,6 @@ var
 implementation
 
 uses
-  System.TypInfo,
   System.UITypes,
   //Winapi.ShellAPI,
 

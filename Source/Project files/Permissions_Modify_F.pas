@@ -10,7 +10,7 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, Vcl.DBCtrls, Vcl.Samples.Spin, Vcl.CheckLst, Vcl.Menus;
+  Vcl.Mask, Vcl.DBCtrls, Vcl.CheckLst, Vcl.Menus;
 
 type
   TPermissions_Object_Type = ( pot_function, pot_procedure_stored, pot_table );
