@@ -19,6 +19,8 @@ uses
   External_Function__Parameter in 'Project files\External_Function__Parameter.pas',
   Form_View_Field in 'Project files\Form_View_Field.pas',
   Generators_Modify_F in 'Project files\Generators_Modify_F.pas' {Generators_Modify_F_Frame},
+  Interceptor__Spin_Edit in 'Project files\Interceptors\Interceptor__Spin_Edit.pas',
+  Interceptor__Syn_Edit in 'Project files\Interceptors\Interceptor__Syn_Edit.pas',
   Migawka_Prostokat_Tabela_2_SDBM in 'Project files\Migawka_Prostokat_Tabela_2_SDBM.pas',
   Options in 'Project files\Options.pas' {Options_Form},
   Permissions_Modify_F in 'Project files\Permissions_Modify_F.pas' {Permissions_Modify_F_Frame},
