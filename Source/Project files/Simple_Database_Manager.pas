@@ -294,6 +294,7 @@ begin
   Common.database__backup__file_name__suffix_default__item_index := 1;
   Common.database__create__application__file_path := 'C:\Program Files\Firebird\isql.exe';
   Common.database__file__default_extension := '.fdb';
+  Common.database__modify__window__maximized := false;
   Common.exe__file__default_extension := '.exe';
 
   Common.fire_dac__fetch_options__mode := fmOnDemand;
@@ -306,6 +307,7 @@ begin
   Common.log__auto_scroll__seconds := 5;
   Common.queries_open_in_background := true;
   Common.splitter_show := true;
+  Common.sql_editor__block_execute__automatic_detection := true;
   Common.sql_editor__bookmarks__toggle__with__line_color := false;
   Common.sql_editor__close_prompt := true;
   Common.sql_editor__code__completion_window__default__lines_in_window := 70;
@@ -973,6 +975,11 @@ begin
       item_index_g := Databases_List_ListBox.ItemIndex;
       Name := '';
       Prepare__DM();
+
+
+      if    ( Common.database__modify__window__maximized )
+        and ( WindowState <> wsMaximized ) then
+        WindowState := wsMaximized;
 
     end;
 

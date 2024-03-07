@@ -153,8 +153,9 @@ type
     N12: TMenuItem;
     Database__Reconnect_MenuItem: TMenuItem;
     N13: TMenuItem;
-    Execute__Automatic_Detection_MenuItem: TMenuItem;
     Transactions_Automatic_MenuItem: TMenuItem;
+    Block_Execute__Automatic_Detection_MenuItem: TMenuItem;
+    Execute__Automatic_Detection_MenuItem: TMenuItem;
     Data_Value_Format__Disabled_MenuItem: TMenuItem;
     Comments_Delete_MenuItem: TMenuItem;
     Execute__Selected_MenuItem: TMenuItem;
@@ -280,6 +281,7 @@ type
 
     databases_r_copy_g : Common.TDatabases_r;
 
+    sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t,
     sql_editor__sql_special_word__execute__automatic_detection__list_g_t,
     sql_editor__sql_special_word__transactions_automatic__list_g_t,
     sql_text_history_g_t
@@ -332,6 +334,7 @@ const
   sql_editor__column_name_add_text__2__file_name_c : string = 'Sql_Editor__Column_Name_Add_Text__2.txt';
   sql_editor__notification__sign__file_changed_c : string = '*';
   sql_editor__select_all_columns_text__file_name_c : string = 'Sql_Editor__Select_All_Columns_Text.txt';
+  sql_editor__sql_special_word__block_execute__automatic_detection__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Block_Execute__Automatic_Detection_List.txt';
   sql_editor__sql_special_word__execute__automatic_detection__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Execute__Automatic_Detection_List.txt';
   sql_editor__sql_special_word__transactions_automatic__file_name_c : string = 'Sql_Editor__Sql_Special_Word__Transactions_Automatic_List.txt';
   sql_editor__table_name_add_text__1__file_name_c : string = 'Sql_Editor__Table_Name_Add_Text__1.txt';
@@ -866,6 +869,30 @@ begin
       else
         Text__File__Save_ButtonClick( Sender );
 
+    end
+  else
+  // T.
+  if    ( Key = 84 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      if Left_Panel.Width <= 1 then
+        begin
+
+          Left_Panel.Width := 185;
+
+          Sql_Text_Panel.Height := 300;
+
+        end
+      else
+        begin
+
+          Buttons_Panel__Hide_ButtonClick( Sender );
+
+          Sql_Text_Panel.Height := Self.Height - Sql_Text_Horizontal_Splitter.Height;
+
+        end;
+
     end;
 
 end;
@@ -934,6 +961,30 @@ begin
 end;
 
 function TSql_Editor_F_Frame.Open_Execute( const command_execute_f : boolean; var history_text_f : string; command_execute_parameters_t_f : array of string ) : boolean;
+
+  function Sql__Block_Execute_Check( const sql_text_f : string ) : boolean;
+  var
+    i_l : integer;
+  begin
+
+    Result := false;
+
+
+    if not Block_Execute__Automatic_Detection_MenuItem.Checked then
+      Exit;
+
+
+    for i_l := 0 to Length( sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t ) - 1 do
+      if Pos( sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t[ i_l ], sql_text_f ) > 0 then
+        begin
+
+          Result := true;
+
+          Exit;
+
+        end;
+
+  end;
 
   function Sql__Command__Comments_Delete( sql_text_f : string ) : string;
   var
@@ -1028,6 +1079,11 @@ function TSql_Editor_F_Frame.Open_Execute( const command_execute_f : boolean; va
     // Result is the position of the separator.
 
     Result := -1; // Sql has only one command.
+
+
+    if Sql__Block_Execute_Check( sql_text_f ) then
+      Exit;
+
 
     i_l := 0;
     sql_text_separator_occurred_l := false;
@@ -1711,6 +1767,7 @@ begin
   sort__column_name_g := '';
   sort__direction_ascending_g := true;
   sql_editor_db_grid__selected_index_copy_g := 0;
+  SetLength( sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t, 0 );
   SetLength( sql_editor__sql_special_word__execute__automatic_detection__list_g_t, 0 );
   SetLength( sql_editor__sql_special_word__transactions_automatic__list_g_t, 0 );
   SetLength( sql_text_history_g_t, 0 );
@@ -1737,6 +1794,7 @@ begin
   Tables_List_ListBox.Height := Round( Tables_Columns_List_Panel.Height * 0.5 ) - Tables_List_Horizontal_Splitter.Height;
 
   Ado_Command_Param_Check_MenuItem.Checked := Ado_Command_Param_Check_CheckBox.Checked;
+  Block_Execute__Automatic_Detection_MenuItem.Checked := Common.sql_editor__block_execute__automatic_detection;
   Execute__Automatic_Detection_CheckBox.Checked := Common.sql_editor__execute__automatic_detection;
   Execute__Automatic_Detection_MenuItem.Checked := Execute__Automatic_Detection_CheckBox.Checked;
   Execute__Selected_MenuItem.Checked := Common.sql_editor__execute__selected;
@@ -1808,6 +1866,49 @@ begin
 
 
   Self.Options_Set__SEF( component_type_f, databases_r_f.sql__quotation_sign, Queries_Open_In_Background_MenuItem.Checked, sql__quotation_sign__use_f );
+
+
+  zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__block_execute__automatic_detection__file_name_c  );
+
+
+  if Trim( zts_1 ) = '' then
+    begin
+
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__block_execute__automatic_detection__file_name_c + ').' );
+
+      zts_1 :=
+        'execute block' + #13 + #10 +
+
+        'EXECUTE BLOCK ' + #13 + #10;
+
+    end;
+
+  Log_Memo.Lines.Add( Translation.translation__messages_r.automatically_block_execute_detection_words_list );
+
+  zti_1 := Pos( #13 + #10, zts_1 );
+
+  while zti_1 > 0 do
+    begin
+
+      zts_2 := Copy( zts_1, 1, zti_1 - 1 );
+
+      if Trim( zts_2 ) <> '' then
+        begin
+
+          zti_2 := Length( sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t );
+          SetLength( sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t, zti_2 + 1 );
+          sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t[ zti_2 ] := zts_2;
+
+          Log_Memo.Lines.Add( sql_editor__sql_special_word__block_execute__automatic_detection__list_g_t[ zti_2 ] );
+
+        end;
+
+      Delete( zts_1, 1, zti_1 + 1 );
+
+
+      zti_1 := Pos( #13 + #10, zts_1 );
+
+    end;
 
 
   zts_1 := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__sef_g ) + sql_editor__sql_special_word__execute__automatic_detection__file_name_c  );

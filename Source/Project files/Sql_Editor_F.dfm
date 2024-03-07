@@ -26,11 +26,11 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     TabOrder = 0
     object Sql_Text_Horizontal_Splitter: TSplitter
       Left = 1
-      Top = 301
+      Top = 273
       Width = 447
       Height = 6
       Cursor = crVSplit
-      Align = alTop
+      Align = alBottom
       AutoSnap = False
       Color = clSkyBlue
       MinSize = 1
@@ -42,14 +42,15 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       Left = 1
       Top = 1
       Width = 447
-      Height = 300
-      Align = alTop
+      Height = 272
+      Align = alClient
       TabOrder = 0
+      ExplicitHeight = 300
       object Sql_Parameters_Vertical_Splitter: TSplitter
         Left = 390
         Top = 1
         Width = 6
-        Height = 298
+        Height = 270
         Align = alRight
         AutoSnap = False
         Color = clSkyBlue
@@ -57,6 +58,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         ParentColor = False
         ExplicitLeft = 6
         ExplicitTop = 2
+        ExplicitHeight = 298
       end
       object Sql_Text_Memo: TMemo
         Left = 1
@@ -75,15 +77,16 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Left = 396
         Top = 1
         Width = 50
-        Height = 298
+        Height = 270
         Align = alRight
         TabOrder = 1
+        ExplicitHeight = 298
       end
       object Sql_Text_SynEdit: TSynEdit
         Left = 1
         Top = 1
         Width = 389
-        Height = 298
+        Height = 270
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -129,18 +132,19 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         WantTabs = True
         OnDropFiles = Sql_Text_SynEditDropFiles
         OnReplaceText = Sql_Text_SynEditReplaceText
+        ExplicitHeight = 298
       end
     end
     object Middle_Panel__Bottom_Panel: TPanel
       Left = 1
-      Top = 307
+      Top = 279
       Width = 447
-      Height = 172
-      Align = alClient
+      Height = 200
+      Align = alBottom
       TabOrder = 1
       object Data_Preview_Memo_Horizontal_Splitter: TSplitter
         Left = 1
-        Top = 115
+        Top = 143
         Width = 445
         Height = 6
         Cursor = crVSplit
@@ -155,7 +159,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Left = 1
         Top = 1
         Width = 445
-        Height = 114
+        Height = 142
         Align = alClient
         DataSource = Sql_Editor_DataSource
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -175,7 +179,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       end
       object Data_Preview_DBMemo: TDBMemo
         Left = 1
-        Top = 121
+        Top = 149
         Width = 445
         Height = 50
         Align = alBottom
@@ -187,6 +191,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         OnClick = Sql_Text_MemoClick
         OnKeyDown = Data_Preview_DBMemoKeyDown
         OnKeyUp = Sql_Text_MemoKeyUp
+        ExplicitTop = 121
       end
     end
   end
@@ -1437,15 +1442,19 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     object N13: TMenuItem
       Caption = '-'
     end
-    object Execute__Automatic_Detection_MenuItem: TMenuItem
-      AutoCheck = True
-      Caption = 'Automatically detect '#39'Query'#39' or '#39'Command'#39' execute'
-      OnClick = Execute__Automatic_Detection_CheckBoxClick
-    end
     object Transactions_Automatic_MenuItem: TMenuItem
       AutoCheck = True
       Caption = 'Automatically begin transaction'
       OnClick = Transactions_Automatic_CheckBoxClick
+    end
+    object Block_Execute__Automatic_Detection_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Automatically '#39'block execute'#39' detection'
+    end
+    object Execute__Automatic_Detection_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Automatically detect '#39'Query'#39' or '#39'Command'#39' execute'
+      OnClick = Execute__Automatic_Detection_CheckBoxClick
     end
     object Data_Value_Format__Disabled_MenuItem: TMenuItem
       AutoCheck = True
