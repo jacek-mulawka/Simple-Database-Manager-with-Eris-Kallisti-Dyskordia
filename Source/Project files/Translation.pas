@@ -39,6 +39,7 @@ type
     alias_should_not_be_empty,
     all_files,
     application_files,
+    automatically_block_execute_detection_words_list,
     automatically_execute_detection_words_list,
     automatically_transaction_begining_words_list,
     backup_file_path_should_not_be_empty,
@@ -913,6 +914,7 @@ begin
     Translation__Component__Add( 'Database__Correctness_Check_Text__Restore_Etiquette_Label', 'Restore' );
     Translation__Component__Add( 'Database__Create__Application__File_Path__Find_Button', '', 'Find file.' );
     Translation__Component__Add( 'Database__Create__Application__File_Path_GroupBox', 'Database create application file path', 'E.g.:' + #13 + #10 + 'C:\Program Files\Firebird\Firebird_3_0\isql.exe' );
+    Translation__Component__Add( 'Database__Modify__Window__Maximized_CheckBox', 'Database modify window maximized' );
     Translation__Component__Add( 'Fire_Dac__Querry__Fetch_Options_GroupBox', 'Querry fetch options' );
     Translation__Component__Add( 'Fire_Dac__Query__Fetch_Options__Mode_Etiquette_Label', 'Mode' );
     Translation__Component__Add( 'Fire_Dac__Query__Fetch_Options__Record_Count_Mode_Etiquette_Label', 'Record count mode' );
@@ -931,6 +933,7 @@ begin
     Translation__Component__Add( 'Sql__Quotation_Sign__Use_CheckBox', 'SQL quotation sign use' );
     Translation__Component__Add( 'Sql__View__Parameter_Separator_GroupBox', 'SQL view parameter separator' );
     Translation__Component__Add( 'Sql_Editor_TabSheet', 'SQL editor' );
+    Translation__Component__Add( 'Sql_Editor__Block_Execute__Automatic_Detection_CheckBox', 'Automatically ''block execute'' detection' );
     Translation__Component__Add( 'Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox', 'Toggle bookmarks with line color' );
     Translation__Component__Add( 'Sql_Editor__Close_Prompt_CheckBox', 'Close prompt', 'Prompt before closing SQL editor if text or data are not empty.' );
     Translation__Component__Add( 'Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_GroupBox', 'Lines in window' );
@@ -1076,6 +1079,7 @@ begin
   Translation__Unit__Add( 'TSql_Editor_F_Frame' );
     Translation__Component__Add( 'Ado_Command_Param_Check_CheckBox', 'P.', 'Query parameters check (ADO command).' );
     Translation__Component__Add( 'Ado_Command_Param_Check_MenuItem', 'Query parameters check (ADO command)' );
+    Translation__Component__Add( 'Block_Execute__Automatic_Detection_MenuItem', 'Automatically ''block execute'' detection' );
     Translation__Component__Add( 'Bookmarks__Clear__All_MenuItem', 'Clear bookmarks' );
     Translation__Component__Add( 'Bookmarks__Go_To_MenuItem', 'Go to bookmark [Ctrl + 0 ... 9]' );
     Translation__Component__Add( 'Bookmarks__Toggle_MenuItem', 'Toggle bookmark [Ctrl + Shift + 0 ... 9]' );
@@ -1328,7 +1332,7 @@ begin
     Translation__Component__Add( 'Modify_GroupBox', 'Modify' );
     Translation__Component__Add( 'Modify__Add_Button', '', 'Add new index <name>.' );
     Translation__Component__Add( 'Modify__Columns_Name__Hide_Indexed_CheckBox', 'Hide', 'Hide indexed columns.' );
-    Translation__Component__Add( 'Modify__Columns_Name_CheckListBox', '', 'Ctrl + A - select all' + #13 + #10 + 'Ctrl + I - invert selection' + #13 + #10 + 'Ctrl + N - unselect all' );
+    Translation__Component__Add( 'Modify__Columns_Name_CheckListBox', '', 'Enter - add new index' + #13 + #10 + 'Ctrl + A - select all' + #13 + #10 + 'Ctrl + D - create default index name' + #13 + #10 + 'Ctrl + I - invert selection' + #13 + #10 + 'Ctrl + N - unselect all' );
     Translation__Component__Add( 'Modify__Columns_Name_Etiquette_Label', 'Columns' );
     Translation__Component__Add( 'Modify__Delete_Button', '', 'Delete selected index.' + #13 + #10 + #13 + #10 + '[Delete]' );
     Translation__Component__Add( 'Modify__Name_Etiquette_Label', 'Name' );
@@ -1535,6 +1539,7 @@ begin
   translation__messages_r.alias_should_not_be_empty := 'Alias should not be empty.';
   translation__messages_r.all_files := 'All files';
   translation__messages_r.application_files := 'Application files';
+  translation__messages_r.automatically_block_execute_detection_words_list := 'Automatically block execute detection words list:';
   translation__messages_r.automatically_execute_detection_words_list := 'Automatically command execute detection words list:';
   translation__messages_r.automatically_transaction_begining_words_list := 'Automatically transaction begining words list:';
   translation__messages_r.backup_file_path_should_not_be_empty := 'Backup file path should not be empty.';
@@ -1846,6 +1851,7 @@ begin
     '    Ctrl + L - load text file' + #13 +
     '    Ctrl + O - find text file' + #13 +
     '    Ctrl + S - save query output as csv' + #13 +
+    '    Ctrl + T - toggle text editor mode' + #13 +
     '    Ctrl + Shift + 0 ... 9 - set / clear bookmark' + #13 +
     '    Ctrl + Shift + S - save text file' + #13 +
     '    Ctrl + Spacebar - add all columns sign (*) in the SQL editor' + #13 +

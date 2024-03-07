@@ -318,8 +318,9 @@ object Table__Indexes_Modify_F_Frame: TTable__Indexes_Modify_F_Frame
         Width = 139
         Height = 85
         Hint = 
-          'Ctrl + A - select all'#13#10'Ctrl + I - invert selection'#13#10'Ctrl + N - u' +
-          'nselect all'
+          'Enter - add new index'#13#10'Ctrl + A - select all'#13#10'Ctrl + D - create ' +
+          'default index name'#13#10'Ctrl + I - invert selection'#13#10'Ctrl + N - unse' +
+          'lect all'
         Margins.Left = 10
         Margins.Top = 0
         Margins.Right = 10

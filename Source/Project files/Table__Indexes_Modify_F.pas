@@ -319,6 +319,8 @@ end;
 
 procedure TTable__Indexes_Modify_F_Frame.Columns_List_Read( const sql_text_log_f : boolean = false );
 var
+  item_index_copy_l : integer;
+
   zts,
   primary_key_value_l
     : string;
@@ -332,6 +334,7 @@ begin
 
   Screen.Cursor := crHourGlass;
 
+  item_index_copy_l := Modify__Columns_Name_CheckListBox.ItemIndex;
   Modify__Columns_Name_CheckListBox.Items.Clear();
 
   zt_sdbm := Common.TSDBM.Create( indexes_sdbm );
@@ -470,7 +473,17 @@ begin
 
 
   if Modify__Columns_Name_CheckListBox.Items.Count > 0 then
-    Modify__Columns_Name_CheckListBox.ItemIndex := 0;
+    begin
+
+      if item_index_copy_l < Modify__Columns_Name_CheckListBox.Items.Count then
+        Modify__Columns_Name_CheckListBox.ItemIndex := item_index_copy_l
+      else
+      if item_index_copy_l - 1 < Modify__Columns_Name_CheckListBox.Items.Count then
+        Modify__Columns_Name_CheckListBox.ItemIndex := item_index_copy_l - 1
+      else
+        Modify__Columns_Name_CheckListBox.ItemIndex := 0;
+
+    end;
 
 
   Screen.Cursor := crDefault;
@@ -870,12 +883,16 @@ begin
   if Trim( Modify__Name_Edit.Text ) = '' then
     begin
 
-      Modify__Name_Edit.SetFocus();
-
       if Application.MessageBox( PChar(Translation.translation__messages_r.index_name_should_not_be_empty__set_default_index_name_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON1 + MB_ICONQUESTION ) = IDYES then
         Modify__Name__Create_Default_ButtonClick( Sender )
       else
-        Exit;
+        begin
+
+          Modify__Name_Edit.SetFocus();
+
+          Exit;
+
+        end
 
     end;
 
@@ -1099,10 +1116,19 @@ var
   i : integer;
 begin
 
+  // Enter.
+  if Key = VK_RETURN then
+    Modify__Add_ButtonClick( Sender )
+  else
   // A.
   if    ( Key = 65 )
     and ( Shift = [ ssCtrl ] ) then
     Modify__Columns_Name_CheckListBox.CheckAll( cbChecked, false, false )
+  else
+  // D.
+  if    ( Key = 68 )
+    and ( Shift = [ ssCtrl ] ) then
+    Modify__Name__Create_Default_ButtonClick( Sender )
   else
   // N.
   if    ( Key = 78 )
