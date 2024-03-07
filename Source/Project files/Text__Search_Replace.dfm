@@ -12,9 +12,9 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poScreenCenter
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 15
   object Search_Etiquette_Label: TLabel

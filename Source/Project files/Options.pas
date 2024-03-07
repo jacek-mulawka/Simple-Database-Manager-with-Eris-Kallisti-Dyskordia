@@ -55,6 +55,7 @@ type
     Database__Create__Application__File_Path_Edit: TEdit;
     Database__Create__Application__File_Path_GroupBox: TGroupBox;
     Database__Create__Application__File_Path__Find_Button: TButton;
+    Database__Modify__Window__Maximized_CheckBox: TCheckBox;
     Fire_Dac__Querry__Fetch_Options_GroupBox: TGroupBox;
     Fire_Dac__Query__Fetch_Options__Mode_ComboBox: TComboBox;
     Fire_Dac__Query__Fetch_Options__Mode_Etiquette_Label: TLabel;
@@ -86,6 +87,7 @@ type
     Syn_Editor_Options_GroupBox: TGroupBox;
     Syn_Editor_Options_CheckListBox: TCheckListBox;
     Sql_Editor_TabSheet: TTabSheet;
+    Sql_Editor__Block_Execute__Automatic_Detection_CheckBox: TCheckBox;
     Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox: TCheckBox;
     Sql_Editor__Close_Prompt_CheckBox: TCheckBox;
     Sql_Editor__Code__Completion_Window_GroupBox: TGroupBox;
@@ -277,6 +279,7 @@ begin
   Database__Correctness_Check_Text__Backup_Edit.Text := Common.database__correctness_check_text__backup;
   Database__Correctness_Check_Text__Restore_Edit.Text := Common.database__correctness_check_text__restore;
   Database__Create__Application__File_Path_Edit.Text := Common.database__create__application__file_path;
+  Database__Modify__Window__Maximized_CheckBox.Checked := Common.database__modify__window__maximized;
 
   if    ( Fire_Dac__Query__Fetch_Options__Mode_ComboBox.Items.Count > 0 )
     and ( integer(Common.fire_dac__fetch_options__mode) >= 0 )
@@ -294,6 +297,7 @@ begin
   Log__Auto_Scroll__Seconds_SpinEdit.Value := Common.log__auto_scroll__seconds;
 
   Queries_Open_In_Background_CheckBox.Checked := Common.queries_open_in_background;
+  Sql_Editor__Block_Execute__Automatic_Detection_CheckBox.Checked := Common.sql_editor__block_execute__automatic_detection;
   Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked := Common.sql_editor__bookmarks__toggle__with__line_color;
   Sql_Editor__Close_Prompt_CheckBox.Checked := Common.sql_editor__close_prompt;
   Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_SpinEdit.Value := Common.sql_editor__code__completion_window__default__lines_in_window;
@@ -576,6 +580,7 @@ begin
   Common.database__correctness_check_text__backup := Database__Correctness_Check_Text__Backup_Edit.Text;
   Common.database__correctness_check_text__restore := Database__Correctness_Check_Text__Restore_Edit.Text;
   Common.database__create__application__file_path := Database__Create__Application__File_Path_Edit.Text;
+  Common.database__modify__window__maximized := Database__Modify__Window__Maximized_CheckBox.Checked;
 
   Common.fire_dac__fetch_options__mode := TFDFetchMode(Fire_Dac__Query__Fetch_Options__Mode_ComboBox.ItemIndex);
   Common.fire_dac__fetch_options__record_count_mode := TFDRecordCountMode(Fire_Dac__Query__Fetch_Options__Record_Count_Mode_ComboBox.ItemIndex);
@@ -586,6 +591,7 @@ begin
   Common.language__selected := Language_ComboBox.Text;
   Common.log__auto_scroll__seconds := Log__Auto_Scroll__Seconds_SpinEdit.Value;
   Common.queries_open_in_background := Queries_Open_In_Background_CheckBox.Checked;
+  Common.sql_editor__block_execute__automatic_detection := Sql_Editor__Block_Execute__Automatic_Detection_CheckBox.Checked;
   Common.sql_editor__bookmarks__toggle__with__line_color := Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox.Checked;
   Common.sql_editor__close_prompt := Sql_Editor__Close_Prompt_CheckBox.Checked;
   Common.sql_editor__code__completion_window__default__lines_in_window := Sql_Editor__Code__Completion_Window__Default__Lines_In_Window_SpinEdit.Value;
@@ -1068,6 +1074,13 @@ begin
 
 
   if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'database__modify__window__maximized' )  ) then
+    file_ini.WriteBool( 'Options', 'database__modify__window__maximized', Database__Modify__Window__Maximized_CheckBox.Checked )
+  else
+    Database__Modify__Window__Maximized_CheckBox.Checked := file_ini.ReadBool( 'Options', 'database__modify__window__maximized', Database__Modify__Window__Maximized_CheckBox.Checked );
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'fire_dac__fetch_options__mode' )  ) then
     file_ini.WriteInteger( 'Options', 'fire_dac__fetch_options__mode', Fire_Dac__Query__Fetch_Options__Mode_ComboBox.ItemIndex )
   else
@@ -1143,6 +1156,13 @@ begin
     file_ini.WriteBool( 'Options', 'splitter_show', Splitter_Show_CheckBox.Checked )
   else
     Splitter_Show_CheckBox.Checked := file_ini.ReadBool( 'Options', 'splitter_show', Splitter_Show_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__block_execute__automatic_detection' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__block_execute__automatic_detection', Sql_Editor__Block_Execute__Automatic_Detection_CheckBox.Checked )
+  else
+    Sql_Editor__Block_Execute__Automatic_Detection_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__block_execute__automatic_detection', Sql_Editor__Block_Execute__Automatic_Detection_CheckBox.Checked );
 
 
   if   ( save_l )

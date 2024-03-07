@@ -29,7 +29,7 @@ type
     Buttons_Panel: TPanel;
     Replace__Prompt_CheckBox: TCheckBox;
     procedure FormCreate( Sender: TObject );
-    procedure FormShow( Sender: TObject );
+    procedure FormActivate( Sender: TObject );
     procedure FormDestroy( Sender: TObject );
 
     procedure Search_Replace_ButtonClick( Sender: TObject );
@@ -225,10 +225,14 @@ begin
 
 end;
 
-procedure TText__Search_Replace_Form.FormShow( Sender: TObject );
+procedure TText__Search_Replace_Form.FormActivate( Sender: TObject );
 begin
 
-  Search_ComboBox.SetFocus();
+  if    ( replace )
+    and ( Search_ComboBox.Text <> '' ) then
+    Replace_ComboBox.SetFocus()
+  else
+    Search_ComboBox.SetFocus();
 
 end;
 
