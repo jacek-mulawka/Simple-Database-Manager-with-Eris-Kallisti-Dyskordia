@@ -254,6 +254,7 @@ type
     code_completion__cursor_position_g,
     id_search__columns_list_g,
     id_search__tablse_list_g,
+    middle_panel__bottom_panel__height__copy_g,
     sql_editor_db_grid__selected_index_copy_g,
     sql_text_history__index_current_g,
     transactions_count_g
@@ -881,7 +882,10 @@ begin
 
           Left_Panel.Width := 185;
 
-          Sql_Text_Panel.Height := 300;
+          if middle_panel__bottom_panel__height__copy_g > 0 then
+            Middle_Panel__Bottom_Panel.Height := middle_panel__bottom_panel__height__copy_g
+          else
+            Middle_Panel__Bottom_Panel.Height := 200;
 
         end
       else
@@ -889,7 +893,8 @@ begin
 
           Buttons_Panel__Hide_ButtonClick( Sender );
 
-          Sql_Text_Panel.Height := Self.Height - Sql_Text_Horizontal_Splitter.Height;
+          middle_panel__bottom_panel__height__copy_g := Middle_Panel__Bottom_Panel.Height;
+          Middle_Panel__Bottom_Panel.Height := 1;
 
         end;
 
@@ -1764,6 +1769,7 @@ begin
   id_search__tablse_list_g := -1;
   database_type__sef_g := databases_r_f.database_type;
   busy_g := false;
+  middle_panel__bottom_panel__height__copy_g := 0;
   sort__column_name_g := '';
   sort__direction_ascending_g := true;
   sql_editor_db_grid__selected_index_copy_g := 0;

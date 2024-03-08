@@ -974,12 +974,12 @@ begin
       databases_r__dm_g := databases_r_t[ Databases_List_ListBox.ItemIndex ];
       item_index_g := Databases_List_ListBox.ItemIndex;
       Name := '';
-      Prepare__DM();
-
 
       if    ( Common.database__modify__window__maximized )
         and ( WindowState <> wsMaximized ) then
         WindowState := wsMaximized;
+
+      Prepare__DM();
 
     end;
 

@@ -45,7 +45,6 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       Height = 272
       Align = alClient
       TabOrder = 0
-      ExplicitHeight = 300
       object Sql_Parameters_Vertical_Splitter: TSplitter
         Left = 390
         Top = 1
@@ -80,7 +79,6 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Height = 270
         Align = alRight
         TabOrder = 1
-        ExplicitHeight = 298
       end
       object Sql_Text_SynEdit: TSynEdit
         Left = 1
@@ -132,7 +130,6 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         WantTabs = True
         OnDropFiles = Sql_Text_SynEditDropFiles
         OnReplaceText = Sql_Text_SynEditReplaceText
-        ExplicitHeight = 298
       end
     end
     object Middle_Panel__Bottom_Panel: TPanel
@@ -191,7 +188,6 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         OnClick = Sql_Text_MemoClick
         OnKeyDown = Data_Preview_DBMemoKeyDown
         OnKeyUp = Sql_Text_MemoKeyUp
-        ExplicitTop = 121
       end
     end
   end
