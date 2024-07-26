@@ -39,6 +39,8 @@ type
     sql__quotation_sign__use__tdf
       : boolean;
 
+    used__distinguishing_height_g : integer;
+
     database_type__tdf,
     sql__case_insensitive__tdf,
     sql__quotation_sign__tdf,
@@ -90,6 +92,7 @@ type
     Filter__Activate_wsk : procedure( Sender : TObject ) of object;
     Filter__Deactivate_wsk : procedure( Sender : TObject ) of object;
     Filter__Show_wsk : procedure( Sender : TObject ) of object;
+    First_Rows__Negate_Value_wsk : procedure() of object;
 
     constructor Create( parent_f : Vcl.Controls.TWinControl; const database_type_f, table_name_f, sql__quotation_sign__tdf_f : string; const queries_open_in_background_f : boolean; field_f : TField; sdbm_f : Common.TSDBM; log_memo_f : TMemo );
     destructor Destroy(); override;
@@ -167,6 +170,7 @@ begin
   Self.quotation_sign__use_check_box := nil;
   Self.sql__quotation_sign__tdf := sql__quotation_sign__tdf_f;
   Self.sql__quotation_sign__use__tdf := false;
+  Self.used__distinguishing_height_g := -1;
 
 
   Self.Parent := parent_f;
@@ -410,6 +414,17 @@ begin
         TDateTimePicker(Self.field_value__dedicated__1).Kind := Vcl.ComCtrls.dtkDate;
         TDateTimePicker(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
 
+
+        if Self.field_value__dedicated__1.Height > 10 then
+          begin
+
+            Self.used__distinguishing_height_g := 10;
+
+            Self.field_value__dedicated__1.Height := Self.field_value__dedicated__1.Height - Self.used__distinguishing_height_g;
+
+          end;
+
+
         if field_f.DataType in [ ftDateTime, ftTimeStamp, ftTimeStampOffset, ftOraTimeStamp ] then
           begin
 
@@ -424,6 +439,11 @@ begin
             Self.field_value__dedicated__2.Margins.Top := Self.field_value__dedicated__1.Margins.Top;
             TDateTimePicker(Self.field_value__dedicated__2).Kind := Vcl.ComCtrls.dtkTime;
             TDateTimePicker(Self.field_value__dedicated__2).OnKeyDown := filterKeyDown;
+
+
+            if    ( Self.used__distinguishing_height_g > 0 )
+              and ( Self.field_value__dedicated__2.Height > Self.used__distinguishing_height_g ) then
+              Self.field_value__dedicated__2.Height := Self.field_value__dedicated__2.Height - Self.used__distinguishing_height_g;
 
           end
         else
@@ -599,6 +619,10 @@ begin
   Self.move_right_button.OnClick := move_right_buttonClick;
 
 
+  if Self.used__distinguishing_height_g < 0 then
+    Self.used__distinguishing_height_g := 0;
+
+
   sql__case_insensitive__tdf := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + case_insensitive__file_name_c  );
 
   if Trim( sql__case_insensitive__tdf ) = '' then
@@ -716,12 +740,78 @@ begin
 end;
 
 procedure TTable__Data_Filter.field_value__dedicated__use_check_boxClick( Sender: TObject );
+
+  procedure Color_Set( const active_f : boolean; field_value__dedicated__f : Vcl.Controls.TWinControl );
+  var
+    zt_color_l : TColor;
+  begin
+
+    if field_value__dedicated__f = nil then
+      Exit;
+
+
+    if active_f then
+      zt_color_l := clWindow
+    else
+      zt_color_l := clBtnFace;
+
+
+    if Self.field_dedicated__data_type in [ ftDate, ftTime ] then
+      begin
+
+        TDateTimePicker(field_value__dedicated__f).Color := zt_color_l; // Do not work. //????
+
+        if active_f then
+          TDateTimePicker(field_value__dedicated__f).Height := TDateTimePicker(field_value__dedicated__f).Height + Self.used__distinguishing_height_g
+        else
+          TDateTimePicker(field_value__dedicated__f).Height := TDateTimePicker(field_value__dedicated__f).Height - Self.used__distinguishing_height_g;
+
+      end
+    else
+    if Self.field_dedicated__data_type = ftInteger then
+      begin
+
+        {$IFDEF JVCL__use}
+        JvSpin.TJvSpinEdit(field_value__dedicated__f).Color := zt_color_l;
+        {$ELSE JVCL__use}
+        Interceptor__Spin_Edit.TSpinEdit(field_value__dedicated__f).Color := zt_color_l;
+        {$ENDIF}
+
+      end;
+
+  end;
+
 begin
 
   if    ( Self.field_value__dedicated__use_check_box <> nil )
     and ( Self.quotation_sign__use_check_box <> nil )
     and ( Self.field_value__dedicated__use_check_box.Visible ) then
     Self.quotation_sign__use_check_box.Enabled := not Self.field_value__dedicated__use_check_box.Checked;
+
+
+  if    ( Self.field_value__dedicated__use_check_box <> nil )
+    and ( Self.field_value__universal_edit <> nil )
+    and ( Self.field_value__dedicated__use_check_box.Visible ) then
+    begin
+
+      if Self.field_value__dedicated__use_check_box.Checked then
+        Self.field_value__universal_edit.Color := clBtnFace
+      else
+        Self.field_value__universal_edit.Color := clWindow;
+
+    end;
+
+
+  if    ( Self.field_value__dedicated__use_check_box <> nil )
+    and ( Self.field_value__dedicated__1 <> nil )
+    and ( Self.field_value__dedicated__use_check_box.Visible ) then
+    Color_Set( Self.field_value__dedicated__use_check_box.Checked, Self.field_value__dedicated__1 );
+
+
+  if    ( Self.field_value__dedicated__use_check_box <> nil )
+    and ( Self.field_value__dedicated__2 <> nil )
+    and ( Self.field_value__dedicated__use_check_box.Visible ) then
+    Color_Set( Self.field_value__dedicated__use_check_box.Checked, Self.field_value__dedicated__2 );
 
 end;
 
@@ -918,6 +1008,12 @@ begin
       {$endregion 'Column distinct values.'}
 
     end
+  else
+  // N.
+  if    ( Key = 78 )
+    and ( Shift = [ ssCtrl ] )
+    and ( @First_Rows__Negate_Value_wsk <> nil ) then
+    First_Rows__Negate_Value_wsk()
   else
   // V.
   if    ( Key = 86 )

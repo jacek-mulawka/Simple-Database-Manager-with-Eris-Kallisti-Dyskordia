@@ -84,13 +84,17 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Top = 17
       Width = 325
       Height = 23
+      Hint = 'Page down - search next;'#13#10'Page up - search prior.'
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
       Margins.Bottom = 5
       Align = alTop
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
       OnChange = Search_Change
+      OnKeyDown = Search_EditKeyDown
     end
     object Search__Case_Insensitive_CheckBox: TCheckBox
       AlignWithMargins = True
@@ -189,7 +193,6 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Hint = 'Close.'#13#10#13#10'[Esc]'
       Anchors = [akTop, akRight]
       Cancel = True
-      Default = True
       ImageIndex = 10
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False

@@ -428,13 +428,17 @@ object Stored_Procedure__Edit_Execute_F_Frame: TStored_Procedure__Edit_Execute_F
           Top = 17
           Width = 137
           Height = 23
+          Hint = 'Page down - search next;'#13#10'Page up - search prior.'
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10
           Margins.Bottom = 5
           Align = alTop
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 0
           OnChange = Search_Change
+          OnKeyDown = Search_EditKeyDown
         end
         object Search__Case_Insensitive_CheckBox: TCheckBox
           AlignWithMargins = True

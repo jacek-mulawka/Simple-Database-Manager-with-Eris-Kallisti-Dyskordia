@@ -100,7 +100,7 @@ object Options_Form: TOptions_Form
     Margins.Top = 5
     Margins.Right = 10
     Margins.Bottom = 5
-    ActivePage = Sql_Editor_TabSheet
+    ActivePage = Data_Presentation_TabSheet
     Align = alClient
     TabOrder = 0
     object Basic_TabSheet: TTabSheet
@@ -118,7 +118,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'Form view - show additional components'
         TabOrder = 1
-        ExplicitTop = 5
       end
       object Queries_Open_In_Background_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -133,7 +132,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'Queries (some) open in the background'
         TabOrder = 3
-        ExplicitTop = 82
       end
       object System_Tables_Visible_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -148,7 +146,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'System tables, roles visible'
         TabOrder = 9
-        ExplicitTop = 393
       end
       object Splitter_Show_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -163,7 +160,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'Show splitters (e.g. form view, stored procedure parameters)'
         TabOrder = 4
-        ExplicitTop = 109
       end
       object Sql__Quotation_Sign__Use_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -178,7 +174,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL quotation sign use'
         TabOrder = 8
-        ExplicitTop = 366
       end
       object Sql__Command_Separator_GroupBox: TGroupBox
         AlignWithMargins = True
@@ -193,7 +188,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL command separator'
         TabOrder = 5
-        ExplicitTop = 136
         object Sql__Command_Separator_Edit: TEdit
           AlignWithMargins = True
           Left = 7
@@ -222,7 +216,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL external function parameter separator'
         TabOrder = 6
-        ExplicitTop = 186
         object Sql__External_Function__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
@@ -246,7 +239,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL view parameter separator'
         TabOrder = 7
-        ExplicitTop = 276
         object Sql__View__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
@@ -273,7 +265,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = True
         TabOrder = 10
-        ExplicitTop = 420
       end
       object Log__Auto_Scroll__GroupBox: TGroupBox
         AlignWithMargins = True
@@ -293,7 +284,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = True
         TabOrder = 2
-        ExplicitTop = 32
         DesignSize = (
           836
           40)
@@ -326,7 +316,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 11
-        ExplicitTop = 447
       end
       object Database__Modify__Window__Maximized_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -343,12 +332,28 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 0
-        ExplicitLeft = 17
       end
     end
     object Data_Presentation_TabSheet: TTabSheet
       Caption = 'Data presentation'
       ImageIndex = 7
+      object Data_Presentation__First_Rows_Etiquette_Label: TLabel
+        AlignWithMargins = True
+        Left = 10
+        Top = 260
+        Width = 836
+        Height = 15
+        Hint = 'Display first <value> rows only.'#13#10'Negative value = disabled.'
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'First rows (table data)'
+        ParentShowHint = False
+        ShowHint = True
+        ExplicitWidth = 113
+      end
       object Data_Presentation__Data_Value_Format_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
@@ -566,6 +571,25 @@ object Options_Form: TOptions_Form
             ExplicitHeight = 23
           end
         end
+      end
+      object Data_Presentation__First_Rows_SpinEdit: TSpinEdit
+        AlignWithMargins = True
+        Left = 10
+        Top = 280
+        Width = 836
+        Height = 24
+        Margins.Left = 10
+        Margins.Top = 0
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 1
+        Value = 0
+        ExplicitLeft = 15
+        ExplicitTop = 69
+        ExplicitWidth = 163
       end
     end
     object Database__Backup_Restore_TabSheet: TTabSheet
@@ -947,7 +971,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           Layout = tlCenter
-          ExplicitTop = 330
           ExplicitWidth = 83
         end
         object Sql_Editor__Code__Completion_Window_GroupBox: TGroupBox
@@ -963,7 +986,6 @@ object Options_Form: TOptions_Form
           Align = alTop
           Caption = 'Code completion window'
           TabOrder = 4
-          ExplicitTop = 50
           object Sql_Editor__Code__Completion_Window__Default__Width_GroupBox: TGroupBox
             AlignWithMargins = True
             Left = 427
@@ -1045,7 +1067,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           TabOrder = 2
-          ExplicitTop = 6
         end
         object Sql_Editor__Transactions_Automatic_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1066,7 +1087,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           TabOrder = 3
-          ExplicitTop = 28
         end
         object Sql_Text_Memo: TMemo
           Left = 1
@@ -1161,8 +1181,6 @@ object Options_Form: TOptions_Form
           TabWidth = 2
           WantTabs = True
           OnReplaceText = Sql_Text_SynEditReplaceText
-          ExplicitTop = 345
-          ExplicitHeight = 311
         end
         object Sql_Editor__Comments_Delete_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1180,7 +1198,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           TabOrder = 7
-          ExplicitTop = 200
         end
         object Sql_Editor__Code__Dent_Width_GroupBox: TGroupBox
           AlignWithMargins = True
@@ -1198,7 +1215,6 @@ object Options_Form: TOptions_Form
           Align = alTop
           Caption = 'Code dent width'
           TabOrder = 5
-          ExplicitTop = 121
           object Sql_Editor__Code__Dent_Width_SpinEdit: TSpinEdit
             AlignWithMargins = True
             Left = 7
@@ -1232,7 +1248,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           TabOrder = 6
-          ExplicitTop = 173
         end
         object Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1250,7 +1265,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           TabOrder = 9
-          ExplicitTop = 254
         end
         object Sql_Editor__Execute__Selected_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1267,7 +1281,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = False
           TabOrder = 8
-          ExplicitTop = 227
         end
         object Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1286,7 +1299,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = False
           TabOrder = 10
-          ExplicitTop = 281
         end
         object Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1303,7 +1315,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = False
           TabOrder = 11
-          ExplicitTop = 308
         end
         object Sql_Editor__Block_Execute__Automatic_Detection_CheckBox: TCheckBox
           AlignWithMargins = True
@@ -1320,8 +1331,6 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = False
           TabOrder = 1
-          ExplicitLeft = 16
-          ExplicitTop = 11
         end
         object Sql_Editor__Font_Button: TButton
           Left = 510

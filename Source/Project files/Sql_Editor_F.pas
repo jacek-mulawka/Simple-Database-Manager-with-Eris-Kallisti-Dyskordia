@@ -4197,6 +4197,12 @@ end;
 procedure TSql_Editor_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender )
+  else
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl ] )
     and ( Search_In_RadioGroup.ItemIndex <> 1 ) // Query output.

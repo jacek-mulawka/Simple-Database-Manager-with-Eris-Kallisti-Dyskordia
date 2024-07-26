@@ -648,6 +648,7 @@ begin
     Translation__Component__Add( 'Database_Description_GroupBox', 'Database description' );
     Translation__Component__Add( 'Database__Description__Drop_MenuItem', 'Database description delete' );
     Translation__Component__Add( 'Database__Description__Set_MenuItem', 'Database description edit' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Partial_Key_CheckBox', 'Partial key' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
@@ -712,7 +713,7 @@ begin
     Translation__Component__Add( 'Stored_Procedures_List__Page__New_Button', '', 'Open stored procedure.' );
     Translation__Component__Add( 'Stored_Procedures_List__Page__New_MenuItem', 'Open stored procedure [Enter, Double-click]' );
     Translation__Component__Add( 'Stored_Procedures_List__Refresh_MenuItem', 'Refresh [Ctrl + R]' );
-    Translation__Component__Add( 'Stored_Procedures_List__Search_Edit', '', 'Shift + Enter - open and edit;' + #13 + #10 + 'Enter - open.' );
+    Translation__Component__Add( 'Stored_Procedures_List__Search_Edit', '', 'Enter - open;' + #13 + #10 + 'Page down - search next;' + #13 + #10 + 'Page up - search prior;' + #13 + #10 + 'Shift + Enter - open and edit.' );
     Translation__Component__Add( 'Stored_Procedures_List__Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Stored_Procedures_List__Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Stored_Procedures_List__Search__Next_Button', '', 'Search next.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + Enter - open and edit]' + #13 + #10 + '[Shift + Enter - open]' );
@@ -733,7 +734,7 @@ begin
     Translation__Component__Add( 'Tables_List__Page__New_Button', '', 'Open table.' + #13 + #10 + #13 + #10 + '[Enter, Double-click]' );
     Translation__Component__Add( 'Tables_List__Page__New_MenuItem', 'Open table [Enter, Double-click]' );
     Translation__Component__Add( 'Tables_List__Refresh_MenuItem', 'Refresh [Ctrl + R]' );
-    Translation__Component__Add( 'Tables_List__Search_Edit', '', 'Ctrl + Enter - open table and open table data;' + #13 + #10 + 'Enter - open table.' );
+    Translation__Component__Add( 'Tables_List__Search_Edit', '', 'Ctrl + Enter - open table and open table data;' + #13 + #10 + 'Enter - open table;' + #13 + #10 + 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Tables_List__Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Tables_List__Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Tables_List__Search__Next_Button', '', 'Search next.' + #13 + #10 + #13 + #10 + '[Ctrl + Enter - open table and open table data]' + #13 + #10 + '[Shift + Enter - open table]' );
@@ -754,7 +755,7 @@ begin
     Translation__Component__Add( 'Views_List__Page__New_Button', '', 'Open view.' );
     Translation__Component__Add( 'Views_List__Page__New_MenuItem', 'Open view [Enter, Double-click]' );
     Translation__Component__Add( 'Views_List__Refresh_MenuItem', 'Refresh [Ctrl + R]' );
-    Translation__Component__Add( 'Views_List__Search_Edit', '', 'Ctrl + Enter - open and open view data;' + #13 + #10 + 'Shift + Enter - open and edit;' + #13 + #10 + 'Enter - open.' );
+    Translation__Component__Add( 'Views_List__Search_Edit', '', 'Ctrl + Enter - open and open view data;' + #13 + #10 + 'Enter - open;' + #13 + #10 + 'Page down - search next;' + #13 + #10 + 'Page up - search prior;' + #13 + #10 + 'Shift + Enter - open and edit.' );
     Translation__Component__Add( 'Views_List__Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Views_List__Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Views_List__Search__Next_Button', '', 'Search next.' + #13 + #10 + #13 + #10 + '[Ctrl + Enter - open and open view data]' + #13 + #10 + '[Ctrl + Shift + Enter - open and edit]' + #13 + #10 + '[Shift + Enter - open]' );
@@ -786,6 +787,7 @@ begin
     Translation__Component__Add( 'Nodes__Collapse_Button', '', 'Collapse nodes.' );
     Translation__Component__Add( 'Nodes__Expand_Button', '', 'Expand  nodes.' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -809,6 +811,7 @@ begin
     Translation__Component__Add( 'Modify__Message_Memo__Update_CheckBox', 'M. u.', 'Update text in the message memo.' );
     Translation__Component__Add( 'Modify__Name_Etiquette_Label', 'Name' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -850,6 +853,7 @@ begin
     Translation__Component__Add( 'Modify__Delete_Button', '', 'Delete selected external function.' + #13 + #10 + #13 + #10 + '[Delete]' );
     Translation__Component__Add( 'Modify__Edit_Button', '', 'Edit selected external function.' + #13 + #10 + #13 + #10 + '[Enter, Double-click]' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -879,6 +883,7 @@ begin
     Translation__Component__Add( 'Permissions__User_Names_CheckListBox', '', 'Ctrl + A - select all' + #13 + #10 + 'Ctrl + I - invert selection' + #13 + #10 + 'Ctrl + N - unselect all' + #13 + #10 + 'Ctrl + R - refresh' + #13 + #10 + 'Ctrl + Enter - users filter cancel' + #13 + #10 + 'Enter - users filter apply' );
     Translation__Component__Add( 'Permissions__User_Names_Etiquette_Label', 'Users' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -905,6 +910,7 @@ begin
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox', 'Use' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Time_GroupBox', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' + #13 + #10 + 'hh mm ss.zzz' + #13 + #10 + 'h m s am/pm' + #13 + #10 + 'hh-m a/p' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Time__Use_CheckBox', 'Use' );
+    Translation__Component__Add( 'Data_Presentation__First_Rows_Etiquette_Label', 'First rows (table data)', 'Display first <value> rows only.' + #13 + #10 + 'Negative value = disabled.' );
     Translation__Component__Add( 'Database__Backup_Restore_TabSheet', 'Database backup / restore' );
     Translation__Component__Add( 'Database__Backup__Application__File_Path__Find_Button', '', 'Find file.' );
     Translation__Component__Add( 'Database__Backup__Application__File_Path_GroupBox', 'Database backup application file path', 'E.g.:' + #13 + #10 + 'C:\Program Files\Firebird\Firebird_3_0\gbak.exe' );
@@ -1007,6 +1013,7 @@ begin
     Translation__Component__Add( 'Modify__Revoke_Button', '', 'Revoke privileges.' );
     Translation__Component__Add( 'Modify__Revoke_MenuItem', 'Revoke privileges' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1030,6 +1037,7 @@ begin
     Translation__Component__Add( 'Role__Description__Drop_MenuItem', 'Description delete' );
     Translation__Component__Add( 'Role__Description__Set_MenuItem', 'Description edit' );
     Translation__Component__Add( 'Role__Description__Write_In_Log_MenuItem', 'Role description write in log' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1137,7 +1145,7 @@ begin
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Refresh_MenuItem', 'Refresh [Ctrl + R]' );
     Translation__Component__Add( 'Replace_MenuItem', 'Replace [Ctrl + H]' );
-    Translation__Component__Add( 'Search_Edit', '', 'Enter - add column / table;' + #13 + #10 + 'Ctrl + Enter - add all columns sign (*) and add table;' + #13 + #10 + 'Shift + Enter - add all columns.' );
+    Translation__Component__Add( 'Search_Edit', '', 'Ctrl + Enter - add all columns sign (*) and add table;' + #13 + #10 + 'Enter - add column / table;' + #13 + #10 + 'Page down - search next;' + #13 + #10 + 'Page up - search prior;' + #13 + #10 + 'Shift + Enter - add all columns.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search_In_RadioGroup', 'Search in', 'Columns list' + #13 + #10 + 'Query output' + #13 + #10 + 'Tables list', 'Col;Que;Tbl;' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
@@ -1186,12 +1194,13 @@ begin
     Translation__Component__Add( 'Owner_Etiquette_Label', 'Owner', 'Double-click - copy the stored procedure name to clipboard.' );
     Translation__Component__Add( 'Owner_Label', '<?>', 'Double-click - copy the owner name to clipboard.' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
+    Translation__Component__Add( 'Search_GroupBox', 'Search' );
+    Translation__Component__Add( 'Search_In_RadioGroup', 'Search in', 'Output' + #13 + #10 + 'Parameters', 'Output;Param;' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
     Translation__Component__Add( 'Search__Partial_Key_CheckBox', 'Partial key' );
     Translation__Component__Add( 'Search__Prior_Button', '', 'Search prior.' );
-    Translation__Component__Add( 'Search_GroupBox', 'Search' );
-    Translation__Component__Add( 'Search_In_RadioGroup', 'Search in', 'Output' + #13 + #10 + 'Parameters', 'Output;Param;' );
     Translation__Component__Add( 'Stored_Procedure__Description__Drop_MenuItem', 'Description delete' );
     Translation__Component__Add( 'Stored_Procedure__Description__Set_MenuItem', 'Description edit' );
     Translation__Component__Add( 'Stored_Procedure__Description_TabSheet', 'Description' );
@@ -1270,6 +1279,7 @@ begin
     Translation__Component__Add( 'Close_Button', '', 'Close.' + #13 + #10 + #13 + #10 + '[Esc]' );
     Translation__Component__Add( 'Ok_Button', '', 'Select value.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1301,17 +1311,20 @@ begin
     Translation__Component__Add( 'Data_Filter__Deactivate__All_Button', '', 'Deactivate all filters.' + #13 + #10 + #13 + #10 + '[Ctrl + Enter]' );
     Translation__Component__Add( 'Data_Filter__Delete__All_Button', '', 'Delete all filters.' );
     Translation__Component__Add( 'Data_Filter__Show_Button', '', 'Show filter value in log.' );
+    Translation__Component__Add( 'Data_Preview_TabSheet', 'Preview' );
     Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled' );
     Translation__Component__Add( 'Delete_Visible_Records_Button', '', 'Delete visible records.' );
     Translation__Component__Add( 'Duplicate_Record_Button', '', 'Duplicate record.' );
     Translation__Component__Add( 'Editing_CheckBox', 'Editing', 'Allow data changes.' );
     Translation__Component__Add( 'Extract_Table_Data_Button', '', 'Extract table data to log / file.' );
+    Translation__Component__Add( 'First_Rows_Etiquette_Label', 'First rows', 'Display first <value> rows only.' + #13 + #10 + 'Negative value = disabled.' );
+    Translation__Component__Add( 'First_Rows_SpinEdit', '', 'Ctrl + N - negate value;' + #13 + #10 + 'Ctrl + O - open.' );
     Translation__Component__Add( 'Grid_View_CheckBox', 'Grid view', 'Switch grid / form view.' );
     Translation__Component__Add( 'Height_Keeper_Label', '^- height keeper -v' );
     Translation__Component__Add( 'Open_Close_Button', '', 'Open.' + #13 + #10 + #13 + #10 + '[Ctrl + O]' );
-    Translation__Component__Add( 'Data_Preview_TabSheet', 'Preview' );
     Translation__Component__Add( 'Primary_Key_Value_Etiquette_Label', 'Primary key value (probably)' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1339,6 +1352,7 @@ begin
     Translation__Component__Add( 'Modify__Name__Create_Default_Button', 'D.', 'Create default index name.' );
     Translation__Component__Add( 'Modify__Parameter_Additional_Etiquette_Label', 'Additional parameter' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1363,6 +1377,7 @@ begin
     Translation__Component__Add( 'Owner_Etiquette_Label', 'Owner', 'Double-click - copy the table name to clipboard.' );
     Translation__Component__Add( 'Owner_Label', '<?>', 'Double-click - copy the owner name to clipboard.' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1428,6 +1443,7 @@ begin
     Translation__Component__Add( 'Modify__Delete_Button', '', 'Delete selected trigger.' + #13 + #10 + #13 + #10 + '[Delete]' );
     Translation__Component__Add( 'Modify__Edit_Button', '', 'Edit selected trigger.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1465,6 +1481,7 @@ begin
     Translation__Component__Add( 'Modify__Unselect_All_Button', '-', 'Unselect all.' );
     Translation__Component__Add( 'Modify__Values_Fields__Update_CheckBox', 'V. u.', 'Update values in the value fields.' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
@@ -1491,6 +1508,7 @@ begin
     Translation__Component__Add( 'Owner_Etiquette_Label', 'Owner', 'Double-click - copy the view name to clipboard.' );
     Translation__Component__Add( 'Owner_Label', '<?>', 'Double-click - copy the owner name to clipboard.' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
+    Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search_In_RadioGroup', 'Search in', 'Output' + #13 + #10 + 'Parameters', 'Output;Param;' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );

@@ -77,7 +77,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Top = 0
       Width = 25
       Height = 25
-      Hint = 'Open.'#13#10#13#10'[Ctrl + R]'
+      Hint = 'Open.'#13#10#13#10'[Ctrl + O]'
       ImageIndex = 6
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
@@ -229,7 +229,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
     object Caret_Position_Label: TLabel
       AlignWithMargins = True
       Left = 11
-      Top = 164
+      Top = 213
       Width = 163
       Height = 15
       Hint = 'Caret position, text length.'
@@ -242,7 +242,25 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       ParentShowHint = False
       ShowHint = True
       Layout = tlCenter
+      ExplicitTop = 164
       ExplicitWidth = 83
+    end
+    object First_Rows_Etiquette_Label: TLabel
+      AlignWithMargins = True
+      Left = 11
+      Top = 54
+      Width = 163
+      Height = 15
+      Hint = 'Display first <value> rows only.'#13#10'Negative value = disabled.'
+      Margins.Left = 10
+      Margins.Top = 5
+      Margins.Right = 10
+      Margins.Bottom = 5
+      Align = alTop
+      Caption = 'First rows'
+      ParentShowHint = False
+      ShowHint = True
+      ExplicitWidth = 50
     end
     object Data_DBEdit: TDBEdit
       AlignWithMargins = True
@@ -259,20 +277,23 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       ReadOnly = True
       TabOrder = 0
       OnChange = Data_DBEditChange
+      ExplicitLeft = 9
+      ExplicitTop = 18
     end
     object Search_GroupBox: TGroupBox
       AlignWithMargins = True
       Left = 11
-      Top = 54
+      Top = 103
       Width = 163
       Height = 105
       Margins.Left = 10
-      Margins.Top = 5
+      Margins.Top = 0
       Margins.Right = 10
       Margins.Bottom = 5
       Align = alTop
       Caption = 'Search'
-      TabOrder = 2
+      TabOrder = 3
+      ExplicitTop = 54
       DesignSize = (
         163
         105)
@@ -282,13 +303,17 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
         Top = 17
         Width = 139
         Height = 23
+        Hint = 'Page down - search next;'#13#10'Page up - search prior.'
         Margins.Left = 10
         Margins.Top = 0
         Margins.Right = 10
         Margins.Bottom = 5
         Align = alTop
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         OnChange = Search_Change
+        OnKeyDown = Search_EditKeyDown
       end
       object Search__Case_Insensitive_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -356,18 +381,20 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
     object Log_Memo: TMemo
       AlignWithMargins = True
       Left = 11
-      Top = 182
+      Top = 231
       Width = 163
-      Height = 247
+      Height = 198
       Margins.Left = 10
       Margins.Right = 10
       Align = alClient
       Lines.Strings = (
         'Log')
       ScrollBars = ssVertical
-      TabOrder = 3
+      TabOrder = 4
       OnKeyDown = Log_MemoKeyDown
       OnKeyUp = Key_Up_Common
+      ExplicitTop = 182
+      ExplicitHeight = 247
     end
     object Buttons_Panel__Hide_Button: TButton
       Left = 155
@@ -390,8 +417,31 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Height = 17
       Align = alBottom
       Step = 1
-      TabOrder = 4
+      TabOrder = 5
       Visible = False
+    end
+    object First_Rows_SpinEdit: TSpinEdit
+      AlignWithMargins = True
+      Left = 11
+      Top = 74
+      Width = 163
+      Height = 24
+      Hint = 'Ctrl + N - negate value;'#13#10'Ctrl + O - open.'
+      Margins.Left = 10
+      Margins.Top = 0
+      Margins.Right = 10
+      Margins.Bottom = 5
+      Align = alTop
+      MaxValue = 0
+      MinValue = 0
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
+      Value = 0
+      OnChange = First_Rows_SpinEditChange
+      OnKeyDown = First_Rows_SpinEditKeyDown
+      ExplicitLeft = 15
+      ExplicitTop = 69
     end
   end
   object Data_Panel: TPanel

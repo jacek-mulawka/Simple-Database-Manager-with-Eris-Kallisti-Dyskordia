@@ -53,7 +53,7 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
       Margins.Left = 10
       Margins.Top = 5
       Margins.Right = 10
-      Margins.Bottom = 10
+      Margins.Bottom = 5
       Align = alTop
       Caption = 'External function name'
       ParentShowHint = False
@@ -62,7 +62,7 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
     end
     object Log_Horizontal_Splitter: TSplitter
       Left = 1
-      Top = 254
+      Top = 244
       Width = 183
       Height = 6
       Cursor = crVSplit
@@ -76,7 +76,7 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
     object External_Function_Name_DBEdit: TDBEdit
       AlignWithMargins = True
       Left = 11
-      Top = 31
+      Top = 26
       Width = 163
       Height = 23
       Margins.Left = 10
@@ -92,11 +92,11 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
     object Search_GroupBox: TGroupBox
       AlignWithMargins = True
       Left = 11
-      Top = 64
+      Top = 54
       Width = 163
       Height = 105
       Margins.Left = 10
-      Margins.Top = 5
+      Margins.Top = 0
       Margins.Right = 10
       Margins.Bottom = 5
       Align = alTop
@@ -111,13 +111,17 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
         Top = 17
         Width = 139
         Height = 23
+        Hint = 'Page down - search next;'#13#10'Page up - search prior.'
         Margins.Left = 10
         Margins.Top = 0
         Margins.Right = 10
         Margins.Bottom = 5
         Align = alTop
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         OnChange = Search_Change
+        OnKeyDown = Search_EditKeyDown
       end
       object Search__Case_Insensitive_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -185,7 +189,7 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
     object Modify_GroupBox: TGroupBox
       AlignWithMargins = True
       Left = 11
-      Top = 174
+      Top = 164
       Width = 163
       Height = 75
       Margins.Left = 10
@@ -268,9 +272,9 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
     object Log_Memo: TMemo
       AlignWithMargins = True
       Left = 11
-      Top = 263
+      Top = 253
       Width = 163
-      Height = 183
+      Height = 193
       Margins.Left = 10
       Margins.Right = 10
       Align = alClient

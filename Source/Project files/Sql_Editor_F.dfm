@@ -308,8 +308,9 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           Width = 137
           Height = 23
           Hint = 
-            'Enter - add column / table;'#13#10'Ctrl + Enter - add all columns sign' +
-            ' (*) and add table;'#13#10'Shift + Enter - add all columns.'
+            'Ctrl + Enter - add all columns sign (*) and add table;'#13#10'Enter - ' +
+            'add column / table;'#13#10'Page down - search next;'#13#10'Page up - search ' +
+            'prior;'#13#10'Shift + Enter - add all columns.'
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10

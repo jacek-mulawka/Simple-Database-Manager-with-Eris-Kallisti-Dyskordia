@@ -68,6 +68,7 @@ type
     procedure Owner_Etiquette_LabelDblClick( Sender: TObject );
     procedure Owner_LabelDblClick( Sender: TObject );
     procedure Search_Change( Sender: TObject );
+    procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
     procedure Column__Add_MenuItemClick( Sender: TObject );
@@ -1202,6 +1203,17 @@ begin
           Exit;
 
         end;
+
+end;
+
+procedure TTable__Metadata_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender );
 
 end;
 

@@ -591,7 +591,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 17
               Width = 152
               Height = 23
-              Hint = 'Shift + Enter - open and edit;'#13#10'Enter - open.'
+              Hint = 
+                'Enter - open;'#13#10'Page down - search next;'#13#10'Page up - search prior;' +
+                #13#10'Shift + Enter - open and edit.'
               Margins.Left = 10
               Margins.Top = 0
               Margins.Right = 10
@@ -849,7 +851,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Top = 17
               Width = 152
               Height = 23
-              Hint = 'Ctrl + Enter - open table and open table data;'#13#10'Enter - open.'
+              Hint = 
+                'Ctrl + Enter - open table and open table data;'#13#10'Enter - open;'#13#10'P' +
+                'age down - search next;'#13#10'Page up - search prior.'
               Margins.Left = 10
               Margins.Top = 0
               Margins.Right = 10
@@ -1120,8 +1124,9 @@ object Database__Modify_Form: TDatabase__Modify_Form
               Width = 152
               Height = 23
               Hint = 
-                'Ctrl + Enter - open and open view data;'#13#10'Shift + Enter - open an' +
-                'd edit;'#13#10'Enter - open.'
+                'Ctrl + Enter - open and open view data;'#13#10'Enter - open;'#13#10'Page dow' +
+                'n - search next;'#13#10'Page up - search prior;'#13#10'Shift + Enter - open ' +
+                'and edit.'
               Margins.Left = 10
               Margins.Top = 0
               Margins.Right = 10

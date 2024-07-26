@@ -35,6 +35,7 @@ type
 
     procedure Value_DBEditChange( Sender: TObject );
     procedure Search_Change( Sender: TObject );
+    procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
 
@@ -199,6 +200,8 @@ begin
 
 
   Ok_Button.Visible := fsModal in Self.FormState;
+
+  //Ok_Button.Default := Ok_Button.Visible;
 
 
   zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c  );
@@ -369,6 +372,17 @@ begin
       table_column__values_distinct_sdbm.Query__Enable_Controls();
 
     end;
+
+end;
+
+procedure TTable_Column__Values_Distinct_Form.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender );
 
 end;
 

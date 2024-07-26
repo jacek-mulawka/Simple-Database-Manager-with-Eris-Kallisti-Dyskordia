@@ -42,6 +42,8 @@ type
     Data_Presentation__Data_Value_Format__Time_Edit: TEdit;
     Data_Presentation__Data_Value_Format__Time_GroupBox: TGroupBox;
     Data_Presentation__Data_Value_Format__Time__Use_CheckBox: TCheckBox;
+    Data_Presentation__First_Rows_Etiquette_Label: TLabel;
+    Data_Presentation__First_Rows_SpinEdit: TSpinEdit;
     Database__Backup_Restore_TabSheet: TTabSheet;
     Database__Backup__Application__File_Path__Find_Button: TButton;
     Database__Backup__Application__File_Path_Edit: TEdit;
@@ -269,6 +271,7 @@ begin
   Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox.Checked := Common.data_presentation__data_value_format__real_numbers__use;
   Data_Presentation__Data_Value_Format__Time_Edit.Text := Common.data_presentation__data_value_format__time;
   Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked := Common.data_presentation__data_value_format__time__use;
+  Data_Presentation__First_Rows_SpinEdit.Value := Common.data_presentation__first_rows;
   Database__Backup__Application__File_Path_Edit.Text := Common.database__backup__application__file_path;
 
   if    ( Database__Backup__File_Name__Suffix_Default_RadioGroup.Items.Count > 0 )
@@ -575,6 +578,7 @@ begin
   Common.data_presentation__data_value_format__real_numbers__use := Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox.Checked;
   Common.data_presentation__data_value_format__time := Data_Presentation__Data_Value_Format__Time_Edit.Text;
   Common.data_presentation__data_value_format__time__use := Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked;
+  Common.data_presentation__first_rows := Data_Presentation__First_Rows_SpinEdit.Value;
   Common.database__backup__application__file_path := Database__Backup__Application__File_Path_Edit.Text;
   Common.database__backup__file_name__suffix_default__item_index := Database__Backup__File_Name__Suffix_Default_RadioGroup.ItemIndex;
   Common.database__correctness_check_text__backup := Database__Correctness_Check_Text__Backup_Edit.Text;
@@ -1026,6 +1030,13 @@ begin
     file_ini.WriteBool( 'Options', 'data_presentation__data_value_format__time__use', Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked )
   else
     Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'data_presentation__data_value_format__time__use', Data_Presentation__Data_Value_Format__Time__Use_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'data_presentation__first_rows' )  ) then
+    file_ini.WriteInteger( 'Options', 'data_presentation__first_rows', Data_Presentation__First_Rows_SpinEdit.Value )
+  else
+    Data_Presentation__First_Rows_SpinEdit.Value := file_ini.ReadInteger( 'Options', 'data_presentation__first_rows', Data_Presentation__First_Rows_SpinEdit.Value );
 
 
   if   ( save_l )

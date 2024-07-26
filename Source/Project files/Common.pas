@@ -766,6 +766,7 @@ var
   text__search__window__one_common
     : boolean;
 
+  data_presentation__first_rows,
   database__backup__file_name__suffix_default__item_index,
   log__auto_scroll__seconds,
   sql_editor__code__completion_window__default__lines_in_window,

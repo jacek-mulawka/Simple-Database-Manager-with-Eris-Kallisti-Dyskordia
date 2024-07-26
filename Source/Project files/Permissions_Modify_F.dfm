@@ -111,13 +111,17 @@ object Permissions_Modify_F_Frame: TPermissions_Modify_F_Frame
         Top = 17
         Width = 139
         Height = 23
+        Hint = 'Page down - search next;'#13#10'Page up - search prior.'
         Margins.Left = 10
         Margins.Top = 0
         Margins.Right = 10
         Margins.Bottom = 5
         Align = alTop
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         OnChange = Search_Change
+        OnKeyDown = Search_EditKeyDown
       end
       object Search__Case_Insensitive_CheckBox: TCheckBox
         AlignWithMargins = True

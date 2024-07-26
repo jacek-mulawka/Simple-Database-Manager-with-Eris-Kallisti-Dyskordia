@@ -40,6 +40,7 @@ type
     procedure Refresh_ButtonClick( Sender: TObject );
     procedure Buttons_Panel__Hide_ButtonClick( Sender: TObject );
     procedure Search_Change( Sender: TObject );
+    procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
     procedure Database__Description__Set_MenuItemClick( Sender: TObject );
@@ -855,6 +856,17 @@ begin
           Exit;
 
         end;
+
+end;
+
+procedure TDatabase__Informations_Modify_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender );
 
 end;
 

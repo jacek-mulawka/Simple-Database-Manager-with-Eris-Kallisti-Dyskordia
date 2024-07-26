@@ -10,7 +10,7 @@ uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, Vcl.DBCtrls, Vcl.ComCtrls;
+  Vcl.Mask, Vcl.DBCtrls, Vcl.ComCtrls, Vcl.Samples.Spin;
 
 type
   TTable__Data_Modify_F_Frame = class( TFrame )
@@ -62,6 +62,8 @@ type
     Editing_CheckBox: TCheckBox;
     SaveDialog1: TSaveDialog;
     Data_Value_Format__Disabled_CheckBox: TCheckBox;
+    First_Rows_Etiquette_Label: TLabel;
+    First_Rows_SpinEdit: TSpinEdit;
 
     procedure Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 
@@ -76,7 +78,11 @@ type
     procedure Editing_CheckBoxClick( Sender: TObject );
     procedure Grid_View_CheckBoxClick( Sender: TObject );
 
+    procedure First_Rows_SpinEditChange( Sender: TObject );
+    procedure First_Rows_SpinEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+
     procedure Search_Change( Sender: TObject );
+    procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
 
@@ -139,6 +145,7 @@ type
     procedure Data_Preview();
     function Extract_Table_Data( const progres_show_f : boolean = false ) : string;
     procedure Field_Name_Selected_From_Form_View__Set();
+    procedure First_Rows__Negate_Value();
     procedure Form_View_Field__Free();
     procedure Free_All__Table_Column__Values_Distinct();
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
@@ -165,6 +172,9 @@ type
   end;
 
 const
+  table__first_rows_c : string = '__FIRST_ROWS__';
+  table__first_rows__file_name_c : string = 'Table__First_Rows.txt';
+  table__first_rows__value_c : string = '__VALUE__';
   table__insert_into__a__file_name_c : string = 'Table__Insert_Into__A__sql.txt';
   table__insert_into__b__file_name_c : string = 'Table__Insert_Into__B__sql.txt';
   table__insert_into__c__file_name_c : string = 'Table__Insert_Into__C__sql.txt';
@@ -718,6 +728,13 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.First_Rows__Negate_Value();
+begin
+
+  First_Rows_SpinEdit.Value := -First_Rows_SpinEdit.Value;
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Form_View_Field__Free();
 var
   visible_copy_l : boolean;
@@ -883,6 +900,7 @@ begin
   Data_ScrollBox.Align := alClient;
   Data_PageControl.ActivePage := Data_Filter_TabSheet;
   Data_PageControl.Height := 1;
+  First_Rows_SpinEdit.Value := Common.data_presentation__first_rows;
 
   Log_Memo.Lines.Add( table_name__tdmf_g );
 
@@ -1207,7 +1225,9 @@ end;
 
 procedure TTable__Data_Modify_F_Frame.Open_Close_ButtonClick( Sender: TObject );
 var
-  zts : string;
+  zts,
+  table__first_rows_l
+    : string;
 begin
 
   if data__sdbm = nil then
@@ -1224,6 +1244,26 @@ begin
   if not data__sdbm.Query__Active() then
     begin
 
+      table__first_rows_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__file_name_c  );
+
+      if Trim( table__first_rows_l ) = '' then
+        begin
+
+          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__file_name_c + ').' );
+
+          table__first_rows_l :=
+            'first __VALUE__ ';
+
+        end
+      else
+        begin
+
+          table__first_rows_l := StringReplace( table__first_rows_l, #10, '', [] );
+          table__first_rows_l := StringReplace( table__first_rows_l, #13, '', [] );
+
+        end;
+
+
       zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__select__file_name_c  );
 
       if Trim( zts ) = '' then
@@ -1232,7 +1272,7 @@ begin
           Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__select__file_name_c + ').' );
 
           zts :=
-            'select * from ' + Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF() + ' ';
+            'select ' + table__first_rows_c + '* from ' + Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF() + ' ';
 
         end
       else
@@ -1241,6 +1281,15 @@ begin
           zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF(), [ rfReplaceAll ] );
 
         end;
+
+
+      if First_Rows_SpinEdit.Value >= 0 then
+        table__first_rows_l := StringReplace( table__first_rows_l, table__first_rows__value_c, First_Rows_SpinEdit.Value.ToString(), [ rfReplaceAll ] )
+      else
+        table__first_rows_l := '';
+
+
+      zts := StringReplace( zts, table__first_rows_c, table__first_rows_l, [ rfReplaceAll ] );
 
 
       data__sdbm.Query__Sql__Set( zts + data__filter_value_g );
@@ -1772,6 +1821,31 @@ begin
 
 end;
 
+procedure TTable__Data_Modify_F_Frame.First_Rows_SpinEditChange( Sender: TObject );
+begin
+
+  if First_Rows_SpinEdit.Value < 0 then
+    First_Rows_SpinEdit.Color := clBtnFace
+  else
+    First_Rows_SpinEdit.Color := clWindow;
+
+end;
+
+procedure TTable__Data_Modify_F_Frame.First_Rows_SpinEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  // N.
+  if    ( Key = 78 )
+    and ( Shift = [ ssCtrl ] ) then
+    First_Rows__Negate_Value()
+  else
+  // O.
+  if    ( Key = 79 )
+    and ( Shift = [ ssCtrl ] ) then
+    Open_Close_ButtonClick( Sender );
+
+end;
+
 procedure TTable__Data_Modify_F_Frame.Search_Change( Sender: TObject );
 var
   locate_options : Data.DB.TLocateOptions;
@@ -1830,6 +1904,17 @@ begin
       data__sdbm.Query__Enable_Controls();
 
     end;
+
+end;
+
+procedure TTable__Data_Modify_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender );
 
 end;
 
@@ -2026,6 +2111,7 @@ begin
   zt_table__data_filter.Filter__Activate_wsk := Data_Filter__Activate__All_ButtonClick;
   zt_table__data_filter.Filter__Deactivate_wsk := Data_Filter__Deactivate__All_ButtonClick;
   zt_table__data_filter.Filter__Show_wsk := Data_Filter__Activate__All_ButtonClick;
+  zt_table__data_filter.First_Rows__Negate_Value_wsk := First_Rows__Negate_Value;
 
 end;
 
@@ -2156,6 +2242,11 @@ begin
         Data_PageControl.Height := 300;
 
     end
+  else
+  // N.
+  if    ( Key = 78 )
+    and ( Shift = [ ssCtrl ] ) then
+    First_Rows__Negate_Value()
   else
   // O.
   if    ( Key = 79 )

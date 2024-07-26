@@ -60,6 +60,7 @@ type
 
     procedure Trigger_Name_DBEditChange( Sender: TObject );
     procedure Search_Change( Sender: TObject );
+    procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
 
@@ -316,7 +317,7 @@ begin
       try
         triggers_sdbm.Query__Field_By_Name( Common.name__trigger__name__big_letters_c ).AsString;
         Trigger_Name_DBEdit.DataField := Common.name__trigger__name__big_letters_c;
-        //triggers_sdbm.Query__Sort(  sort__column_name_g + Common.Sort_Direction_Symbol( sort__direction_ascending_g )  );
+        triggers_sdbm.Query__Sort(  sort__column_name_g + Common.Sort_Direction_Symbol( sort__direction_ascending_g )  );
       except
         on E : Exception do
           begin
@@ -599,8 +600,8 @@ begin
   Self.Name := '';
 
   database_type__trmf_g := database_type_f;
-  //sort__column_name_g := Common.name__trigger__name__big_letters_c;
-  sort__column_name_g := ''; // RDB$TRIGGERS.RDB$TRIGGER_SEQUENCE probably is more important.
+  sort__column_name_g := Common.name__trigger__name__big_letters_c;
+  //sort__column_name_g := ''; // RDB$TRIGGERS.RDB$TRIGGER_SEQUENCE probably is more important.
   sort__direction_ascending_g := true;
   table_name__trmf_g := table_name_f;
   text__search_replace_form := nil;
@@ -737,6 +738,17 @@ begin
       triggers_sdbm.Query__Enable_Controls();
 
     end;
+
+end;
+
+procedure TTriggers_Modify_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender );
 
 end;
 

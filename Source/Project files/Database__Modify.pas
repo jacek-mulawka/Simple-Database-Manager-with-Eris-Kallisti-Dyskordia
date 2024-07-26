@@ -2048,6 +2048,12 @@ end;
 procedure TDatabase__Modify_Form.Stored_Procedures_List__Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if Key = VK_PRIOR then
+    Stored_Procedures_List__Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Stored_Procedures_List__Search__Next_ButtonClick( Sender )
+  else
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssShift ] ) then
     Stored_Procedures_List__Stored_Procedure__Open__Edit__DM()
@@ -2554,6 +2560,12 @@ end;
 procedure TDatabase__Modify_Form.Tables_List__Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if Key = VK_PRIOR then
+    Tables_List__Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Tables_List__Search__Next_ButtonClick( Sender )
+  else
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl ] ) then
     Tables_List__Table__Data_Open__DM()
@@ -3051,6 +3063,12 @@ end;
 procedure TDatabase__Modify_Form.Views_List__Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  if Key = VK_PRIOR then
+    Views_List__Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Views_List__Search__Next_ButtonClick( Sender )
+  else
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl ] ) then
       Views_List__View__Data_Open__DM()

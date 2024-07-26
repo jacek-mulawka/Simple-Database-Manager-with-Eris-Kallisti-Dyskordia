@@ -81,6 +81,7 @@ type
     procedure Stored_Procedure__Parameter__Name_DBEditChange( Sender: TObject );
     procedure Stored_Procedure__Output_DBEditChange( Sender: TObject );
     procedure Search_Change( Sender: TObject );
+    procedure Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
 
@@ -1719,6 +1720,17 @@ begin
         end;
 
     end;
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Search_EditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  if Key = VK_PRIOR then
+    Search__Prior_ButtonClick( Sender )
+  else
+  if Key = VK_NEXT then
+    Search__Next_ButtonClick( Sender );
 
 end;
 
