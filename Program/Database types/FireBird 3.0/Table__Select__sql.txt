@@ -1,1 +1,1 @@
-﻿select * from __TABLE_NAME__ 
+﻿select __FIRST_ROWS__* from __TABLE_NAME__ 
