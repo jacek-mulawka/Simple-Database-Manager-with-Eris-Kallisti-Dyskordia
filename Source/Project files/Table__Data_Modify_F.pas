@@ -2225,10 +2225,7 @@ begin
   else
   // D.
   if    ( Key = 68 )
-    and (
-             ( Shift = [ ssCtrl ] )
-          or ( Shift = [ ssShift ] )
-        ) then
+    and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.
     Table_Column__Values_Distinct_ButtonClick( Sender )
   else
   // F.

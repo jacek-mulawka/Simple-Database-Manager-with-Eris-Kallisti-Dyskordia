@@ -893,10 +893,7 @@ begin
   else
   // D.
   if    ( Key = 68 )
-    and (
-             ( Shift = [ ssCtrl ] )
-          or ( Shift = [ ssShift ] )
-        )
+    and ( Shift = [ ssCtrl ] ) // Due to writing capitals without ssShift.
     and ( Self.field_name_combo_box <> nil )
     and (  Trim( Self.field_name_combo_box.Text ) <> ''  ) then
     begin

@@ -29,7 +29,7 @@ object About_Form: TAbout_Form
     Align = alTop
     Caption = 
       'Simple Database Manager with Eris Kallisti Dyskordia'#13#10'version 20' +
-      '24.07.26.'#13#10#13#10'MIT License'#13#10#13#10'Copyright (c) 2023 Jacek Mulawka'#13#10#13#10
+      '24.07.30.'#13#10#13#10'MIT License'#13#10#13#10'Copyright (c) 2023 Jacek Mulawka'#13#10#13#10
     WordWrap = True
     ExplicitWidth = 276
   end

@@ -169,7 +169,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Top = 0
       Width = 25
       Height = 25
-      Hint = 'Column distinct values.'#13#10#13#10'[Ctrl + D, Shift + D]'
+      Hint = 'Column distinct values.'#13#10#13#10'[Ctrl + D]'
       Enabled = False
       ImageIndex = 34
       Images = Shared_DataModule.ImageList1
@@ -242,7 +242,6 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       ParentShowHint = False
       ShowHint = True
       Layout = tlCenter
-      ExplicitTop = 164
       ExplicitWidth = 83
     end
     object First_Rows_Etiquette_Label: TLabel
@@ -277,8 +276,6 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       ReadOnly = True
       TabOrder = 0
       OnChange = Data_DBEditChange
-      ExplicitLeft = 9
-      ExplicitTop = 18
     end
     object Search_GroupBox: TGroupBox
       AlignWithMargins = True
@@ -293,7 +290,6 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Align = alTop
       Caption = 'Search'
       TabOrder = 3
-      ExplicitTop = 54
       DesignSize = (
         163
         105)
@@ -393,8 +389,6 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       TabOrder = 4
       OnKeyDown = Log_MemoKeyDown
       OnKeyUp = Key_Up_Common
-      ExplicitTop = 182
-      ExplicitHeight = 247
     end
     object Buttons_Panel__Hide_Button: TButton
       Left = 155
@@ -440,8 +434,6 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Value = 0
       OnChange = First_Rows_SpinEditChange
       OnKeyDown = First_Rows_SpinEditKeyDown
-      ExplicitLeft = 15
-      ExplicitTop = 69
     end
   end
   object Data_Panel: TPanel

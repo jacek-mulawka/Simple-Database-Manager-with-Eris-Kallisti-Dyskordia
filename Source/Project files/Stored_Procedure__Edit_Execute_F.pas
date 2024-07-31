@@ -2953,10 +2953,7 @@ begin
 
   // D.
   if    ( Key = 68 )
-    and (
-             ( Shift = [ ssCtrl ] )
-          or ( Shift = [ ssShift ] )
-        ) then
+    and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.
     Column__Values__Distinct()
   else
   // C.

@@ -1330,7 +1330,7 @@ begin
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
     Translation__Component__Add( 'Search__Partial_Key_CheckBox', 'Partial key' );
     Translation__Component__Add( 'Search__Prior_Button', '', 'Search prior.' );
-    Translation__Component__Add( 'Table_Column__Values_Distinct_Button', '', 'Column distinct values.' + #13 + #10 + #13 + #10 + '[Ctrl + D, Shift + D]' );
+    Translation__Component__Add( 'Table_Column__Values_Distinct_Button', '', 'Column distinct values.' + #13 + #10 + #13 + #10 + '[Ctrl + D]' );
     Translation__Component__Add( 'Width_Keeper_Label', '<-- width keeper -->' );
     Translation__Component__Add( 'Width_Keeper__Move__Left_Button', '', 'Move the width keeper left.' );
     Translation__Component__Add( 'Width_Keeper__Move__Right_Button', '', 'Move the width keeper right.' );
@@ -1851,7 +1851,7 @@ begin
     '    Ctrl + \, Ctrl + Shift + \ - comment / uncomment line / block alternatively' + #13 +
     '    Ctrl + Shift + \ - invert comment alternatively (block only)' + #13 +
     '    Ctrl + C - copy to clipboard (e.g. column name, query value, table name)' + #13 +
-    '    Ctrl + D, Shift + D - show column distinct values' + #13 +
+    '    Ctrl + D - show column distinct values' + #13 +
     '    Ctrl + Enter, Ctrl + Double-click - open table, view and open table, view data' + #13 +
     '    Ctrl + F - add table filter' + #13 +
     '    Ctrl + S, Shift + S - sum indicated column values' + #13 +
@@ -1862,7 +1862,7 @@ begin
     'SQL editor' + #13 +
     '    Ctrl + 0 ... 9 - go to bookmark' + #13 +
     '    Ctrl + . - code completion' + #13 +
-    '    Ctrl + D, Shift + D - display indicated column distinct values' + #13 +
+    '    Ctrl + D - display indicated column distinct values' + #13 +
     '    Ctrl + Enter - add all columns sign (*) and add table in the SQL editor' + #13 +
     '    Ctrl + F - find (search) text' + #13 +
     '    Ctrl + H - replace text' + #13 +
@@ -2065,6 +2065,7 @@ begin
   translation__table__data_filter_r.automatically_use_quotation_sign__hint := 'Automatically use quotation sign.';
   translation__table__data_filter_r.buttons_panel__hint :=
     'Enter - activate all filters' + #13 +
+    'Ctrl + D - show column distinct values' + #13 +
     'Ctrl + Enter - deactivate all filters' + #13 +
     'Ctrl + ?, Ctrl + / - show filter value';
   translation__table__data_filter_r.case_insensitive := 'c.i.';
@@ -2083,7 +2084,7 @@ begin
   translation__table__data_filter_r.field_value__dedicated__use_check_box__hint :=
     'Use the value of additional components.' + #13 + #13 +
     'Enter - activate all filters' + #13 +
-    'Ctrl + D, Shift + D - show column distinct values' + #13 +
+    'Ctrl + D - show column distinct values' + #13 +
     'Ctrl + Enter - deactivate all filters' + #13 +
     'Ctrl + ?, Ctrl + / - show filter value';
   translation__table__data_filter_r.move_left__hint := 'Move left.';
