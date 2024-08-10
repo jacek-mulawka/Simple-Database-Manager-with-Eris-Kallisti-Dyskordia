@@ -572,6 +572,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}from\style{-B}-->from ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}group by \style{-B}-->group by ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}iif( | = ''M'', ''Yes'', ''No'' )\style{-B}-->iif( | = ''M'', ''Yes'', ''No'' )' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}in ( | )\style{-B}-->in ( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into  values \style{-B}-->insert into  values ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}insert into table(...)\style{-B}-->insert into tabela#13#10    (#13#10        C1#13#10      , C2#13#10    )#13#10  values#13#10    (#13#10        v_c1#13#10      ' +
       ', ( select C2 from T2 where ... )#13#10    )' + #13 + #10 +
@@ -580,6 +581,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}is not null \style{-B}-->is not null ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}join\style{-B}-->join ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}left join | on  = \style{-B}-->left join | on  = ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}like ''%|%''\style{-B}-->like ''%|%'' ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (select)\style{-B}-->list~#13#10select cast#13#10         (#13#10           substring#13#10             (#13#10               list( ''(id: '' || T1.C1 || ''; name: '' || T1.C2 || '')'' )' +
       '#13#10               from 1 for 50#13#10             )#13#10           as varchar( 50 )#13#10         )#13#10from T1' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}list (     , )\style{-B}-->list~#13#10     , (#13#10         select cast#13#10                  (#13#10                    substring#13#10                      (#13#10' +
@@ -591,6 +593,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}max( | )\style{-B}-->max( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}min( | )\style{-B}-->min( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not \style{-B}-->not ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not in ( | )\style{-B}-->not in ( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}not null \style{-B}-->not null ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}null \style{-B}-->null ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}or \style{-B}-->or ' + #13 + #10 +
