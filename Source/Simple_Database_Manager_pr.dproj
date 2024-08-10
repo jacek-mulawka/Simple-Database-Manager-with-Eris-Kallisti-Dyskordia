@@ -72,7 +72,7 @@
         <SanitizedProjectName>Simple_Database_Manager_pr</SanitizedProjectName>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>2057</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=Jacek Mulawka;FileDescription=Simple Database Manager with Eris Kallisti Dyskordia. MIT License.;FileVersion=1.0.0.0;InternalName=;LegalCopyright=Copyright (c) 2023 Jacek Mulawka;LegalTrademarks=;OriginalFilename=Simple Database Manager with Eris Kallisti Dyskordia;ProgramID=;ProductName=Simple Database Manager with Eris Kallisti Dyskordia;ProductVersion=2024.7.30;Comments=j.mulawka@interia.pl https://github.com/jacek-mulawka</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Jacek Mulawka;FileDescription=Simple Database Manager with Eris Kallisti Dyskordia. MIT License.;FileVersion=1.0.0.0;InternalName=;LegalCopyright=Copyright (c) 2023 Jacek Mulawka;LegalTrademarks=;OriginalFilename=Simple Database Manager with Eris Kallisti Dyskordia;ProgramID=;ProductName=Simple Database Manager with Eris Kallisti Dyskordia;ProductVersion=2024.8.8;Comments=j.mulawka@interia.pl https://github.com/jacek-mulawka</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>JvNet;vclwinx;fmx;vclie;DbxCommonDriver;bindengine;IndyIPCommon;VCLRESTComponents;FireDACCommonODBC;FireDACCommonDriver;appanalytics;IndyProtocols;vclx;frxe28;IndyIPClient;dbxcds;vcledge;frxTee28;bindcompvclwinx;FmxTeeUI;bindcompfmx;JvBands;inetdb;JvAppFrm;ibmonitor;FireDACSqliteDriver;DbxClientDriver;Tee;soapmidas;JclVcl;vclactnband;TeeUI;fmxFireDAC;dbexpress;Jcl;JvManagedThreads;Python;DBXMySQLDriver;VclSmp;inet;JvPascalInterpreter;PythonVcl;vcltouch;fmxase;frx28;JvPluginSystem;JvDB;JvTimeFramework;dbrtl;Zbiorcza_paczka;fmxdae;TeeDB;FireDACMSAccDriver;JvCustom;CustomIPTransport;JvSystem;JclDeveloperTools;JvControls;vcldsnap;JvCrypt;DBXInterBaseDriver;JvJans;frxDB28;JvMM;IndySystem;JvWizards;JvGlobus;vcldb;ibxbindings;JclContainers;JvPageComps;vclFireDAC;JvCore;bindcomp;FireDACCommon;IndyCore;RESTBackendComponents;bindcompdbx;rtl;FireDACMySQLDriver;SMCmpntRX104;FireDACADSDriver;RESTComponents;DBXSqliteDriver;vcl;IndyIPServer;dsnapxml;dsnapcon;adortl;JvDotNetCtrls;JvHMI;JvRuntimeDesign;JvXPCtrls;vclimg;FireDACPgDriver;FireDAC;inetdbxpress;JvDlgs;xmlrtl;tethering;JvStdCtrls;ibxpress;JvDocking;JvPrintPreview;bindcompvcl;dsnap;JvCmp;CloudService;vclib;fmxobj;bindcompvclsmp;FMXTee;PythonFmx;soaprtl;soapserver;FireDACIBDriver;$(DCC_UsePackage)</DCC_UsePackage>
@@ -1110,9 +1110,9 @@
                 </DeployClass>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="OSX64" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Android64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSXARM64" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Linux64" Name="$(PROJECTNAME)"/>
