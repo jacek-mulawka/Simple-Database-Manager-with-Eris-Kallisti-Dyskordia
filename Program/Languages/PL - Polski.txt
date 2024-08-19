@@ -355,6 +355,7 @@ TOptions_Form
 Caption=Opcje
 Apply_Hint_Label=Aby zastosować ustawienia we wszystkich otwartych oknach należy użyć opcji 'Połącz ponownie'.
 Basic_TabSheet=Podstawowe
+Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox=Powiadomienie o zajętości ('Nieustraszony' migawka) nieaktywne
 Cancel_Button=Anuluj
 Csv__File_GroupBox=Csv plik
 Csv__File__Data_Separator_GroupBox=Separator danych
