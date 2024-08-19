@@ -18,6 +18,7 @@ type
     Apply_Hint_Label: TLabel;
     Basic_TabSheet: TTabSheet;
     Bottom_Panel: TPanel;
+    Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox: TCheckBox;
     Cancel_Button: TButton;
     Caret_Position_Label: TLabel;
     Csv__File_GroupBox: TGroupBox;
@@ -259,6 +260,7 @@ var
   i : integer;
 begin
 
+  Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked := Common.busy_notification__knight_rider_equalizer__disabled;
   Csv__File__Data_Separator_Edit.Text := Common.csv__file__data_separator;
   Csv__File__Text_Qualifier_Edit.Text := Common.csv__file__text_qualifier;
   Data_Presentation__Data_Value_Format__Date_Edit.Text := Common.data_presentation__data_value_format__date;
@@ -566,6 +568,7 @@ var
   i : integer;
 begin
 
+  Common.busy_notification__knight_rider_equalizer__disabled := Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked;
   Common.csv__file__data_separator := Csv__File__Data_Separator_Edit.Text;
   Common.csv__file__text_qualifier := Csv__File__Text_Qualifier_Edit.Text;
   Common.data_presentation__data_value_format__date := Data_Presentation__Data_Value_Format__Date_Edit.Text;
@@ -948,6 +951,13 @@ begin
 
 
   {$region 'Ini file.'}
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'busy_notification__knight_rider_equalizer__disabled' )  ) then
+    file_ini.WriteBool( 'Options', 'busy_notification__knight_rider_equalizer__disabled', Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked )
+  else
+    Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked := file_ini.ReadBool( 'Options', 'busy_notification__knight_rider_equalizer__disabled', Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked );
+
+
   if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'csv__file__data_separator' )  ) then
     file_ini.WriteString( 'Options', 'csv__file__data_separator', Csv__File__Data_Separator_Edit.Text )

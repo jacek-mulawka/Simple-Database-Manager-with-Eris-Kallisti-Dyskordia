@@ -172,6 +172,8 @@ type
     function Parent_Caption__Get() : string;
     procedure Parent_Caption__Set( const text_f : string );
     procedure Parent_Tab_Switch( const prior_f : boolean = false );
+    function Parent__Extended_Caption__Get() : string;
+    procedure Parent__Extended_Caption__Set( const text_f : string );
     procedure Primary_Column_Find();
     procedure Query_Active_Notification_Set();
     function Quotation_Sign__SPEEF() : string;
@@ -224,15 +226,16 @@ begin
     Parent_Caption__Set(  StringReplace( Parent_Caption__Get(), Common.notification__sign__busy_c, '', [ rfReplaceAll ] )  );
 
 
-  if busy_f then
-    begin
-
-      busy_notification__knight_rider_equalizer.Szerokoœæ_Koryguj();
-      busy_notification__knight_rider_equalizer.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Migaj );
-
-    end
+  if    ( busy_f )
+    and (  Pos( Common.notification__sign__busy_c, Parent__Extended_Caption__Get() ) <= 0  ) then
+    Parent__Extended_Caption__Set( Parent__Extended_Caption__Get() + Common.notification__sign__busy_c )
   else
-    busy_notification__knight_rider_equalizer.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Mignij );
+  if    ( not busy_f )
+    and (  Pos( Common.notification__sign__busy_c, Parent__Extended_Caption__Get() ) > 0  ) then
+    Parent__Extended_Caption__Set(  StringReplace( Parent__Extended_Caption__Get(), Common.notification__sign__busy_c, '', [ rfReplaceAll ] )  );
+
+
+  Common.Busy_Notification__Knight_Rider_Equalizer__Set( busy_f, busy_notification__knight_rider_equalizer );
 
 end;
 
@@ -1285,23 +1288,6 @@ begin
 
 end;
 
-procedure TStored_Procedure__Edit_Execute_F_Frame.Primary_Column_Find();
-begin
-
-  if    ( stored_procedure__output_sdbm.Query__Active() )
-    and ( stored_procedure__output_sdbm.Query__Field_Count > 0 ) then
-    begin
-
-      Stored_Procedure__Output_DBEdit.DataField := stored_procedure__output_sdbm.Query__Fields( 0 ).FieldName;
-
-
-      if stored_procedure__output__sort__column_name_g = '' then
-        stored_procedure__output__sort__column_name_g := Stored_Procedure__Output_DBEdit.DataField;
-
-    end;
-
-end;
-
 procedure TStored_Procedure__Edit_Execute_F_Frame.Parent_Tab_Switch( const prior_f : boolean = false );
 var
   zti : integer;
@@ -1344,6 +1330,32 @@ begin
       TPageControl(parent_supreme_tab_sheet.Parent).ActivePageIndex := zti;
 
     end;
+
+end;
+
+function TStored_Procedure__Edit_Execute_F_Frame.Parent__Extended_Caption__Get() : string;
+begin
+
+  if    ( Self.Parent <> nil )
+    and ( Self.Parent.Parent <> nil )
+    and ( Self.Parent.Parent.Parent <> nil )
+    and ( Self.Parent.Parent.Parent.Parent <> nil )
+    and ( Self.Parent.Parent.Parent.Parent is TTabSheet ) then
+    Result := TTabSheet(Self.Parent.Parent.Parent.Parent).Caption
+  else
+    Result := '';
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Parent__Extended_Caption__Set( const text_f : string );
+begin
+
+  if    ( Self.Parent <> nil )
+    and ( Self.Parent.Parent <> nil )
+    and ( Self.Parent.Parent.Parent <> nil )
+    and ( Self.Parent.Parent.Parent.Parent <> nil )
+    and ( Self.Parent.Parent.Parent.Parent is TTabSheet ) then
+    TTabSheet(Self.Parent.Parent.Parent.Parent).Caption := text_f;
 
 end;
 
@@ -1409,6 +1421,23 @@ begin
 
 
   Highlight__Font__Set__SPEEF();
+
+end;
+
+procedure TStored_Procedure__Edit_Execute_F_Frame.Primary_Column_Find();
+begin
+
+  if    ( stored_procedure__output_sdbm.Query__Active() )
+    and ( stored_procedure__output_sdbm.Query__Field_Count > 0 ) then
+    begin
+
+      Stored_Procedure__Output_DBEdit.DataField := stored_procedure__output_sdbm.Query__Fields( 0 ).FieldName;
+
+
+      if stored_procedure__output__sort__column_name_g = '' then
+        stored_procedure__output__sort__column_name_g := Stored_Procedure__Output_DBEdit.DataField;
+
+    end;
 
 end;
 

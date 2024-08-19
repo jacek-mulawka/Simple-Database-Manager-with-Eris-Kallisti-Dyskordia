@@ -100,7 +100,7 @@ object Options_Form: TOptions_Form
     Margins.Top = 5
     Margins.Right = 10
     Margins.Bottom = 5
-    ActivePage = Data_Presentation_TabSheet
+    ActivePage = Basic_TabSheet
     Align = alClient
     TabOrder = 0
     object Basic_TabSheet: TTabSheet
@@ -108,7 +108,7 @@ object Options_Form: TOptions_Form
       object Form_View__Additional_Component_Show_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 32
+        Top = 59
         Width = 836
         Height = 17
         Margins.Left = 10
@@ -117,37 +117,10 @@ object Options_Form: TOptions_Form
         Margins.Bottom = 5
         Align = alTop
         Caption = 'Form view - show additional components'
-        TabOrder = 1
+        TabOrder = 2
+        ExplicitTop = 32
       end
       object Queries_Open_In_Background_CheckBox: TCheckBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 109
-        Width = 836
-        Height = 17
-        Margins.Left = 10
-        Margins.Top = 5
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Queries (some) open in the background'
-        TabOrder = 3
-      end
-      object System_Tables_Visible_CheckBox: TCheckBox
-        AlignWithMargins = True
-        Left = 10
-        Top = 420
-        Width = 836
-        Height = 17
-        Margins.Left = 10
-        Margins.Top = 5
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'System tables, roles visible'
-        TabOrder = 9
-      end
-      object Splitter_Show_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
         Top = 136
@@ -158,13 +131,44 @@ object Options_Form: TOptions_Form
         Margins.Right = 10
         Margins.Bottom = 5
         Align = alTop
-        Caption = 'Show splitters (e.g. form view, stored procedure parameters)'
+        Caption = 'Queries (some) open in the background'
         TabOrder = 4
+        ExplicitTop = 109
+      end
+      object System_Tables_Visible_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 10
+        Top = 447
+        Width = 836
+        Height = 17
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'System tables, roles visible'
+        TabOrder = 10
+        ExplicitTop = 420
+      end
+      object Splitter_Show_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 10
+        Top = 163
+        Width = 836
+        Height = 17
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Show splitters (e.g. form view, stored procedure parameters)'
+        TabOrder = 5
+        ExplicitTop = 136
       end
       object Sql__Quotation_Sign__Use_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 393
+        Top = 420
         Width = 836
         Height = 17
         Margins.Left = 10
@@ -173,12 +177,13 @@ object Options_Form: TOptions_Form
         Margins.Bottom = 5
         Align = alTop
         Caption = 'SQL quotation sign use'
-        TabOrder = 8
+        TabOrder = 9
+        ExplicitTop = 393
       end
       object Sql__Command_Separator_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
-        Top = 163
+        Top = 190
         Width = 836
         Height = 40
         Margins.Left = 10
@@ -187,7 +192,8 @@ object Options_Form: TOptions_Form
         Margins.Bottom = 5
         Align = alTop
         Caption = 'SQL command separator'
-        TabOrder = 5
+        TabOrder = 6
+        ExplicitTop = 163
         object Sql__Command_Separator_Edit: TEdit
           AlignWithMargins = True
           Left = 7
@@ -206,7 +212,7 @@ object Options_Form: TOptions_Form
       object Sql__External_Function__Parameter_Separator_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
-        Top = 213
+        Top = 240
         Width = 836
         Height = 80
         Margins.Left = 10
@@ -215,7 +221,8 @@ object Options_Form: TOptions_Form
         Margins.Bottom = 5
         Align = alTop
         Caption = 'SQL external function parameter separator'
-        TabOrder = 6
+        TabOrder = 7
+        ExplicitTop = 213
         object Sql__External_Function__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
@@ -229,7 +236,7 @@ object Options_Form: TOptions_Form
       object Sql__View__Parameter_Separator_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
-        Top = 303
+        Top = 330
         Width = 836
         Height = 80
         Margins.Left = 10
@@ -238,7 +245,8 @@ object Options_Form: TOptions_Form
         Margins.Bottom = 5
         Align = alTop
         Caption = 'SQL view parameter separator'
-        TabOrder = 7
+        TabOrder = 8
+        ExplicitTop = 303
         object Sql__View__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
@@ -252,7 +260,7 @@ object Options_Form: TOptions_Form
       object Table__Data_Modify__Editing__Default_State_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 447
+        Top = 474
         Width = 836
         Height = 17
         Hint = 'Data in the tables defaults to edit mode.'
@@ -264,12 +272,13 @@ object Options_Form: TOptions_Form
         Caption = 'Table data editing default state'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 10
+        TabOrder = 11
+        ExplicitTop = 447
       end
       object Log__Auto_Scroll__GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
-        Top = 59
+        Top = 86
         Width = 836
         Height = 40
         Hint = 
@@ -283,7 +292,8 @@ object Options_Form: TOptions_Form
         Caption = 'Log automatic scrolling'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 2
+        TabOrder = 3
+        ExplicitTop = 59
         DesignSize = (
           836
           40)
@@ -304,7 +314,7 @@ object Options_Form: TOptions_Form
       object Sql_Editor__Font__Use_In_Other_Components_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 474
+        Top = 501
         Width = 836
         Height = 17
         Margins.Left = 10
@@ -315,12 +325,13 @@ object Options_Form: TOptions_Form
         Caption = 'Use SQL editor font in other components'
         ParentShowHint = False
         ShowHint = False
-        TabOrder = 11
+        TabOrder = 12
+        ExplicitTop = 474
       end
       object Database__Modify__Window__Maximized_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 5
+        Top = 32
         Width = 836
         Height = 17
         Margins.Left = 10
@@ -331,7 +342,25 @@ object Options_Form: TOptions_Form
         Caption = 'Database modify window maximized'
         ParentShowHint = False
         ShowHint = False
+        TabOrder = 1
+        ExplicitTop = 5
+      end
+      object Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 10
+        Top = 5
+        Width = 836
+        Height = 17
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Busy notification ('#39'Knight Rider'#39' equalizer) disabled'
+        ParentShowHint = False
+        ShowHint = False
         TabOrder = 0
+        ExplicitLeft = 17
       end
     end
     object Data_Presentation_TabSheet: TTabSheet
@@ -587,9 +616,6 @@ object Options_Form: TOptions_Form
         MinValue = 0
         TabOrder = 1
         Value = 0
-        ExplicitLeft = 15
-        ExplicitTop = 69
-        ExplicitWidth = 163
       end
     end
     object Database__Backup_Restore_TabSheet: TTabSheet

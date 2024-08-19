@@ -366,15 +366,7 @@ begin
   Caret_Position_Display();
 
 
-  if busy_f then
-    begin
-
-      busy_notification__knight_rider_equalizer.Szerokoœæ_Koryguj();
-      busy_notification__knight_rider_equalizer.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Migaj );
-
-    end
-  else
-    busy_notification__knight_rider_equalizer.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Mignij );
+  Common.Busy_Notification__Knight_Rider_Equalizer__Set( busy_f, busy_notification__knight_rider_equalizer );
 
 
   Transaction_Active_Notification_Set();
@@ -1727,6 +1719,25 @@ begin
 
 end;
 
+procedure TSql_Editor_F_Frame.Primary_Column_Find();
+begin
+
+  // Nested functions not allowed in threads.
+
+  if    ( sql_editor_sdbm.Query__Active() )
+    and ( sql_editor_sdbm.Query__Field_Count > 0 ) then
+    begin
+
+      Sql_Editor_Column_DBEdit.DataField := sql_editor_sdbm.Query__Fields( 0 ).FieldName;
+
+
+      if sort__column_name_g = '' then
+        sort__column_name_g := Sql_Editor_Column_DBEdit.DataField;
+
+    end;
+
+end;
+
 procedure TSql_Editor_F_Frame.Prepare__SEF( const databases_r_f : Common.TDatabases_r; const component_type_f : Common.TComponent_Type; ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const database_connection__separated_f, queries_open_in_background_f, sql__quotation_sign__use_f : boolean );
 
   function Newline_Characters_Delete( const text_f : string ) : string;
@@ -2259,25 +2270,6 @@ begin
 
 
   Winapi.ShellAPI.DragAcceptFiles( Sql_Text_SynEdit.Handle, true );
-
-end;
-
-procedure TSql_Editor_F_Frame.Primary_Column_Find();
-begin
-
-  // Nested functions not allowed in threads.
-
-  if    ( sql_editor_sdbm.Query__Active() )
-    and ( sql_editor_sdbm.Query__Field_Count > 0 ) then
-    begin
-
-      Sql_Editor_Column_DBEdit.DataField := sql_editor_sdbm.Query__Fields( 0 ).FieldName;
-
-
-      if sort__column_name_g = '' then
-        sort__column_name_g := Sql_Editor_Column_DBEdit.DataField;
-
-    end;
 
 end;
 

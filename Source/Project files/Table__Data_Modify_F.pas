@@ -214,15 +214,7 @@ begin
     end;
 
 
-  if busy_f then
-    begin
-
-      busy_notification__knight_rider_equalizer.Szerokoœæ_Koryguj();
-      busy_notification__knight_rider_equalizer.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Migaj );
-
-    end
-  else
-    busy_notification__knight_rider_equalizer.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Mignij );
+  Common.Busy_Notification__Knight_Rider_Equalizer__Set( busy_f, busy_notification__knight_rider_equalizer );
 
 end;
 

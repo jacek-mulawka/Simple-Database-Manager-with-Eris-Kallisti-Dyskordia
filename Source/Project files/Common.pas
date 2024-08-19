@@ -21,6 +21,7 @@ uses
 
   SynCompletionProposal,
 
+  Migawka_Prostokat_Tabela_2_SDBM,
   Text__Search_Replace,
 
   Interceptor__Syn_Edit;
@@ -177,6 +178,7 @@ type
   end;
 
 
+procedure Busy_Notification__Knight_Rider_Equalizer__Set( const busy_f : boolean; busy_notification__knight_rider_equalizer_f : Migawka_Prostokat_Tabela_2_SDBM.TMigawka_Prostokat_Tabela_2 );
 function Case_Insensitive_To_String( const value_f : string; const case_insensitive_f : boolean ) : string;
 function Column__Name_To_Grid_Caption( const column_name_f : string ) : string;
 function Column__Values__Distinct__Processing( sdbm_f : TSDBM; db_grid_f : Vcl.DBGrids.TDBGrid; var items_count_f : integer; progress_bar_f : Vcl.ComCtrls.TProgressBar = nil; progres_show_f : boolean = false ) : string;
@@ -735,6 +737,7 @@ var
   fire_dac__fetch_options__record_count_mode : TFDRecordCountMode;
   fire_dac__fetch_options__rowset_size : integer;
 
+  busy_notification__knight_rider_equalizer__disabled,
   data_presentation__data_value_format__date__use,
   data_presentation__data_value_format__date_time__use,
   data_presentation__data_value_format__numbers__use,
@@ -2239,6 +2242,37 @@ begin
 
   if Self.value_edit <> nil then
     Self.value_edit.Text := value_f;
+
+end;
+
+procedure Busy_Notification__Knight_Rider_Equalizer__Set( const busy_f : boolean; busy_notification__knight_rider_equalizer_f : Migawka_Prostokat_Tabela_2_SDBM.TMigawka_Prostokat_Tabela_2 );
+begin
+
+  if busy_notification__knight_rider_equalizer_f = nil then
+    Exit;
+
+
+  if busy_f then
+    begin
+
+      if not Common.busy_notification__knight_rider_equalizer__disabled then
+        begin
+
+          busy_notification__knight_rider_equalizer_f.Szerokoœæ_Koryguj();
+          busy_notification__knight_rider_equalizer_f.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Migaj );
+
+        end;
+
+    end
+  else
+    begin
+
+      if not Common.busy_notification__knight_rider_equalizer__disabled then
+        busy_notification__knight_rider_equalizer_f.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Mignij )
+      else
+        busy_notification__knight_rider_equalizer_f.Tryb_Ustaw( Migawka_Prostokat_Tabela_2_SDBM.mpt2_Brak );
+
+    end;
 
 end;
 

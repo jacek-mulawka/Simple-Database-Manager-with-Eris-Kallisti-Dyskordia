@@ -273,6 +273,7 @@ procedure TSimple_Database_Manager_Form.FormShow( Sender: TObject );
 begin
 
   Common.all_files_find__filter := '*.*';
+  Common.busy_notification__knight_rider_equalizer__disabled := false;
   Common.csv__file__data_separator := ',';
   Common.csv__file__default_extension := '.csv';
   Common.csv__file__text_qualifier := '"';

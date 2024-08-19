@@ -894,6 +894,7 @@ begin
     Translation__Component__Add( 'Caption', 'Options' );
     Translation__Component__Add( 'Apply_Hint_Label', 'To apply settings in all open windows use the reconnect option.' );
     Translation__Component__Add( 'Basic_TabSheet', 'Basic' );
+    Translation__Component__Add( 'Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox', 'Busy notification (''Knight Rider'' equalizer) disabled' );
     Translation__Component__Add( 'Cancel_Button', 'Cancel' );
     Translation__Component__Add( 'Csv__File_GroupBox', 'Csv file' );
     Translation__Component__Add( 'Csv__File__Data_Separator_GroupBox', 'Data separator', 'Data separator.' );
