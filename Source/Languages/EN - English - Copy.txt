@@ -346,6 +346,7 @@ TOptions_Form
 Caption=Options EN
 Apply_Hint_Label=To apply settings in all open windows use the reconnect option. EN
 Basic_TabSheet=Basic EN
+Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox=Busy notification ('Knight Rider' equalizer) disabled EN
 Cancel_Button=Cancel EN
 Csv__File_GroupBox=Csv file EN
 Csv__File__Data_Separator_GroupBox=Data separator EN
