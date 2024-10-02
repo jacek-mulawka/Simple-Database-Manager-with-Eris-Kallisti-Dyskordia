@@ -226,7 +226,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
     Margins.Bottom = 5
     Align = alClient
     DataSource = Table_Column__Values_Distinct_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     ReadOnly = True
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET

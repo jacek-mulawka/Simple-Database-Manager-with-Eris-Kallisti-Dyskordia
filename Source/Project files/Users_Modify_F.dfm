@@ -598,7 +598,7 @@ object Users_Modify_F_Frame: TUsers_Modify_F_Frame
     Height = 700
     Align = alClient
     DataSource = Users_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = Users_PopupMenu
     ReadOnly = True
     TabOrder = 1

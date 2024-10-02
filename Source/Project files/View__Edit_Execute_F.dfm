@@ -72,7 +72,7 @@ object View__Edit_Execute_F_Frame: TView__Edit_Execute_F_Frame
           Height = 210
           Align = alClient
           DataSource = View__Parameters_DataSource
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           PopupMenu = View_PopupMenu
           ReadOnly = True
           TabOrder = 0
@@ -141,7 +141,7 @@ object View__Edit_Execute_F_Frame: TView__Edit_Execute_F_Frame
           Height = 186
           Align = alClient
           DataSource = View__Output_DataSource
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           PopupMenu = View_PopupMenu
           ReadOnly = True
           TabOrder = 0

@@ -307,8 +307,8 @@ type
     search_string_not_found__1,
     search_string_not_found__2,
     set_exception,
-    set_generator,
     set_role,
+    set_selected_generators,
     set_the_column_primary_key_attribute,
     set_user_values__1,
     set_user_values__2,
@@ -870,7 +870,7 @@ begin
     Translation__Component__Add( 'Modify_GroupBox', 'Modify' );
     Translation__Component__Add( 'Modify__Add_Button', '', 'Add new generator <name>.' );
     Translation__Component__Add( 'Modify__Delete_Button', '', 'Delete selected generator.' + #13 + #10 + #13 + #10 + '[Delete]' );
-    Translation__Component__Add( 'Modify__Edit_Button', '', 'Set <value> to selected generator.' + #13 + #10 + #13 + #10 + '[Enter]' );
+    Translation__Component__Add( 'Modify__Edit_Button', '', 'Set <value> to selected generators.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Modify__Name_Etiquette_Label', 'Name' );
     Translation__Component__Add( 'Modify__Value_Etiquette_Label', 'Value' );
     Translation__Component__Add( 'Modify__Values_Fields__Update_CheckBox', 'V. u.', 'Update value in the value field.' );
@@ -1909,8 +1909,8 @@ begin
   translation__messages_r.search_string_not_found__1 := 'Search string';
   translation__messages_r.search_string_not_found__2 := 'not found.';
   translation__messages_r.set_exception := 'Set exception';
-  translation__messages_r.set_generator := 'Set generator';
   translation__messages_r.set_role := 'Set role';
+  translation__messages_r.set_selected_generators := 'Set selected generators';
   translation__messages_r.set_the_column_primary_key_attribute := 'Set the column ''primary key'' attribute';
   translation__messages_r.set_user_values__1 := 'Set user';
   translation__messages_r.set_user_values__2 := 'values';

@@ -159,7 +159,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Height = 142
         Align = alClient
         DataSource = Sql_Editor_DataSource
-        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
         PopupMenu = Sql_Text_PopupMenu
         ReadOnly = True
         TabOrder = 0

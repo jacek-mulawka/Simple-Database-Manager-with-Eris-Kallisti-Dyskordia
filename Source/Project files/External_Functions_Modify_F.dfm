@@ -306,7 +306,7 @@ object External_Functions_Modify_F_Frame: TExternal_Functions_Modify_F_Frame
     Height = 480
     Align = alClient
     DataSource = External_Functions_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = External_Functions_PopupMenu
     ReadOnly = True
     TabOrder = 1

@@ -93,7 +93,7 @@ object Stored_Procedure__Edit_Execute_F_Frame: TStored_Procedure__Edit_Execute_F
           Height = 210
           Align = alClient
           DataSource = Stored_Procedure__Parameters_DataSource
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           PopupMenu = Stored_Procedure_PopupMenu
           ReadOnly = True
           TabOrder = 0
@@ -162,7 +162,7 @@ object Stored_Procedure__Edit_Execute_F_Frame: TStored_Procedure__Edit_Execute_F
           Height = 186
           Align = alClient
           DataSource = Stored_Procedure__Output_DataSource
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           PopupMenu = Stored_Procedure_PopupMenu
           ReadOnly = True
           TabOrder = 0

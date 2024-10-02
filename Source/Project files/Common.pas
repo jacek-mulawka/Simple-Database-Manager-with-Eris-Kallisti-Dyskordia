@@ -3141,44 +3141,75 @@ begin
 end;
 
 procedure DB_Grid_Draw_Column_Cell( const sort__column_name_f : string; db_grid_f : Vcl.DBGrids.TDBGrid; const Rect : Winapi.Windows.TRect; DataCol : Integer; Column : Vcl.DBGrids.TColumn; State : Vcl.Grids.TGridDrawState );
+const
+  margin_c : integer = 2;
+
+var
+  rect_l : Winapi.Windows.TRect;
 begin
 
   if Column <> nil then
     begin
 
       // Sorting column color.
-      if    ( Column.Field <> nil )
-        and ( Column.Field.FullName = sort__column_name_f ) then
-        begin
+      if not db_grid_f.SelectedRows.CurrentRowSelected then
+        if    ( Column.Field <> nil )
+          and ( Column.Field.FullName = sort__column_name_f ) then
+          begin
 
-          Column.Font.Color := Vcl.Graphics.clNavy;
+            Column.Font.Color := Vcl.Graphics.clNavy;
 
-          if db_grid_f <> nil then
-            begin
+            if db_grid_f <> nil then
+              begin
 
-              db_grid_f.Canvas.Brush.Color := color__blue__light_c;
+                db_grid_f.Canvas.Brush.Color := color__blue__light_c;
 
-              db_grid_f.DefaultDrawColumnCell( Rect, DataCol, Column, State );
+                db_grid_f.DefaultDrawColumnCell( Rect, DataCol, Column, State );
 
-            end;
+              end;
 
-        end
-      else
-        Column.Font.Color := Vcl.Graphics.clWindowText;
+          end
+        else
+          Column.Font.Color := Vcl.Graphics.clWindowText;
 
 
+      // Writing the 'null symbol'.
       if    ( Column.Field <> nil )
         and ( Column.Field.IsNull ) then
         begin
 
-          if Column.Field.FullName = sort__column_name_f  then
+          // Background.
+          if Column.Field.FullName = sort__column_name_f then
             db_grid_f.Canvas.Brush.Color := color__blue__light_c
           else
-            db_grid_f.Canvas.Brush.Color := Vcl.Graphics.clWhite;
+            if db_grid_f.SelectedRows.CurrentRowSelected then
+              db_grid_f.Canvas.Brush.Color := Vcl.Graphics.clSkyBlue
+            else
+              db_grid_f.Canvas.Brush.Color := Vcl.Graphics.clWhite;
 
           db_grid_f.Canvas.Rectangle( Rect ); // For 'Memo' fields word '(Memo)' is longer than word 'null' and is visible behind.
 
 
+          // Fill in the inside of the rectangle (background) to make a frame for the selected rows.
+          if db_grid_f.SelectedRows.CurrentRowSelected then
+            begin
+
+              db_grid_f.Canvas.Brush.Color := Vcl.Graphics.clWhite;
+
+              rect_l := Rect;
+
+              rect_l.Left := rect_l.Left + margin_c;
+              rect_l.Top := rect_l.Top + margin_c;
+
+              rect_l.Right := rect_l.Right - margin_c;
+              rect_l.Bottom := rect_l.Bottom - margin_c;
+
+              db_grid_f.Canvas.Rectangle( rect_l );
+
+            end;
+
+
+          // 'Null symbol'.
           db_grid_f.Canvas.Font.Color := clBlue;
           db_grid_f.Canvas.TextOut( Rect.Left, Rect.Top, notification__sign__null_c );
 

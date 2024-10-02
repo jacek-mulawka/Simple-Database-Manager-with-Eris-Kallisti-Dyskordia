@@ -384,7 +384,7 @@ object Permissions_Modify_F_Frame: TPermissions_Modify_F_Frame
     Height = 580
     Align = alClient
     DataSource = Permissions_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = Permissions_PopupMenu
     ReadOnly = True
     TabOrder = 1

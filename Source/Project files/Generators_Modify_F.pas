@@ -837,10 +837,17 @@ end;
 
 procedure TGenerators_Modify_F_Frame.Modify__Edit_ButtonClick( Sender: TObject );
 var
-  ztb : boolean;
+  ztb,
+  error_occurred
+    : boolean;
+
+  i,
+  value_l
+    : integer;
 
   zts,
-  error_message_l
+  error_message_l,
+  sql_pattern_l
     : string;
 begin
 
@@ -853,56 +860,117 @@ begin
     Exit;
 
 
-  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__gmf_g ) + generators_list__sql__generator__set__file_name_c  );
+  sql_pattern_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__gmf_g ) + generators_list__sql__generator__set__file_name_c  );
 
-  if Trim( zts ) = '' then
+  if Trim( sql_pattern_l ) = '' then
     begin
 
       Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__gmf_g ) + generators_list__sql__generator__set__file_name_c + ').' );
 
-      zts :=
-        'set generator ' +
-        Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF() +
-        ' to ' +
-        IntToStr(  Trunc( Modify__Value_SpinEdit.Value )  ) +
-        ' ';
-
-    end
-  else
-    begin
-
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + generators_list__column__generator_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF(), [ rfReplaceAll ] );
-      zts := StringReplace(   zts, Common.sql__word_replace_separator_c + generators_list__column__generator_value_c + Common.sql__word_replace_separator_c, IntToStr(  Trunc( Modify__Value_SpinEdit.Value )  ), [ rfReplaceAll ]   );
+      sql_pattern_l :=
+        'set generator __GENERATOR_NAME__ to __GENERATOR_VALUE__ ';
 
     end;
 
 
-  Log_Memo.Lines.Add( zts );
+  Log_Memo.Lines.Add( sql_pattern_l );
 
 
-  if Application.MessageBox(   PChar(Translation.translation__messages_r.set_generator + ' ''' + Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF() + ''' ' + Translation.translation__messages_r.word__value_to + ' ''' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Modify__Value_SpinEdit.Value )  ) + '''?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION   ) <> IDYES then
+  if Generators_DBGrid.SelectedRows.Count <= 0 then
+    begin
+
+      Generators_DBGrid.SetFocus();
+      Application.MessageBox( PChar(Translation.translation__messages_r.generators_must_be_selected), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
+      Exit;
+
+    end;
+
+
+  value_l := Trunc( Modify__Value_SpinEdit.Value );
+
+  zts := '';
+
+  for i := 0 to Generators_DBGrid.SelectedRows.Count - 1 do
+    begin
+
+      Generators_DBGrid.DataSource.DataSet.GotoBookmark( Generators_DBGrid.SelectedRows.Items[ i ] );
+
+      if i > 0 then
+        zts := zts +
+          ', ';
+
+      zts := zts +
+        Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString;
+
+    end;
+
+
+  if Application.MessageBox(   PChar(Translation.translation__messages_r.set_selected_generators + ' (' + zts + ') ' + Translation.translation__messages_r.word__value_to + ' ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', value_l )  ) + '?'), PChar(Translation.translation__messages_r.confirmation), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION   ) <> IDYES then
     Exit;
 
 
-  ztb := generators_sdbm.Sql_Command_Execute( zts, error_message_l, Translation.translation__messages_r.failed_to_set_generator );
+  Screen.Cursor := crSQLWait;
 
 
-  if ztb then
+  generators_sdbm.Operation_Duration__Calculating_Type__Set( Common.odct_multi_command );
+
+  error_occurred := false;
+
+
+  for i := 0 to Generators_DBGrid.SelectedRows.Count - 1 do
+    begin
+
+      Generators_DBGrid.DataSource.DataSet.GotoBookmark( Generators_DBGrid.SelectedRows.Items[ i ] );
+
+
+      zts := sql_pattern_l;
+
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + generators_list__column__generator_name__big_letter_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__GMF() + generators_sdbm.Query__Field_By_Name( generators_list__column__generator_name__big_letter_c ).AsString + Self.Quotation_Sign__GMF(), [ rfReplaceAll ] );
+      zts := StringReplace(  zts, Common.sql__word_replace_separator_c + generators_list__column__generator_value_c + Common.sql__word_replace_separator_c, IntToStr( value_l ), [ rfReplaceAll ]  );
+
+      Log_Memo.Lines.Add( zts );
+
+
+      ztb := generators_sdbm.Sql_Command_Execute(  zts, error_message_l, Translation.translation__messages_r.failed_to_set_generator + ' (' + Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString + ')'  );
+
+      if    ( not ztb )
+        and ( not error_occurred ) then
+        error_occurred := true;
+
+
+      if Trim( error_message_l ) <> '' then
+        Log_Memo.Lines.Add
+          (
+            Translation.translation__messages_r.failed_to_set_generator + ' (' +
+            Generators_DBGrid.DataSource.DataSet.FieldByName( generators_list__column__generator_name__big_letter_c ).AsString + ') ' +
+            error_message_l
+          );
+
+    end;
+
+
+  generators_sdbm.Operation_Duration__Calculating_Type__Set( Common.odct_single_command );
+
+
+  Screen.Cursor := crDefault;
+
+
+  Refresh_ButtonClick( Sender );
+
+
+  if error_occurred then
+    begin
+
+      Application.MessageBox( PChar(Translation.translation__messages_r.errors_were_encountered), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+
+    end
+  else
     begin
 
       Log_Memo.Lines.Add( generators_sdbm.Operation_Duration_Get() );
 
 
-      Refresh_ButtonClick( Sender );
-
       Application.MessageBox( PChar(Translation.translation__messages_r.done), PChar(Translation.translation__messages_r.information), MB_OK + MB_ICONINFORMATION );
-
-    end
-  else
-    begin
-
-      if Trim( error_message_l ) <> '' then
-        Log_Memo.Lines.Add(  StringReplace( error_message_l, #10, #13 + #10, [ rfReplaceAll ] )  );
 
     end;
 
@@ -1202,8 +1270,8 @@ var
     : integer;
 
   zts,
-  sql_pattern_l,
-  error_message_l
+  error_message_l,
+  sql_pattern_l
     : string;
 begin
 
@@ -1226,7 +1294,6 @@ begin
 
       sql_pattern_l :=
         'grant USAGE on sequence __GENERATOR_NAME__ to user __USER_NAME__ ';
-
 
     end;
 

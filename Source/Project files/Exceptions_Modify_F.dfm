@@ -363,7 +363,7 @@ object Exceptions_Modify_F_Frame: TExceptions_Modify_F_Frame
     Height = 480
     Align = alClient
     DataSource = Exceptions_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = Exceptions_PopupMenu
     ReadOnly = True
     TabOrder = 1

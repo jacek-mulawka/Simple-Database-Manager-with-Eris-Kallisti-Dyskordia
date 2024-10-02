@@ -333,7 +333,7 @@ object Triggers_Modify_F_Frame: TTriggers_Modify_F_Frame
       Height = 172
       Align = alClient
       DataSource = Triggers_DataSource
-      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
       PopupMenu = Triggers_PopupMenu
       ReadOnly = True
       TabOrder = 0

@@ -372,7 +372,7 @@ object Roles_Modify_F_Frame: TRoles_Modify_F_Frame
     Height = 580
     Align = alClient
     DataSource = Roles_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = Roles_PopupMenu
     ReadOnly = True
     TabOrder = 1

@@ -278,7 +278,7 @@ object Generators_Modify_F_Frame: TGenerators_Modify_F_Frame
         Top = 125
         Width = 25
         Height = 25
-        Hint = 'Set <value> to selected generator.'#13#10#13#10'[Enter]'
+        Hint = 'Set <value> to selected generators.'#13#10#13#10'[Enter]'
         ImageIndex = 1
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False

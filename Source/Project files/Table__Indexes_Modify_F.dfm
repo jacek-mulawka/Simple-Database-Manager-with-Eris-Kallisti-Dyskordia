@@ -405,7 +405,7 @@ object Table__Indexes_Modify_F_Frame: TTable__Indexes_Modify_F_Frame
     Height = 580
     Align = alClient
     DataSource = Indexes_DataSource
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = Indexes_PopupMenu
     ReadOnly = True
     TabOrder = 1
