@@ -1,3 +1,7 @@
 ﻿execute block
 
 EXECUTE BLOCK
+
+recreate procedure
+
+RECREATE PROCEDURE
