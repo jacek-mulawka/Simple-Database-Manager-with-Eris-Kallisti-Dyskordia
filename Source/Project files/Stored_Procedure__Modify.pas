@@ -46,6 +46,7 @@ type
     Stored_Procedure__Source__SynCompletionProposal: TSynCompletionProposal;
     Stored_Procedure__Source_SynEdit: TSynEdit;
     Caret_Position_Label: TLabel;
+    Lines_Break_CheckBox: TCheckBox;
 
     procedure Stored_Procedure__Parameter_On_Click( Sender : TObject );
 
@@ -925,6 +926,10 @@ begin
         if zts_2 <> '' then
           zts_2 := zts_2 + ', ';
 
+        if Lines_Break_CheckBox.Checked then
+          zts_2 := zts_2 + Common.newline_c;
+
+
         zts_2 := zts_2 +
           Stored_Procedure__Parameter.TStored_Procedure__Parameter(Stored_Procedure__Parameters__List_ScrollBox.Controls[ i ]).Name_Get__SPP() +
           ' ' +
@@ -953,6 +958,10 @@ begin
 
         if zts_2 <> '' then
           zts_2 := zts_2 + ', ';
+
+        if Lines_Break_CheckBox.Checked then
+          zts_2 := zts_2 + Common.newline_c;
+
 
         zts_2 := zts_2 +
           Stored_Procedure__Parameter.TStored_Procedure__Parameter(Stored_Procedure__Parameters__List_ScrollBox.Controls[ i ]).Name_Get__SPP() +

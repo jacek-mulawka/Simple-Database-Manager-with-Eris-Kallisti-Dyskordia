@@ -1219,6 +1219,7 @@ begin
     Translation__Component__Add( 'Code_Examples_Button', 'Code', 'Code examples.' );
     Translation__Component__Add( 'Execute_Button', 'Execute', 'Command execute.' + #13 + #10 + #13 + #10 + '[Ctrl + E]' );
     Translation__Component__Add( 'Execute_Button_Works_As_Prepare_Execute_CheckBox', 'P + E', 'Execute button works as Prepare + Execute.' + #13 + #10 + #13 + #10 + '[Ctrl + +]' );
+    Translation__Component__Add( 'Lines_Break_CheckBox', 'Break lines', 'List the parameters of the stored procedure on separate lines.' );
     Translation__Component__Add( 'Log_TabSheet', 'Log' );
     Translation__Component__Add( 'Modify__Parameter__Add_Button', '', 'Add parameter.' );
     Translation__Component__Add( 'Modify__Parameter__Delete_Button', '', 'Delete selected parameter.' );

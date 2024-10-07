@@ -506,6 +506,7 @@ const
   name__view__small_letters_c : string = 'view_name';
   name__view__source_c : string = 'VIEW_SOURCE';
 
+  newline_c : string = #13 + #10;
   newline_symbol_c : string = '#13#10';
 
   notification__sign__busy_c : string = ' ...';

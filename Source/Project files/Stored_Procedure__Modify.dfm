@@ -86,6 +86,19 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
       ShowHint = True
       Layout = tlCenter
     end
+    object Lines_Break_CheckBox: TCheckBox
+      Left = 230
+      Top = 25
+      Width = 150
+      Height = 17
+      Hint = 'List the parameters of the stored procedure on separate lines.'
+      Caption = 'Break lines'
+      Checked = True
+      ParentShowHint = False
+      ShowHint = True
+      State = cbChecked
+      TabOrder = 3
+    end
     object Close_Button: TButton
       Left = 535
       Top = 10
@@ -96,7 +109,7 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
       ImageIndex = 7
       Images = Shared_DataModule.ImageList1
       ModalResult = 2
-      TabOrder = 4
+      TabOrder = 5
     end
     object Execute_Button: TButton
       Left = 145
@@ -134,7 +147,7 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
       ActivePage = Log_TabSheet
       Anchors = [akLeft, akTop, akRight, akBottom]
       MultiLine = True
-      TabOrder = 5
+      TabOrder = 6
       TabPosition = tpLeft
       object Log_TabSheet: TTabSheet
         Caption = 'Log'
@@ -180,7 +193,7 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 3
+      TabOrder = 4
       OnClick = Code_Examples_ButtonClick
     end
     object Execute_Button_Works_As_Prepare_Execute_CheckBox: TCheckBox
