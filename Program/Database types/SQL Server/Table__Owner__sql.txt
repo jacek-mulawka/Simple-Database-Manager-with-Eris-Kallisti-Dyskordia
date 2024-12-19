@@ -1,0 +1,3 @@
+﻿select TABLE_SCHEMA as OWNER_NAME
+from  INFORMATION_SCHEMA.TABLES
+where TABLE_NAME = :table_name 

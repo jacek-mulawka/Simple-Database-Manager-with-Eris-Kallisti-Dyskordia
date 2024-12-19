@@ -1,0 +1,3 @@
+﻿select distinct DBA_TABLES.TABLE_NAME as TABLE_NAME
+from DBA_TABLES
+order by DBA_TABLES.TABLE_NAME

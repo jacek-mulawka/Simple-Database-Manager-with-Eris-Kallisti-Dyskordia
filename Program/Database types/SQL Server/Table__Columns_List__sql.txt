@@ -1,0 +1,4 @@
+﻿select COLUMN_NAME as COLUMN_NAME
+from INFORMATION_SCHEMA.COLUMNS
+where TABLE_NAME = :table_name
+order by COLUMN_NAME

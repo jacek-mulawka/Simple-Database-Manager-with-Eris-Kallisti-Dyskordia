@@ -1,0 +1,4 @@
+﻿select * from
+  (
+    select * from __TABLE_NAME__ __FIRST_ROWS__ 
+  ) __TABLE_NAME__ 

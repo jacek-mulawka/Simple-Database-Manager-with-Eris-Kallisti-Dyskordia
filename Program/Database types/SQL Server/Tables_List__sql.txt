@@ -1,0 +1,3 @@
+﻿select SYS.TABLES.NAME as TABLE_NAME
+from SYS.TABLES
+order by SYS.TABLES.NAME
