@@ -1622,7 +1622,7 @@ begin
 
       Application.MessageBox( PChar(Translation.translation__messages_r.task_is_still_running_wait_until_finish), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
       Exit;
-      
+
     end;
 
 
@@ -1640,6 +1640,17 @@ begin
 
 
   Connections__Close();
+
+
+  if Component_Type_Get() = Common.ct_none then
+    begin
+
+      Application.MessageBox( PChar(Translation.translation__messages_r.component_type_should_not_be_empty), PChar(Translation.translation__messages_r.warning), MB_OK + MB_ICONEXCLAMATION );
+
+      Component_Type_ComboBox.SetFocus();
+
+    end;
+
 
   Connection__Open( Component_Type_Get() );
 

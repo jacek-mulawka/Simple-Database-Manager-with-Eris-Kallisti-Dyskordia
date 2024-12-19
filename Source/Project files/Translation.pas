@@ -55,6 +55,7 @@ type
     column_names_should_be_unique,
     column_type_should_not_be_empty,
     columns_must_be_selected,
+    component_type_should_not_be_empty,
     confirmation,
     connection_successful,
     continue_,
@@ -288,6 +289,7 @@ type
     parameter_name_should_be_unique,
     parameter_name_should_not_be_empty,
     point_the_database_file___e_g___c___program_files_firebird_examples_empbuild_employee_fdb,
+    preferred_component_type_should_not_be_empty,
     privileges_must_be_selected,
     query_output_count_,
     record_number__records_count_label__hint,
@@ -1574,6 +1576,7 @@ begin
   translation__messages_r.column_name_should_not_be_empty := 'Column name should not be empty.';
   translation__messages_r.column_names_should_be_unique := 'Column names should be unique.';
   translation__messages_r.column_type_should_not_be_empty := 'Column type should not be empty.';
+  translation__messages_r.component_type_should_not_be_empty := 'Component type should not be empty.';
   translation__messages_r.columns_must_be_selected := 'Columns must be selected.';
   translation__messages_r.confirmation := 'Confirmation';
   translation__messages_r.connection_successful := 'Connection successful.';
@@ -1891,6 +1894,7 @@ begin
   translation__messages_r.parameter_name_should_be_unique := 'Parameter name should be unique.';
   translation__messages_r.parameter_name_should_not_be_empty := 'Parameter name should not be empty.';
   translation__messages_r.point_the_database_file___e_g___c___program_files_firebird_examples_empbuild_employee_fdb := 'Point the database file.' + #13 + #13 + 'E.g.:' + #13 + #13 + 'C:\Program Files\Firebird\examples\empbuild\EMPLOYEE.FDB';
+  translation__messages_r.preferred_component_type_should_not_be_empty := 'Preferred component type should not be empty.';
   translation__messages_r.privileges_must_be_selected := 'Privileges must be selected.';
   translation__messages_r.query_output_count_ := ', query output count';
   translation__messages_r.record_number__records_count_label__hint := 'Record number / records count.';

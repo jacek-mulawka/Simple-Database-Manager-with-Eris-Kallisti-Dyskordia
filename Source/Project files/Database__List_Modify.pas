@@ -154,7 +154,7 @@ begin
   if mode_add then
     begin
 
-      Ado__Connection_String_Edit.Text := 'Provider=MSDASQL.1;Persist Security Info=False;Data Source=database_odbc_name';
+      Ado__Connection_String_Edit.Text := 'Provider=MSDASQL.1;Persist Security Info=False;User ID=SYSDBA;Password=masterkey;Data Source=database_odbc_name';
       Fire_Dac__Parameters_Memo.Lines.Add( 'CharacterSet=utf8' );
       Sql__Parameter_Sign_Edit.Text := ':';
       Sql__Quotation_Sign_Edit.Text := '"';
@@ -264,6 +264,19 @@ begin
         end;
 
     end;
+
+
+  if   ( Component_Type_ComboBox.ItemIndex <= 0 )
+    or ( Component_Type_ComboBox.ItemIndex = integer(Common.ct_none) )
+    or (  Component_Type_ComboBox.ItemIndex <= integer(Low( Common.TComponent_Type ))  )
+    or (  Component_Type_ComboBox.ItemIndex > integer(High( Common.TComponent_Type ))  ) then
+    if Application.MessageBox( PChar(Translation.translation__messages_r.preferred_component_type_should_not_be_empty + #13 + #13 + Translation.translation__messages_r.continue_), PChar(Translation.translation__messages_r.warning), MB_YESNO + MB_DEFBUTTON2 + MB_ICONQUESTION ) <> ID_YES then
+      begin
+
+        Component_Type_ComboBox.SetFocus();
+        Exit;
+
+      end;
 
 
   databases_r__lm_g.alias := Alias_Edit.Text;
