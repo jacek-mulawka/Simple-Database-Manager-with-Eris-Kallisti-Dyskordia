@@ -3463,6 +3463,7 @@ end;
 
 procedure TSql_Editor_F_Frame.Refresh_ButtonClick( Sender: TObject );
 var
+  display_format__copy_l,
   primary_key_name_l,
   primary_key_value_l
     : string;
@@ -3481,7 +3482,22 @@ begin
     begin
 
       primary_key_name_l := Sql_Editor_Column_DBEdit.DataField;
+
+
+      if Sql_Editor_Column_DBEdit.DataSource.DataSet <> nil then
+        begin
+
+          display_format__copy_l := TFloatField(Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField )).DisplayFormat;
+          TFloatField(Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField )).DisplayFormat := '';
+
+        end;
+
+
       primary_key_value_l := Sql_Editor_Column_DBEdit.Text;
+
+
+      if Sql_Editor_Column_DBEdit.DataSource.DataSet <> nil then
+        TFloatField(Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end
   else

@@ -2256,6 +2256,7 @@ end;
 
 procedure TStored_Procedure__Edit_Execute_F_Frame.Refresh_ButtonClick( Sender: TObject );
 var
+  display_format__copy_l,
   primary_key_name_l,
   primary_key_value_l
     : string;
@@ -2312,7 +2313,22 @@ begin
     begin
 
       primary_key_name_l := Stored_Procedure__Output_DBEdit.DataField;
+
+
+      if Stored_Procedure__Output_DBEdit.DataSource.DataSet <> nil then
+        begin
+
+          display_format__copy_l := TFloatField(Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField )).DisplayFormat;
+          TFloatField(Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField )).DisplayFormat := '';
+
+        end;
+
+
       primary_key_value_l := Stored_Procedure__Output_DBEdit.Text;
+
+
+      if Stored_Procedure__Output_DBEdit.DataSource.DataSet <> nil then
+        TFloatField(Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end
   else

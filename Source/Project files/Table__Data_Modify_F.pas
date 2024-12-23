@@ -1435,6 +1435,7 @@ end;
 
 procedure TTable__Data_Modify_F_Frame.Refresh_ButtonClick( Sender: TObject );
 var
+  display_format__copy_l,
   primary_key_name_l,
   primary_key_value_l
     : string;
@@ -1453,7 +1454,22 @@ begin
     begin
 
       primary_key_name_l := Data_DBEdit.DataField;
+
+
+      if Data_DBEdit.DataSource.DataSet <> nil then
+        begin
+
+          display_format__copy_l := TFloatField(Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField )).DisplayFormat;
+          TFloatField(Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField )).DisplayFormat := '';
+
+        end;
+
+
       primary_key_value_l := Data_DBEdit.Text;
+
+
+      if Data_DBEdit.DataSource.DataSet <> nil then
+        TFloatField(Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end
   else
