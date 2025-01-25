@@ -795,6 +795,8 @@ Sql_TabSheet=SQL EN
 TTable_Column__Values_Distinct_Form
 Caption=Column distinct values EN
 Close_Button-->Hint=Close.#13#10#13#10[Esc] EN
+Filter__Deactivate_CheckBox=d. EN
+Filter__Deactivate_CheckBox-->Hint=Disable filter.#13#10#13#10[Ctrl + F] EN
 Ok_Button-->Hint=Select value.#13#10#13#10[Enter] EN
 Refresh_Button-->Hint=Refresh.#13#10#13#10[Ctrl + R] EN
 Search_Edit-->Hint=Page down - search next;#13#10Page up - search prior. EN
