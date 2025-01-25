@@ -857,17 +857,6 @@ begin
 
 end;
 
-procedure TTable__Metadata_F_Frame.Highlight__Font__Set__TMeF();
-begin
-
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-  Common.Font__Set( Table_Description_Memo.Font, Common.sql_editor__font );
-
-  if Common.sql_editor__font__use_in_other_components then
-    Common.Font__Set( Metadata_StringGrid.Font, Common.sql_editor__font );
-
-end;
-
 procedure TTable__Metadata_F_Frame.Free_All__Table_Column__Values_Distinct();
 var
   i : integer;
@@ -885,6 +874,17 @@ begin
       table_column__values_distinct_form_list__tmef_g.Delete( i );
 
     end;
+
+end;
+
+procedure TTable__Metadata_F_Frame.Highlight__Font__Set__TMeF();
+begin
+
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+  Common.Font__Set( Table_Description_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Metadata_StringGrid.Font, Common.sql_editor__font );
 
 end;
 

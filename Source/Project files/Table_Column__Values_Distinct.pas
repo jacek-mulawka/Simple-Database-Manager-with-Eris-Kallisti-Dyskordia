@@ -28,6 +28,7 @@ type
     No_Thread_Timer: TTimer;
     Ok_Button: TButton;
     Close_Button: TButton;
+    Filter__Deactivate_CheckBox: TCheckBox;
     procedure FormCreate( Sender: TObject );
     procedure FormShow( Sender: TObject );
     procedure FormClose( Sender: TObject; var Action: TCloseAction );
@@ -39,6 +40,7 @@ type
     procedure Search__Next_ButtonClick( Sender: TObject );
     procedure Search__Prior_ButtonClick( Sender: TObject );
 
+    procedure Filter__Deactivate_CheckBoxClick( Sender: TObject );
     procedure Refresh_ButtonClick( Sender: TObject );
     procedure Ok_ButtonClick( Sender: TObject );
     procedure Close_ButtonClick( Sender: TObject );
@@ -65,11 +67,13 @@ type
   public
     { Public declarations }
     queries_open_in_background_g,
-    sql__quotation_sign__use__tcvd
+    sql__quotation_sign__use__tcvd,
+    values_logged_g // Values log only once.
       : boolean;
 
     column_name__tcvd,
     database_type__tcvd,
+    filter_value,
     sql__quotation_sign__tcvd,
     table_name__tcvd,
     value_selected__tcvd
@@ -103,6 +107,8 @@ procedure TTable_Column__Values_Distinct_Form.Busy_Notification_Set( const busy_
 begin
 
   // Nested functions not allowed in threads.
+
+  Filter__Deactivate_CheckBox.Enabled := not busy_f;
 
   if    ( busy_f )
     and (  Pos( Common.notification__sign__busy_c, Self.Caption ) <= 0  ) then
@@ -161,12 +167,14 @@ procedure TTable_Column__Values_Distinct_Form.FormCreate( Sender: TObject );
 begin
 
   column_name__tcvd := '';
+  filter_value := '';
   queries_open_in_background_g := true;
   sort__direction_ascending_g := true;
   table_column__values_distinct_form_list := nil;
   table_name__tcvd := '';
   task_is_running_g := false;
   value_selected__tcvd := '';
+  values_logged_g := false;
 
 
   Translation.Translation__Apply( Self );
@@ -174,8 +182,6 @@ begin
 end;
 
 procedure TTable_Column__Values_Distinct_Form.FormShow( Sender: TObject );
-var
-  zts : string;
 begin
 
   Search_GroupBox.Caption := Search_GroupBox.Caption +
@@ -196,39 +202,10 @@ begin
   //Ok_Button.Default := Ok_Button.Visible;
 
 
-  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c  );
-
-  if Trim( zts ) = '' then
-    begin
-
-      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c + ').' );
-
-      zts :=
-        'select distinct ' +
-        Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() +
-        Common.sql__names_separator +
-        Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD() +
-        ' from ' +
-        Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() + ' ';
-
-    end
+  if Trim( Self.filter_value ) <> '' then
+    Self.filter_value := ' where ' + Self.filter_value
   else
-    begin
-
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD(), [ rfReplaceAll ] );
-      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD(), [ rfReplaceAll ] );
-
-    end;
-
-
-  Log_Memo.Lines.Add( zts );
-
-
-  if table_column__values_distinct_sdbm.Query__Active() then
-    table_column__values_distinct_sdbm.Query__Close();
-
-
-  table_column__values_distinct_sdbm.Query__Sql__Set( zts );
+    Filter__Deactivate_CheckBox.Visible := false;
 
 
   Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
@@ -244,10 +221,7 @@ begin
   Value_DBEdit.DataField := column_name__tcvd;
 
 
-  if queries_open_in_background_g then
-    Refresh_ButtonClick( Sender )
-  else
-    No_Thread_Timer.Enabled := true;
+  Filter__Deactivate_CheckBoxClick( Sender );
 
 end;
 
@@ -455,6 +429,69 @@ begin
 
 
   table_column__values_distinct_sdbm.Query__Enable_Controls();
+
+end;
+
+procedure TTable_Column__Values_Distinct_Form.Filter__Deactivate_CheckBoxClick( Sender: TObject );
+var
+  zts : string;
+begin
+
+  if Self.Task_Running_Check__TCVD() then
+    Exit;
+
+
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c  );
+
+  if Trim( zts ) = '' then
+    begin
+
+      Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tcvd ) + table_column__values_distinct__sql__file_name_c + ').' );
+
+      zts :=
+        'select distinct ' +
+        Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() +
+        Common.sql__names_separator +
+        Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD() +
+        ' from ' +
+        Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD() + ' ';
+
+    end
+  else
+    begin
+
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCVD() + column_name__tcvd + Self.Quotation_Sign__TCVD(), [ rfReplaceAll ] );
+      zts := StringReplace( zts, Common.sql__word_replace_separator_c + Common.name__table__big_letters_c + Common.sql__word_replace_separator_c, Self.Quotation_Sign__TCVD() + table_name__tcvd + Self.Quotation_Sign__TCVD(), [ rfReplaceAll ] );
+
+    end;
+
+
+  if not values_logged_g then
+    begin
+
+      values_logged_g := true;
+      Log_Memo.Lines.Add( zts );
+      Log_Memo.Lines.Add( Translation.translation__messages_r.filter_value );
+      Log_Memo.Lines.Add( Self.filter_value );
+
+    end;
+
+
+  if not Filter__Deactivate_CheckBox.Checked then
+    zts := zts + Self.filter_value;
+
+
+  if table_column__values_distinct_sdbm.Query__Active() then
+    table_column__values_distinct_sdbm.Query__Close();
+
+
+  table_column__values_distinct_sdbm.Query__Sql__Set( zts );
+
+
+  if queries_open_in_background_g then
+    Refresh_ButtonClick( Sender )
+  else
+    No_Thread_Timer.Enabled := true;
 
 end;
 
@@ -709,6 +746,11 @@ begin
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
     end
+  else
+  // F.
+  if    ( Key = 70 )
+    and ( Shift = [ ssCtrl ] ) then
+    Filter__Deactivate_CheckBox.Checked := not Filter__Deactivate_CheckBox.Checked
   else
   // R.
   if    ( Key = 82 )

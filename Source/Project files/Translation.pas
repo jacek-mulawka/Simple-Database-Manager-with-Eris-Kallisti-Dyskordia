@@ -1281,6 +1281,7 @@ begin
   Translation__Unit__Add( 'TTable_Column__Values_Distinct_Form' );
     Translation__Component__Add( 'Caption', 'Column distinct values' );
     Translation__Component__Add( 'Close_Button', '', 'Close.' + #13 + #10 + #13 + #10 + '[Esc]' );
+    Translation__Component__Add( 'Filter__Deactivate_CheckBox', 'd.', 'Disable filter.' + #13 + #10 + #13 + #10 + '[Ctrl + F]' );
     Translation__Component__Add( 'Ok_Button', '', 'Select value.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );

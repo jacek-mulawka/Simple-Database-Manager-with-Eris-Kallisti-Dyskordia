@@ -796,6 +796,46 @@ begin
 
 end;
 
+procedure TSql_Editor_F_Frame.Highlights__Brackets_MenuItem__Enabled__Correct();
+begin
+
+  Highlights__Brackets__All_Pairs_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Angle_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Curly_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Round_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+  Highlights__Brackets__Square_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
+
+end;
+
+procedure TSql_Editor_F_Frame.Highlighter__Syntax_MenuItem__Check__Correct();
+var
+  i : integer;
+begin
+
+  for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
+    Highlighter__Syntax_MenuItem.Items[ i ].Checked := false;
+
+
+  if Sql_Text_SynEdit.Highlighter <> nil then
+    begin
+
+      for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
+        if Highlighter__Syntax_MenuItem.Items[ i ].Hint = Sql_Text_SynEdit.Highlighter.Name then
+          begin
+
+            Highlighter__Syntax_MenuItem.Items[ i ].Checked := true;
+
+            Break;
+
+          end;
+
+    end
+  else
+    if Highlighter__Syntax_MenuItem.Count > 0 then
+      Highlighter__Syntax_MenuItem.Items[ 0 ].Checked := true;
+
+end;
+
 procedure TSql_Editor_F_Frame.Key_Down_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
@@ -914,46 +954,6 @@ begin
       Key := 0;
 
     end;
-
-end;
-
-procedure TSql_Editor_F_Frame.Highlights__Brackets_MenuItem__Enabled__Correct();
-begin
-
-  Highlights__Brackets__All_Pairs_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
-  Highlights__Brackets__Angle_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
-  Highlights__Brackets__Curly_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
-  Highlights__Brackets__Round_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
-  Highlights__Brackets__Square_MenuItem.Enabled := not Highlights__Brackets__Marked_Only_MenuItem.Checked;
-
-end;
-
-procedure TSql_Editor_F_Frame.Highlighter__Syntax_MenuItem__Check__Correct();
-var
-  i : integer;
-begin
-
-  for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
-    Highlighter__Syntax_MenuItem.Items[ i ].Checked := false;
-
-
-  if Sql_Text_SynEdit.Highlighter <> nil then
-    begin
-
-      for i := 0 to Highlighter__Syntax_MenuItem.Count - 1 do
-        if Highlighter__Syntax_MenuItem.Items[ i ].Hint = Sql_Text_SynEdit.Highlighter.Name then
-          begin
-
-            Highlighter__Syntax_MenuItem.Items[ i ].Checked := true;
-
-            Break;
-
-          end;
-
-    end
-  else
-    if Highlighter__Syntax_MenuItem.Count > 0 then
-      Highlighter__Syntax_MenuItem.Items[ 0 ].Checked := true;
 
 end;
 

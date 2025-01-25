@@ -78,6 +78,18 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       ParentShowHint = False
       ShowHint = True
     end
+    object Filter__Deactivate_CheckBox: TCheckBox
+      Left = 120
+      Top = 55
+      Width = 40
+      Height = 17
+      Hint = 'Disable filter.'#13#10#13#10'[Ctrl + F]'
+      Caption = 'd.'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      OnClick = Filter__Deactivate_CheckBoxClick
+    end
     object Search_Edit: TEdit
       AlignWithMargins = True
       Left = 2
@@ -139,7 +151,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 6
       OnClick = Search__Prior_ButtonClick
     end
     object Search__Next_Button: TButton
@@ -153,7 +165,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 6
+      TabOrder = 7
       OnClick = Search__Next_ButtonClick
     end
     object Refresh_Button: TButton
@@ -167,7 +179,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 7
+      TabOrder = 8
       OnClick = Refresh_ButtonClick
     end
     object Ok_Button: TButton
@@ -182,7 +194,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 3
+      TabOrder = 4
       OnClick = Ok_ButtonClick
     end
     object Close_Button: TButton
@@ -197,7 +209,7 @@ object Table_Column__Values_Distinct_Form: TTable_Column__Values_Distinct_Form
       Images = Shared_DataModule.ImageList1
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 4
+      TabOrder = 5
       OnClick = Close_ButtonClick
     end
   end

@@ -287,7 +287,7 @@ begin
   Common.data_presentation__data_value_format__real_numbers__use := true;
   Common.data_presentation__data_value_format__time := 'hh:mm:ss.zzz';
   Common.data_presentation__data_value_format__time__use := true;
-  Common.data_presentation__first_rows := 10;
+  Common.data_presentation__first_rows := 100;
   Common.database__backup_restore__quotation_sign := '"';
   Common.database__backup__application__file_path:= 'C:\Program Files\Firebird\gbak.exe';
   Common.database__correctness_check_text__backup := 'gbak:closing file, committing, and finishing.';

@@ -145,6 +145,7 @@ type
     procedure Data_Preview();
     function Extract_Table_Data( const progres_show_f : boolean = false ) : string;
     procedure Field_Name_Selected_From_Form_View__Set();
+    function Filter_Value__Get__All() : string;
     procedure First_Rows__Negate_Value();
     procedure Form_View_Field__Free();
     procedure Free_All__Table_Column__Values_Distinct();
@@ -690,17 +691,6 @@ begin
 
 end;
 
-procedure TTable__Data_Modify_F_Frame.Highlight__Font__Set__TDMF();
-begin
-
-  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
-  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
-
-  if Common.sql_editor__font__use_in_other_components then
-    Common.Font__Set( Data_DBGrid.Font, Common.sql_editor__font );
-
-end;
-
 procedure TTable__Data_Modify_F_Frame.Field_Name_Selected_From_Form_View__Set();
 var
   i : integer;
@@ -717,6 +707,31 @@ begin
            Break;
 
          end;
+
+end;
+
+function TTable__Data_Modify_F_Frame.Filter_Value__Get__All() : string;
+var
+  i : integer;
+
+  table__data_filter_t : Table__Data_Filter.TTable__Data_Filter_t;
+begin
+
+  table__data_filter_t := Table__Data_Filter.Filters_From_Left_To_Right__Get( Data_Filter_ScrollBox );
+
+  Result := '';
+
+  //for i := 0 to Data_Filter_ScrollBox.ControlCount - 1 do
+  //  if Data_Filter_ScrollBox.Controls[ i ].ClassType = Table__Data_Filter.TTable__Data_Filter then
+  //    Result := Result +
+  //      Table__Data_Filter.TTable__Data_Filter(Data_Filter_ScrollBox.Controls[ i ]).Filter_Value__Get( sql__quotation_sign__use__tdmf_g );
+
+  for i := 0 to Length( table__data_filter_t ) - 1 do
+    Result := Result +
+      table__data_filter_t[ i ].Filter_Value__Get( sql__quotation_sign__use__tdmf_g );
+
+
+  SetLength( table__data_filter_t, 0 );
 
 end;
 
@@ -771,6 +786,17 @@ begin
       table_column__values_distinct_form_list__tdmf_g.Delete( i );
 
     end;
+
+end;
+
+procedure TTable__Data_Modify_F_Frame.Highlight__Font__Set__TDMF();
+begin
+
+  Common.Font__Set( Data_Preview_DBMemo.Font, Common.sql_editor__font );
+  Common.Font__Set( Log_Memo.Font, Common.sql_editor__font );
+
+  if Common.sql_editor__font__use_in_other_components then
+    Common.Font__Set( Data_DBGrid.Font, Common.sql_editor__font );
 
 end;
 
@@ -1717,6 +1743,7 @@ begin
     table_column__values_distinct_form_l.column_name__tcvd := field_name_selected_g; // Form.
 
   table_column__values_distinct_form_l.database_type__tcvd := database_type__tdmf_g;
+  table_column__values_distinct_form_l.filter_value := Filter_Value__Get__All();
   table_column__values_distinct_form_l.sql__quotation_sign__tcvd := sql__quotation_sign__tdmf_g;
   table_column__values_distinct_form_l.sql__quotation_sign__use__tcvd := sql__quotation_sign__use__tdmf_g;
   table_column__values_distinct_form_l.table_name__tcvd := table_name__tdmf_g;
@@ -2052,28 +2079,10 @@ end;
 
 procedure TTable__Data_Modify_F_Frame.Data_Filter__Activate__All_ButtonClick( Sender: TObject );
 var
-  i : integer;
-
   zts : string;
-
-  table__data_filter_t : Table__Data_Filter.TTable__Data_Filter_t;
 begin
 
-  table__data_filter_t := Table__Data_Filter.Filters_From_Left_To_Right__Get( Data_Filter_ScrollBox );
-
-  zts := '';
-
-  //for i := 0 to Data_Filter_ScrollBox.ControlCount - 1 do
-  //  if Data_Filter_ScrollBox.Controls[ i ].ClassType = Table__Data_Filter.TTable__Data_Filter then
-  //    zts := zts +
-  //      Table__Data_Filter.TTable__Data_Filter(Data_Filter_ScrollBox.Controls[ i ]).Filter_Value__Get( sql__quotation_sign__use__tdmf_g );
-
-  for i := 0 to Length( table__data_filter_t ) - 1 do
-    zts := zts +
-      table__data_filter_t[ i ].Filter_Value__Get( sql__quotation_sign__use__tdmf_g );
-
-
-  SetLength( table__data_filter_t, 0 );
+  zts := Filter_Value__Get__All();
 
 
   if Trim( zts ) <> '' then
