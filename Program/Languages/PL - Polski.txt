@@ -811,6 +811,8 @@ Sql_TabSheet=SQL
 TTable_Column__Values_Distinct_Form
 Caption=Kolumna - niepowtarzalne wartości
 Close_Button-->Hint=Zamknij.#13#10#13#10[Esc]
+Filter__Deactivate_CheckBox=d.
+Filter__Deactivate_CheckBox-->Hint=Deaktywuj filtr.#13#10#13#10[Ctrl + F]
 Ok_Button-->Hint=Wybierz wartość.#13#10#13#10[Enter]
 Refresh_Button-->Hint=Odśwież.#13#10#13#10[Ctrl + R]
 Search_Edit-->Hint=Page down - znajdź następny;#13#10Page up - znajdź poprzedni.
