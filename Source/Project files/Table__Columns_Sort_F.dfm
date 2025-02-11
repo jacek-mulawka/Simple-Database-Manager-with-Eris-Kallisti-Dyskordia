@@ -95,7 +95,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
         Top = 5
         Width = 25
         Height = 25
-        Hint = 'Refresh.'
+        Hint = 'Refresh.'#13#10#13#10'[Ctrl + R]'
         Anchors = [akTop, akRight]
         ImageIndex = 3
         Images = Shared_DataModule.ImageList1
@@ -150,6 +150,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
       ViewStyle = vsReport
       OnDragDrop = Columns_Sort_ListViewDragDrop
       OnDragOver = Columns_Sort_ListViewDragOver
+      OnKeyDown = Columns_Sort_ListViewKeyDown
       OnKeyUp = Key_Up_Common
     end
   end

@@ -2454,7 +2454,12 @@ begin
   // D.
   if    ( Key = 68 )
     and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.
-    Table_Column__Values_Distinct_MenuItemClick( Sender );
+    Table_Column__Values_Distinct_MenuItemClick( Sender )
+  else
+  // R.
+  if    ( Key = 82 )
+    and ( Shift = [ ssCtrl ] ) then
+    Refresh_ButtonClick( Sender );
 
 end;
 

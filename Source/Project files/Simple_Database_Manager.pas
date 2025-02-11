@@ -1270,6 +1270,16 @@ begin
 
     end
   else
+  // H.
+  if    ( Key = 72 )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+      Databases__Hide_Show_Databases_MenuItemClick( Sender );
+
+    end
+  else
   // R.
   if    ( Key = 82 )
     and ( Shift = [ ssCtrl ] ) then

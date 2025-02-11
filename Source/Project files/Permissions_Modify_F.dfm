@@ -335,7 +335,7 @@ object Permissions_Modify_F_Frame: TPermissions_Modify_F_Frame
         Top = 15
         Width = 25
         Height = 25
-        Hint = 'Refresh.'
+        Hint = 'Refresh.'#13#10#13#10'[Ctrl + R]'
         Anchors = [akTop, akRight]
         ImageIndex = 3
         Images = Shared_DataModule.ImageList1

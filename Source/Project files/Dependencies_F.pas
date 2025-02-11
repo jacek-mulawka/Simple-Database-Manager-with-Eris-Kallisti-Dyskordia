@@ -961,7 +961,12 @@ begin
     and ( Shift = [ ssCtrl ] )
     and ( Dependencies_TreeView.Selected <> nil )
     and ( Dependencies_TreeView.Selected.Data <> nil ) then
-    Vcl.Clipbrd.Clipboard.AsText := TNode_Data_r_wsk(Dependencies_TreeView.Selected.Data).name__nd;
+    Vcl.Clipbrd.Clipboard.AsText := TNode_Data_r_wsk(Dependencies_TreeView.Selected.Data).name__nd
+  else
+  // R.
+  if    ( Key = 82 )
+    and ( Shift = [ ssCtrl ] ) then
+    Refresh_ButtonClick( Sender );
 
 end;
 

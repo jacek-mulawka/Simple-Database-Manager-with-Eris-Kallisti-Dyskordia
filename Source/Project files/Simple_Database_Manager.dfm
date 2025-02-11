@@ -51,7 +51,7 @@ object Simple_Database_Manager_Form: TSimple_Database_Manager_Form
     object Databases_MenuItem: TMenuItem
       Caption = 'Databases'
       object Databases__Hide_Show_Databases_MenuItem: TMenuItem
-        Caption = 'Hide / show databases'
+        Caption = 'Hide / show databases [Ctrl + H]'
         ImageIndex = 19
         OnClick = Databases__Hide_Show_Databases_MenuItemClick
       end
@@ -184,7 +184,7 @@ object Simple_Database_Manager_Form: TSimple_Database_Manager_Form
     Left = 75
     Top = 25
     object Databases__Hide_Show_Databases_2_MenuItem: TMenuItem
-      Caption = 'Hide / show databases'
+      Caption = 'Hide / show databases [Ctrl + H]'
       ImageIndex = 19
       OnClick = Databases__Hide_Show_Databases_MenuItemClick
     end

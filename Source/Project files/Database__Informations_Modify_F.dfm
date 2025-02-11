@@ -98,7 +98,7 @@ object Database__Informations_Modify_F_Frame: TDatabase__Informations_Modify_F_F
       Top = 5
       Width = 25
       Height = 25
-      Hint = 'Refresh.'
+      Hint = 'Refresh.'#13#10#13#10'[Ctrl + R]'
       Anchors = [akTop, akRight]
       ImageIndex = 3
       Images = Shared_DataModule.ImageList1

@@ -2588,11 +2588,6 @@ begin
     Exit;
 
 
-  // D.
-  if    ( Key = 68 )
-    and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.
-    Column__Values__Distinct()
-  else
   // C.
   if    ( Key = 67 )
     and ( Shift = [ ssCtrl ] )
@@ -2605,6 +2600,11 @@ begin
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
     end
+  else
+  // D.
+  if    ( Key = 68 )
+    and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.
+    Column__Values__Distinct()
   else
   // S.
   if    ( Key = 83 )

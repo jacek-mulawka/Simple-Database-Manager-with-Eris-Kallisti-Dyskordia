@@ -35,6 +35,7 @@ type
     procedure Log_MemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Columns_Sort_ListViewDragDrop( Sender, Source: TObject; X, Y: Integer );
     procedure Columns_Sort_ListViewDragOver( Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean );
+    procedure Columns_Sort_ListViewKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
   private
     { Private declarations }
     sql__quotation_sign__use__tcsf_g : boolean;
@@ -503,6 +504,16 @@ procedure TTable__Columns_Sort_F_Frame.Columns_Sort_ListViewDragOver( Sender, So
 begin
 
   Accept := Source = Columns_Sort_ListView;
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Columns_Sort_ListViewKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  // R.
+  if    ( Key = 82 )
+    and ( Shift = [ ssCtrl ] ) then
+    Refresh_ButtonClick( Sender );
 
 end;
 

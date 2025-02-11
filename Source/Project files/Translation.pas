@@ -653,7 +653,7 @@ begin
     Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Partial_Key_CheckBox', 'Partial key' );
-    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Next_Button', '', 'Search next.' );
     Translation__Component__Add( 'Search__Prior_Button', '', 'Search prior.' );
@@ -788,7 +788,7 @@ begin
     Translation__Component__Add( 'Dependencies_Type_RadioGroup', 'Type', '', 'Dependent objects;Depended on objects;' );
     Translation__Component__Add( 'Nodes__Collapse_Button', '', 'Collapse nodes.' );
     Translation__Component__Add( 'Nodes__Expand_Button', '', 'Expand  nodes.' );
-    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
@@ -1015,7 +1015,7 @@ begin
     Translation__Component__Add( 'Modify__Revoke__All_MenuItem', 'Revoke all on all privileges' );
     Translation__Component__Add( 'Modify__Revoke_Button', '', 'Revoke privileges.' );
     Translation__Component__Add( 'Modify__Revoke_MenuItem', 'Revoke privileges' );
-    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
@@ -1069,8 +1069,8 @@ begin
     Translation__Component__Add( 'Databases__Edit_2_MenuItem', 'Edit list [Spacebar, Ctrl + Enter]' );
     Translation__Component__Add( 'Databases__Exit_MenuItem', 'Exit' );
     Translation__Component__Add( 'Databases__Exit_2_MenuItem', 'Exit' );
-    Translation__Component__Add( 'Databases__Hide_Show_Databases_MenuItem', 'Hide / show databases' );
-    Translation__Component__Add( 'Databases__Hide_Show_Databases_2_MenuItem', 'Hide / show databases' );
+    Translation__Component__Add( 'Databases__Hide_Show_Databases_MenuItem', 'Hide / show databases [Ctrl + H]' );
+    Translation__Component__Add( 'Databases__Hide_Show_Databases_2_MenuItem', 'Hide / show databases [Ctrl + H]' );
     Translation__Component__Add( 'Databases__Move__Down_MenuItem', 'Move down [Ctrl + Down arrow]' );
     Translation__Component__Add( 'Databases__Move__Down_2_MenuItem', 'Move down [Ctrl + Down arrow]' );
     Translation__Component__Add( 'Databases__Move__Up_MenuItem', 'Move up [Ctrl + Up arrow]' );
@@ -1304,7 +1304,7 @@ begin
     Translation__Component__Add( 'Buttons_Panel__Hide_Button', '', 'Hide panel.' );
     Translation__Component__Add( 'Columns_Sort_ListView', '', '', 'Column name;Column position;' );
     Translation__Component__Add( 'Execute_Button', '', 'Save changes.' );
-    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Sort_Button', '', 'Sort columns.' );
 
   Translation__Unit__Add( 'TTable__Data_Modify_F_Frame' );
@@ -1356,7 +1356,7 @@ begin
     Translation__Component__Add( 'Modify__Name_Etiquette_Label', 'Name' );
     Translation__Component__Add( 'Modify__Name__Create_Default_Button', 'D.', 'Create default index name.' );
     Translation__Component__Add( 'Modify__Parameter_Additional_Etiquette_Label', 'Additional parameter' );
-    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
@@ -1381,7 +1381,7 @@ begin
     Translation__Component__Add( 'Metadata__Write_In_Log_MenuItem', 'Metadata write in log' );
     Translation__Component__Add( 'Owner_Etiquette_Label', 'Owner', 'Double-click - copy the table name to clipboard.' );
     Translation__Component__Add( 'Owner_Label', '<?>', 'Double-click - copy the owner name to clipboard.' );
-    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' );
+    Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Search_Edit', '', 'Page down - search next;' + #13 + #10 + 'Page up - search prior.' );
     Translation__Component__Add( 'Search_GroupBox', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );

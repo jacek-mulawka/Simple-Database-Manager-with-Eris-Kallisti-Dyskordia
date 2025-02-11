@@ -55,6 +55,7 @@ implementation
 
 
 uses
+  Class_Helper__Win_Control,
   Common,
   Translation;
 
@@ -300,6 +301,13 @@ begin
   // Swap positions.
   for i := Length( external_function__parameter_t ) - 1 downto 0 do
     begin
+
+      if external_function__parameter_t[ i ] = Self then
+        if direction_f = alTop then
+          Self.Parent.SetChildOrder( external_function__parameter_t[ i ], i - 1 )
+        else
+          Self.Parent.SetChildOrder( external_function__parameter_t[ i ], i + 1 );
+
 
       external_function__parameter_t[ i ].Align := alBottom;
 

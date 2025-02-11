@@ -88,7 +88,7 @@ object Dependencies_F_Frame: TDependencies_F_Frame
         Top = 5
         Width = 25
         Height = 25
-        Hint = 'Refresh.'
+        Hint = 'Refresh.'#13#10#13#10'[Ctrl + R]'
         Anchors = [akTop, akRight]
         ImageIndex = 3
         Images = Shared_DataModule.ImageList1

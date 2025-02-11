@@ -67,6 +67,7 @@ implementation
 
 
 uses
+  Class_Helper__Win_Control,
   Common,
   Translation;
 
@@ -460,6 +461,13 @@ begin
   // Swap positions.
   for i := Length( stored_procedure__parameter_t ) - 1 downto 0 do
     begin
+
+      if stored_procedure__parameter_t[ i ] = Self then
+        if direction_f = alTop then
+          Self.Parent.SetChildOrder( stored_procedure__parameter_t[ i ], i - 1 )
+        else
+          Self.Parent.SetChildOrder( stored_procedure__parameter_t[ i ], i + 1 );
+
 
       stored_procedure__parameter_t[ i ].Align := alBottom;
 

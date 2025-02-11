@@ -1415,7 +1415,12 @@ begin
     except
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
-    end;
+    end
+  else
+  // R.
+  if    ( Key = 82 )
+    and ( Shift = [ ssCtrl ] ) then
+    Refresh_ButtonClick( Sender );
 
 end;
 

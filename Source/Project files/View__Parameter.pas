@@ -55,6 +55,7 @@ implementation
 
 
 uses
+  Class_Helper__Win_Control,
   Translation;
 
 constructor TView__Parameter.Create( parent_f : Vcl.Controls.TWinControl; var view__parameter_id_f : integer; const parameter__name_f, parameter__description_f : string; const splitter_show_f : boolean; on_click_wsk_f : TOn_Click_wsk );
@@ -285,6 +286,13 @@ begin
   // Swap positions.
   for i := Length( view__parameter_t ) - 1 downto 0 do
     begin
+
+      if view__parameter_t[ i ] = Self then
+        if direction_f = alTop then
+          Self.Parent.SetChildOrder( view__parameter_t[ i ], i - 1 )
+        else
+          Self.Parent.SetChildOrder( view__parameter_t[ i ], i + 1 );
+
 
       view__parameter_t[ i ].Align := alBottom;
 
