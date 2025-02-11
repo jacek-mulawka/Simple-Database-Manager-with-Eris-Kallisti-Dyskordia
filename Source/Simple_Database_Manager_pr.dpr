@@ -3,6 +3,7 @@ program Simple_Database_Manager_pr;
 uses
   Vcl.Forms,
   About in 'Project files\About.pas' {About_Form},
+  Class_Helper__Win_Control in 'Project files\Class helpers\Class_Helper__Win_Control.pas',
   Common in 'Project files\Common.pas',
   Database__Backup_Restore in 'Project files\Database__Backup_Restore.pas' {Database__Backup_Restore_Form},
   Database__Backup_Restore__Parameter in 'Project files\Database__Backup_Restore__Parameter.pas',
