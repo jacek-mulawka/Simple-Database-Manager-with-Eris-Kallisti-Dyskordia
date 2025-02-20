@@ -3484,7 +3484,8 @@ begin
       primary_key_name_l := Sql_Editor_Column_DBEdit.DataField;
 
 
-      if Sql_Editor_Column_DBEdit.DataSource.DataSet <> nil then
+      if    ( Sql_Editor_Column_DBEdit.DataSource.DataSet <> nil )
+        and ( Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField ) is TNumericField ) then
         begin
 
           display_format__copy_l := TFloatField(Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField )).DisplayFormat;
@@ -3496,7 +3497,8 @@ begin
       primary_key_value_l := Sql_Editor_Column_DBEdit.Text;
 
 
-      if Sql_Editor_Column_DBEdit.DataSource.DataSet <> nil then
+      if    ( Sql_Editor_Column_DBEdit.DataSource.DataSet <> nil )
+        and ( Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField ) is TNumericField ) then
         TFloatField(Sql_Editor_Column_DBEdit.DataSource.DataSet.FieldByName( Sql_Editor_Column_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end

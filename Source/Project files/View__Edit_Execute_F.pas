@@ -1925,7 +1925,8 @@ begin
       primary_key_name_l := View__Output_DBEdit.DataField;
 
 
-      if View__Output_DBEdit.DataSource.DataSet <> nil then
+      if    ( View__Output_DBEdit.DataSource.DataSet <> nil )
+        and ( View__Output_DBEdit.DataSource.DataSet.FieldByName( View__Output_DBEdit.DataField ) is TNumericField ) then
         begin
 
           display_format__copy_l := TFloatField(View__Output_DBEdit.DataSource.DataSet.FieldByName( View__Output_DBEdit.DataField )).DisplayFormat;
@@ -1937,7 +1938,8 @@ begin
       primary_key_value_l := View__Output_DBEdit.Text;
 
 
-      if View__Output_DBEdit.DataSource.DataSet <> nil then
+      if    ( View__Output_DBEdit.DataSource.DataSet <> nil )
+        and ( View__Output_DBEdit.DataSource.DataSet.FieldByName( View__Output_DBEdit.DataField ) is TNumericField ) then
         TFloatField(View__Output_DBEdit.DataSource.DataSet.FieldByName( View__Output_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end

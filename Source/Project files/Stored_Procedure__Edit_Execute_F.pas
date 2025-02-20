@@ -2315,7 +2315,8 @@ begin
       primary_key_name_l := Stored_Procedure__Output_DBEdit.DataField;
 
 
-      if Stored_Procedure__Output_DBEdit.DataSource.DataSet <> nil then
+      if    ( Stored_Procedure__Output_DBEdit.DataSource.DataSet <> nil )
+        and ( Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField ) is TNumericField ) then
         begin
 
           display_format__copy_l := TFloatField(Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField )).DisplayFormat;
@@ -2327,7 +2328,8 @@ begin
       primary_key_value_l := Stored_Procedure__Output_DBEdit.Text;
 
 
-      if Stored_Procedure__Output_DBEdit.DataSource.DataSet <> nil then
+      if    ( Stored_Procedure__Output_DBEdit.DataSource.DataSet <> nil )
+        and ( Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField ) is TNumericField ) then
         TFloatField(Stored_Procedure__Output_DBEdit.DataSource.DataSet.FieldByName( Stored_Procedure__Output_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end

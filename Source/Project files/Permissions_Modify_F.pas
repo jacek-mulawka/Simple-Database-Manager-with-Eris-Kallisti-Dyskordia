@@ -907,7 +907,7 @@ begin
     and ( permissions_sdbm.Query__Active() ) then
     if    ( not Modify__Permissions__Row_One_CheckBox.Checked )
       and ( primary_key_value__2_l <> '' ) then
-      permissions_sdbm.Query__Locate(  Common.name__user__name__big_letters_c + '; ' + permissions_list__column__privilege_symbol_c, VarArrayOf( [ primary_key_value__1_l, primary_key_value__2_l ] ), [ Data.DB.loCaseInsensitive ]  )
+      permissions_sdbm.Query__Locate(  Common.name__user__name__big_letters_c + '; ' + permissions_list__column__privilege_symbol_c, System.Variants.VarArrayOf( [ primary_key_value__1_l, primary_key_value__2_l ] ), [ Data.DB.loCaseInsensitive ]  )
     else
       permissions_sdbm.Query__Locate( Common.name__user__name__big_letters_c, primary_key_value__1_l, [ Data.DB.loCaseInsensitive ] );
 

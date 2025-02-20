@@ -1482,7 +1482,8 @@ begin
       primary_key_name_l := Data_DBEdit.DataField;
 
 
-      if Data_DBEdit.DataSource.DataSet <> nil then
+      if    ( Data_DBEdit.DataSource.DataSet <> nil )
+        and ( Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField ) is TNumericField ) then
         begin
 
           display_format__copy_l := TFloatField(Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField )).DisplayFormat;
@@ -1494,7 +1495,8 @@ begin
       primary_key_value_l := Data_DBEdit.Text;
 
 
-      if Data_DBEdit.DataSource.DataSet <> nil then
+      if    ( Data_DBEdit.DataSource.DataSet <> nil )
+        and ( Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField ) is TNumericField ) then
         TFloatField(Data_DBEdit.DataSource.DataSet.FieldByName( Data_DBEdit.DataField )).DisplayFormat := display_format__copy_l;
 
     end
