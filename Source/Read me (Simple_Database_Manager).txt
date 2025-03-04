@@ -1,5 +1,5 @@
 Simple Database Manager with Eris Kallisti Dyskordia
-wersja 2025.02.20
+wersja 2025.03.04
 
 MIT License
 
