@@ -32,6 +32,7 @@
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}distinct \style{-B}-->distinct 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract( year from | )\style{-B}-->extract( year from | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract: month, day, hour, minute, second, millisecond\style{-B}-->extract: month, day, hour, minute, second, millisecond
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}fetch first | rows only\style{-B}-->fetch first | rows only
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}first \style{-B}-->first 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}floor( | )\style{-B}-->floor( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}from\style{-B}-->from 
