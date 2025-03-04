@@ -174,6 +174,7 @@ type
 
 const
   table__first_rows_c : string = '__FIRST_ROWS__';
+  table__first_rows__at_the_end__file_name_c : string = 'Table__First_Rows__At_The_End.txt';
   table__first_rows__file_name_c : string = 'Table__First_Rows.txt';
   table__first_rows__value_c : string = '__VALUE__';
   table__insert_into__a__file_name_c : string = 'Table__Insert_Into__A__sql.txt';
@@ -1244,7 +1245,8 @@ end;
 procedure TTable__Data_Modify_F_Frame.Open_Close_ButtonClick( Sender: TObject );
 var
   zts,
-  table__first_rows_l
+  table__first_rows_l,
+  table__first_rows__at_the_end_l
     : string;
 begin
 
@@ -1262,22 +1264,38 @@ begin
   if not data__sdbm.Query__Active() then
     begin
 
-      table__first_rows_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__file_name_c  );
+      table__first_rows__at_the_end_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__at_the_end__file_name_c  );
 
-      if Trim( table__first_rows_l ) = '' then
+      if Trim( table__first_rows__at_the_end_l ) = '' then
         begin
 
-          Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__file_name_c + ').' );
+          table__first_rows_l := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__file_name_c  );
 
-          table__first_rows_l :=
-            'first __VALUE__ ';
+          if Trim( table__first_rows_l ) = '' then
+            begin
+
+              Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__first_rows__at_the_end__file_name_c + ').' );
+
+              table__first_rows__at_the_end_l :=
+                ' fetch first __VALUE__ rows only ';
+
+            end
+          else
+            begin
+
+              table__first_rows__at_the_end_l := '';
+
+              table__first_rows_l := StringReplace( table__first_rows_l, #10, '', [] );
+              table__first_rows_l := StringReplace( table__first_rows_l, #13, '', [] );
+
+            end;
 
         end
       else
         begin
 
-          table__first_rows_l := StringReplace( table__first_rows_l, #10, '', [] );
-          table__first_rows_l := StringReplace( table__first_rows_l, #13, '', [] );
+          table__first_rows__at_the_end_l := StringReplace( table__first_rows__at_the_end_l, #10, '', [] );
+          table__first_rows__at_the_end_l := StringReplace( table__first_rows__at_the_end_l, #13, '', [] );
 
         end;
 
@@ -1290,7 +1308,7 @@ begin
           Log_Memo.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdmf_g ) + table__select__file_name_c + ').' );
 
           zts :=
-            'select ' + table__first_rows_c + '* from ' + Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF() + ' ';
+            'select * from ' + Self.Quotation_Sign__TDMF() + table_name__tdmf_g + Self.Quotation_Sign__TDMF() + ' ' + table__first_rows_c + ' ';
 
         end
       else
@@ -1302,15 +1320,34 @@ begin
 
 
       if First_Rows_SpinEdit.Value >= 0 then
-        table__first_rows_l := StringReplace( table__first_rows_l, table__first_rows__value_c, First_Rows_SpinEdit.Value.ToString(), [ rfReplaceAll ] )
+        begin
+
+          table__first_rows_l := StringReplace( table__first_rows_l, table__first_rows__value_c, First_Rows_SpinEdit.Value.ToString(), [ rfReplaceAll ] );
+          table__first_rows__at_the_end_l := StringReplace( table__first_rows__at_the_end_l, table__first_rows__value_c, First_Rows_SpinEdit.Value.ToString(), [ rfReplaceAll ] );
+
+        end
       else
-        table__first_rows_l := '';
+        begin
+
+          table__first_rows_l := '';
+          table__first_rows__at_the_end_l := '';
+
+        end;
 
 
       zts := StringReplace( zts, table__first_rows_c, table__first_rows_l, [ rfReplaceAll ] );
 
 
-      data__sdbm.Query__Sql__Set( zts + data__filter_value_g );
+      zts := zts +
+        data__filter_value_g;
+
+
+      if Trim( table__first_rows__at_the_end_l ) <> '' then
+        zts := zts +
+          table__first_rows__at_the_end_l;
+
+
+      data__sdbm.Query__Sql__Set( zts );
 
 
       if not values_logged_g then

@@ -570,6 +570,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}distinct \style{-B}-->distinct ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract( year from | )\style{-B}-->extract( year from | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}extract: month, day, hour, minute, second, millisecond\style{-B}-->extract: month, day, hour, minute, second, millisecond' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}fetch first | rows only\style{-B}-->fetch first | rows only' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}first \style{-B}-->first ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}floor( | )\style{-B}-->floor( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}from\style{-B}-->from ' + #13 + #10 +
