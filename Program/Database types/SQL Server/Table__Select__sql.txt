@@ -1,0 +1,1 @@
+﻿select __FIRST_ROWS__* from __TABLE_NAME__ 
