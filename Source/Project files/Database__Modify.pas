@@ -606,6 +606,8 @@ begin
       Screen.Cursor := crHourGlass;
 
 
+      Stored_Procedures_List__ListBox.Items.BeginUpdate();
+
       Stored_Procedures_List__ListBox.Items.Clear();
 
       zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( databases_r__dm_g.database_type ) + stored_procedures_list__file_name_c  );
@@ -709,8 +711,10 @@ begin
 
         end
       else
-        if Stored_Procedures_List__ListBox.Items.Count > 0 then
-          Stored_Procedures_List__ListBox.ItemIndex := 0;
+      if Stored_Procedures_List__ListBox.Items.Count > 0 then
+        Stored_Procedures_List__ListBox.ItemIndex := 0;
+
+      Stored_Procedures_List__ListBox.Items.EndUpdate();
 
 
       Screen.Cursor := crDefault;
@@ -725,6 +729,8 @@ begin
       {$region 'Tables.'}
       Screen.Cursor := crHourGlass;
 
+
+      Tables_List__ListBox.Items.BeginUpdate();
 
       Tables_List__ListBox.Items.Clear();
 
@@ -850,6 +856,8 @@ begin
       if Tables_List__ListBox.Items.Count > 0 then
         Tables_List__ListBox.ItemIndex := 0;
 
+      Tables_List__ListBox.Items.EndUpdate();
+
 
       Screen.Cursor := crDefault;
       {$endregion 'Tables.'}
@@ -883,6 +891,8 @@ begin
       {$region 'Views.'}
       Screen.Cursor := crHourGlass;
 
+
+      Views_List__ListBox.Items.BeginUpdate();
 
       Views_List__ListBox.Items.Clear();
 
@@ -1004,6 +1014,8 @@ begin
       else
       if Views_List__ListBox.Items.Count > 0 then
         Views_List__ListBox.ItemIndex := 0;
+
+      Views_List__ListBox.Items.EndUpdate();
 
 
       Screen.Cursor := crDefault;

@@ -1309,6 +1309,7 @@ begin
 
   Translation__Unit__Add( 'TTable__Data_Modify_F_Frame' );
     Translation__Component__Add( 'Buttons_Panel__Hide_Button', '', 'Hide panel.' );
+    Translation__Component__Add( 'Data_DBNavigator', '', 'First record.;Prior record.;Next record.;Last record.;Insert record.;Delete record.;Edit record.;Post edit.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + Enter];Cancel edit.' + #13 + #10 + #13 + #10 + '[Esc];Refresh data.;Apply updates.;Cancel updates.;', '' );
     Translation__Component__Add( 'Data_Filter_TabSheet', 'Filter' );
     Translation__Component__Add( 'Data_Filter__Activate__All_Button', '', 'Activate all filters.' + #13 + #10 + #13 + #10 + '[Enter]' );
     Translation__Component__Add( 'Data_Filter__Add_Button', '', 'Add filter.' + #13 + #10 + #13 + #10 + '[Ctrl + F]' );
@@ -2661,11 +2662,30 @@ begin
                         if not hint_translation_locked_l then
                           begin
 
-                            Vcl.DBCtrls.TDBNavigator(zt_component).Hint := translation__units_r_t[ i ].components_r_t[ j ].hint;
+                            //Vcl.DBCtrls.TDBNavigator(zt_component).Hint := translation__units_r_t[ i ].components_r_t[ j ].hint;
+                            //
+                            //if    (  Trim( Vcl.DBCtrls.TDBNavigator(zt_component).Hint ) <> ''  )
+                            //  and ( not Vcl.DBCtrls.TDBNavigator(zt_component).ShowHint ) then
+                            //  Vcl.DBCtrls.TDBNavigator(zt_component).ShowHint := true;
+                            Vcl.DBCtrls.TDBNavigator(zt_component).Hints.Clear();
 
-                            if    (  Trim( Vcl.DBCtrls.TDBNavigator(zt_component).Hint ) <> ''  )
-                              and ( not Vcl.DBCtrls.TDBNavigator(zt_component).ShowHint ) then
-                              Vcl.DBCtrls.TDBNavigator(zt_component).ShowHint := true;
+                            zts_1 := translation__units_r_t[ i ].components_r_t[ j ].hint;
+
+                            zti_1 := Pos( translation__differentiator__items__record_c, zts_1 );
+
+                            while zti_1 > 0 do
+                              begin
+
+                                zts_2 := Copy( zts_1, 1, zti_1 - 1 );
+                                Delete( zts_1, 1, zti_1 );
+
+                                zts_2 := StringReplace( zts_2, #13, '', [ rfReplaceAll ] );
+
+                                Vcl.DBCtrls.TDBNavigator(zt_component).Hints.Add( zts_2 );
+
+                                zti_1 := Pos( translation__differentiator__items__record_c, zts_1 );
+
+                              end;
 
                           end;
 

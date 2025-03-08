@@ -674,6 +674,12 @@ var
   i : integer;
 begin
 
+  Screen.Cursor := crHourGlass;
+
+
+  Columns_List_ListBox.Items.BeginUpdate();
+
+
   for i := 0 to Columns_List_ListBox.Items.Count - 1 do
     begin
 
@@ -684,6 +690,12 @@ begin
         Columns_List_ListBoxDblClick( nil );
 
     end;
+
+
+  Columns_List_ListBox.Items.EndUpdate();
+
+
+  Screen.Cursor := crDefault;
 
 end;
 
@@ -1502,11 +1514,14 @@ procedure TSql_Editor_F_Frame.Options_Set__SEF( const component_type_f : Common.
 var
   zti : integer;
 
-  zts : string;
+  zts,
+  table_name_l
+    : string;
 
   zt_sdbm : Common.TSDBM;
 begin
 
+  id_search__tablse_list_g := -1;
   sql__quotation_sign__use__sef_g := sql__quotation_sign__use_f;
   sql__quotation_sign__sef_g := sql__quotation_sign_f;
 
@@ -1517,6 +1532,13 @@ begin
 
   if sql_editor_sdbm <> nil then
     begin
+
+      if    ( Tables_List_ListBox.Items.Count > 0 )
+        and ( Tables_List_ListBox.ItemIndex >= 0 ) then
+        table_name_l := Tables_List_ListBox.Items[ Tables_List_ListBox.ItemIndex ]
+      else
+        table_name_l := '';
+
 
       sql_editor_sdbm.Component_Type_Set( component_type_f, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
@@ -1530,6 +1552,8 @@ begin
       {$region 'Tables.'}
       Screen.Cursor := crHourGlass;
 
+
+      Tables_List_ListBox.Items.BeginUpdate();
 
       Tables_List_ListBox.Items.Clear();
       Columns_List_ListBox.Items.Clear();
@@ -1634,8 +1658,25 @@ begin
       FreeAndNil( zt_sdbm );
 
 
+      if table_name_l <> '' then
+        begin
+
+          for zti := 0 to Tables_List_ListBox.Items.Count - 1 do
+            if Tables_List_ListBox.Items[ zti ] = table_name_l then
+              begin
+
+                Tables_List_ListBox.ItemIndex := zti;
+
+                Break;
+
+              end;
+
+        end
+      else
       if Tables_List_ListBox.Items.Count > 0 then
         Tables_List_ListBox.ItemIndex := 0;
+
+      Tables_List_ListBox.Items.EndUpdate();
 
 
       Screen.Cursor := crDefault;
@@ -2497,6 +2538,10 @@ var
   zt_sdbm : Common.TSDBM;
 begin
 
+  if Tables_List_ListBox.ItemIndex = id_search__tablse_list_g then
+    Exit;
+
+
   id_search__tablse_list_g := Tables_List_ListBox.ItemIndex;
 
 
@@ -2524,6 +2569,8 @@ begin
       {$region 'Columns.'}
       Screen.Cursor := crHourGlass;
 
+
+      Columns_List_ListBox.Items.BeginUpdate();
 
       Columns_List_ListBox.Items.Clear();
 
@@ -2612,6 +2659,8 @@ begin
 
       if Columns_List_ListBox.Items.Count > 0 then
         Columns_List_ListBox.ItemIndex := 0;
+
+      Columns_List_ListBox.Items.EndUpdate();
 
 
       Screen.Cursor := crDefault;
@@ -3968,7 +4017,11 @@ end;
 
 procedure TSql_Editor_F_Frame.Search__Next_ButtonClick( Sender: TObject );
 var
-  i : integer;
+  found_l : boolean;
+
+  i,
+  id_search__tablse_list_copy_l
+    : integer;
 begin
 
   if Search_In_RadioGroup.ItemIndex = 0 then // Columns list.
@@ -4051,6 +4104,8 @@ begin
 
       Search_Edit.Color := Common.color__red__light_c;
 
+      found_l := false;
+      id_search__tablse_list_copy_l := id_search__tablse_list_g;
 
       id_search__tablse_list_g := id_search__tablse_list_g + 1;
 
@@ -4071,15 +4126,22 @@ begin
 
             Tables_List_ListBox.ItemIndex := i;
 
-            id_search__tablse_list_g := i;
+            id_search__tablse_list_g := -1;
 
             Search_Edit.Color := clWindow;
 
             Tables_List_ListBoxClick( Sender );
 
+            found_l := true;
+
+
             Break;
 
           end;
+
+
+      if not found_l then
+        id_search__tablse_list_g := id_search__tablse_list_copy_l;
 
     end;
 
@@ -4087,7 +4149,11 @@ end;
 
 procedure TSql_Editor_F_Frame.Search__Prior_ButtonClick( Sender: TObject );
 var
-  i : integer;
+  found_l : boolean;
+
+  i,
+  id_search__tablse_list_copy_l
+    : integer;
 begin
 
   if Search_In_RadioGroup.ItemIndex = 0 then // Columns list.
@@ -4170,6 +4236,8 @@ begin
 
       Search_Edit.Color := Common.color__red__light_c;
 
+      found_l := false;
+      id_search__tablse_list_copy_l := id_search__tablse_list_g;
 
       id_search__tablse_list_g := id_search__tablse_list_g - 1;
 
@@ -4190,15 +4258,22 @@ begin
 
             Tables_List_ListBox.ItemIndex := i;
 
-            id_search__tablse_list_g := i;
+            id_search__tablse_list_g := -1;
 
             Search_Edit.Color := clWindow;
 
             Tables_List_ListBoxClick( Sender );
 
+            found_l := true;
+
+
             Break;
 
           end;
+
+
+      if not found_l then
+        id_search__tablse_list_g := id_search__tablse_list_copy_l;
 
     end;
 

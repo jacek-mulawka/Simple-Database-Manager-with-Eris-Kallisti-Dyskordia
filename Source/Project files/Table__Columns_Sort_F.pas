@@ -82,6 +82,8 @@ begin
     Exit;
 
 
+  Columns_Sort_ListView.Items.BeginUpdate();
+
   Columns_Sort_ListView.Items.Clear();
 
   zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tcsf_g ) + Common.table_columns_list__sql__file_name_c  );
@@ -164,6 +166,9 @@ begin
       columns_sort_sdbm.Query__Close();
 
     end;
+
+
+  Columns_Sort_ListView.Items.EndUpdate();
 
 
   if columns_sort_sdbm.Query__Active() then

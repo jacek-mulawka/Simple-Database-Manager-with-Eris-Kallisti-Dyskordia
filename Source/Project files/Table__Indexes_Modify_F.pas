@@ -333,7 +333,11 @@ begin
     or ( not indexes_sdbm.Query__Active() ) then
     Exit;
 
+
   Screen.Cursor := crHourGlass;
+
+
+  Modify__Columns_Name_CheckListBox.Items.BeginUpdate();
 
   item_index_copy_l := Modify__Columns_Name_CheckListBox.ItemIndex;
   Modify__Columns_Name_CheckListBox.Items.Clear();
@@ -485,6 +489,9 @@ begin
         Modify__Columns_Name_CheckListBox.ItemIndex := 0;
 
     end;
+
+
+  Modify__Columns_Name_CheckListBox.Items.EndUpdate();
 
 
   Screen.Cursor := crDefault;

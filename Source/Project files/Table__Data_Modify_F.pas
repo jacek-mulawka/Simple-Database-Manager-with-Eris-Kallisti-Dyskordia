@@ -2279,6 +2279,12 @@ begin
   if Key = VK_F5 then
     Refresh_ButtonClick( Sender )
   else
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl, ssShift ] )
+    and ( Data_DBNavigator.DataSource.DataSet <> nil )
+    and ( Data_DBNavigator.DataSource.DataSet.State in [ dsInsert, dsEdit ] ) then
+    Data_DBNavigator.BtnClick( Vcl.DBCtrls.nbPost )
+  else
   // D.
   if    ( Key = 68 )
     and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.

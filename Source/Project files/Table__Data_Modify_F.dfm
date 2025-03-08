@@ -106,6 +106,8 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Height = 25
       DataSource = Data_DataSource
       VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbEdit, nbPost, nbCancel]
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 2
     end
     object Duplicate_Record_Button: TButton
