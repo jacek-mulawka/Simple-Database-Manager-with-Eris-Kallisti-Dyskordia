@@ -824,6 +824,7 @@ Sort_Button-->Hint=Sort columns. EN
 
 TTable__Data_Modify_F_Frame
 Buttons_Panel__Hide_Button-->Hint=Hide panel. EN
+Data_DBNavigator-->Hint=First record EN.;Prior record EN.;Next record EN.;Last record EN.;Insert record EN.;Delete record EN.;Edit record EN.;Post edit.#13#10#13#10[Ctrl + Shift + Enter] EN;Cancel edit.#13#10#13#10[Esc] EN;Refresh data EN.;Apply updates EN.;Cancel updates EN.;
 Data_Filter_TabSheet=Filter EN
 Data_Filter__Activate__All_Button-->Hint=Activate all filters.#13#10#13#10[Enter] EN
 Data_Filter__Add_Button-->Hint=Add filter.#13#10#13#10[Ctrl + F] EN
