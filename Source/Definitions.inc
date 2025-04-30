@@ -8,4 +8,4 @@
 // (e.g. change DEFINE with UNDEF or just delete the definition line).
 //
 
-{$DEFINE JVCL__use}
+{$UNDEF JVCL__use}

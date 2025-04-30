@@ -13,6 +13,7 @@ uses
   Database__List_Modify in 'Project files\Database__List_Modify.pas' {Database__List_Modify_Form},
   Database__Modify in 'Project files\Database__Modify.pas' {Database__Modify_Form},
   Database__Trigger_Modify in 'Project files\Database__Trigger_Modify.pas' {Database__Trigger_Modify_Form},
+  Date_Time_Picker in 'Project files\Components\Date_Time_Picker.pas',
   Dependencies_F in 'Project files\Dependencies_F.pas' {TDependencies_F_Frame},
   Exceptions_Modify_F in 'Project files\Exceptions_Modify_F.pas' {Exceptions_Modify_F_Frame},
   External_Function__Modify in 'Project files\External_Function__Modify.pas' {External_Function__Modify_Form},
