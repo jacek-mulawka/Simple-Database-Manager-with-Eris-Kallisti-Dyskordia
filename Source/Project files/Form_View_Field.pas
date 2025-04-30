@@ -1,12 +1,11 @@
 unit Form_View_Field;{05.Lip.2023}
 
-{$I Definitions.inc}
-
 interface
 
 uses
   Data.DB,
   System.Classes,
+  System.DateUtils,
   System.SysUtils,
   Vcl.Clipbrd,
   Vcl.ComCtrls,
@@ -15,17 +14,11 @@ uses
   Vcl.ExtCtrls,
   Vcl.Forms,
   Vcl.Graphics,
+  Vcl.Samples.Spin,
   Vcl.StdCtrls,
-  Winapi.Windows
+  Winapi.Windows,
 
- {$IFDEF JVCL__use}
-  ,
-  //JvDBControls,
-  JvDBDateTimePicker,
-  JvDBSpinEdit,
-  JvSpin
-  {$ENDIF}
-  ;
+  Interceptor__Spin_Edit;
 
 type
   TKeyDown_wsk = procedure( Sender : TObject; var Key : Word; Shift : TShiftState ) of object;
@@ -37,6 +30,11 @@ type
     field_name_selected_wsk_g : ^string;
 
     key_down_wsk_g : TKeyDown_wsk;
+
+    component__date_time__conventional__use__fvf,
+    field_value__dedicated_db_edit__on_change__block,
+    field_value__universal_db_edit__on_change__block
+      : boolean;
 
     field_dedicated__data_type : Data.DB.TFieldType;
 
@@ -52,16 +50,26 @@ type
     field_value__universal__vertical_splitter
       : Vcl.ExtCtrls.TSplitter;
 
-    procedure field_name_etiquette_labelDblClick( Sender : TObject );
+    log_memo_shared : TMemo;
+
+    procedure field_name_etiquette_label_DblClick( Sender : TObject );
     procedure field_Enter( Sender : TObject );
     procedure field_KeyDown( Sender : TObject; var Key : Word; Shift : TShiftState );
+
+    procedure Field_Value__Dedicated_Db_Edit__On_Change( Sender : TObject );
+    procedure Field_Value__Universal_Db_Edit__On_Change( Sender : TObject );
+    procedure Field_Value__Universal_Db_Edit__On_Exit( Sender : TObject );
   public
     { Public declarations }
-    constructor Create( parent_f : Vcl.Controls.TWinControl; data_source_f : TDataSource; field_f : TField; const additional_component_show_f, editing_f, splitter_show_f : boolean; field_name_selected_pointer_f : Pointer; key_down_wsk_f : TKeyDown_wsk; key_up_wsk_f : TKey_Up_wsk );
+    data_value_format__disabled__fvf : boolean;
+
+
+    constructor Create( parent_f : Vcl.Controls.TWinControl; data_source_f : TDataSource; field_f : TField; const additional_component_show_f, component__date_time__conventional__use_f, data_value_format__disabled__f, editing_f, splitter_show_f : boolean; field_name_selected_pointer_f : Pointer; key_down_wsk_f : TKeyDown_wsk; key_up_wsk_f : TKey_Up_wsk; log_memo_f : TMemo = nil );
     destructor Destroy(); override;
 
     procedure Align_Correct__FVF();
     procedure Editing__Set__FVF( const editing_f : boolean );
+    procedure Translation__Apply__FVF();
   end;
 
 const
@@ -71,23 +79,30 @@ implementation
 
 uses
   Common,
+  Date_Time_Picker,
   Translation;
 
-constructor TForm_View_Field.Create( parent_f : Vcl.Controls.TWinControl; data_source_f : TDataSource; field_f : TField; const additional_component_show_f, editing_f, splitter_show_f : boolean; field_name_selected_pointer_f : Pointer; key_down_wsk_f : TKeyDown_wsk; key_up_wsk_f : TKey_Up_wsk );
+constructor TForm_View_Field.Create( parent_f : Vcl.Controls.TWinControl; data_source_f : TDataSource; field_f : TField; const additional_component_show_f, component__date_time__conventional__use_f, data_value_format__disabled__f, editing_f, splitter_show_f : boolean; field_name_selected_pointer_f : Pointer; key_down_wsk_f : TKeyDown_wsk; key_up_wsk_f : TKey_Up_wsk; log_memo_f : TMemo = nil );
 begin
 
   inherited Create( Vcl.Forms.Application );
 
+
+  Self.component__date_time__conventional__use__fvf := component__date_time__conventional__use_f;
+  Self.data_value_format__disabled__fvf := data_value_format__disabled__f;
   Self.field_dedicated__data_type := ftUnknown;
   Self.field_name_etiquette_label := nil;
   Self.field_name_etiquette__vertical_splitter := nil;
   Self.field_name_selected_wsk_g := field_name_selected_pointer_f;
   Self.field_value__dedicated := nil;
   //Self.field_value__dedicated__horizontal_splitter := nil;
+  Self.field_value__dedicated_db_edit__on_change__block := true;
+  Self.field_value__universal_db_edit__on_change__block := true;
   Self.field_value__dedicated__vertical_splitter := nil;
   Self.field_value__universal_db_edit := nil;
   Self.field_value__universal__vertical_splitter := nil;
   Self.key_down_wsk_g := key_down_wsk_f;
+  log_memo_shared := log_memo_f;
 
 
   Self.Parent := parent_f;
@@ -102,9 +117,6 @@ begin
   Self.field_name_etiquette_label.Align := alLeft;
   Self.field_name_etiquette_label.Caption := field_f.FieldName;
   Self.field_name_etiquette_label.AutoSize := false; // After 'Caption := '.
-  Self.field_name_etiquette_label.Hint :=
-    Self.field_name_etiquette_label.Caption + #13 + #13 +
-    Translation.translation__table__data_filter_r.field_name_etiquette_label__hint;
   Self.field_name_etiquette_label.Layout := tlCenter;
   Self.field_name_etiquette_label.Margins.Bottom := 0;
   Self.field_name_etiquette_label.Margins.Left := margin_c * 2;
@@ -115,7 +127,7 @@ begin
   if Self.field_name_etiquette_label.Width < 350 then
     Self.field_name_etiquette_label.Width := 350;
 
-  Self.field_name_etiquette_label.OnDblClick := field_name_etiquette_labelDblClick;
+  Self.field_name_etiquette_label.OnDblClick := field_name_etiquette_label_DblClick;
 
   if splitter_show_f then
     begin
@@ -145,6 +157,8 @@ begin
   Self.field_value__universal_db_edit.OnEnter := field_Enter;
   Self.field_value__universal_db_edit.OnKeyDown := field_KeyDown;
   Self.field_value__universal_db_edit.OnKeyUp := key_up_wsk_f;
+  Self.field_value__universal_db_edit.OnChange := Self.Field_Value__Universal_Db_Edit__On_Change;
+  Self.field_value__universal_db_edit.OnExit := Self.Field_Value__Universal_Db_Edit__On_Exit;
 
   Self.field_value__universal_db_edit.DataSource := data_source_f; // At the end.
   Self.field_value__universal_db_edit.DataField := field_f.FieldName;
@@ -209,40 +223,19 @@ begin
         //  Self.Height := 400;
 
       end
-    {$IFDEF JVCL__use}
     else
-    //if field_f.DataType in [ ftDate, ftTime ] then
-    //  begin
-    //
-    //    Self.field_dedicated__data_type := ftDate;
-    //
-    //    Self.field_value__dedicated := JvDBControls.TJvDBDateEdit.Create( Vcl.Forms.Application );
-    //    Self.field_value__dedicated.Parent := Self;
-    //    Self.field_value__dedicated.AlignWithMargins := true;
-    //    Self.field_value__dedicated.Align := alRight;
-    //    Self.field_value__dedicated.Align := alLeft; // Do not work well.
-    //    Self.field_value__dedicated.Margins.Bottom := margin_c;
-    //    Self.field_value__dedicated.Margins.Left := margin_c * 2;
-    //    Self.field_value__dedicated.Margins.Right := margin_c * 2;
-    //    Self.field_value__dedicated.Margins.Top := margin_c;
-    //    JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).OnEnter := field_Enter;
-    //    JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).OnKeyDown := field_KeyDown;
-    //    JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).OnKeyUp := key_up_wsk;
-    //
-    //    JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).DataSource := data_source_f; // At the end.
-    //    JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).DataField := field_f.FieldName;
-    //
-    //  end
-    //else
-    //if field_f.DataType in [ ftDate, ftDateTime, ftTime, ftTimeStamp, ftOraTimeStamp ] then
-    if field_f.DataType in [ ftDate, ftTime ] then
+    if field_f.DataType in [ ftDate, ftDateTime, ftTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
       begin
 
         Self.field_dedicated__data_type := ftDate;
 
-        Self.field_value__dedicated := JvDBDateTimePicker.TJvDBDateTimePicker.Create( Vcl.Forms.Application );
+        if Self.component__date_time__conventional__use__fvf then
+          Self.field_value__dedicated := Vcl.ComCtrls.TDateTimePicker.Create( Vcl.Forms.Application )
+        else
+          Self.field_value__dedicated := Date_Time_Picker.TDate_Time_Picker.Create( Vcl.Forms.Application );
+
         Self.field_value__dedicated.Parent := Self;
-        //JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).ShowCheckbox := true;
+        //Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).ShowCheckbox := true;
         Self.field_value__dedicated.AlignWithMargins := true;
         Self.field_value__dedicated.Align := alRight;
         Self.field_value__dedicated.Align := alLeft; // Do not work well.
@@ -251,21 +244,51 @@ begin
         Self.field_value__dedicated.Margins.Right := margin_c * 2;
         Self.field_value__dedicated.Margins.Top := margin_c;
 
-        if field_f.DataType in [ ftDate ] then
-          JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDate
+        if Self.component__date_time__conventional__use__fvf then
+          begin
+
+            if field_f.DataType in [ ftDate ] then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDate
+            else
+            if field_f.DataType in [ ftTime ] then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkTime
+            else
+            if field_f.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+              begin
+
+                Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDateTime;
+
+                Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Format :=
+                  Common.component__date_time__conventional__date_time__format;
+
+              end;
+
+            Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).OnEnter := field_Enter;
+            Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).OnKeyDown := field_KeyDown;
+            Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).OnKeyUp := key_up_wsk_f;
+            Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).OnChange := Field_Value__Dedicated_Db_Edit__On_Change;
+
+          end
         else
-        if field_f.DataType in [ ftTime ] then
-          JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkTime;
-        //else
-        //if field_f.DataType in [ ftDateTime, ftTimeStamp, ftOraTimeStamp ] then
-        //  JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDateTime;
+          begin
 
-        JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).OnEnter := field_Enter;
-        JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).OnKeyDown := field_KeyDown;
-        JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).OnKeyUp := key_up_wsk_f;
+            if field_f.DataType in [ ftDate ] then
+              Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDate
+            else
+            if field_f.DataType in [ ftTime ] then
+              Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkTime
+            else
+            if field_f.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+              Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDateTime;
 
-        JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).DataSource := data_source_f; // At the end.
-        JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).DataField := field_f.FieldName;
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).OnEnter := field_Enter;
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).OnKeyDown := field_KeyDown;
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).OnKeyUp := key_up_wsk_f;
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).OnChange := Field_Value__Dedicated_Db_Edit__On_Change;
+
+          end;
+
+        Self.Field_Value__Universal_Db_Edit__On_Exit( nil );
 
       end
     else
@@ -278,19 +301,16 @@ begin
 
         Self.field_dedicated__data_type := ftInteger;
 
-        Self.field_value__dedicated := JvDBSpinEdit.TJvDBSpinEdit.Create( Vcl.Forms.Application );
+        Self.field_value__dedicated := Interceptor__Spin_Edit.TSpinEdit.Create( Application );
         Self.field_value__dedicated.Parent := Self;
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).Thousands := true;
 
         if field_f.DataType in [ ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes ] then
           begin
 
-            JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).ValueType := JvSpin.vtFloat;
-            JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).Decimal := field_f.Size;
+            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value_Type_Float := true;
+            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Decimal := field_f.Size;
 
-          end
-        else
-          JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).ValueType := JvSpin.vtInteger;
+          end;
 
         Self.field_value__dedicated.AlignWithMargins := true;
         Self.field_value__dedicated.Align := alRight;
@@ -299,17 +319,14 @@ begin
         Self.field_value__dedicated.Margins.Left := margin_c * 2;
         Self.field_value__dedicated.Margins.Right := margin_c * 2;
         Self.field_value__dedicated.Margins.Top := margin_c;
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).OnEnter := field_Enter;
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).OnKeyDown := field_KeyDown;
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).OnKeyUp := key_up_wsk_f;
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).OnEnter := field_Enter;
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).OnKeyDown := field_KeyDown;
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).OnKeyUp := key_up_wsk_f;
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).OnChange := Field_Value__Dedicated_Db_Edit__On_Change;
 
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).DataSource := data_source_f; // At the end.
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).DataField := field_f.FieldName;
+        Self.Field_Value__Universal_Db_Edit__On_Exit( nil );
 
       end;
-    {$ELSE JVCL__use}
-    ;
-    {$ENDIF}
     //else
     //  begin
     //
@@ -335,7 +352,13 @@ begin
     end;
 
 
+  Self.field_value__dedicated_db_edit__on_change__block := false;
+  Self.field_value__universal_db_edit__on_change__block := false;
+
+
   Self.Editing__Set__FVF( editing_f );
+
+  Self.Translation__Apply__FVF();
 
 end;
 
@@ -349,19 +372,19 @@ begin
   if Self.field_value__dedicated <> nil then
     if Self.field_dedicated__data_type = ftBlob then
       FreeAndNil( Vcl.DBCtrls.TDBMemo(Self.field_value__dedicated) )
-    {$IFDEF JVCL__use}
-    //else
-    //if Self.field_dedicated__data_type = ftDate then
-    //  FreeAndNil( JvDBControls.TJvDBDateEdit(Self.field_value__dedicated) );
     else
     if Self.field_dedicated__data_type = ftDate then
-      FreeAndNil( JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated) )
+      begin
+
+        if Self.component__date_time__conventional__use__fvf then
+          FreeAndNil( Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated) )
+        else
+          FreeAndNil( Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated) );
+
+      end
     else
     if Self.field_dedicated__data_type = ftInteger then
-      FreeAndNil( JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated) );
-    {$ELSE JVCL__use}
-    ;
-    {$ENDIF}
+      FreeAndNil( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated) );
 
 
   //if Self.field_value__dedicated__horizontal_splitter <> nil then
@@ -377,7 +400,7 @@ begin
 
 end;
 
-procedure TForm_View_Field.field_name_etiquette_labelDblClick( Sender : TObject );
+procedure TForm_View_Field.field_name_etiquette_label_DblClick( Sender : TObject );
 begin
 
   Vcl.Clipbrd.Clipboard.AsText := Self.field_name_etiquette_label.Caption;
@@ -394,6 +417,12 @@ end;
 procedure TForm_View_Field.field_KeyDown( Sender : TObject; var Key : Word; Shift : TShiftState );
 var
   zti : integer;
+
+  ztdt : TDateTime;
+
+  zts : string;
+
+  date_format : TFormatSettings;
 begin
 
   // A.
@@ -401,9 +430,134 @@ begin
     and ( Shift = [ ssCtrl, ssShift ] ) then
     Self.Align_Correct__FVF()
   else
+  // C.
+  if    ( Key = 67 )
+    and ( Shift = [ ssCtrl ] )
+    and ( Sender <> nil ) then
+  begin
+
+    if Sender is Vcl.DBCtrls.TDBEdit then
+      begin
+
+        if Vcl.DBCtrls.TDBEdit(Sender).SelText <> '' then
+          Vcl.Clipbrd.Clipboard.AsText := Vcl.DBCtrls.TDBEdit(Sender).SelText
+        else
+        if Self.data_value_format__disabled__fvf then
+          Vcl.Clipbrd.Clipboard.AsText := Vcl.DBCtrls.TDBEdit(Sender).Field.AsString
+        else
+          Vcl.Clipbrd.Clipboard.AsText := Vcl.DBCtrls.TDBEdit(Sender).Text;
+
+      end
+    else
+    if    ( Self.component__date_time__conventional__use__fvf )
+      and ( Sender is Vcl.ComCtrls.TDateTimePicker ) then
+      begin
+
+        try
+          if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + Common.table__data_filter__filter__dedicated_value_format__time, Vcl.ComCtrls.TDateTimePicker(Sender).DateTime )
+          else
+          if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__time, Vcl.ComCtrls.TDateTimePicker(Sender).Time )
+          else
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date, Vcl.ComCtrls.TDateTimePicker(Sender).Date );
+
+          Vcl.Clipbrd.Clipboard.AsText := zts;
+        except
+          on E : Exception do
+            Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+        end;
+
+      end
+    else
+    if    ( not Self.component__date_time__conventional__use__fvf )
+      and ( Sender is Interceptor__Spin_Edit.TSpinEdit )
+      and ( Interceptor__Spin_Edit.TSpinEdit(Sender).Parent <> nil )
+      and ( Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent <> nil )
+      and ( Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent is Date_Time_Picker.TDate_Time_Picker ) then
+      begin
+
+        try
+          if Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Kind = Vcl.ComCtrls.dtkDateTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + Common.table__data_filter__filter__dedicated_value_format__time, Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Date_Time )
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Kind = Vcl.ComCtrls.dtkTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__time, Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Time )
+          else
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date, Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Date );
+
+          Vcl.Clipbrd.Clipboard.AsText := zts;
+        except
+          on E : Exception do
+            Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+        end;
+
+      end;
+
+  end
+  else
+  // Q.
+  if    ( Key = 81 )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    Self.Align_Correct__FVF()
+  else
+  // V.
+  if    ( Key = 86 )
+    and ( Shift = [ ssCtrl ] )
+    and ( Sender <> nil ) then
+  begin
+
+    try
+      if Self.component__date_time__conventional__use__fvf then
+        begin
+
+          date_format.ShortDateFormat := Common.table__data_filter__filter__dedicated_value_format__date;
+          date_format.ShortTimeFormat := Common.table__data_filter__filter__dedicated_value_format__time;
+
+          if Length( Common.table__data_filter__filter__dedicated_value_format__separator__date ) > 0 then
+            date_format.DateSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__date[ 1 ];
+
+          if Length( Common.table__data_filter__filter__dedicated_value_format__separator__decimal ) > 0 then
+            date_format.DecimalSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__decimal[ 1 ];
+
+          if Length( Common.table__data_filter__filter__dedicated_value_format__separator__time ) > 0 then
+            date_format.TimeSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__time[ 1 ];
+
+          ztdt := StrToDateTime( Vcl.Clipbrd.Clipboard.AsText, date_format );
+
+
+          if Sender is Vcl.ComCtrls.TDateTimePicker then
+            begin
+
+              if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
+                Vcl.ComCtrls.TDateTimePicker(Sender).DateTime := ztdt
+              else
+              if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
+                Vcl.ComCtrls.TDateTimePicker(Sender).Time := System.DateUtils.TimeOf( ztdt )
+              else
+                Vcl.ComCtrls.TDateTimePicker(Sender).Date := System.DateUtils.DateOf( ztdt );
+
+            end;
+
+
+          Field_Value__Dedicated_Db_Edit__On_Change( Sender );
+
+        end;
+
+      // Date_Time_Picker.TDate_Time_Picker supports 'paste' on its own.
+
+    except
+      on E : Exception do
+        Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_paste_value_from_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+    end;
+
+  end
+  else
   if    ( Sender <> nil )
     and ( TWinControl(Sender).Parent <> nil ) then
     begin
+
+      // At the end.
 
       if    ( Key = Winapi.Windows.VK_ADD )
         and ( Shift = [ ssCtrl ] ) then
@@ -482,19 +636,270 @@ begin
   if Self.field_value__dedicated <> nil then
     begin
 
-      {$IFDEF JVCL__use}
-      //if Self.field_value__dedicated is JvDBControls.TJvDBDateEdit then
-      //  JvDBControls.TJvDBDateEdit(Self.field_value__dedicated).ReadOnly := not editing_f
-      //else
-      if Self.field_value__dedicated is JvDBDateTimePicker.TJvDBDateTimePicker then
-        JvDBDateTimePicker.TJvDBDateTimePicker(Self.field_value__dedicated).ReadOnly := not editing_f
+      if    ( Self.component__date_time__conventional__use__fvf )
+        and ( Self.field_value__dedicated is Vcl.ComCtrls.TDateTimePicker ) then
+        Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Enabled := editing_f
       else
-      if Self.field_value__dedicated is JvDBSpinEdit.TJvDBSpinEdit then
-        JvDBSpinEdit.TJvDBSpinEdit(Self.field_value__dedicated).ReadOnly := not editing_f
+      if    ( not Self.component__date_time__conventional__use__fvf )
+        and ( Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker ) then
+        Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).ReadOnly := not editing_f
       else
-     {$ENDIF}
+      if Self.field_value__dedicated is Interceptor__Spin_Edit.TSpinEdit then
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).ReadOnly := not editing_f
+      else
       if Self.field_value__dedicated is Vcl.DBCtrls.TDBMemo then
         Vcl.DBCtrls.TDBMemo(Self.field_value__dedicated).ReadOnly := not editing_f;
+
+    end;
+
+end;
+
+procedure TForm_View_Field.Field_Value__Dedicated_Db_Edit__On_Change( Sender : TObject );
+begin
+
+  if   ( Self.field_value__dedicated_db_edit__on_change__block )
+    or ( Self.field_value__dedicated = nil )
+    or ( Self.field_value__universal_db_edit = nil )
+    or ( Self.field_value__universal_db_edit.Field = nil )
+    or ( not Self.field_value__dedicated.Focused() )
+    or ( Self.field_value__universal_db_edit.ReadOnly ) then
+    Exit;
+
+
+  Self.field_value__universal_db_edit__on_change__block := true;
+
+
+  if Self.field_value__universal_db_edit.Field.DataType in [ ftDate, ftDateTime, ftTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+    begin
+
+      if not ( Self.field_value__universal_db_edit.DataSource.DataSet.State in [ Data.DB.dsEdit, Data.DB.dsInsert ] ) then
+        Self.field_value__universal_db_edit.DataSource.DataSet.Edit();
+
+
+      if Self.field_value__dedicated is Vcl.ComCtrls.TDateTimePicker then
+        begin
+
+          if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+            Self.field_value__universal_db_edit.Field.AsDateTime := Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).DateTime
+          else
+          if Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
+            Self.field_value__universal_db_edit.Field.AsDateTime := Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Date
+          else
+          if Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
+            Self.field_value__universal_db_edit.Field.AsDateTime := Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Time;
+
+        end
+      else
+      if Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker then
+        begin
+
+          if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+            Self.field_value__universal_db_edit.Field.AsDateTime := Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
+            Self.field_value__universal_db_edit.Field.AsDateTime := Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
+            Self.field_value__universal_db_edit.Field.AsDateTime := Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time;
+
+        end;
+
+    end
+  else
+  if Self.field_value__universal_db_edit.Field.DataType in
+       [
+         ftAutoInc, ftByte, ftBytes, ftInteger, ftLargeint, ftLongWord, ftShortint, ftSmallint, ftWord,
+         ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes
+       ] then
+    begin
+
+      if not ( Self.field_value__universal_db_edit.DataSource.DataSet.State in [ Data.DB.dsEdit, Data.DB.dsInsert ] ) then
+        Self.field_value__universal_db_edit.DataSource.DataSet.Edit();
+
+
+      Self.field_value__universal_db_edit.Field.AsCurrency := Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value;
+
+    end;
+
+
+  Self.field_value__universal_db_edit__on_change__block := false;
+
+end;
+
+procedure TForm_View_Field.Field_Value__Universal_Db_Edit__On_Change( Sender : TObject );
+var
+  zts : string;
+begin
+
+  if   ( Self.field_value__universal_db_edit__on_change__block )
+    or ( Self.field_value__dedicated = nil )
+    or ( Self.field_value__universal_db_edit = nil )
+    or ( Self.field_value__universal_db_edit.Field = nil ) then
+    Exit;
+
+
+  Self.field_value__dedicated_db_edit__on_change__block := true;
+
+
+  if Self.field_value__universal_db_edit.Field.DataType in [ ftDate, ftDateTime, ftTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+    begin
+
+      if Self.field_value__dedicated is Vcl.ComCtrls.TDateTimePicker then
+        begin
+
+          try
+
+            // TDateTimePicker gives error 'Failed to set calendar date or time' if date is earlier than '01.01.1601'.
+
+            if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).DateTime := StrToDateTimeDef( Self.field_value__universal_db_edit.Text, 0 )
+            else
+            if Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Date := StrToDateDef( Self.field_value__universal_db_edit.Text, 0 )
+            else
+            if Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Time := StrToTimeDef( Self.field_value__universal_db_edit.Text, 0 );
+
+          except
+            on E : Exception do
+              begin
+
+                if log_memo_shared <> nil then
+                  log_memo_shared.Lines.Add( Self.field_value__universal_db_edit.Field.FieldName + ' (' + Self.field_value__universal_db_edit.Text + ') - ' + E.Message + '.' )
+                else
+                  Application.MessageBox( PChar(Self.field_value__universal_db_edit.Field.FieldName + ' (' + Self.field_value__universal_db_edit.Text + ') - ' + E.Message + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+
+              end;
+          end;
+
+        end
+      else
+      if Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker then
+        begin
+
+          if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time := StrToDateTimeDef( Self.field_value__universal_db_edit.Text, 0 )
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date := StrToDateDef( Self.field_value__universal_db_edit.Text, 0 )
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time := StrToTimeDef( Self.field_value__universal_db_edit.Text, 0 );
+
+        end;
+
+    end
+  else
+  if Self.field_value__universal_db_edit.Field.DataType in
+       [
+         ftAutoInc, ftByte, ftBytes, ftInteger, ftLargeint, ftLongWord, ftShortint, ftSmallint, ftWord,
+         ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes
+       ] then
+    begin
+
+      zts := Self.field_value__universal_db_edit.Text;
+      zts := StringReplace( zts, ' ', '', [ rfReplaceAll ] );
+      zts := StringReplace( zts, '.', ',', [ rfReplaceAll ] );
+      Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value := StrToCurrDef( zts, Self.field_value__universal_db_edit.Field.AsCurrency );
+
+    end;
+
+
+  Self.field_value__dedicated_db_edit__on_change__block := false;
+
+end;
+
+procedure TForm_View_Field.Field_Value__Universal_Db_Edit__On_Exit( Sender : TObject );
+begin
+
+  if   ( Self.field_value__dedicated = nil )
+    or ( Self.field_value__universal_db_edit = nil )
+    or ( Self.field_value__universal_db_edit.Field = nil ) then
+    Exit;
+
+
+  Self.field_value__dedicated_db_edit__on_change__block := true;
+
+
+  if Self.field_value__universal_db_edit.Field.DataType in [ ftDate, ftDateTime, ftTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+    begin
+
+      if Self.field_value__dedicated is Vcl.ComCtrls.TDateTimePicker then
+        begin
+
+          try
+
+            // TDateTimePicker gives error 'Failed to set calendar date or time' if date is earlier than '01.01.1601'.
+
+            if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).DateTime := Self.field_value__universal_db_edit.Field.AsDateTime
+            else
+            if Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Date := System.DateUtils.DateOf( Self.field_value__universal_db_edit.Field.AsDateTime )
+            else
+            if Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Time := System.DateUtils.TimeOf( Self.field_value__universal_db_edit.Field.AsDateTime );
+
+          except
+            on E : Exception do
+              begin
+
+                if log_memo_shared <> nil then
+                  log_memo_shared.Lines.Add( Self.field_value__universal_db_edit.Field.FieldName + ' (' + Self.field_value__universal_db_edit.Text + ') - ' + E.Message + '.' )
+                else
+                  Application.MessageBox( PChar(Self.field_value__universal_db_edit.Field.FieldName + ' (' + Self.field_value__universal_db_edit.Text + ') - ' + E.Message + '.'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+
+              end;
+          end;
+
+        end
+      else
+      if Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker then
+        begin
+
+          if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time := Self.field_value__universal_db_edit.Field.AsDateTime
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date := System.DateUtils.DateOf( Self.field_value__universal_db_edit.Field.AsDateTime )
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time := System.DateUtils.TimeOf( Self.field_value__universal_db_edit.Field.AsDateTime );
+
+        end;
+
+    end
+  else
+  if Self.field_value__universal_db_edit.Field.DataType in
+       [
+         ftAutoInc, ftByte, ftBytes, ftInteger, ftLargeint, ftLongWord, ftShortint, ftSmallint, ftWord,
+         ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes
+       ] then
+    Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value := Self.field_value__universal_db_edit.Field.AsCurrency;
+
+
+  Self.field_value__dedicated_db_edit__on_change__block := false;
+
+end;
+
+procedure TForm_View_Field.Translation__Apply__FVF();
+begin
+
+  if Self.field_name_etiquette_label <> nil then
+    Self.field_name_etiquette_label.Hint :=
+      Self.field_name_etiquette_label.Caption + #13 + #13 +
+      Translation.translation__table__data_filter_r.field_name_etiquette_label__hint;
+
+
+  if    ( Self.field_value__dedicated <> nil )
+    and ( Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker ) then
+    begin
+
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_time__format__hint__translation := Translation.translation__table__data_filter_r.day___month___year___hour___minute___second___milli_second;
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).failed_to_paste_value_from_clipboard__translation := Translation.translation__messages_r.failed_to_paste_value_from_clipboard;
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).error__translation := Translation.translation__messages_r.error;
+
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Translation__Apply__DTP();
 
     end;
 

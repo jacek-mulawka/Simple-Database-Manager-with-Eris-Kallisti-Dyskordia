@@ -1225,6 +1225,10 @@ begin
     if Data_Filter_ScrollBox.Controls[ i ].ClassType = Table__Data_Filter.TTable__Data_Filter then
       Table__Data_Filter.TTable__Data_Filter(Data_Filter_ScrollBox.Controls[ i ]).Translation__Apply__TDF();
 
+  for i := 0 to Data_ScrollBox.ControlCount - 1 do
+    if Data_ScrollBox.Controls[ i ].ClassType = Form_View_Field.TForm_View_Field then
+      Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).Translation__Apply__FVF();
+
 end;
 
 procedure TTable__Data_Modify_F_Frame.Data_DBEditChange( Sender: TObject );
@@ -1569,6 +1573,8 @@ begin
         data__sdbm.Query__Locate( primary_key_name_l, primary_key_value_l, [ Data.DB.loCaseInsensitive ] );
 
 
+      Data_DBEditChange( Sender ); // Sometimes display out of date information rows count.
+
       Busy_Notification_Set( false );
 
       Screen.Cursor := crDefault;
@@ -1606,6 +1612,8 @@ begin
                       if Trim( primary_key_name_l ) <> '' then
                         data__sdbm.Query__Locate( primary_key_name_l, primary_key_value_l, [ Data.DB.loCaseInsensitive ] );
 
+
+                      Data_DBEditChange( Sender ); // Sometimes display out of date information rows count.
 
                       Busy_Notification_Set( false );
 
@@ -1786,7 +1794,7 @@ begin
   table_column__values_distinct_form_l.sql__quotation_sign__tcvd := sql__quotation_sign__tdmf_g;
   table_column__values_distinct_form_l.sql__quotation_sign__use__tcvd := sql__quotation_sign__use__tdmf_g;
   table_column__values_distinct_form_l.table_name__tcvd := table_name__tdmf_g;
-  table_column__values_distinct_form_l.queries_open_in_background_g := queries_open_in_background_g;
+  table_column__values_distinct_form_l.queries_open_in_background__tcvd := queries_open_in_background_g;
   table_column__values_distinct_form_l.table_column__values_distinct_form_list := table_column__values_distinct_form_list__tdmf_g;
   table_column__values_distinct_form_l.Show();
 
@@ -1863,6 +1871,9 @@ begin
       if Data_ScrollBox.ControlCount <= 1 then // Width_Keeper_Label.
         begin
 
+          Screen.Cursor := crHourGlass;
+
+
           if @Additional_Component_Show__Get_wsk <> nil then
             additional_component_show_g := Additional_Component_Show__Get_wsk();
 
@@ -1875,16 +1886,71 @@ begin
           for i := 0 to data__sdbm.Query__Field_Count() - 1 do
             begin
 
-              Form_View_Field.TForm_View_Field.Create(  Data_ScrollBox, Data_DataSource, data__sdbm.Query__Fields( i ), additional_component_show_g, Editing_CheckBox.Checked, splitter_show_g, @field_name_selected_g, Data_DBGridKeyDown, Key_Up_Common  );
+              Form_View_Field.TForm_View_Field.Create(  Data_ScrollBox, Data_DataSource, data__sdbm.Query__Fields( i ), additional_component_show_g, Common.component__date_time__conventional__use, Data_Value_Format__Disabled_CheckBox.Checked, Editing_CheckBox.Checked, splitter_show_g, @field_name_selected_g, Data_DBGridKeyDown, Key_Up_Common, Log_Memo  );
 
             end;
 
-          Data_ScrollBox.Visible := true;
+          try
+            Data_ScrollBox.Visible := true; // TDateTimePicker gives error 'Failed to set calendar date or time' if date is earlier than '01.01.1601'.
+          except
+            on E : Exception do
+              begin
+
+                Screen.Cursor := crDefault;
+
+                Application.MessageBox( PChar(E.Message + ' [1].'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
 
 
-          for i := Data_ScrollBox.ControlCount - 1 downto 0 do
-            if Data_ScrollBox.Controls[ i ].ClassType = Form_View_Field.TForm_View_Field then
-              Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).Align_Correct__FVF();
+                Data_ScrollBox.Visible := false; // If an exception occurs Data_ScrollBox.Visible = true but Data_ScrollBox is still not visible.
+
+              end;
+          end;
+
+          if not Data_ScrollBox.Visible then
+            try
+              Data_ScrollBox.Visible := true; // TDateTimePicker gives error 'Failed to set calendar date or time' if date is earlier than '01.01.1601'.
+            except
+              on E : Exception do
+                begin
+
+                  Screen.Cursor := crDefault;
+
+                  Application.MessageBox( PChar(E.Message + ' [2].'), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION );
+
+                end;
+            end;
+
+
+          Screen.Cursor := crAppStart;
+
+
+          System.Threading.TTask.Run
+            (
+              procedure
+                var
+                  i_l : integer;
+                begin
+
+                  // Works slowly.
+
+                  for i_l := 0 to Data_ScrollBox.ControlCount - 1 do
+                    if Data_ScrollBox.Controls[ i_l ].ClassType = Form_View_Field.TForm_View_Field then
+                      Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i_l ]).Align_Correct__FVF();
+
+
+                  TThread.Synchronize
+                    (
+                      TThread.Current,
+                      procedure
+                        begin
+
+                          Screen.Cursor := crDefault;
+
+                        end
+                    );
+
+                end
+            );
 
 
           //Width_Keeper_Label.BringToFront();
@@ -2162,7 +2228,7 @@ begin
   Field_Name_Selected_From_Form_View__Set();
 
 
-  zt_table__data_filter := Table__Data_Filter.TTable__Data_Filter.Create( Data_Filter_ScrollBox, database_type__tdmf_g, table_name__tdmf_g, sql__quotation_sign__tdmf_g, queries_open_in_background_g, Data_DBGrid.SelectedField, data__sdbm, Log_Memo );
+  zt_table__data_filter := Table__Data_Filter.TTable__Data_Filter.Create( Data_Filter_ScrollBox, database_type__tdmf_g, table_name__tdmf_g, sql__quotation_sign__tdmf_g, Common.component__date_time__conventional__use, queries_open_in_background_g, Data_DBGrid.SelectedField, data__sdbm, Log_Memo );
   zt_table__data_filter.Align_Correct__DTF();
   zt_table__data_filter.Filter__Activate_wsk := Data_Filter__Activate__All_ButtonClick;
   zt_table__data_filter.Filter__Deactivate_wsk := Data_Filter__Deactivate__All_ButtonClick;
@@ -2199,9 +2265,16 @@ begin
 end;
 
 procedure TTable__Data_Modify_F_Frame.Data_Value_Format__Disabled_CheckBoxClick( Sender: TObject );
+var
+  i : integer;
 begin
 
   Common.Data_Value_Format__Set( data__sdbm, Log_Memo, Data_Value_Format__Disabled_CheckBox.Checked );
+
+
+  for i := 0 to Data_ScrollBox.ControlCount - 1 do
+    if Data_ScrollBox.Controls[ i ].ClassType = Form_View_Field.TForm_View_Field then
+      Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).data_value_format__disabled__fvf := Data_Value_Format__Disabled_CheckBox.Checked;
 
 end;
 
@@ -2279,10 +2352,15 @@ begin
   if Key = VK_F5 then
     Refresh_ButtonClick( Sender )
   else
+  if    ( Key = VK_ESCAPE )
+    and ( Data_DBNavigator.DataSource.DataSet <> nil )
+    and ( Data_DBNavigator.DataSource.DataSet.State in [ Data.DB.dsInsert, Data.DB.dsEdit ] ) then
+    Data_DBNavigator.BtnClick( Vcl.DBCtrls.nbCancel )
+  else
   if    ( Key = VK_RETURN )
     and ( Shift = [ ssCtrl, ssShift ] )
     and ( Data_DBNavigator.DataSource.DataSet <> nil )
-    and ( Data_DBNavigator.DataSource.DataSet.State in [ dsInsert, dsEdit ] ) then
+    and ( Data_DBNavigator.DataSource.DataSet.State in [ Data.DB.dsInsert, Data.DB.dsEdit ] ) then
     Data_DBNavigator.BtnClick( Vcl.DBCtrls.nbPost )
   else
   // D.
@@ -2298,7 +2376,7 @@ begin
       Data_Filter__Add_ButtonClick( Sender );
 
       if Data_PageControl.Height <= 1 then
-        Data_PageControl.Height := 300;
+        Data_PageControl.Height := Common.table__data_modify__filter__height_keeper__top + Height_Keeper_Label.Height * 2;
 
     end
   else
@@ -2333,7 +2411,12 @@ begin
       and ( data__sdbm.Query__Record_Count > 0 )
       and ( Data_DBGrid.SelectedField <> nil ) then
       try
-        Vcl.Clipbrd.Clipboard.AsText := Data_DBGrid.SelectedField.Value;
+
+        if Data_Value_Format__Disabled_CheckBox.Checked then
+          Vcl.Clipbrd.Clipboard.AsText := Data_DBGrid.SelectedField.Value
+        else
+          Vcl.Clipbrd.Clipboard.AsText := Data_DBGrid.SelectedField.DisplayText;
+
       except
         on E : Exception do
           Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );

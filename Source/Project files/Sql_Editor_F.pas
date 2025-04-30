@@ -5153,7 +5153,12 @@ begin
     and ( sql_editor_sdbm.Query__Record_Count > 0 )
     and ( Sql_Editor_DBGrid.SelectedField <> nil ) then
     try
-      Vcl.Clipbrd.Clipboard.AsText := Sql_Editor_DBGrid.SelectedField.Value;
+
+      if Data_Value_Format__Disabled_CheckBox.Checked then
+        Vcl.Clipbrd.Clipboard.AsText := Sql_Editor_DBGrid.SelectedField.Value
+      else
+        Vcl.Clipbrd.Clipboard.AsText := Sql_Editor_DBGrid.SelectedField.DisplayText;
+
     except
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );

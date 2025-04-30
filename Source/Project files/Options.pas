@@ -5,6 +5,7 @@ unit Options;{20.Cze.2023}
 interface
 
 uses
+  Date_Time_Picker,
   Text__Search_Replace,
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
@@ -21,6 +22,15 @@ type
     Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox: TCheckBox;
     Cancel_Button: TButton;
     Caret_Position_Label: TLabel;
+    Component_GroupBox: TGroupBox;
+    Component__Date_Time_GroupBox: TGroupBox;
+    Component__Date_Time__Conventional__Date_Time__Format_Edit: TEdit;
+    Component__Date_Time__Conventional__Date_Time__Format_GroupBox: TGroupBox;
+    Component__Date_Time__Conventional__Use_CheckBox: TCheckBox;
+    Component__Date_Time__Conventional__Use__Example_Panel: TPanel;
+    Component__Date_Time__Conventional__Use__Example__Color_Panel: TPanel;
+    Component__Date_Time__Conventional__Use__Example__Mode_RadioGroup: TRadioGroup;
+    Component__Date_Time__Conventional__Use__Example__DateTimePicker: TDateTimePicker;
     Csv__File_GroupBox: TGroupBox;
     Csv__File__Data_Separator_Edit: TEdit;
     Csv__File__Data_Separator_GroupBox: TGroupBox;
@@ -159,9 +169,13 @@ type
     Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Time_GroupBox: TGroupBox;
     Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit: TEdit;
     Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_GroupBox: TGroupBox;
-    Table__Data_Filter__Filter__Dedicated_Value_Format__Separators_GroupBox: TGroupBox;
+    Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_GroupBox: TGroupBox;
+    Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit: TEdit;
+    Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_GroupBox: TGroupBox;
+    Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_Edit: TEdit;
     Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Edit: TEdit;
     Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Etiquette_Label: TLabel;
+    Table__Data_Filter__Filter__Dedicated_Value_Format__Separators_GroupBox: TGroupBox;
     Table__Data_Filter__Quotation_Sign__Use_CheckBox: TCheckBox;
     Table__Data_Modify__Editing__Default_State_CheckBox: TCheckBox;
     Text__Search__History_Save_To_File__Items_Count_Etiquette_Label: TLabel;
@@ -178,14 +192,17 @@ type
 
     procedure Load_Save_ButtonClick( Sender: TObject );
 
+    procedure Component__Date_Time__Conventional__Use_CheckBoxClick( Sender: TObject );
+    procedure Component__Date_Time__Conventional__Use__Example__Mode_RadioGroupClick( Sender: TObject );
     procedure File_Path_EditExit( Sender: TObject );
     procedure File_Path__Find_ButtonClick( Sender: TObject );
-    procedure Sql_Editor__Font_ButtonClick( Sender: TObject );
     procedure Language_ComboBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+
+    procedure Syn_Editor_Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+    procedure Sql_Editor__Font_ButtonClick( Sender: TObject );
 
     procedure Sql_Text_MemoClick( Sender: TObject );
     procedure Sql_Text_MemoKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
-    procedure Syn_Editor_Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
     procedure Sql_Text_SynEditEnter( Sender: TObject );
     procedure Sql_Text_SynEditClick( Sender: TObject );
@@ -214,6 +231,7 @@ type
     sql_editor__highlights__words__color__border__copy_g
       : integer;
 
+    date_time_picker_example : Date_Time_Picker.TDate_Time_Picker;
     text__search_replace_form : Text__Search_Replace.TText__Search_Replace_Form;
 
     procedure Caret_Position_Display();
@@ -261,6 +279,8 @@ var
 begin
 
   Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked := Common.busy_notification__knight_rider_equalizer__disabled;
+  Component__Date_Time__Conventional__Date_Time__Format_Edit.Text := Common.component__date_time__conventional__date_time__format;
+  Component__Date_Time__Conventional__Use_CheckBox.Checked := Common.component__date_time__conventional__use;
   Csv__File__Data_Separator_Edit.Text := Common.csv__file__data_separator;
   Csv__File__Text_Qualifier_Edit.Text := Common.csv__file__text_qualifier;
   Data_Presentation__Data_Value_Format__Date_Edit.Text := Common.data_presentation__data_value_format__date;
@@ -365,73 +385,16 @@ begin
   System_Tables_Visible_CheckBox.Checked := Common.system_tables_visible;
   Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked := Common.table__data_filter__field_dedicated__default_use;
   Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__date;
+  Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__separator__date;
   Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Time_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__separator__date_time;
   Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__separator__decimal;
+  Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__separator__time;
   Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__time;
   Table__Data_Filter__Quotation_Sign__Use_CheckBox.Checked := Common.table__data_filter__quotation_sign__use;
   Table__Data_Modify__Editing__Default_State_CheckBox.Checked := Common.table__data_modify__editing__default_state;
   Text__Search__History_Save_To_File_CheckBox.Checked := Common.text__search__history_save_to_file;
   Text__Search__History_Save_To_File__Items_Count_SpinEdit.Value := Common.text__search__history_save_to_file__items_count;
   Text__Search__Window__One_Common_CheckBox.Checked := Common.text__search__window__one_common;
-
-end;
-
-function TOptions_Form.Syn_Edit_Keystrokes_Get() : string;
-var
-  i,
-  j
-    : integer;
-
-  zts_1,
-  zts_2
-    : string;
-begin
-
-  Result := '';
-
-  for i := 0 to Sql_Text_SynEdit.Keystrokes.Count - 1 do
-    begin
-
-      zts_1 := Sql_Text_SynEdit.Keystrokes.Items[ i ].DisplayName; // ecActName - KeyName
-
-      if Trim( zts_1 ) <> '' then
-        begin
-
-          Delete( zts_1, 1, 2 );
-          zts_2 := '';
-
-          for j := 1 to Length( zts_1 ) do
-            begin
-
-              if zts_1[ j ] = ' ' then
-                begin
-
-                  zts_2 := '    ' + zts_2 + Copy(  zts_1, j, Length( zts_1 )  );
-                  Break;
-
-                end;
-
-              if    ( j > 1 )
-                and (  zts_1[ j ] = AnsiUpperCase( zts_1[ j ] )  ) then
-                zts_2 := zts_2 + ' ';
-
-              zts_2 := zts_2 + zts_1[ j ];
-
-            end;
-
-
-          if Trim( Result ) <> '' then
-            Result := Result + #13 + #10;
-
-          Result := Result + zts_2;
-
-        end;
-
-    end;
-
-
-  if Trim( Result ) <> '' then
-    Result := Translation.translation__messages_r.sql_editor_default_keystrokes + #13 + #10 + Result;
 
 end;
 
@@ -569,6 +532,8 @@ var
 begin
 
   Common.busy_notification__knight_rider_equalizer__disabled := Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked;
+  Common.component__date_time__conventional__date_time__format := Component__Date_Time__Conventional__Date_Time__Format_Edit.Text;
+  Common.component__date_time__conventional__use := Component__Date_Time__Conventional__Use_CheckBox.Checked;
   Common.csv__file__data_separator := Csv__File__Data_Separator_Edit.Text;
   Common.csv__file__text_qualifier := Csv__File__Text_Qualifier_Edit.Text;
   Common.data_presentation__data_value_format__date := Data_Presentation__Data_Value_Format__Date_Edit.Text;
@@ -650,8 +615,10 @@ begin
 
   Common.table__data_filter__field_dedicated__default_use := Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked;
   Common.table__data_filter__filter__dedicated_value_format__date := Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text;
+  Common.table__data_filter__filter__dedicated_value_format__separator__date := Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit.Text;
   Common.table__data_filter__filter__dedicated_value_format__separator__date_time := Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Time_Edit.Text;
   Common.table__data_filter__filter__dedicated_value_format__separator__decimal := Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text;
+  Common.table__data_filter__filter__dedicated_value_format__separator__time := Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_Edit.Text;
   Common.table__data_filter__filter__dedicated_value_format__time := Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Edit.Text;
   Common.table__data_filter__quotation_sign__use := Table__Data_Filter__Quotation_Sign__Use_CheckBox.Checked;
   Common.table__data_modify__editing__default_state := Table__Data_Modify__Editing__Default_State_CheckBox.Checked;
@@ -663,6 +630,65 @@ begin
   Common.Syn_Completion_Proposal__Parameters__Set( Sql_Text__SynCompletionProposal );
 
   Common.Syn_Edit__Parameters__Set( Sql_Text_SynEdit );
+
+end;
+
+function TOptions_Form.Syn_Edit_Keystrokes_Get() : string;
+var
+  i,
+  j
+    : integer;
+
+  zts_1,
+  zts_2
+    : string;
+begin
+
+  Result := '';
+
+  for i := 0 to Sql_Text_SynEdit.Keystrokes.Count - 1 do
+    begin
+
+      zts_1 := Sql_Text_SynEdit.Keystrokes.Items[ i ].DisplayName; // ecActName - KeyName
+
+      if Trim( zts_1 ) <> '' then
+        begin
+
+          Delete( zts_1, 1, 2 );
+          zts_2 := '';
+
+          for j := 1 to Length( zts_1 ) do
+            begin
+
+              if zts_1[ j ] = ' ' then
+                begin
+
+                  zts_2 := '    ' + zts_2 + Copy(  zts_1, j, Length( zts_1 )  );
+                  Break;
+
+                end;
+
+              if    ( j > 1 )
+                and (  zts_1[ j ] = AnsiUpperCase( zts_1[ j ] )  ) then
+                zts_2 := zts_2 + ' ';
+
+              zts_2 := zts_2 + zts_1[ j ];
+
+            end;
+
+
+          if Trim( Result ) <> '' then
+            Result := Result + #13 + #10;
+
+          Result := Result + zts_2;
+
+        end;
+
+    end;
+
+
+  if Trim( Result ) <> '' then
+    Result := Translation.translation__messages_r.sql_editor_default_keystrokes + #13 + #10 + Result;
 
 end;
 
@@ -844,10 +870,23 @@ begin
   Common.Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( Sql_Text_SynEdit );
 
 
+  Component__Date_Time__Conventional__Use__Example__DateTimePicker.DateTime := Now();
+
+  date_time_picker_example := Date_Time_Picker.TDate_Time_Picker.Create( Self );
+  date_time_picker_example.Parent := Component__Date_Time__Conventional__Use__Example_Panel;
+  date_time_picker_example.Left := Component__Date_Time__Conventional__Use__Example__Color_Panel.Left;
+  date_time_picker_example.Top := Component__Date_Time__Conventional__Use__Example__Color_Panel.Top + Component__Date_Time__Conventional__Use__Example__Color_Panel.Height + 10;
+  date_time_picker_example.Date_Time := Component__Date_Time__Conventional__Use__Example__DateTimePicker.DateTime;
+  date_time_picker_example.Kind := Vcl.ComCtrls.dtkDate;
+
+
   Translation.Translation__Apply( Self );
 
 
   Common.Text__Search_Replace__Hide( text__search_replace_form );
+
+  Component__Date_Time__Conventional__Use__Example__Mode_RadioGroupClick( Sender ); // Translation.Translation__Apply() call it as well.
+  Component__Date_Time__Conventional__Use_CheckBoxClick( Sender );
 
 end;
 
@@ -871,6 +910,9 @@ begin
     Common.TObject_Id_Caption(Sql_Editor__Highlights__Syntax_ComboBox.Items.Objects[ i ]).Free();
 
   Sql_Editor__Highlights__Syntax_ComboBox.Items.Clear();
+
+
+  FreeAndNil( date_time_picker_example );
 
 end;
 
@@ -956,6 +998,20 @@ begin
     file_ini.WriteBool( 'Options', 'busy_notification__knight_rider_equalizer__disabled', Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked )
   else
     Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked := file_ini.ReadBool( 'Options', 'busy_notification__knight_rider_equalizer__disabled', Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'component__date_time__conventional__date_time__format' )  ) then
+    file_ini.WriteString( 'Options', 'component__date_time__conventional__date_time__format', Component__Date_Time__Conventional__Date_Time__Format_Edit.Text )
+  else
+    Component__Date_Time__Conventional__Date_Time__Format_Edit.Text := file_ini.ReadString( 'Options', 'component__date_time__conventional__date_time__format', Component__Date_Time__Conventional__Date_Time__Format_Edit.Text );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'component__date_time__conventional__use' )  ) then
+    file_ini.WriteBool( 'Options', 'component__date_time__conventional__use', Component__Date_Time__Conventional__Use_CheckBox.Checked )
+  else
+    Component__Date_Time__Conventional__Use_CheckBox.Checked := file_ini.ReadBool( 'Options', 'component__date_time__conventional__use', Component__Date_Time__Conventional__Use_CheckBox.Checked );
 
 
   if   ( save_l )
@@ -1621,6 +1677,32 @@ begin
 
 
   if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__date' )  ) then
+    begin
+
+      zt_string_stream.Clear();
+      zt_string_stream.WriteString( Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit.Text );
+      zt_string_stream.Position := 0;
+
+      file_ini.WriteBinaryStream( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__date', zt_string_stream );
+
+      zt_string_stream.Clear();
+
+    end
+  else
+    begin
+
+      zt_string_stream.Clear();
+
+      file_ini.ReadBinaryStream( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__date', zt_string_stream );
+
+      Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit.Text := zt_string_stream.DataString;
+      zt_string_stream.Clear();
+
+    end;
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__date_time' )  ) then
     begin
 
@@ -1651,6 +1733,32 @@ begin
     file_ini.WriteString( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__decimal', Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text )
   else
     Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text := file_ini.ReadString( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__decimal', Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit.Text );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__time' )  ) then
+    begin
+
+      zt_string_stream.Clear();
+      zt_string_stream.WriteString( Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_Edit.Text );
+      zt_string_stream.Position := 0;
+
+      file_ini.WriteBinaryStream( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__time', zt_string_stream );
+
+      zt_string_stream.Clear();
+
+    end
+  else
+    begin
+
+      zt_string_stream.Clear();
+
+      file_ini.ReadBinaryStream( 'Options', 'table__data_filter__filter__dedicated_value_format__separator__time', zt_string_stream );
+
+      Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_Edit.Text := zt_string_stream.DataString;
+      zt_string_stream.Clear();
+
+    end;
 
 
   if   ( save_l )
@@ -1821,6 +1929,80 @@ begin
 
 end;
 
+procedure TOptions_Form.Component__Date_Time__Conventional__Use_CheckBoxClick( Sender: TObject );
+begin
+
+  if Component__Date_Time__Conventional__Use_CheckBox.Checked then
+    begin
+
+      Component__Date_Time__Conventional__Use__Example__DateTimePicker.Color := clWindow;  // Do not work. //????
+      Component__Date_Time__Conventional__Use__Example__Color_Panel.Color := clWindow;
+
+    end
+  else
+    begin
+
+      Component__Date_Time__Conventional__Use__Example__DateTimePicker.Color := clBtnFace; // Do not work.
+      Component__Date_Time__Conventional__Use__Example__Color_Panel.Color := clBtnFace;
+
+    end;
+
+  Component__Date_Time__Conventional__Date_Time__Format_Edit.Color := Component__Date_Time__Conventional__Use__Example__Color_Panel.Color;
+
+
+  if date_time_picker_example = nil then
+    Exit;
+
+
+  if not Component__Date_Time__Conventional__Use_CheckBox.Checked then
+    date_time_picker_example.Color := clWindow
+  else
+    date_time_picker_example.Color := clBtnFace;
+
+end;
+
+procedure TOptions_Form.Component__Date_Time__Conventional__Use__Example__Mode_RadioGroupClick( Sender: TObject );
+begin
+
+  if date_time_picker_example = nil then
+    Exit;
+
+
+  case Component__Date_Time__Conventional__Use__Example__Mode_RadioGroup.ItemIndex of
+      0 :
+        begin
+
+          Component__Date_Time__Conventional__Use__Example__DateTimePicker.Kind := Vcl.ComCtrls.dtkDate;
+          date_time_picker_example.Kind := Vcl.ComCtrls.dtkDate;
+
+          Component__Date_Time__Conventional__Use__Example__DateTimePicker.Format := '';
+
+        end;
+
+      1 :
+        begin
+
+          Component__Date_Time__Conventional__Use__Example__DateTimePicker.Kind := Vcl.ComCtrls.dtkDateTime;
+          date_time_picker_example.Kind := Vcl.ComCtrls.dtkDateTime;
+
+          Component__Date_Time__Conventional__Use__Example__DateTimePicker.Format :=
+            Component__Date_Time__Conventional__Date_Time__Format_Edit.Text;
+
+        end;
+
+      else
+        begin
+
+          Component__Date_Time__Conventional__Use__Example__DateTimePicker.Kind := Vcl.ComCtrls.dtkTime;
+          date_time_picker_example.Kind := Vcl.ComCtrls.dtkTime;
+
+          Component__Date_Time__Conventional__Use__Example__DateTimePicker.Format := '';
+
+        end;
+    end;
+
+end;
+
 procedure TOptions_Form.File_Path_EditExit( Sender: TObject );
 begin
 
@@ -1878,20 +2060,6 @@ begin
 
 end;
 
-procedure TOptions_Form.Sql_Editor__Font_ButtonClick( Sender: TObject );
-begin
-
-  if FontDialog1.Execute() then
-    begin
-
-      //Common.Font__Set( Sql_Text_Memo.Font, FontDialog1.Font );
-      Common.Font__Set( Sql_Text_SynEdit.Font, FontDialog1.Font );
-      Common.Font__Set( Syn_Editor_Options_CheckListBox.Font, FontDialog1.Font );
-
-    end;
-
-end;
-
 procedure TOptions_Form.Language_ComboBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 var
   language_selected_copy_l : string;
@@ -1928,20 +2096,6 @@ begin
 
 end;
 
-procedure TOptions_Form.Sql_Text_MemoClick( Sender: TObject );
-begin
-
-  Caret_Position_Display();
-
-end;
-
-procedure TOptions_Form.Sql_Text_MemoKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
-begin
-
-  Caret_Position_Display();
-
-end;
-
 procedure TOptions_Form.Syn_Editor_Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 var
   i : integer;
@@ -1962,6 +2116,34 @@ begin
     and ( Shift = [ ssCtrl ] ) then
     for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
       Syn_Editor_Options_CheckListBox.Checked[ i ] := not Syn_Editor_Options_CheckListBox.Checked[ i ];
+
+end;
+
+procedure TOptions_Form.Sql_Editor__Font_ButtonClick( Sender: TObject );
+begin
+
+  if FontDialog1.Execute() then
+    begin
+
+      //Common.Font__Set( Sql_Text_Memo.Font, FontDialog1.Font );
+      Common.Font__Set( Sql_Text_SynEdit.Font, FontDialog1.Font );
+      Common.Font__Set( Syn_Editor_Options_CheckListBox.Font, FontDialog1.Font );
+
+    end;
+
+end;
+
+procedure TOptions_Form.Sql_Text_MemoClick( Sender: TObject );
+begin
+
+  Caret_Position_Display();
+
+end;
+
+procedure TOptions_Form.Sql_Text_MemoKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState );
+begin
+
+  Caret_Position_Display();
 
 end;
 

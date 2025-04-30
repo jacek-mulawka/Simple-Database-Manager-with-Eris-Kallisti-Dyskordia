@@ -464,6 +464,7 @@ type
     buttons_panel__hint,
     case_insensitive,
     case_insensitive__hint,
+    day___month___year___hour___minute___second___milli_second,
     double_click___copy_the_field_name_to_clipboard,
     correct_align,
     correct_align__hint,
@@ -898,6 +899,11 @@ begin
     Translation__Component__Add( 'Basic_TabSheet', 'Basic' );
     Translation__Component__Add( 'Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox', 'Busy notification (''Knight Rider'' equalizer) disabled' );
     Translation__Component__Add( 'Cancel_Button', 'Cancel' );
+    Translation__Component__Add( 'Component_GroupBox', 'Component' );
+    Translation__Component__Add( 'Component__Date_Time_GroupBox', 'Date time' );
+    Translation__Component__Add( 'Component__Date_Time__Conventional__Date_Time__Format_GroupBox', 'Conventional component date time format', 'E.g.:' + #13 + #10 + 'dd.MM.yyyy HH:mm:ss' );
+    Translation__Component__Add( 'Component__Date_Time__Conventional__Use_CheckBox', 'Conventional use', 'Use a conventional component to handling date and time.' + #13 + #10 + 'Supports dates range only: 01.01.1601 - 31.12.9999.' );
+    Translation__Component__Add( 'Component__Date_Time__Conventional__Use__Example__Mode_RadioGroup', 'Example mode', '', 'date;date time;time;' );
     Translation__Component__Add( 'Csv__File_GroupBox', 'Csv file' );
     Translation__Component__Add( 'Csv__File__Data_Separator_GroupBox', 'Data separator', 'Data separator.' );
     Translation__Component__Add( 'Csv__File__Text_Qualifier_GroupBox', 'Text qualifier', 'Text qualifier.' );
@@ -905,13 +911,13 @@ begin
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format_GroupBox', 'Data value format' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Date_GroupBox', 'Date', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy' + #13 + #10 + 'dd-mm-yyyy' + #13 + #10 + 'yyyy-mm-dd' + #13 + #10 + 'yy mmm ddd' + #13 + #10 + 'd dddd mmmm y' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Date__Use_CheckBox', 'Use' );
-    Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Date_Time_GroupBox', 'Date time', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy hh:mm:ss' );
+    Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Date_Time_GroupBox', 'Date time', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy hh:mm:ss.zzz' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Date_Time__Use_CheckBox', 'Use' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Numbers_GroupBox', 'Numbers', 'E.g.:' + #13 + #10 + '### ### ### ### ### ### ##0' + #13 + #10 + '0' + #13 + #10 + '000000' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Numbers__Use_CheckBox', 'Use' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Real_Numbers_GroupBox', 'Real numbers', 'E.g.:' + #13 + #10 + '### ### ### ### ### ### ##0.###' + #13 + #10 + '0.##############' + #13 + #10 + '### ### ##0.### ### ###' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox', 'Use' );
-    Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Time_GroupBox', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' + #13 + #10 + 'hh mm ss.zzz' + #13 + #10 + 'h m s am/pm' + #13 + #10 + 'hh-m a/p' );
+    Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Time_GroupBox', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' + #13 + #10 + 'hh mm ss.z' + #13 + #10 + 'hh mm ss.zzz' + #13 + #10 + 'h m s am/pm' + #13 + #10 + 'hh-m a/p' );
     Translation__Component__Add( 'Data_Presentation__Data_Value_Format__Time__Use_CheckBox', 'Use' );
     Translation__Component__Add( 'Data_Presentation__First_Rows_Etiquette_Label', 'First rows (table data)', 'Display first <value> rows only.' + #13 + #10 + 'Negative value = disabled.' );
     Translation__Component__Add( 'Database__Backup_Restore_TabSheet', 'Database backup / restore' );
@@ -963,7 +969,7 @@ begin
     Translation__Component__Add( 'Sql_Editor__Highlights__Lines__Active__Color_Etiquette_Label', 'Active line' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax_Etiquette_Label', 'Syntax' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax_TabSheet', 'Syntax' );
-    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox', 'All pairs', 'Highlight all selected brackets pairs.' + #13 + #10 + #13 + #10 + 'When a text is long it may work slowly.' );
+    Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__All_Pairs_CheckBox', 'All pairs', 'Highlight all selected brackets pairs.' + #13 + #10 + #13 + #10 + 'When a text is long it may works slowly.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Angle_CheckBox', '< >', 'Highlight angle brackets.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Curly_CheckBox', '{ }', 'Highlight curly brackets.' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Syntax__Brackets__Marked_Only_CheckBox', 'Marked only', 'Highlight only marked brackets.' );
@@ -988,10 +994,12 @@ begin
     Translation__Component__Add( 'Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox', 'Use additional value as default', 'Use dedicated value as default in table data filter.' );
     Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format_GroupBox', 'Filter value format' );
     Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Etiquette_Label', 'Date', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy' );
+    Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_GroupBox', 'Date' );
     Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Time_GroupBox', 'Date time' );
     Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_GroupBox', 'Decimal' );
+    Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_GroupBox', 'Time' );
     Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Separators_GroupBox', 'Separators' );
-    Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Etiquette_Label', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' );
+    Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format__Time_Etiquette_Label', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss.zzz' );
     Translation__Component__Add( 'Table__Data_Filter__Quotation_Sign__Use_CheckBox', 'Quotation sign use', 'Automatically use quotation sign in table data filter e.g. for text fields.' );
     Translation__Component__Add( 'Table__Data_Modify__Editing__Default_State_CheckBox', 'Table data editing default state', 'Data in the tables defaults to edit mode.' );
     Translation__Component__Add( 'Text__Search__History_Save_To_File__Items_Count_Etiquette_Label', 'Saved search and replace history items count' );
@@ -1245,10 +1253,10 @@ begin
     Translation__Component__Add( 'Column__Delete_ToolButton', '', 'Column delete.' + #13 + #10 + #13 + #10 + '[Delete]' );
     Translation__Component__Add( 'Column__Edit_MenuItem', 'Column name edit [Enter]' );
     Translation__Component__Add( 'Column__Edit_ToolButton', '', 'Column name edit.' + #13 + #10 + #13 + #10 + '[Enter]' );
-    Translation__Component__Add( 'Column__Move__Down_MenuItem', 'Column move down' );
-    Translation__Component__Add( 'Column__Move__Down_ToolButton', '', 'Column move down.' );
-    Translation__Component__Add( 'Column__Move__Up_MenuItem', 'Column move up' );
-    Translation__Component__Add( 'Column__Move__Up_ToolButton', '', 'Column move up.' );
+    Translation__Component__Add( 'Column__Move__Down_MenuItem', 'Column move down [Ctrl + Down arrow]' );
+    Translation__Component__Add( 'Column__Move__Down_ToolButton', '', 'Column move down.' + #13 + #10 + #13 + #10 + '[Ctrl + Down arrow]' );
+    Translation__Component__Add( 'Column__Move__Up_MenuItem', 'Column move up [Ctrl + Up arrow]' );
+    Translation__Component__Add( 'Column__Move__Up_ToolButton', '', 'Column move up.' + #13 + #10 + #13 + #10 + '[Ctrl + Up arrow]' );
     Translation__Component__Add( 'Execute_Button', 'Execute', 'Command execute.' );
     Translation__Component__Add( 'Execute_Button_Works_As_Prepare_Execute_CheckBox', 'P + E', 'Execute button works as Prepare + Execute.' );
     Translation__Component__Add( 'Log_TabSheet', 'Log' );
@@ -2075,9 +2083,11 @@ begin
     'Enter - activate all filters' + #13 +
     'Ctrl + D - show column distinct values' + #13 +
     'Ctrl + Enter - deactivate all filters' + #13 +
-    'Ctrl + ?, Ctrl + / - show filter value';
+    'Ctrl + ?, Ctrl + / - show filter value' + #13 +
+    'Ctrl + Shift + A - correct align';
   translation__table__data_filter_r.case_insensitive := 'c.i.';
   translation__table__data_filter_r.case_insensitive__hint := 'Case insensitive.';
+  translation__table__data_filter_r.day___month___year___hour___minute___second___milli_second := 'day - month - year   hour : minute : second . millisecond';
   translation__table__data_filter_r.double_click___copy_the_field_name_to_clipboard := 'Double-click - copy the field name to clipboard.';
   translation__table__data_filter_r.correct_align := 'a';
   translation__table__data_filter_r.correct_align__hint := 'Correct align.';
@@ -2085,16 +2095,19 @@ begin
   translation__table__data_filter_r.disable_filter := 'd.';
   translation__table__data_filter_r.disable_filter__hint := 'Disable filter.';
   translation__table__data_filter_r.field_name_etiquette_label__hint :=
-    'Double-click - copy the field name to clipboard.' + #13 +
-    'Ctrl + + - increase height.' + #13 +
-    'Ctrl + - - decrease height.' + #13 +
-    'Ctrl + Shift + A - correct splitters align.';
+    'Double-click - copy the field name to clipboard' + #13 +
+    'Ctrl + + - increase height' + #13 +
+    'Ctrl + - - decrease height' + #13 +
+    'Ctrl + Shift + A - correct splitters align (all fields)' + #13 +
+    'Ctrl + Shift + Q - correct splitters align (one field)';
   translation__table__data_filter_r.field_value__dedicated__use_check_box__hint :=
     'Use the value of additional components.' + #13 + #13 +
+    '[Ctrl + U]' + #13 + #13 +
     'Enter - activate all filters' + #13 +
     'Ctrl + D - show column distinct values' + #13 +
     'Ctrl + Enter - deactivate all filters' + #13 +
-    'Ctrl + ?, Ctrl + / - show filter value';
+    'Ctrl + ?, Ctrl + / - show filter value' + #13 +
+    'Ctrl + Shift + A - correct align';
   translation__table__data_filter_r.move_left__hint := 'Move left.';
   translation__table__data_filter_r.move_right__hint := 'Move right.';
   translation__table__data_filter_r.parameter_by := 'Parameter by.';

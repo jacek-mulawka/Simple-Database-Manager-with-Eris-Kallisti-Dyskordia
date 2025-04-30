@@ -1,7 +1,5 @@
 unit Table__Data_Filter;{11.Lip.2023}
 
-//{$I Definitions.inc}
-
 interface
 
 uses
@@ -12,6 +10,7 @@ uses
 
   Data.DB,
   System.Classes,
+  System.DateUtils,
   System.SysUtils,
   Winapi.Windows,
   Vcl.Clipbrd,
@@ -20,21 +19,16 @@ uses
   Vcl.ExtCtrls,
   Vcl.Forms,
   Vcl.Graphics,
+  Vcl.Samples.Spin,
   Vcl.StdCtrls,
 
-  {$IFDEF JVCL__use}
-  JvSpin
-  {$ELSE JVCL__use}
-  Vcl.Samples.Spin,
-
-  Interceptor__Spin_Edit
-  {$ENDIF}
-  ;
+  Interceptor__Spin_Edit;
 
 type
   TTable__Data_Filter = class( Vcl.ExtCtrls.TPanel )
   private
     { Private declarations }
+    component__date_time__conventional__use__tdf,
     queries_open_in_background_g,
     sql__quotation_sign__use__tdf
       : boolean;
@@ -62,9 +56,7 @@ type
     operators_combo_box
       : Vcl.StdCtrls.TComboBox;
 
-    field_value__dedicated__1,
-    field_value__dedicated__2
-      : Vcl.Controls.TWinControl;
+    field_value__dedicated : Vcl.Controls.TWinControl;
 
     case_insensitive_check_box,
     field_value__dedicated__use_check_box,
@@ -94,7 +86,7 @@ type
     Filter__Show_wsk : procedure( Sender : TObject ) of object;
     First_Rows__Negate_Value_wsk : procedure() of object;
 
-    constructor Create( parent_f : Vcl.Controls.TWinControl; const database_type_f, table_name_f, sql__quotation_sign__tdf_f : string; const queries_open_in_background_f : boolean; field_f : TField; sdbm_f : Common.TSDBM; log_memo_f : TMemo );
+    constructor Create( parent_f : Vcl.Controls.TWinControl; const database_type_f, table_name_f, sql__quotation_sign__tdf_f : string; const component__date_time__conventional__use_f, queries_open_in_background_f : boolean; field_f : TField; sdbm_f : Common.TSDBM; log_memo_f : TMemo );
     destructor Destroy(); override;
 
     procedure Align_Correct__DTF();
@@ -112,8 +104,10 @@ function Filters_From_Left_To_Right__Get( parent_f : Vcl.Controls.TWinControl ) 
 
 implementation
 
+uses
+  Date_Time_Picker;
 
-constructor TTable__Data_Filter.Create( parent_f : Vcl.Controls.TWinControl; const database_type_f, table_name_f, sql__quotation_sign__tdf_f : string; const queries_open_in_background_f : boolean; field_f : TField; sdbm_f : Common.TSDBM; log_memo_f : TMemo );
+constructor TTable__Data_Filter.Create( parent_f : Vcl.Controls.TWinControl; const database_type_f, table_name_f, sql__quotation_sign__tdf_f : string; const component__date_time__conventional__use_f, queries_open_in_background_f : boolean; field_f : TField; sdbm_f : Common.TSDBM; log_memo_f : TMemo );
 
   function Parent_Has_Filters() : boolean;
   var
@@ -155,21 +149,21 @@ begin
 
   inherited Create( Application );
 
-  database_type__tdf := database_type_f;
-  queries_open_in_background_g := queries_open_in_background_f;
-  table_name__tdf := table_name_f;
 
+  Self.component__date_time__conventional__use__tdf := component__date_time__conventional__use_f;
+  Self.database_type__tdf := database_type_f;
   Self.field_dedicated__data_type := ftUnknown;
   Self.field_name_combo_box := nil;
   Self.field_value__dedicated__use_check_box := nil;
-  Self.field_value__dedicated__1 := nil;
-  Self.field_value__dedicated__2 := nil;
+  Self.field_value__dedicated := nil;
   Self.field_value__universal_edit := nil;
   Self.logical_sign_combo_box := nil;
   Self.operators_combo_box := nil;
+  Self.queries_open_in_background_g := queries_open_in_background_f;
   Self.quotation_sign__use_check_box := nil;
   Self.sql__quotation_sign__tdf := sql__quotation_sign__tdf_f;
   Self.sql__quotation_sign__use__tdf := false;
+  Self.table_name__tdf := table_name_f;
   Self.used__distinguishing_height_g := -1;
 
 
@@ -203,13 +197,13 @@ begin
   {$region 'Add logical signs.'}
   Self.logical_sign_combo_box.Items.Clear();
 
-  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + logical_signs_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + logical_signs_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + logical_signs_list__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + logical_signs_list__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -245,13 +239,13 @@ begin
   zt_sdbm := Common.TSDBM.Create( sdbm_f );
   zt_sdbm.Component_Type_Set( sdbm_f.component_type__sdbm, Common.fire_dac__fetch_options__mode, Common.fire_dac__fetch_options__record_count_mode, Common.fire_dac__fetch_options__rowset_size );
 
-  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + Common.table_columns_list__sql__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + Common.table_columns_list__sql__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + Common.table_columns_list__sql__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + Common.table_columns_list__sql__file_name_c + ').' );
 
       zts := Common.table_columns_list__sql_c;
 
@@ -259,7 +253,7 @@ begin
 
   zt_sdbm.Query__Sql__Set( zts );
 
-  zt_sdbm.Query__Param_By_Name__Set( Common.name__table__small_letters_c, table_name__tdf, log_memo_f );
+  zt_sdbm.Query__Param_By_Name__Set( Common.name__table__small_letters_c, Self.table_name__tdf, log_memo_f );
 
   try
     zt_sdbm.Query__Open();
@@ -335,13 +329,13 @@ begin
   {$region 'Add operators.'}
   Self.operators_combo_box.Items.Clear();
 
-  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + operators_list__file_name_c  );
+  zts := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + operators_list__file_name_c  );
 
   if Trim( zts ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + operators_list__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + operators_list__file_name_c + ').' );
 
       zts :=
         '' + #13 + #10 +
@@ -395,55 +389,91 @@ begin
 
 
   if field_f <> nil then
-    if field_f.DataType in [ ftDate, ftDateTime, ftTime, ftTimeStamp, ftTimeStampOffset, ftOraTimeStamp ] then
+    if field_f.DataType in [ ftDate, ftDateTime, ftTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
       begin
 
         Self.field_dedicated__data_type := ftDate;
         Self.field_value__dedicated__use_check_box.Visible := true;
 
 
-        Self.field_value__dedicated__1 := TDateTimePicker.Create( Application );
-        Self.field_value__dedicated__1.Parent := Self;
-        Self.field_value__dedicated__1.AlignWithMargins := true;
-        Self.field_value__dedicated__1.Align := alBottom;
-        Self.field_value__dedicated__1.Align := alTop; // Do not work well.
-        Self.field_value__dedicated__1.Margins.Bottom := margin_c;
-        Self.field_value__dedicated__1.Margins.Left := margin_c;
-        Self.field_value__dedicated__1.Margins.Right := margin_c;
-        Self.field_value__dedicated__1.Margins.Top := margin_c;
-        TDateTimePicker(Self.field_value__dedicated__1).Kind := Vcl.ComCtrls.dtkDate;
-        TDateTimePicker(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
+        if Self.component__date_time__conventional__use__tdf then
+          Self.field_value__dedicated := Vcl.ComCtrls.TDateTimePicker.Create( Application )
+        else
+          Self.field_value__dedicated := Date_Time_Picker.TDate_Time_Picker.Create( Application );
 
+        Self.field_value__dedicated.Parent := Self;
+        Self.field_value__dedicated.AlignWithMargins := true;
+        Self.field_value__dedicated.Align := alBottom;
+        Self.field_value__dedicated.Align := alTop; // Do not work well.
+        Self.field_value__dedicated.Margins.Bottom := margin_c;
+        Self.field_value__dedicated.Margins.Left := margin_c;
+        Self.field_value__dedicated.Margins.Right := margin_c;
+        Self.field_value__dedicated.Margins.Top := margin_c;
 
-        if Self.field_value__dedicated__1.Height > 10 then
+        if Self.component__date_time__conventional__use__tdf then
           begin
 
-            Self.used__distinguishing_height_g := 10;
+            Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDate;
+            Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).OnKeyDown := filterKeyDown;
 
-            Self.field_value__dedicated__1.Height := Self.field_value__dedicated__1.Height - Self.used__distinguishing_height_g;
+          end
+        else
+          begin
+
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDate;
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).OnKeyDown := filterKeyDown;
+
+            Self.Width := 225;
+
+
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_format.ShortDateFormat := Common.table__data_filter__filter__dedicated_value_format__date;
+            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_format.ShortTimeFormat := Common.table__data_filter__filter__dedicated_value_format__time;
+
+            if Length( Common.table__data_filter__filter__dedicated_value_format__separator__date ) > 0 then
+              Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_format.DateSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__date[ 1 ];
+
+            if Length( Common.table__data_filter__filter__dedicated_value_format__separator__decimal ) > 0 then
+              Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_format.DecimalSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__decimal[ 1 ];
+
+            if Length( Common.table__data_filter__filter__dedicated_value_format__separator__time ) > 0 then
+              Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_format.TimeSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__time[ 1 ];
 
           end;
 
 
-        if field_f.DataType in [ ftDateTime, ftTimeStamp, ftTimeStampOffset, ftOraTimeStamp ] then
+        if    ( Self.component__date_time__conventional__use__tdf )
+          and ( Self.field_value__dedicated.Height > 10 ) then
           begin
 
-            Self.field_value__dedicated__2 := TDateTimePicker.Create( Application );
-            Self.field_value__dedicated__2.Parent := Self.field_value__dedicated__1.Parent;
-            Self.field_value__dedicated__2.AlignWithMargins := Self.field_value__dedicated__1.AlignWithMargins;
-            Self.field_value__dedicated__2.Align := alBottom;
-            Self.field_value__dedicated__2.Align := Self.field_value__dedicated__1.Align; // Do not work well.
-            Self.field_value__dedicated__2.Margins.Bottom := Self.field_value__dedicated__1.Margins.Bottom;
-            Self.field_value__dedicated__2.Margins.Left := Self.field_value__dedicated__1.Margins.Left;
-            Self.field_value__dedicated__2.Margins.Right := Self.field_value__dedicated__1.Margins.Right;
-            Self.field_value__dedicated__2.Margins.Top := Self.field_value__dedicated__1.Margins.Top;
-            TDateTimePicker(Self.field_value__dedicated__2).Kind := Vcl.ComCtrls.dtkTime;
-            TDateTimePicker(Self.field_value__dedicated__2).OnKeyDown := filterKeyDown;
+            Self.used__distinguishing_height_g := 10;
+
+            Self.field_value__dedicated.Height := Self.field_value__dedicated.Height - Self.used__distinguishing_height_g;
+
+          end;
 
 
-            if    ( Self.used__distinguishing_height_g > 0 )
-              and ( Self.field_value__dedicated__2.Height > Self.used__distinguishing_height_g ) then
-              Self.field_value__dedicated__2.Height := Self.field_value__dedicated__2.Height - Self.used__distinguishing_height_g;
+        if field_f.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
+          begin
+
+            Self.field_dedicated__data_type := ftDateTime;
+
+            if Self.component__date_time__conventional__use__tdf then
+              begin
+
+                Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDateTime;
+
+                Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Format :=
+                  Common.component__date_time__conventional__date_time__format;
+
+              end
+            else
+              begin
+
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkDateTime;
+
+                Self.Width := 395;
+
+              end;
 
           end
         else
@@ -452,7 +482,16 @@ begin
 
             Self.field_dedicated__data_type := ftTime;
 
-            TDateTimePicker(Self.field_value__dedicated__1).Kind := Vcl.ComCtrls.dtkTime;
+            if Self.component__date_time__conventional__use__tdf then
+              Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkTime
+            else
+              begin
+
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind := Vcl.ComCtrls.dtkTime;
+
+                Self.Width := 205;
+
+              end;
 
           end;
 
@@ -467,50 +506,27 @@ begin
 
         Self.field_dedicated__data_type := ftInteger;
         Self.field_value__dedicated__use_check_box.Visible := true;
+        Self.field_value__dedicated := Interceptor__Spin_Edit.TSpinEdit.Create( Application );
+        Self.field_value__dedicated.Parent := Self;
 
-
-        {$IFDEF JVCL__use}
-        Self.field_value__dedicated__1 := JvSpin.TJvSpinEdit.Create( Application );
-        JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Thousands := true;
-        {$ELSE JVCL__use}
-        Self.field_value__dedicated__1 := Interceptor__Spin_Edit.TSpinEdit.Create( Application );
-        {$ENDIF}
-        Self.field_value__dedicated__1.Parent := Self;
 
         if field_f.DataType in [ ftBCD, ftCurrency, ftExtended, ftFloat, ftFMTBcd, ftSingle, ftVarBytes ] then
           begin
 
-            {$IFDEF JVCL__use}
-            JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).ValueType := JvSpin.vtFloat;
-            JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Decimal := field_f.Size;
-            {$ELSE JVCL__use}
-            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).value_type_float := true;
-            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value := 0; // To call Interceptor__Spin_Edit.TSpinEdit.SetValue() and set display format.
-            {$ENDIF}
-
-          end
-        else
-          begin
-
-            {$IFDEF JVCL__use}
-            JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).ValueType := JvSpin.vtInteger;
-            {$ENDIF}
+            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value_Type_Float := true;
+            Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Decimal := field_f.Size;
 
           end;
 
 
-        Self.field_value__dedicated__1.AlignWithMargins := true;
-        Self.field_value__dedicated__1.Align := alBottom;
-        Self.field_value__dedicated__1.Align := alTop; // Do not work well.
-        Self.field_value__dedicated__1.Margins.Bottom := margin_c;
-        Self.field_value__dedicated__1.Margins.Left := margin_c * 2;
-        Self.field_value__dedicated__1.Margins.Right := margin_c * 2;
-        Self.field_value__dedicated__1.Margins.Top := margin_c;
-        {$IFDEF JVCL__use}
-        JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
-        {$ELSE JVCL__use}
-        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).OnKeyDown := filterKeyDown;
-        {$ENDIF}
+        Self.field_value__dedicated.AlignWithMargins := true;
+        Self.field_value__dedicated.Align := alBottom;
+        Self.field_value__dedicated.Align := alTop; // Do not work well.
+        Self.field_value__dedicated.Margins.Bottom := margin_c;
+        Self.field_value__dedicated.Margins.Left := margin_c * 2;
+        Self.field_value__dedicated.Margins.Right := margin_c * 2;
+        Self.field_value__dedicated.Margins.Top := margin_c;
+        Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).OnKeyDown := filterKeyDown;
 
       end
     else
@@ -524,7 +540,7 @@ begin
     //  begin
     //
     //    Self.field_dedicated__data_type := ftUnknown;
-    //    Self.field_value__dedicated__1 := nil;
+    //    Self.field_value__dedicated := nil;
     //
     //  end;
 
@@ -623,13 +639,13 @@ begin
     Self.used__distinguishing_height_g := 0;
 
 
-  sql__case_insensitive__tdf := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + case_insensitive__file_name_c  );
+  sql__case_insensitive__tdf := Common.Text__File_Load(  Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + case_insensitive__file_name_c  );
 
   if Trim( sql__case_insensitive__tdf ) = '' then
     begin
 
       if log_memo_f <> nil then
-        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( database_type__tdf ) + case_insensitive__file_name_c + ').' );
+        log_memo_f.Lines.Add( Translation.translation__messages_r.file_not_found___default_value_used + ' (' + Common.Databases_Type__Directory_Path__Get( Self.database_type__tdf ) + case_insensitive__file_name_c + ').' );
 
       sql__case_insensitive__tdf :=
         'lower(__COLUMN_NAME__)';
@@ -683,23 +699,19 @@ begin
   FreeAndNil( Self.logical_sign_combo_box );
   FreeAndNil( Self.operators_combo_box );
 
-  if Self.field_value__dedicated__1 <> nil then
-    if Self.field_dedicated__data_type in [ ftDate, ftTime ] then
+  if Self.field_value__dedicated <> nil then
+    if Self.field_dedicated__data_type in [ ftDate, ftDateTime, ftTime ] then
       begin
 
-        FreeAndNil( TDateTimePicker(Self.field_value__dedicated__1) );
-
-        if Self.field_value__dedicated__2 <> nil then
-          FreeAndNil( TDateTimePicker(Self.field_value__dedicated__2) );
+        if Self.component__date_time__conventional__use__tdf then
+          FreeAndNil( Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated) )
+        else
+          FreeAndNil( Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated) );
 
       end
     else
     if Self.field_dedicated__data_type = ftInteger then
-      {$IFDEF JVCL__use}
-      FreeAndNil( JvSpin.TJvSpinEdit(Self.field_value__dedicated__1) );
-      {$ELSE JVCL__use}
-      FreeAndNil( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1) );
-      {$ENDIF}
+      FreeAndNil( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated) );
 
 
   FreeAndNil( Self.align_correct_button );
@@ -741,12 +753,12 @@ end;
 
 procedure TTable__Data_Filter.field_value__dedicated__use_check_boxClick( Sender: TObject );
 
-  procedure Color_Set( const active_f : boolean; field_value__dedicated__f : Vcl.Controls.TWinControl );
+  procedure Color_Set( const active_f : boolean; field_value__f : Vcl.Controls.TWinControl );
   var
     zt_color_l : TColor;
   begin
 
-    if field_value__dedicated__f = nil then
+    if field_value__f = nil then
       Exit;
 
 
@@ -756,26 +768,29 @@ procedure TTable__Data_Filter.field_value__dedicated__use_check_boxClick( Sender
       zt_color_l := clBtnFace;
 
 
-    if Self.field_dedicated__data_type in [ ftDate, ftTime ] then
+    if Self.field_dedicated__data_type in [ ftDate, ftDateTime, ftTime ] then
       begin
 
-        TDateTimePicker(field_value__dedicated__f).Color := zt_color_l; // Do not work. //????
+        if Self.component__date_time__conventional__use__tdf then
+          begin
 
-        if active_f then
-          TDateTimePicker(field_value__dedicated__f).Height := TDateTimePicker(field_value__dedicated__f).Height + Self.used__distinguishing_height_g
+            Vcl.ComCtrls.TDateTimePicker(field_value__f).Color := zt_color_l; // Do not work.
+
+            if active_f then
+              Vcl.ComCtrls.TDateTimePicker(field_value__f).Height := Vcl.ComCtrls.TDateTimePicker(field_value__f).Height + Self.used__distinguishing_height_g
+            else
+              Vcl.ComCtrls.TDateTimePicker(field_value__f).Height := Vcl.ComCtrls.TDateTimePicker(field_value__f).Height - Self.used__distinguishing_height_g;
+
+          end
         else
-          TDateTimePicker(field_value__dedicated__f).Height := TDateTimePicker(field_value__dedicated__f).Height - Self.used__distinguishing_height_g;
+          Date_Time_Picker.TDate_Time_Picker(field_value__f).Color := zt_color_l;
 
       end
     else
     if Self.field_dedicated__data_type = ftInteger then
       begin
 
-        {$IFDEF JVCL__use}
-        JvSpin.TJvSpinEdit(field_value__dedicated__f).Color := zt_color_l;
-        {$ELSE JVCL__use}
-        Interceptor__Spin_Edit.TSpinEdit(field_value__dedicated__f).Color := zt_color_l;
-        {$ENDIF}
+        Interceptor__Spin_Edit.TSpinEdit(field_value__f).Color := zt_color_l;
 
       end;
 
@@ -803,15 +818,9 @@ begin
 
 
   if    ( Self.field_value__dedicated__use_check_box <> nil )
-    and ( Self.field_value__dedicated__1 <> nil )
+    and ( Self.field_value__dedicated <> nil )
     and ( Self.field_value__dedicated__use_check_box.Visible ) then
-    Color_Set( Self.field_value__dedicated__use_check_box.Checked, Self.field_value__dedicated__1 );
-
-
-  if    ( Self.field_value__dedicated__use_check_box <> nil )
-    and ( Self.field_value__dedicated__2 <> nil )
-    and ( Self.field_value__dedicated__use_check_box.Visible ) then
-    Color_Set( Self.field_value__dedicated__use_check_box.Checked, Self.field_value__dedicated__2 );
+    Color_Set( Self.field_value__dedicated__use_check_box.Checked, Self.field_value__dedicated );
 
 end;
 
@@ -833,7 +842,11 @@ procedure TTable__Data_Filter.filterKeyDown( Sender: TObject; var Key: Word; Shi
 var
   i : integer;
 
+  ztdt : TDateTime;
+
   zts : string;
+
+  date_format : TFormatSettings;
 
   table_column__values_distinct_form_l : Table_Column__Values_Distinct.TTable_Column__Values_Distinct_Form;
 begin
@@ -873,20 +886,49 @@ begin
           Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
       end
     else
-    if Sender is TDateTimePicker then
-      try
+    if    ( Self.component__date_time__conventional__use__tdf )
+      and ( Sender is Vcl.ComCtrls.TDateTimePicker ) then
+      begin
 
-        if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
-          Vcl.Clipbrd.Clipboard.AsText := DateTimeToStr( TDateTimePicker(Sender).DateTime )
-        else
-        if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
-          Vcl.Clipbrd.Clipboard.AsText := TimeToStr( TDateTimePicker(Sender).Time )
-        else
-          Vcl.Clipbrd.Clipboard.AsText := DateToStr( TDateTimePicker(Sender).Date );
+        try
+          if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + Common.table__data_filter__filter__dedicated_value_format__time, Vcl.ComCtrls.TDateTimePicker(Sender).DateTime )
+          else
+          if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__time, Vcl.ComCtrls.TDateTimePicker(Sender).Time )
+          else
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date, Vcl.ComCtrls.TDateTimePicker(Sender).Date );
 
-      except
-        on E : Exception do
-          Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+          Vcl.Clipbrd.Clipboard.AsText := zts;
+        except
+          on E : Exception do
+            Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+        end;
+
+      end
+    else
+    if    ( not Self.component__date_time__conventional__use__tdf )
+      and ( Sender is Interceptor__Spin_Edit.TSpinEdit )
+      and ( Interceptor__Spin_Edit.TSpinEdit(Sender).Parent <> nil )
+      and ( Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent <> nil )
+      and ( Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent is Date_Time_Picker.TDate_Time_Picker ) then
+      begin
+
+        try
+          if Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Kind = Vcl.ComCtrls.dtkDateTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + Common.table__data_filter__filter__dedicated_value_format__time, Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Date_Time )
+          else
+          if Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Kind = Vcl.ComCtrls.dtkTime then
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__time, Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Time )
+          else
+            DateTimeToString( zts, Common.table__data_filter__filter__dedicated_value_format__date, Date_Time_Picker.TDate_Time_Picker(Interceptor__Spin_Edit.TSpinEdit(Sender).Parent.Parent).Date );
+
+          Vcl.Clipbrd.Clipboard.AsText := zts;
+        except
+          on E : Exception do
+            Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_copy_value_to_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
+        end;
+
       end;
 
   end
@@ -901,11 +943,11 @@ begin
       {$region 'Column distinct values.'}
       table_column__values_distinct_form_l := Table_Column__Values_Distinct.TTable_Column__Values_Distinct_Form.Create( Application, table__data_filter__table_column__values_distinct_sdbm );
       table_column__values_distinct_form_l.column_name__tcvd := Self.field_name_combo_box.Text;
-      table_column__values_distinct_form_l.database_type__tcvd := database_type__tdf;
+      table_column__values_distinct_form_l.database_type__tcvd := Self.database_type__tdf;
       table_column__values_distinct_form_l.sql__quotation_sign__tcvd := sql__quotation_sign__tdf;
       table_column__values_distinct_form_l.sql__quotation_sign__use__tcvd := sql__quotation_sign__use__tdf;
-      table_column__values_distinct_form_l.table_name__tcvd := table_name__tdf;
-      table_column__values_distinct_form_l.queries_open_in_background_g := queries_open_in_background_g;
+      table_column__values_distinct_form_l.table_name__tcvd := Self.table_name__tdf;
+      table_column__values_distinct_form_l.queries_open_in_background__tcvd := Self.queries_open_in_background_g;
 
       if table_column__values_distinct_form_l.ShowModal() = mrOk then
         begin
@@ -915,54 +957,39 @@ begin
 
 
           if    ( Self.field_dedicated__data_type = ftDate )
-            and ( Self.field_value__dedicated__1 <> nil ) then
+            and ( Self.field_value__dedicated <> nil ) then
             begin
 
               zts := Trim( table_column__values_distinct_form_l.value_selected__tcvd );
 
-              for i := Length( zts ) downto 1 do
-                if zts[ i ] = ' ' then
-                  begin
-
-                    zts := Trim(  Copy( zts, 1, i )  );
-                    Break;
-
-                  end;
-
               try
-                TDateTimePicker(Self.field_value__dedicated__1).Date := StrToDate( zts );
+                if Self.component__date_time__conventional__use__tdf then
+                  Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Date := StrToDate( zts )
+                else
+                  Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date := StrToDate( zts );
               except
               end;
 
+            end
+          else
+          if    ( Self.field_dedicated__data_type = ftDateTime )
+            and ( Self.field_value__dedicated <> nil ) then
+            begin
 
-              if Self.field_value__dedicated__2 <> nil then
-                begin
+              zts := Trim( table_column__values_distinct_form_l.value_selected__tcvd );
 
-                  zts := Trim( table_column__values_distinct_form_l.value_selected__tcvd );
-
-                  for i := Length( zts ) downto 1 do
-                    if zts[ i ] = ' ' then
-                      begin
-
-                        zts := Trim(   Copy(  zts, i, Length( zts )  )   );
-                        Break;
-
-                      end;
-
-                  zts := StringReplace( zts, ' ', '', [ rfReplaceAll ] );
-
-                  try
-                    TDateTimePicker(Self.field_value__dedicated__2).Time := StrToTime( zts );
-                  except
-                    TDateTimePicker(Self.field_value__dedicated__2).Time := 0;
-                  end;
-
-                end;
+              try
+                if Self.component__date_time__conventional__use__tdf then
+                  Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).DateTime := StrToDateTime( zts )
+                else
+                  Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time := StrToDateTime( zts );
+              except
+              end;
 
             end
           else
           if    ( Self.field_dedicated__data_type = ftInteger )
-            and ( Self.field_value__dedicated__1 <> nil ) then
+            and ( Self.field_value__dedicated <> nil ) then
             begin
 
               zts := Trim( table_column__values_distinct_form_l.value_selected__tcvd );
@@ -970,30 +997,25 @@ begin
               zts := StringReplace( zts, '.', ',', [ rfReplaceAll ] ) ;
 
               try
-                {$IFDEF JVCL__use}
-                JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value := StrToFloat( zts );
-                {$ELSE JVCL__use}
-                Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value := StrToFloat( zts );
-                {$ENDIF}
+                Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value := StrToFloat( zts );
               except
-                {$IFDEF JVCL__use}
-                JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value := 0;
-                {$ELSE JVCL__use}
-                Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value := 0;
-                {$ENDIF}
+                Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value := 0;
               end;
 
             end
           else
           if    ( Self.field_dedicated__data_type = ftTime )
-            and ( Self.field_value__dedicated__1 <> nil ) then
+            and ( Self.field_value__dedicated <> nil ) then
             begin
 
               zts := Trim( table_column__values_distinct_form_l.value_selected__tcvd );
               zts := StringReplace( zts, ' ', '', [ rfReplaceAll ] );
 
               try
-                TDateTimePicker(Self.field_value__dedicated__1).Time := StrToTime( zts );
+                if Self.component__date_time__conventional__use__tdf then
+                  Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Time := StrToTime( zts )
+                else
+                  Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time := StrToTime( zts );
               except
               end;
 
@@ -1012,6 +1034,27 @@ begin
     and ( @First_Rows__Negate_Value_wsk <> nil ) then
     First_Rows__Negate_Value_wsk()
   else
+  // U.
+  if    ( Key = 85 )
+    and ( Shift = [ ssCtrl ] )
+    and ( Self <> nil )
+    and ( Self.field_value__dedicated__use_check_box <> nil )
+    and ( Self.field_value__dedicated__use_check_box.Visible ) then
+    begin
+
+      Self.field_value__dedicated__use_check_box.Checked := not Self.field_value__dedicated__use_check_box.Checked;
+
+
+      if    ( Self.field_value__universal_edit <> nil )
+        and ( not Self.field_value__dedicated__use_check_box.Checked ) then
+        Self.field_value__universal_edit.SetFocus()
+      else
+      if    ( Self.field_value__dedicated <> nil )
+        and ( Self.field_value__dedicated__use_check_box.Checked ) then
+        Self.field_value__dedicated.SetFocus();
+
+    end
+  else
   // V.
   if    ( Key = 86 )
     and ( Shift = [ ssCtrl ] )
@@ -1019,27 +1062,46 @@ begin
   begin
 
     try
-      //{$IFDEF JVCL__use}
-      //if Sender is JvSpin.TJvSpinEdit then
-      //  JvSpin.TJvSpinEdit(Sender).Value := StrToFloat( Vcl.Clipbrd.Clipboard.AsText ) // Do not work well.
-      //{$ELSE JVCL__use}
       //if Sender is Interceptor__Spin_Edit.TSpinEdit then
       //  StrToFloat( Vcl.Clipbrd.Clipboard.AsText ) // Do not work well.
       //{$ENDIF}
       //else
-      if Sender is TDateTimePicker then
-        begin
+      //  begin
 
-          if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
-            TDateTimePicker(Sender).DateTime := StrToDateTime( Vcl.Clipbrd.Clipboard.AsText )
-          else
-          if TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
-            TDateTimePicker(Sender).Time := StrToTime( Vcl.Clipbrd.Clipboard.AsText )
-          else
-            TDateTimePicker(Sender).Date  := StrToDate( Vcl.Clipbrd.Clipboard.AsText );
+          if Self.component__date_time__conventional__use__tdf then
+            begin
 
-        end;
+              date_format.ShortDateFormat := Common.table__data_filter__filter__dedicated_value_format__date;
+              date_format.ShortTimeFormat := Common.table__data_filter__filter__dedicated_value_format__time;
 
+              if Length( Common.table__data_filter__filter__dedicated_value_format__separator__date ) > 0 then
+                date_format.DateSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__date[ 1 ];
+
+              if Length( Common.table__data_filter__filter__dedicated_value_format__separator__decimal ) > 0 then
+                date_format.DecimalSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__decimal[ 1 ];
+
+              if Length( Common.table__data_filter__filter__dedicated_value_format__separator__time ) > 0 then
+                date_format.TimeSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__time[ 1 ];
+
+              ztdt := StrToDateTime( Vcl.Clipbrd.Clipboard.AsText, date_format );
+
+
+              if Sender is Vcl.ComCtrls.TDateTimePicker then
+                begin
+
+                  if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkDateTime then
+                    Vcl.ComCtrls.TDateTimePicker(Sender).DateTime := ztdt
+                  else
+                  if Vcl.ComCtrls.TDateTimePicker(Sender).Kind = Vcl.ComCtrls.dtkTime then
+                    Vcl.ComCtrls.TDateTimePicker(Sender).Time := System.DateUtils.TimeOf( ztdt )
+                  else
+                    Vcl.ComCtrls.TDateTimePicker(Sender).Date := System.DateUtils.DateOf( ztdt );
+
+                end;
+
+            end;
+
+      //  end;
     except
       on E : Exception do
         Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_paste_value_from_clipboard + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
@@ -1073,11 +1135,8 @@ begin
   if Self.field_value__dedicated__use_check_box <> nil then
     Self.field_value__dedicated__use_check_box.Align := alBottom;
 
-  if Self.field_value__dedicated__1 <> nil then
-    Self.field_value__dedicated__1.Align := alBottom;
-
-  if Self.field_value__dedicated__2 <> nil then
-    Self.field_value__dedicated__2.Align := alBottom;
+  if Self.field_value__dedicated <> nil then
+    Self.field_value__dedicated.Align := alBottom;
 
   if Self.buttons_panel <> nil then
     Self.buttons_panel.Align := alBottom;
@@ -1099,11 +1158,8 @@ begin
   if Self.field_value__dedicated__use_check_box <> nil then
     Self.field_value__dedicated__use_check_box.Align := alTop;
 
-  if Self.field_value__dedicated__1 <> nil then
-    Self.field_value__dedicated__1.Align := alTop;
-
-  if Self.field_value__dedicated__2 <> nil then
-    Self.field_value__dedicated__2.Align := alTop;
+  if Self.field_value__dedicated <> nil then
+    Self.field_value__dedicated.Align := alTop;
 
   if Self.buttons_panel <> nil then
     Self.buttons_panel.Align := alTop;
@@ -1137,7 +1193,7 @@ begin
     and (  Trim( Self.field_name_combo_box.Text ) <> ''  ) then
     begin
 
-      zts_1 := ' ' + Self.Quotation_Sign__TDF() + table_name__tdf + Self.Quotation_Sign__TDF() + Common.sql__names_separator + Self.Quotation_Sign__TDF() + Self.field_name_combo_box.Text + Self.Quotation_Sign__TDF() + ' ';
+      zts_1 := ' ' + Self.Quotation_Sign__TDF() + Self.table_name__tdf + Self.Quotation_Sign__TDF() + Common.sql__names_separator + Self.Quotation_Sign__TDF() + Self.field_name_combo_box.Text + Self.Quotation_Sign__TDF() + ' ';
 
       if Self.case_insensitive_check_box.Checked then
         zts_1 := StringReplace( sql__case_insensitive__tdf, Common.sql__word_replace_separator_c + Common.name__column__big_letters_c + Common.sql__word_replace_separator_c, zts_1, [ rfReplaceAll ] );
@@ -1152,7 +1208,7 @@ begin
 
   if    ( Self.field_value__dedicated__use_check_box <> nil )
     and ( Self.field_value__dedicated__use_check_box.Checked )
-    and ( Self.field_value__dedicated__1 <> nil ) then
+    and ( Self.field_value__dedicated <> nil ) then
     begin
 
       zts_1 := '0';
@@ -1161,17 +1217,22 @@ begin
       if Self.field_dedicated__data_type = ftDate then
         begin
 
-          DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__date, TDateTimePicker(Self.field_value__dedicated__1).Date );
+          if Self.component__date_time__conventional__use__tdf then
+            DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__date, Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Date )
+          else
+            DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__date, Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date );
+  
+          zts_1 := Common.sql__text_separator + zts_1 + Common.sql__text_separator;
 
+        end
+      else
+      if Self.field_dedicated__data_type = ftDateTime then
+        begin
 
-          if Self.field_value__dedicated__2 <> nil then
-            begin
-
-              DateTimeToString( zts_2, Common.table__data_filter__filter__dedicated_value_format__time, TDateTimePicker(Self.field_value__dedicated__2).Time );
-
-              zts_1 := zts_1 + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + zts_2;
-
-            end;
+          if Self.component__date_time__conventional__use__tdf then
+            DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__date + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + Common.table__data_filter__filter__dedicated_value_format__time, Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).DateTime )
+          else
+            DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__date + Common.table__data_filter__filter__dedicated_value_format__separator__date_time + Common.table__data_filter__filter__dedicated_value_format__time, Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time );
 
           zts_1 := Common.sql__text_separator + zts_1 + Common.sql__text_separator;
 
@@ -1180,14 +1241,8 @@ begin
       if Self.field_dedicated__data_type = ftInteger then
         begin
 
-          {$IFDEF JVCL__use}
-          zts_2 := FloatToStr( JvSpin.TJvSpinEdit(Self.field_value__dedicated__1).Value );
-          {$ELSE JVCL__use}
-          zts_2 := FloatToStr( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated__1).Value );
-          {$ENDIF}
-
+          zts_2 := FloatToStr( Interceptor__Spin_Edit.TSpinEdit(Self.field_value__dedicated).Value );
           zts_2 := StringReplace( zts_2, ' ', '', [ rfReplaceAll ] );
-
 
           zts_1 := '';
 
@@ -1208,7 +1263,6 @@ begin
               zts_1 := zts_1 + Common.table__data_filter__filter__dedicated_value_format__separator__decimal;
             end;
 
-
           zts_1 := StringReplace( zts_1, ',', '.', [ rfReplaceAll ] );
 
         end
@@ -1216,7 +1270,11 @@ begin
       if Self.field_dedicated__data_type = ftTime then
         begin
 
-          DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__time, TDateTimePicker(Self.field_value__dedicated__1).Time );
+          if Self.component__date_time__conventional__use__tdf then
+            DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__time, Vcl.ComCtrls.TDateTimePicker(Self.field_value__dedicated).Time )
+          else
+            DateTimeToString( zts_1, Common.table__data_filter__filter__dedicated_value_format__time, Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time );
+
           zts_1 := Common.sql__text_separator + zts_1 + Common.sql__text_separator;
 
         end;
@@ -1415,6 +1473,21 @@ begin
 
       Self.quotation_sign__use_check_box.Caption := Translation.translation__table__data_filter_r.automatically_use_quotation_sign;
       Self.quotation_sign__use_check_box.Hint := Translation.translation__table__data_filter_r.automatically_use_quotation_sign__hint;
+
+    end;
+
+
+  if    ( not Self.component__date_time__conventional__use__tdf )
+    and ( Self.field_dedicated__data_type in [ ftDate, ftDateTime, ftTime ] )
+    and ( Self.field_value__dedicated <> nil )
+    and ( Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker ) then
+    begin
+
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).date_time__format__hint__translation := Translation.translation__table__data_filter_r.day___month___year___hour___minute___second___milli_second;
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).failed_to_paste_value_from_clipboard__translation := Translation.translation__messages_r.failed_to_paste_value_from_clipboard;
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).error__translation := Translation.translation__messages_r.error;
+
+      Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Translation__Apply__DTP();
 
     end;
 

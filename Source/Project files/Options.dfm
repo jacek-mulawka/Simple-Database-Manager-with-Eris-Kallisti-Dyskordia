@@ -100,7 +100,7 @@ object Options_Form: TOptions_Form
     Margins.Top = 5
     Margins.Right = 10
     Margins.Bottom = 5
-    ActivePage = Basic_TabSheet
+    ActivePage = Table__Data_Filter_TabSheet
     Align = alClient
     TabOrder = 0
     object Basic_TabSheet: TTabSheet
@@ -118,7 +118,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'Form view - show additional components'
         TabOrder = 2
-        ExplicitTop = 32
       end
       object Queries_Open_In_Background_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -133,7 +132,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'Queries (some) open in the background'
         TabOrder = 4
-        ExplicitTop = 109
       end
       object System_Tables_Visible_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -148,7 +146,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'System tables, roles visible'
         TabOrder = 10
-        ExplicitTop = 420
       end
       object Splitter_Show_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -163,7 +160,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'Show splitters (e.g. form view, stored procedure parameters)'
         TabOrder = 5
-        ExplicitTop = 136
       end
       object Sql__Quotation_Sign__Use_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -178,7 +174,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL quotation sign use'
         TabOrder = 9
-        ExplicitTop = 393
       end
       object Sql__Command_Separator_GroupBox: TGroupBox
         AlignWithMargins = True
@@ -193,7 +188,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL command separator'
         TabOrder = 6
-        ExplicitTop = 163
         object Sql__Command_Separator_Edit: TEdit
           AlignWithMargins = True
           Left = 7
@@ -222,7 +216,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL external function parameter separator'
         TabOrder = 7
-        ExplicitTop = 213
         object Sql__External_Function__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
@@ -246,7 +239,6 @@ object Options_Form: TOptions_Form
         Align = alTop
         Caption = 'SQL view parameter separator'
         TabOrder = 8
-        ExplicitTop = 303
         object Sql__View__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
@@ -273,7 +265,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = True
         TabOrder = 11
-        ExplicitTop = 447
       end
       object Log__Auto_Scroll__GroupBox: TGroupBox
         AlignWithMargins = True
@@ -293,7 +284,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = True
         TabOrder = 3
-        ExplicitTop = 59
         DesignSize = (
           836
           40)
@@ -326,7 +316,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 12
-        ExplicitTop = 474
       end
       object Database__Modify__Window__Maximized_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -343,7 +332,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 1
-        ExplicitTop = 5
       end
       object Busy_Notification__Knight_Rider_Equalizer__Disabled_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -360,7 +348,6 @@ object Options_Form: TOptions_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 0
-        ExplicitLeft = 17
       end
     end
     object Data_Presentation_TabSheet: TTabSheet
@@ -402,7 +389,7 @@ object Options_Form: TOptions_Form
           Top = 202
           Width = 812
           Height = 40
-          Hint = 'E.g.:'#13#10'hh:mm:ss'#13#10'hh mm ss.zzz'#13#10'h m s am/pm'#13#10'hh-m a/p'
+          Hint = 'E.g.:'#13#10'hh:mm:ss'#13#10'hh mm ss.z'#13#10'hh mm ss.zzz'#13#10'h m s am/pm'#13#10'hh-m a/p'
           Margins.Left = 10
           Margins.Top = 5
           Margins.Right = 10
@@ -484,7 +471,7 @@ object Options_Form: TOptions_Form
           Top = 67
           Width = 812
           Height = 40
-          Hint = 'E.g.:'#13#10'dd.mm.yyyy hh:mm:ss'
+          Hint = 'E.g.:'#13#10'dd.mm.yyyy hh:mm:ss.zzz'
           Margins.Left = 10
           Margins.Top = 5
           Margins.Right = 10
@@ -1955,7 +1942,7 @@ object Options_Form: TOptions_Form
       object Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 216
+        Top = 366
         Width = 836
         Height = 17
         Hint = 'Use additional value as default in table data filter.'
@@ -1967,12 +1954,12 @@ object Options_Form: TOptions_Form
         Caption = 'Use additional value as default'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 3
+        TabOrder = 4
       end
       object Table__Data_Filter__Quotation_Sign__Use_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 189
+        Top = 339
         Width = 836
         Height = 17
         Hint = 
@@ -1986,21 +1973,21 @@ object Options_Form: TOptions_Form
         Caption = 'Quotation sign use'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 2
+        TabOrder = 3
       end
       object Table__Data_Filter__Filter__Dedicated_Value_Format_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
-        Top = 5
+        Top = 155
         Width = 836
         Height = 110
         Margins.Left = 10
-        Margins.Top = 5
+        Margins.Top = 0
         Margins.Right = 10
         Margins.Bottom = 5
         Align = alTop
         Caption = 'Filter value format'
-        TabOrder = 0
+        TabOrder = 1
         object Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Etiquette_Label: TLabel
           AlignWithMargins = True
           Left = 12
@@ -2024,7 +2011,7 @@ object Options_Form: TOptions_Form
           Top = 65
           Width = 812
           Height = 15
-          Hint = 'E.g.:'#13#10'hh:mm:ss'
+          Hint = 'E.g.:'#13#10'hh:mm:ss.zzz'
           Margins.Left = 10
           Margins.Top = 5
           Margins.Right = 10
@@ -2065,7 +2052,7 @@ object Options_Form: TOptions_Form
       object Table__Data_Filter__Filter__Dedicated_Value_Format__Separators_GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
-        Top = 120
+        Top = 270
         Width = 836
         Height = 59
         Margins.Left = 10
@@ -2074,25 +2061,27 @@ object Options_Form: TOptions_Form
         Margins.Bottom = 5
         Align = alTop
         Caption = 'Separators'
-        TabOrder = 1
+        TabOrder = 2
         object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_GroupBox: TGroupBox
           AlignWithMargins = True
-          Left = 754
+          Left = 202
           Top = 17
-          Width = 80
+          Width = 100
           Height = 40
           Margins.Left = 0
           Margins.Top = 0
           Margins.Right = 0
           Margins.Bottom = 0
-          Align = alRight
+          Align = alLeft
           Caption = 'Decimal'
-          TabOrder = 1
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 2
           object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Decimal_Edit: TEdit
             AlignWithMargins = True
             Left = 7
             Top = 17
-            Width = 66
+            Width = 86
             Height = 21
             Margins.Left = 5
             Margins.Top = 0
@@ -2105,22 +2094,24 @@ object Options_Form: TOptions_Form
         end
         object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Time_GroupBox: TGroupBox
           AlignWithMargins = True
-          Left = 2
+          Left = 102
           Top = 17
-          Width = 752
+          Width = 100
           Height = 40
           Margins.Left = 0
           Margins.Top = 0
           Margins.Right = 0
           Margins.Bottom = 0
-          Align = alClient
+          Align = alLeft
           Caption = 'Date time'
-          TabOrder = 0
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
           object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Time_Edit: TEdit
             AlignWithMargins = True
             Left = 7
             Top = 17
-            Width = 738
+            Width = 86
             Height = 21
             Margins.Left = 5
             Margins.Top = 0
@@ -2129,6 +2120,191 @@ object Options_Form: TOptions_Form
             Align = alClient
             TabOrder = 0
             ExplicitHeight = 23
+          end
+        end
+        object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_GroupBox: TGroupBox
+          AlignWithMargins = True
+          Left = 2
+          Top = 17
+          Width = 100
+          Height = 40
+          Margins.Left = 0
+          Margins.Top = 0
+          Margins.Right = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          Caption = 'Date'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit: TEdit
+            AlignWithMargins = True
+            Left = 7
+            Top = 17
+            Width = 86
+            Height = 21
+            Margins.Left = 5
+            Margins.Top = 0
+            Margins.Right = 5
+            Margins.Bottom = 0
+            Align = alClient
+            TabOrder = 0
+            ExplicitHeight = 23
+          end
+        end
+        object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_GroupBox: TGroupBox
+          AlignWithMargins = True
+          Left = 302
+          Top = 17
+          Width = 100
+          Height = 40
+          Margins.Left = 0
+          Margins.Top = 0
+          Margins.Right = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          Caption = 'Time'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 3
+          object Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Time_Edit: TEdit
+            AlignWithMargins = True
+            Left = 7
+            Top = 17
+            Width = 86
+            Height = 21
+            Margins.Left = 5
+            Margins.Top = 0
+            Margins.Right = 5
+            Margins.Bottom = 0
+            Align = alClient
+            TabOrder = 0
+            ExplicitHeight = 23
+          end
+        end
+      end
+      object Component_GroupBox: TGroupBox
+        AlignWithMargins = True
+        Left = 10
+        Top = 5
+        Width = 836
+        Height = 145
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Component'
+        TabOrder = 0
+        object Component__Date_Time_GroupBox: TGroupBox
+          AlignWithMargins = True
+          Left = 12
+          Top = 17
+          Width = 812
+          Height = 120
+          Margins.Left = 10
+          Margins.Top = 0
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Date time'
+          TabOrder = 0
+          object Component__Date_Time__Conventional__Use_CheckBox: TCheckBox
+            AlignWithMargins = True
+            Left = 12
+            Top = 17
+            Width = 788
+            Height = 17
+            Hint = 
+              'Use a conventional component to handling date and time.'#13#10'Support' +
+              's dates range only: 01.01.1601 - 31.12.9999.'
+            Margins.Left = 10
+            Margins.Top = 0
+            Margins.Right = 10
+            Margins.Bottom = 0
+            Align = alTop
+            Caption = 'Conventional use'
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 0
+            OnClick = Component__Date_Time__Conventional__Use_CheckBoxClick
+          end
+          object Component__Date_Time__Conventional__Use__Example_Panel: TPanel
+            Left = 2
+            Top = 34
+            Width = 808
+            Height = 84
+            Align = alClient
+            TabOrder = 1
+            DesignSize = (
+              808
+              84)
+            object Component__Date_Time__Conventional__Use__Example__Mode_RadioGroup: TRadioGroup
+              AlignWithMargins = True
+              Left = 11
+              Top = 6
+              Width = 200
+              Height = 72
+              Margins.Left = 10
+              Margins.Top = 5
+              Margins.Right = 10
+              Margins.Bottom = 5
+              Align = alLeft
+              Caption = 'Example mode'
+              ItemIndex = 1
+              Items.Strings = (
+                'date'
+                'date time'
+                'time')
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              OnClick = Component__Date_Time__Conventional__Use__Example__Mode_RadioGroupClick
+            end
+            object Component__Date_Time__Conventional__Use__Example__Color_Panel: TPanel
+              Left = 230
+              Top = 10
+              Width = 200
+              Height = 35
+              Color = clWindow
+              ParentBackground = False
+              TabOrder = 1
+              object Component__Date_Time__Conventional__Use__Example__DateTimePicker: TDateTimePicker
+                Left = 5
+                Top = 5
+                Width = 190
+                Height = 23
+                Date = 45771.000000000000000000
+                Time = 0.543136284723004800
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 0
+              end
+            end
+            object Component__Date_Time__Conventional__Date_Time__Format_GroupBox: TGroupBox
+              Left = 435
+              Top = 0
+              Width = 365
+              Height = 45
+              Hint = 'E.g.:'#13#10'dd.MM.yyyy HH:mm:ss'
+              Anchors = [akLeft, akTop, akRight]
+              Caption = 'Conventional component date time format'
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 2
+              object Component__Date_Time__Conventional__Date_Time__Format_Edit: TEdit
+                Left = 2
+                Top = 17
+                Width = 361
+                Height = 23
+                Align = alTop
+                TabOrder = 0
+                OnChange = Component__Date_Time__Conventional__Use__Example__Mode_RadioGroupClick
+                ExplicitLeft = 30
+                ExplicitTop = 30
+                ExplicitWidth = 121
+              end
+            end
           end
         end
       end

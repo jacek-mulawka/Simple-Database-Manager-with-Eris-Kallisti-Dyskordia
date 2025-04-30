@@ -740,6 +740,7 @@ var
   fire_dac__fetch_options__rowset_size : integer;
 
   busy_notification__knight_rider_equalizer__disabled,
+  component__date_time__conventional__use,
   data_presentation__data_value_format__date__use,
   data_presentation__data_value_format__date_time__use,
   data_presentation__data_value_format__numbers__use,
@@ -791,6 +792,7 @@ var
     : integer;
 
   all_files_find__filter,
+  component__date_time__conventional__date_time__format,
   csv__file__data_separator,
   csv__file__default_extension,
   csv__file__text_qualifier,
@@ -823,8 +825,10 @@ var
   sql__text_separator,
   sql__view__parameter_separator,
   table__data_filter__filter__dedicated_value_format__date,
+  table__data_filter__filter__dedicated_value_format__separator__date,
   table__data_filter__filter__dedicated_value_format__separator__date_time,
   table__data_filter__filter__dedicated_value_format__separator__decimal,
+  table__data_filter__filter__dedicated_value_format__separator__time,
   table__data_filter__filter__dedicated_value_format__time,
   txt__file__default_extension
     : string;
@@ -2170,6 +2174,7 @@ constructor TSql_Parameter.Create( parent_f : Vcl.Controls.TWinControl; const ca
 begin
 
   inherited Create( parent_f );
+
 
   Self.parameter_name := caption_f;
   Self.Parameter_Number_Set( -1 );

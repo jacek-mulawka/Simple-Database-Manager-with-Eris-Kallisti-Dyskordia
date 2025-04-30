@@ -288,6 +288,7 @@ type
     procedure Prepare__DM( const connect_f : boolean = true );
     function Sql_Editor__Page__Close__All( const modal_result_f : TModalResult = mrNone ) : TModalResult;
     function Sql_Editor__Page__Count__Get() : integer;
+    procedure Sql_Editor__Page__New__And__Text__File__Load( const text__file__path_f : string );
     function Task_Running_Check__DM( var task_is_running_f : boolean ) : boolean;
   end;
 
@@ -1376,6 +1377,37 @@ begin
 
 end;
 
+procedure TDatabase__Modify_Form.Sql_Editor__Page__New__And__Text__File__Load( const text__file__path_f : string );
+var
+  tab_sheet_l : TTabSheet;
+  sql_editor_f_frame_l : Sql_Editor_F.TSql_Editor_F_Frame;
+begin
+
+  inc( sql_editor__tabs__count_total_g );
+
+  tab_sheet_l := TTabSheet.Create( Application );
+  tab_sheet_l.Caption := 'SQL ' + sql_editor__tabs__count_total_g.ToString;
+  tab_sheet_l.PageControl := Sql_Editor__PageControl;
+  Sql_Editor__PageControl.ActivePageIndex := Sql_Editor__PageControl.PageCount - 1;
+
+
+  sql_editor_f_frame_l := Sql_Editor_F.TSql_Editor_F_Frame.Create( Application );
+  sql_editor_f_frame_l.Parent := tab_sheet_l;
+  sql_editor_f_frame_l.Align := alClient;
+  sql_editor_f_frame_l.Prepare__SEF( databases_r__dm_g, Component_Type_Get(), ADOConnection1, FDConnection1, Sql_Editor__Database_Connection__Separated_CheckBox.Checked, Queries_Open_In_Background_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+
+
+  if    (  Trim( text__file__path_f ) <> ''  )
+    and (  FileExists( text__file__path_f )  ) then
+    begin
+
+      sql_editor_f_frame_l.Text__File__Path_Edit.Text := text__file__path_f;
+      sql_editor_f_frame_l.Text__File__Load_ButtonClick( nil );
+
+    end;
+
+end;
+
 procedure TDatabase__Modify_Form.Stored_Procedures_List__Stored_Procedure__Open__DM();
 var
   tab_sheet_l : TTabSheet;
@@ -1695,23 +1727,9 @@ begin
 end;
 
 procedure TDatabase__Modify_Form.Sql_Editor__Page__New_ButtonClick( Sender: TObject );
-var
-  tab_sheet_l : TTabSheet;
-  sql_editor_f_frame_l : Sql_Editor_F.TSql_Editor_F_Frame;
 begin
 
-  inc( sql_editor__tabs__count_total_g );
-
-  tab_sheet_l := TTabSheet.Create( Application );
-  tab_sheet_l.Caption := 'SQL ' + sql_editor__tabs__count_total_g.ToString;
-  tab_sheet_l.PageControl := Sql_Editor__PageControl;
-  Sql_Editor__PageControl.ActivePageIndex := Sql_Editor__PageControl.PageCount - 1;
-
-
-  sql_editor_f_frame_l := Sql_Editor_F.TSql_Editor_F_Frame.Create( Application );
-  sql_editor_f_frame_l.Parent := tab_sheet_l;
-  sql_editor_f_frame_l.Align := alClient;
-  sql_editor_f_frame_l.Prepare__SEF( databases_r__dm_g, Component_Type_Get(), ADOConnection1, FDConnection1, Sql_Editor__Database_Connection__Separated_CheckBox.Checked, Queries_Open_In_Background_CheckBox.Checked, Sql__Quotation_Sign__Use_CheckBox.Checked );
+  Sql_Editor__Page__New__And__Text__File__Load( '' );
 
 end;
 

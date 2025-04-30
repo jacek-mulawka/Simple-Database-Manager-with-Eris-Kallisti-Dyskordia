@@ -272,7 +272,7 @@ object Table_Add_Form: TTable_Add_Form
       object Column__Move__Up_ToolButton: TToolButton
         Left = 131
         Top = 0
-        Hint = 'Column move up.'
+        Hint = 'Column move up.'#13#10#13#10'[Ctrl + Up arrow]'
         Caption = 'Column__Move__Up_ToolButton'
         ImageIndex = 13
         ParentShowHint = False
@@ -282,7 +282,7 @@ object Table_Add_Form: TTable_Add_Form
       object Column__Move__Down_ToolButton: TToolButton
         Left = 154
         Top = 0
-        Hint = 'Column move down.'
+        Hint = 'Column move down.'#13#10#13#10'[Ctrl + Down arrow]'
         Caption = 'Column__Move__Down_ToolButton'
         ImageIndex = 14
         ParentShowHint = False
@@ -327,12 +327,12 @@ object Table_Add_Form: TTable_Add_Form
       Caption = '-'
     end
     object Column__Move__Up_MenuItem: TMenuItem
-      Caption = 'Column move up'
+      Caption = 'Column move up [Ctrl + Up arrow]'
       ImageIndex = 13
       OnClick = Column__Move__Up_MenuItemClick
     end
     object Column__Move__Down_MenuItem: TMenuItem
-      Caption = 'Column move down'
+      Caption = 'Column move down [Ctrl + Down arrow]'
       ImageIndex = 14
       OnClick = Column__Move__Down_MenuItemClick
     end

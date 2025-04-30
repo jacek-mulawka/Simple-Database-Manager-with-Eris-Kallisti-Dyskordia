@@ -116,6 +116,7 @@ type
     databases_list_box__width_default_g : integer;
 
     procedure Databases__Modified_Notification_Set( modified_f : boolean );
+    procedure File__Open__From__Parameters();
     procedure Highlight__Font__Set__DBM();
     function SQL_Editor__Close_Prompt__DBM( zt_database__modify_form_f : Database__Modify.TDatabase__Modify_Form = nil; const item_index_f : integer = -1 ) : boolean;
   public
@@ -159,6 +160,33 @@ begin
   if    ( not databases__modified_g )
     and (  Pos( Common.notification__sign__modified_c, Databases_MenuItem.Caption ) > 0  ) then
     Databases_MenuItem.Caption := StringReplace( Databases_MenuItem.Caption, Common.notification__sign__modified_c, '', [ rfReplaceAll ] );
+
+end;
+
+procedure TSimple_Database_Manager_Form.File__Open__From__Parameters();
+var
+  i : integer;
+begin
+
+  if ParamCount < 1 then
+    Exit;
+
+
+  if Self.MDIChildCount <= 0 then
+    Databases__Open_MenuItemClick( nil );
+
+  if   ( Self.MDIChildCount <= 0 )
+    or (  not ( Self.ActiveMDIChild is Database__Modify.TDatabase__Modify_Form )  ) then
+    Exit;
+
+
+  if Database__Modify.TDatabase__Modify_Form(Self.ActiveMDIChild).Main_PageControl.ActivePage <> Database__Modify.TDatabase__Modify_Form(Self.ActiveMDIChild).Sql_Editor_TabSheet then
+    Database__Modify.TDatabase__Modify_Form(Self.ActiveMDIChild).Main_PageControl.ActivePage := Database__Modify.TDatabase__Modify_Form(Self.ActiveMDIChild).Sql_Editor_TabSheet;
+
+
+  for i := 1 to ParamCount do
+    if FileExists(  ParamStr( i )  ) then
+      Database__Modify.TDatabase__Modify_Form(Self.ActiveMDIChild).Sql_Editor__Page__New__And__Text__File__Load(  ParamStr( i )  );
 
 end;
 
@@ -273,7 +301,9 @@ procedure TSimple_Database_Manager_Form.FormShow( Sender: TObject );
 begin
 
   Common.all_files_find__filter := '*.*';
+  Common.component__date_time__conventional__date_time__format := 'dd.MM.yyyy HH:mm:ss';
   Common.busy_notification__knight_rider_equalizer__disabled := false;
+  Common.component__date_time__conventional__use := false;
   Common.csv__file__data_separator := ',';
   Common.csv__file__default_extension := '.csv';
   Common.csv__file__text_qualifier := '"';
@@ -351,9 +381,11 @@ begin
   Common.system_tables_visible := false;
   Common.table__data_filter__field_dedicated__default_use := true;
   Common.table__data_filter__filter__dedicated_value_format__date := 'dd.mm.yyyy';
+  Common.table__data_filter__filter__dedicated_value_format__separator__date := '.';
   Common.table__data_filter__filter__dedicated_value_format__separator__date_time := ' ';
   Common.table__data_filter__filter__dedicated_value_format__separator__decimal := '.';
-  Common.table__data_filter__filter__dedicated_value_format__time := 'hh:mm:ss';
+  Common.table__data_filter__filter__dedicated_value_format__separator__time := ':';
+  Common.table__data_filter__filter__dedicated_value_format__time := 'hh:mm:ss.zzz';
   Common.table__data_filter__quotation_sign__use := true;
   Common.table__data_modify__editing__default_state := false;
   Common.txt__file__default_extension := '.txt';
@@ -362,7 +394,8 @@ begin
   Common.text__search__window__one_common := true;
 
   //Common.fd_connection__format_options__max_string_size := 32767;
-  Common.table__data_modify__filter__height_keeper__top := 270;
+  Common.table__data_modify__filter__height_keeper__top := 240;
+
 
   Common.sql_editor__font := Vcl.Graphics.TFont.Create();
   Common.syn_editor_options :=
@@ -410,6 +443,9 @@ begin
 
 
   Translation.Translation__Apply( Self );
+
+
+  File__Open__From__Parameters();
 
 end;
 

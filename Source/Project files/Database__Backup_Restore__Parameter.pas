@@ -47,6 +47,7 @@ begin
 
   inherited Create( Vcl.Forms.Application );
 
+
   Self.parameter_code := nil;
   Self.parameter_description := nil;
   Self.parameter_values := nil;

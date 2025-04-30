@@ -65,6 +65,7 @@ begin
 
   inherited Create( Vcl.Forms.Application );
 
+
   inc( view__parameter_id_f );
   Self.view__parameter_id := view__parameter_id_f;
 
@@ -179,7 +180,7 @@ begin
     System.SysUtils.FreeAndNil( Self.parameter_description__vertical_splitter );
 
 
-  FreeAndNil( Self.align_correct_button );
+  System.SysUtils.FreeAndNil( Self.align_correct_button );
 
 
   inherited;

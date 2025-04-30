@@ -55,7 +55,8 @@ type
   private
     { Private declarations }
     sort__direction_ascending_g,
-    task_is_running_g
+    task_is_running_g,
+    values_logged_g // Values log only once.
       : boolean;
 
     table_column__values_distinct_sdbm : Common.TSDBM;
@@ -66,9 +67,8 @@ type
     function Quotation_Sign__TCVD() : string;
   public
     { Public declarations }
-    queries_open_in_background_g,
-    sql__quotation_sign__use__tcvd,
-    values_logged_g // Values log only once.
+    queries_open_in_background__tcvd,
+    sql__quotation_sign__use__tcvd
       : boolean;
 
     column_name__tcvd,
@@ -168,7 +168,7 @@ begin
 
   column_name__tcvd := '';
   filter_value := '';
-  queries_open_in_background_g := true;
+  queries_open_in_background__tcvd := true;
   sort__direction_ascending_g := true;
   table_column__values_distinct_form_list := nil;
   table_name__tcvd := '';
@@ -488,7 +488,7 @@ begin
   table_column__values_distinct_sdbm.Query__Sql__Set( zts );
 
 
-  if queries_open_in_background_g then
+  if queries_open_in_background__tcvd then
     Refresh_ButtonClick( Sender )
   else
     No_Thread_Timer.Enabled := true;
@@ -515,7 +515,7 @@ begin
   ztb := true; // False = error occurred.
 
 
-  if not queries_open_in_background_g then
+  if not queries_open_in_background__tcvd then
     begin
 
       Screen.Cursor := crSQLWait;

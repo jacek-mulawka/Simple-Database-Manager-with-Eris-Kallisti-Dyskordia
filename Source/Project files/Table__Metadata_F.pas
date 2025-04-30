@@ -2364,7 +2364,7 @@ begin
   table_column__values_distinct_form_l.sql__quotation_sign__tcvd := sql__quotation_sign__tmef_g;
   table_column__values_distinct_form_l.sql__quotation_sign__use__tcvd := sql__quotation_sign__use__tmef_g;
   table_column__values_distinct_form_l.table_name__tcvd := table_name__tmef_g;
-  table_column__values_distinct_form_l.queries_open_in_background_g := queries_open_in_background_g;
+  table_column__values_distinct_form_l.queries_open_in_background__tcvd := queries_open_in_background_g;
   table_column__values_distinct_form_l.table_column__values_distinct_form_list := table_column__values_distinct_form_list__tmef_g;
   table_column__values_distinct_form_l.Show();
 

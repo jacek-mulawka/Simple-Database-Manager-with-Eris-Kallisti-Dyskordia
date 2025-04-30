@@ -770,6 +770,14 @@ begin
   if Key = VK_INSERT then
     Column__Add_MenuItemClick( Sender )
   else
+  if    ( Key = VK_UP )
+    and ( Shift = [ ssCtrl ] ) then
+    Column__Move__Up_MenuItemClick( nil )
+  else
+  if    ( Key = VK_DOWN )
+    and ( Shift = [ ssCtrl ] ) then
+    Column__Move__Down_MenuItemClick( nil )
+  else
   if Key = VK_RETURN then
     Column__Edit_MenuItemClick( Sender )
   else
