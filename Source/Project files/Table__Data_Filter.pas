@@ -1071,17 +1071,7 @@ begin
           if Self.component__date_time__conventional__use__tdf then
             begin
 
-              date_format.ShortDateFormat := Common.table__data_filter__filter__dedicated_value_format__date;
-              date_format.ShortTimeFormat := Common.table__data_filter__filter__dedicated_value_format__time;
-
-              if Length( Common.table__data_filter__filter__dedicated_value_format__separator__date ) > 0 then
-                date_format.DateSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__date[ 1 ];
-
-              if Length( Common.table__data_filter__filter__dedicated_value_format__separator__decimal ) > 0 then
-                date_format.DecimalSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__decimal[ 1 ];
-
-              if Length( Common.table__data_filter__filter__dedicated_value_format__separator__time ) > 0 then
-                date_format.TimeSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__time[ 1 ];
+              Common.Date_Format__Prepare( date_format );
 
               ztdt := StrToDateTime( Vcl.Clipbrd.Clipboard.AsText, date_format );
 

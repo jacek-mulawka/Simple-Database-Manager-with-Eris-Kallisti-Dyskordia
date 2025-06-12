@@ -70,6 +70,7 @@ type
     procedure Align_Correct__FVF();
     procedure Editing__Set__FVF( const editing_f : boolean );
     procedure Translation__Apply__FVF();
+    procedure Value_Refresh__FVF();
   end;
 
 const
@@ -511,17 +512,7 @@ begin
       if Self.component__date_time__conventional__use__fvf then
         begin
 
-          date_format.ShortDateFormat := Common.table__data_filter__filter__dedicated_value_format__date;
-          date_format.ShortTimeFormat := Common.table__data_filter__filter__dedicated_value_format__time;
-
-          if Length( Common.table__data_filter__filter__dedicated_value_format__separator__date ) > 0 then
-            date_format.DateSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__date[ 1 ];
-
-          if Length( Common.table__data_filter__filter__dedicated_value_format__separator__decimal ) > 0 then
-            date_format.DecimalSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__decimal[ 1 ];
-
-          if Length( Common.table__data_filter__filter__dedicated_value_format__separator__time ) > 0 then
-            date_format.TimeSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__time[ 1 ];
+          Common.Date_Format__Prepare( date_format );
 
           ztdt := StrToDateTime( Vcl.Clipbrd.Clipboard.AsText, date_format );
 
@@ -729,6 +720,8 @@ end;
 procedure TForm_View_Field.Field_Value__Universal_Db_Edit__On_Change( Sender : TObject );
 var
   zts : string;
+
+  date_format : TFormatSettings;
 begin
 
   if   ( Self.field_value__universal_db_edit__on_change__block )
@@ -740,6 +733,7 @@ begin
 
   Self.field_value__dedicated_db_edit__on_change__block := true;
 
+  // Here Self.field_value__universal_db_edit.Field.As keeps old value the current value is in Self.field_value__universal_db_edit.Text.
 
   if Self.field_value__universal_db_edit.Field.DataType in [ ftDate, ftDateTime, ftTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
     begin
@@ -777,14 +771,45 @@ begin
       if Self.field_value__dedicated is Date_Time_Picker.TDate_Time_Picker then
         begin
 
+          if not Self.data_value_format__disabled__fvf then
+            begin
+
+              Common.Date_Format__Prepare( date_format );
+
+              StrToDateTimeDef( Vcl.Clipbrd.Clipboard.AsText, 0, date_format );
+
+            end;
+
+
           if Self.field_value__universal_db_edit.Field.DataType in [ ftDateTime, ftOraTimeStamp, ftTimeStamp, ftTimeStampOffset ] then
-            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time := StrToDateTimeDef( Self.field_value__universal_db_edit.Text, 0 )
+            begin
+
+              if Self.data_value_format__disabled__fvf then
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time := StrToDateTimeDef( Self.field_value__universal_db_edit.Text, 0 )
+              else
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date_Time := StrToDateTimeDef( Self.field_value__universal_db_edit.Text, 0, date_format );
+
+            end
           else
           if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkDate then
-            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date := StrToDateDef( Self.field_value__universal_db_edit.Text, 0 )
+            begin
+
+              if Self.data_value_format__disabled__fvf then
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date := StrToDateDef( Self.field_value__universal_db_edit.Text, 0 )
+              else
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Date := StrToDateDef( Self.field_value__universal_db_edit.Text, 0, date_format );
+
+            end
           else
           if Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Kind = Vcl.ComCtrls.dtkTime then
-            Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time := StrToTimeDef( Self.field_value__universal_db_edit.Text, 0 );
+            begin
+
+              if Self.data_value_format__disabled__fvf then
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time := StrToTimeDef( Self.field_value__universal_db_edit.Text, 0 )
+              else
+                Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Time := StrToTimeDef( Self.field_value__universal_db_edit.Text, 0, date_format );
+
+            end;
 
         end;
 
@@ -902,6 +927,13 @@ begin
       Date_Time_Picker.TDate_Time_Picker(Self.field_value__dedicated).Translation__Apply__DTP();
 
     end;
+
+end;
+
+procedure TForm_View_Field.Value_Refresh__FVF();
+begin
+
+  Self.Field_Value__Universal_Db_Edit__On_Change( nil );
 
 end;
 

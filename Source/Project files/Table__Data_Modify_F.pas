@@ -2274,7 +2274,13 @@ begin
 
   for i := 0 to Data_ScrollBox.ControlCount - 1 do
     if Data_ScrollBox.Controls[ i ].ClassType = Form_View_Field.TForm_View_Field then
-      Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).data_value_format__disabled__fvf := Data_Value_Format__Disabled_CheckBox.Checked;
+      begin
+
+        Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).data_value_format__disabled__fvf := Data_Value_Format__Disabled_CheckBox.Checked;
+
+        Form_View_Field.TForm_View_Field(Data_ScrollBox.Controls[ i ]).Value_Refresh__FVF();
+
+      end;
 
 end;
 

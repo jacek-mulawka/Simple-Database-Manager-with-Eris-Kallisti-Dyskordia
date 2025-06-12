@@ -9,6 +9,7 @@ uses
   FireDAC.Stan.Option,
   SynEdit,
   System.Classes,
+  System.SysUtils,
   System.Variants,
   Vcl.DBGrids,
   Vcl.Forms,
@@ -189,6 +190,7 @@ procedure Data_Value_Format__Set( sdbm_f : TSDBM; log_memo_f : TMemo; const disp
 function Database__Connection__Open( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection; const databases_r_f : TDatabases_r; log_memo_f : TMemo; const component_type_f : Common.TComponent_Type = Common.ct_ADO ) : TModalResult;
 procedure Database__Connections__Close( ado_connection_f : Data.Win.ADODB.TADOConnection; fd_connection_f : FireDAC.Comp.Client.TFDConnection );
 function Databases_Type__Directory_Path__Get( const database_type_f : string ) : string;
+procedure Date_Format__Prepare( var date_format_f : System.SysUtils.TFormatSettings );
 procedure DB_Grid_Draw_Column_Cell( const sort__column_name_f : string; db_grid_f : Vcl.DBGrids.TDBGrid; const Rect : Winapi.Windows.TRect; DataCol : Integer; Column : Vcl.DBGrids.TColumn; State : Vcl.Grids.TGridDrawState );
 procedure DB_Grid_Select( db_grid_f : Vcl.DBGrids.TDBGrid; const selected_f : boolean; const invertf : boolean = false );
 procedure Font__Set( font__to_f, font__from_f : TFont );
@@ -846,7 +848,6 @@ uses
   System.Math,
   System.IOUtils,
   System.StrUtils,
-  System.SysUtils,
   Vcl.Clipbrd,
 
   plgSearchHighlighter,
@@ -3144,6 +3145,23 @@ begin
   if Trim( database_type_f ) <> '' then
     Result := Result +
       database_type_f + System.IOUtils.TPath.DirectorySeparatorChar;
+
+end;
+
+procedure Date_Format__Prepare( var date_format_f : System.SysUtils.TFormatSettings );
+begin
+
+  date_format_f.ShortDateFormat := Common.table__data_filter__filter__dedicated_value_format__date;
+  date_format_f.ShortTimeFormat := Common.table__data_filter__filter__dedicated_value_format__time;
+
+  if Length( Common.table__data_filter__filter__dedicated_value_format__separator__date ) > 0 then
+    date_format_f.DateSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__date[ 1 ];
+
+  if Length( Common.table__data_filter__filter__dedicated_value_format__separator__decimal ) > 0 then
+    date_format_f.DecimalSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__decimal[ 1 ];
+
+  if Length( Common.table__data_filter__filter__dedicated_value_format__separator__time ) > 0 then
+    date_format_f.TimeSeparator := Common.table__data_filter__filter__dedicated_value_format__separator__time[ 1 ];
 
 end;
 
