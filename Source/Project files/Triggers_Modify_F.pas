@@ -368,6 +368,14 @@ begin
 
 
       for i := 0 to Triggers_DBGrid.Columns.Count - 1 do
+        if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+          begin
+
+            if Triggers_DBGrid.Columns.Items[ i ].Width > 500 then
+              Triggers_DBGrid.Columns.Items[ i ].Width := 500;
+
+          end
+        else
         if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__active_c then
           begin
 
@@ -380,15 +388,10 @@ begin
           begin
 
             if Triggers_DBGrid.Columns.Items[ i ].Width > 500 then
-              Triggers_DBGrid.Columns.Items[ i ].Width := 500;
-
-          end
-        else
-        if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
-          begin
-
-            if Triggers_DBGrid.Columns.Items[ i ].Width > 500 then
-              Triggers_DBGrid.Columns.Items[ i ].Width := 500;
+              Triggers_DBGrid.Columns.Items[ i ].Width := 500
+            else
+            if Triggers_DBGrid.Columns.Items[ i ].Width < 400 then
+              Triggers_DBGrid.Columns.Items[ i ].Width := 400;
 
           end
         else
@@ -658,14 +661,14 @@ begin
 
   if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
     for i := 0 to Triggers_DBGrid.Columns.Count - 1 do
+      if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
       if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__active_c then
         Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__active
       else
       if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__trigger__name__big_letters_c then
         Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__trigger__name
-      else
-      if Triggers_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
-        Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
       else
         Triggers_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Triggers_DBGrid.Columns.Items[ i ].FieldName );
 

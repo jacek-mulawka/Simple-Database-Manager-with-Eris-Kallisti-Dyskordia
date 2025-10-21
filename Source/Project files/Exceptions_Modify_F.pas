@@ -236,6 +236,14 @@ begin
 
 
       for i := 0 to Exceptions_DBGrid.Columns.Count - 1 do
+        if Exceptions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+          begin
+
+            if Exceptions_DBGrid.Columns.Items[ i ].Width > 500 then
+              Exceptions_DBGrid.Columns.Items[ i ].Width := 500;
+
+          end
+        else
         if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_message__cast_c then
           begin
 
@@ -244,11 +252,11 @@ begin
 
           end
         else
-        if Exceptions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_name__big_letter_c then
           begin
 
-            if Exceptions_DBGrid.Columns.Items[ i ].Width > 500 then
-              Exceptions_DBGrid.Columns.Items[ i ].Width := 500;
+            if Exceptions_DBGrid.Columns.Items[ i ].Width < 400 then
+              Exceptions_DBGrid.Columns.Items[ i ].Width := 400;
 
           end
         else
@@ -352,14 +360,14 @@ begin
 
   if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
     for i := 0 to Exceptions_DBGrid.Columns.Count - 1 do
-      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_name__big_letter_c then
-        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__name
+      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
       else
       if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_message__cast_c then
         Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__message__with_a_capital_letter
       else
-      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
-        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      if Exceptions_DBGrid.Columns.Items[ i ].FieldName = exceptions_list__column__exception_name__big_letter_c then
+        Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__name
       else
         Exceptions_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Exceptions_DBGrid.Columns.Items[ i ].FieldName );
 

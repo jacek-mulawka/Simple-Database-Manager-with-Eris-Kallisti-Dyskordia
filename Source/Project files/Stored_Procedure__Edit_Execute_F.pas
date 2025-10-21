@@ -479,11 +479,11 @@ begin
 
 
       for i := 0 to Stored_Procedure__Parameters_DBGrid.Columns.Count - 1 do
-        if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_name_c then
+        if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.column_name__default_value__cast_c then
           begin
 
-            if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width < 50 then
-              Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 50;
+            if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width > 200 then
+              Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 200;
 
           end
         else
@@ -495,11 +495,11 @@ begin
 
           end
         else
-        if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.column_name__default_value__cast_c then
+        if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_name_c then
           begin
 
-            if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width > 200 then
-              Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 200;
+            if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width < 400 then
+              Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Width := 400;
 
           end
         else
@@ -1607,17 +1607,17 @@ begin
 
   if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
     for i := 0 to Stored_Procedure__Parameters_DBGrid.Columns.Count - 1 do
+      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.column_name__default_value__cast_c then
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__default__value
+      else
+      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value_c then
+        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
       if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_name_c then
         Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__parameter__name
       else
       if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.stored_procedure__column__parameter_type_input_c then
         Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__table__data_filter_r.type_input__hint
-      else
-      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value_c then
-        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
-      else
-      if Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.column_name__default_value__cast_c then
-        Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__default__value
       else
         Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Stored_Procedure__Parameters_DBGrid.Columns.Items[ i ].FieldName );
 

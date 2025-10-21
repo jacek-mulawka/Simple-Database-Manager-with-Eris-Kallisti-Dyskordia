@@ -468,7 +468,7 @@ begin
   if Metadata_StringGrid.Cells[ 0, 0 ] = '' then
     begin
 
-      Metadata_StringGrid.ColWidths[ metadata__column_number__name_c ] := 200;
+      Metadata_StringGrid.ColWidths[ metadata__column_number__name_c ] := 400;
       Metadata_StringGrid.ColWidths[ metadata__column_number__type_c ] := 100;
       Metadata_StringGrid.ColWidths[ metadata__column_number__default_c ] := 100;
       Metadata_StringGrid.ColWidths[ metadata__column_number__character_set_c ] := 100;

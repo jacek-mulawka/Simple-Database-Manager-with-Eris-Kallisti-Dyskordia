@@ -501,6 +501,14 @@ begin
 
             end
           else
+          if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
+            begin
+
+              if Users_DBGrid.Columns.Items[ i ].Width < 400 then
+                Users_DBGrid.Columns.Items[ i ].Width := 400;
+
+            end
+          else
             if Users_DBGrid.Columns.Items[ i ].Width > 200 then
               Users_DBGrid.Columns.Items[ i ].Width := 200;
 
@@ -598,17 +606,11 @@ begin
 
   if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
     for i := 0 to Users_DBGrid.Columns.Count - 1 do
+      if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
       if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
         Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__user__name
-      else
-      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__first_c then
-        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__first_name
-      else
-      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__middle_c then
-        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__middle_name
-      else
-      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__last_c then
-        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__last_name
       else
       if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__active_c then
         Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__active
@@ -616,8 +618,14 @@ begin
       if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__is_administrator_c then
         Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__administrator
       else
-      if Users_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
-        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__first_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__first_name
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__last_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__last_name
+      else
+      if Users_DBGrid.Columns.Items[ i ].FieldName = users_list__column__user__name__middle_c then
+        Users_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__middle_name
       else
         Users_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Users_DBGrid.Columns.Items[ i ].FieldName );
 

@@ -340,6 +340,14 @@ begin
 
             end
           else
+          if Generators_DBGrid.Columns.Items[ i ].FieldName = generators_list__column__generator_name__big_letter_c then
+            begin
+
+              if Generators_DBGrid.Columns.Items[ i ].Width < 400 then
+                Generators_DBGrid.Columns.Items[ i ].Width := 400;
+
+            end
+          else
             if Generators_DBGrid.Columns.Items[ i ].Width > 200 then
               Generators_DBGrid.Columns.Items[ i ].Width := 200;
 

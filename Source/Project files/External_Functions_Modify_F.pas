@@ -420,6 +420,14 @@ begin
 
 
       for i := 0 to External_Functions_DBGrid.Columns.Count - 1 do
+        if External_Functions_DBGrid.Columns.Items[ i ].FieldName = Common.external_functions__column__external_functions_name__big_letter_c then
+          begin
+
+            if External_Functions_DBGrid.Columns.Items[ i ].Width < 400 then
+              External_Functions_DBGrid.Columns.Items[ i ].Width := 400;
+
+          end
+        else
         if External_Functions_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
 

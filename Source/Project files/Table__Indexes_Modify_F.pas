@@ -274,7 +274,7 @@ begin
 
 
       for i := 0 to Indexes_DBGrid.Columns.Count - 1 do
-        if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__column_name_c then
+        if Indexes_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
           begin
 
             if Indexes_DBGrid.Columns.Items[ i ].Width > 500 then
@@ -282,7 +282,7 @@ begin
 
           end
         else
-        if Indexes_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
+        if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__column_name_c then
           begin
 
             if Indexes_DBGrid.Columns.Items[ i ].Width > 500 then
@@ -293,8 +293,8 @@ begin
         if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__index_name_c then
           begin
 
-            if Indexes_DBGrid.Columns.Items[ i ].Width < 300 then
-              Indexes_DBGrid.Columns.Items[ i ].Width := 300;
+            if Indexes_DBGrid.Columns.Items[ i ].Width < 400 then
+              Indexes_DBGrid.Columns.Items[ i ].Width := 400;
 
           end
         else
@@ -679,11 +679,11 @@ begin
 
   if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
     for i := 0 to Indexes_DBGrid.Columns.Count - 1 do
-      if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__column_name_c then
-        Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__columns
-      else
       if Indexes_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
         Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+      if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__column_name_c then
+        Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__columns
       else
       if Indexes_DBGrid.Columns.Items[ i ].FieldName = indexes_list__column__index_name_c then
         Indexes_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__index__name

@@ -942,7 +942,12 @@ begin
 
         end;
 
-    end;
+    end
+  else
+  // W.
+  if    ( Key = 87 )
+    and ( Shift = [ ssCtrl ] ) then
+    Data_Value_Format__Disabled_CheckBox.Checked := not Data_Value_Format__Disabled_CheckBox.Checked;
 
 end;
 

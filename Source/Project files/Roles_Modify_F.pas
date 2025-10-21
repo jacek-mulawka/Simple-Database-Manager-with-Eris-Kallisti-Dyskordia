@@ -240,6 +240,14 @@ begin
 
           end
         else
+        if Roles_DBGrid.Columns.Items[ i ].FieldName = roles_list__column__role_name__big_letter_c then
+          begin
+
+            if Roles_DBGrid.Columns.Items[ i ].Width < 400 then
+              Roles_DBGrid.Columns.Items[ i ].Width := 400;
+
+          end
+        else
           begin
 
             if Roles_DBGrid.Columns.Items[ i ].Width > 200 then
@@ -436,11 +444,11 @@ begin
 
   if tak_f in [ Translation.tak_All, Translation.tak_Grid ] then
     for i := 0 to Roles_DBGrid.Columns.Count - 1 do
-      if Roles_DBGrid.Columns.Items[ i ].FieldName = roles_list__column__role_name__big_letter_c then
-        Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__role_name
-      else
       if Roles_DBGrid.Columns.Items[ i ].FieldName = Common.name__description_value__cast_c then
         Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__description
+      else
+      if Roles_DBGrid.Columns.Items[ i ].FieldName = roles_list__column__role_name__big_letter_c then
+        Roles_DBGrid.Columns.Items[ i ].Title.Caption := Translation.translation__messages_r.word__role_name
       else
         Roles_DBGrid.Columns.Items[ i ].Title.Caption := Common.Column__Name_To_Grid_Caption( Roles_DBGrid.Columns.Items[ i ].FieldName );
 

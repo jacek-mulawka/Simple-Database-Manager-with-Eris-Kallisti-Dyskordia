@@ -185,7 +185,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Top = 0
       Width = 110
       Height = 17
-      Hint = 'Allow data changes.'
+      Hint = 'Allow data changes.'#13#10#13#10'[Ctrl + E]'
       Caption = 'Editing'
       ParentShowHint = False
       ShowHint = True
@@ -197,7 +197,10 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
       Top = 0
       Width = 200
       Height = 17
+      Hint = '[Ctrl + W]'
       Caption = 'Data value format disabled'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 8
       OnClick = Data_Value_Format__Disabled_CheckBoxClick
     end
@@ -551,7 +554,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
             Images = Shared_DataModule.ImageList1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 3
+            TabOrder = 4
             OnClick = Data_Filter__Delete__All_ButtonClick
           end
           object Data_Filter__Show_Button: TButton
@@ -564,7 +567,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
             Images = Shared_DataModule.ImageList1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 4
+            TabOrder = 5
             OnClick = Data_Filter__Activate__All_ButtonClick
           end
           object Data_Filter__Deactivate__All_Button: TButton
@@ -577,7 +580,7 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
             Images = Shared_DataModule.ImageList1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 2
+            TabOrder = 3
             OnClick = Data_Filter__Deactivate__All_ButtonClick
           end
           object Data_Filter__Activate__All_Button: TButton
@@ -590,8 +593,21 @@ object Table__Data_Modify_F_Frame: TTable__Data_Modify_F_Frame
             Images = Shared_DataModule.ImageList1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 1
+            TabOrder = 2
             OnClick = Data_Filter__Activate__All_ButtonClick
+          end
+          object Data_Filter__Focus__Set_CheckBox: TCheckBox
+            Left = 40
+            Top = 20
+            Width = 100
+            Height = 17
+            Hint = 'Set focus to the added filter.'#13#10#13#10'[Ctrl + Shift + F]'
+            Caption = 'F. S.'
+            Checked = True
+            ParentShowHint = False
+            ShowHint = True
+            State = cbChecked
+            TabOrder = 1
           end
         end
         object Data_Filter_ScrollBox: TScrollBox

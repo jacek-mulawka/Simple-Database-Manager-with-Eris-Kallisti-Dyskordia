@@ -463,8 +463,8 @@ begin
         if View__Parameters_DBGrid.Columns.Items[ i ].FieldName = Common.name__column__big_letters_c then
           begin
 
-            if View__Parameters_DBGrid.Columns.Items[ i ].Width < 50 then
-              View__Parameters_DBGrid.Columns.Items[ i ].Width := 50;
+            if View__Parameters_DBGrid.Columns.Items[ i ].Width < 400 then
+              View__Parameters_DBGrid.Columns.Items[ i ].Width := 400;
 
           end
         else

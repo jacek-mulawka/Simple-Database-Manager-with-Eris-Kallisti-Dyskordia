@@ -464,6 +464,14 @@ begin
       for i := 0 to Permissions_DBGrid.Columns.Count - 1 do
         begin
 
+          if Permissions_DBGrid.Columns.Items[ i ].FieldName = Common.name__user__name__big_letters_c then
+            begin
+
+              if Permissions_DBGrid.Columns.Items[ i ].Width < 400 then
+                Permissions_DBGrid.Columns.Items[ i ].Width := 400;
+
+            end
+          else
           if Permissions_DBGrid.Columns.Items[ i ].Width < 50 then
             Permissions_DBGrid.Columns.Items[ i ].Width := 50;
 

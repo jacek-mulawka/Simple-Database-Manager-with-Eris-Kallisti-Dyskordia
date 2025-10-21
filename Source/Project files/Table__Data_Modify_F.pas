@@ -45,6 +45,7 @@ type
     Data_Filter__Buttons_GroupBox: TGroupBox;
     Data_Filter__Add_Button: TButton;
     Data_Filter__Delete__All_Button: TButton;
+    Data_Filter__Focus__Set_CheckBox: TCheckBox;
     Data_Filter__Show_Button: TButton;
     Data_Filter__Deactivate__All_Button: TButton;
     Data_Filter__Activate__All_Button: TButton;
@@ -2235,6 +2236,9 @@ begin
   zt_table__data_filter.Filter__Show_wsk := Data_Filter__Activate__All_ButtonClick;
   zt_table__data_filter.First_Rows__Negate_Value_wsk := First_Rows__Negate_Value;
 
+  if Data_Filter__Focus__Set_CheckBox.Checked then
+    zt_table__data_filter.Set_Focus();
+
 end;
 
 procedure TTable__Data_Modify_F_Frame.Data_Filter__Deactivate__All_ButtonClick( Sender: TObject );
@@ -2374,6 +2378,16 @@ begin
     and ( Shift = [ ssCtrl ] ) then // Due to writing capitals without ssShift.
     Table_Column__Values_Distinct_ButtonClick( Sender )
   else
+  // E.
+  if    ( Key = 69 )
+    and ( Shift = [ ssCtrl ] ) then
+    Editing_CheckBox.Checked := not Editing_CheckBox.Checked
+  else
+  // F.
+  if    ( Key = 70 )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    Data_Filter__Focus__Set_CheckBox.Checked := not Data_Filter__Focus__Set_CheckBox.Checked
+  else
   // F.
   if    ( Key = 70 )
     and ( Shift = [ ssCtrl ] ) then
@@ -2408,6 +2422,11 @@ begin
           or ( Shift = [ ssShift ] )
         ) then
     Column__Values__Sum()
+  else
+  // W.
+  if    ( Key = 87 )
+    and ( Shift = [ ssCtrl ] ) then
+    Data_Value_Format__Disabled_CheckBox.Checked := not Data_Value_Format__Disabled_CheckBox.Checked
   else
   if Grid_View_CheckBox.Checked then
     // C.

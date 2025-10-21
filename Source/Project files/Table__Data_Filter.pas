@@ -92,6 +92,7 @@ type
     procedure Align_Correct__DTF();
     function Filter_Value__Get( const sql__quotation_sign__use__tdf_f : boolean ) : string;
     procedure Positions_Swap( const direction_f : TAlign );
+    procedure Set_Focus();
     procedure Translation__Apply__TDF();
   end;
 
@@ -1400,6 +1401,20 @@ begin
 
 
   SetLength( table__data_filter_t, 0 );
+
+end;
+
+procedure TTable__Data_Filter.Set_Focus();
+begin
+
+  if    ( Self.field_value__dedicated__use_check_box <> nil )
+    and ( Self.field_value__dedicated__use_check_box.Visible )
+    and ( Self.field_value__dedicated__use_check_box.Checked )
+    and ( Self.field_value__dedicated <> nil ) then
+    Self.field_value__dedicated.SetFocus()
+  else
+  if Self.field_value__universal_edit <> nil then
+    Self.field_value__universal_edit.SetFocus();
 
 end;
 

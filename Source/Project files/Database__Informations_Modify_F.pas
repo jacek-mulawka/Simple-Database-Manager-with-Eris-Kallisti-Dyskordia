@@ -309,8 +309,8 @@ begin
   if Metadata_StringGrid.Cells[ 0, 0 ] = '' then
     begin
 
-      Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__name_c ] := 300;
-      Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__value_c ] := 500;
+      Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__name_c ] := 500;
+      Metadata_StringGrid.ColWidths[ database__informations__column_number__attribute__value_c ] := 800;
 
     end;
 

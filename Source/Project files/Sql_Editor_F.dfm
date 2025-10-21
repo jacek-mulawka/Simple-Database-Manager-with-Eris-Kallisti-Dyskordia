@@ -938,12 +938,15 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
         Top = 276
         Width = 161
         Height = 17
+        Hint = '[Ctrl + W]'
         Margins.Left = 10
         Margins.Top = 5
         Margins.Right = 10
         Margins.Bottom = 0
         Align = alTop
         Caption = 'Data value format disabled'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 2
         OnClick = Data_Value_Format__Disabled_CheckBoxClick
       end
@@ -1455,7 +1458,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     end
     object Data_Value_Format__Disabled_MenuItem: TMenuItem
       AutoCheck = True
-      Caption = 'Data value format disabled'
+      Caption = 'Data value format disabled [Ctrl + W]'
       OnClick = Data_Value_Format__Disabled_CheckBoxClick
     end
     object Comments_Delete_MenuItem: TMenuItem

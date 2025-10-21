@@ -1115,8 +1115,8 @@ begin
     Translation__Component__Add( 'Cut_MenuItem', 'Cut [Ctrl + X]' );
     Translation__Component__Add( 'Csv__File__Data_Separator_Edit', '', 'Csv data separator.' );
     Translation__Component__Add( 'Csv__File__Text_Qualifier_Edit', '', 'Csv text qualifier.' );
-    Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled' );
-    Translation__Component__Add( 'Data_Value_Format__Disabled_MenuItem', 'Data value format disabled' );
+    Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled', '[Ctrl + W]' );
+    Translation__Component__Add( 'Data_Value_Format__Disabled_MenuItem', 'Data value format disabled [Ctrl + W]' );
     Translation__Component__Add( 'Database__Reconnect_MenuItem', 'Database reconnect' );
     Translation__Component__Add( 'Execute_Button', '', 'Command execute.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + E]' );
     Translation__Component__Add( 'Execute_MenuItem', 'Command execute [Ctrl + Shift + E]' );
@@ -1324,12 +1324,13 @@ begin
     Translation__Component__Add( 'Data_Filter__Buttons_GroupBox', 'Filter' );
     Translation__Component__Add( 'Data_Filter__Deactivate__All_Button', '', 'Deactivate all filters.' + #13 + #10 + #13 + #10 + '[Ctrl + Enter]' );
     Translation__Component__Add( 'Data_Filter__Delete__All_Button', '', 'Delete all filters.' );
+    Translation__Component__Add( 'Data_Filter__Focus__Set_CheckBox', 'F. S.', 'Set focus to the added filter.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + F]' );
     Translation__Component__Add( 'Data_Filter__Show_Button', '', 'Show filter value in log.' );
     Translation__Component__Add( 'Data_Preview_TabSheet', 'Preview' );
-    Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled' );
+    Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled', '[Ctrl + W]' );
     Translation__Component__Add( 'Delete_Visible_Records_Button', '', 'Delete visible records.' );
     Translation__Component__Add( 'Duplicate_Record_Button', '', 'Duplicate record.' );
-    Translation__Component__Add( 'Editing_CheckBox', 'Editing', 'Allow data changes.' );
+    Translation__Component__Add( 'Editing_CheckBox', 'Editing', 'Allow data changes.' + #13 + #10 + #13 + #10 + '[Ctrl + E]' );
     Translation__Component__Add( 'Extract_Table_Data_Button', '', 'Extract table data to log / file.' );
     Translation__Component__Add( 'First_Rows_Etiquette_Label', 'First rows', 'Display first <value> rows only.' + #13 + #10 + 'Negative value = disabled.' );
     Translation__Component__Add( 'First_Rows_SpinEdit', '', 'Ctrl + N - negate value;' + #13 + #10 + 'Ctrl + O - open.' );

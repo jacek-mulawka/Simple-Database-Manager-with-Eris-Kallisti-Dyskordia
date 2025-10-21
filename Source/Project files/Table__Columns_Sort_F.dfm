@@ -136,7 +136,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
       Columns = <
         item
           Caption = 'Column name'
-          Width = 300
+          Width = 600
         end
         item
           Caption = 'Column position'
