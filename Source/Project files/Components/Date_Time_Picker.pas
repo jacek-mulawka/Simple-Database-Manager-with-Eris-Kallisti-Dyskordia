@@ -92,6 +92,7 @@ type
     destructor Destroy(); override;
 
     function Focused() : boolean; override;
+    procedure SetFocus(); override;
     procedure Translation__Apply__DTP();
   published
     property Color : Vcl.Graphics.TColor read FColor write Color__Set;
@@ -953,6 +954,17 @@ procedure TDate_Time_Picker.Translation__Apply__DTP();
 begin
 
   Self.Calendar_Date_Time_Picker__Hint__Set();
+
+end;
+
+procedure TDate_Time_Picker.SetFocus();
+begin
+
+  if Self.date_panel.Visible then
+    Self.day_spin_edit.SetFocus()
+  else
+  if Self.time_panel.Visible then
+    Self.hour_spin_edit.SetFocus();
 
 end;
 
