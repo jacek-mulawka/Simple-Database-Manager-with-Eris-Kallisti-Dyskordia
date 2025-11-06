@@ -1569,7 +1569,7 @@ translation__messages_r.word__view=widok
 
 translation__table__data_filter_r.automatically_use_quotation_sign=a.'
 translation__table__data_filter_r.automatically_use_quotation_sign__hint=Automatyczne używaj cudzysłowów.
-translation__table__data_filter_r.buttons_panel__hint=Enter - aktywuj wszystkie filtry#13#10Ctrl + D - wyświetl niepowtarzalne wartości kolumny#13#10Ctrl + Enter - deaktywuj wszystkie filtry#13#10Ctrl + ?, Ctrl + / - wyświetl wartość filtra#13#10Ctrl + Shift + A - popraw wyrównanie
+translation__table__data_filter_r.buttons_panel__hint=Enter - aktywuj wszystkie filtry#13#10Ctrl + D - wyświetl niepowtarzalne wartości kolumny#13#10Ctrl + Enter - deaktywuj wszystkie filtry#13#10Ctrl + O - ustaw skupienie na operator#13#10Ctrl + ?, Ctrl + / - wyświetl wartość filtra#13#10Ctrl + Shift + A - popraw wyrównanie
 translation__table__data_filter_r.case_insensitive=i.w.
 translation__table__data_filter_r.case_insensitive__hint=Ignoruj wielkość znaków.
 translation__table__data_filter_r.day___month___year___hour___minute___second___milli_second=dzień - miesiąc - rok   godzina : minuta : sekunda . milisekunda
@@ -1580,7 +1580,7 @@ translation__table__data_filter_r.delete_filter__hint=Usuń filtr.
 translation__table__data_filter_r.disable_filter=d.
 translation__table__data_filter_r.disable_filter__hint=Deaktywuj filtr.
 translation__table__data_filter_r.field_name_etiquette_label__hint=Podwójne kliknięcie - skopiuj do schowka nazwę pola#13#10Ctrl + + - zwiększ wysokość#13#10Ctrl + - - zmniejsz wysokość#13#10Ctrl + Shift + A - popraw wyrównanie rozdzielaczy (splitters) (wszystkie pola)#13#10Ctrl + Shift + Q - popraw wyrównanie rozdzielaczy (splitters) (jedno pole)
-translation__table__data_filter_r.field_value__dedicated__use_check_box__hint=Użyj wartości z dodatkowych komponentów.#13#10#13#10[Ctrl + U]#13#10#13#10Enter - aktywuj wszystkie filtry#13#10Ctrl + D - wyświetl niepowtarzalne wartości kolumny#13#10Ctrl + Enter - deaktywuj wszystkie filtry#13#10Ctrl + ?, Ctrl + / - wyświetl wartość filtra
+translation__table__data_filter_r.field_value__dedicated__use_check_box__hint=Użyj wartości z dodatkowych komponentów.#13#10#13#10[Ctrl + U]#13#10#13#10Enter - aktywuj wszystkie filtry#13#10Ctrl + D - wyświetl niepowtarzalne wartości kolumny#13#10Ctrl + Enter - deaktywuj wszystkie filtry#13#10Ctrl + O - ustaw skupienie na operator#13#10Ctrl + ?, Ctrl + / - wyświetl wartość filtra#13#10Ctrl + Shift + A - popraw wyrównanie
 translation__table__data_filter_r.move_left__hint=Przesuń w lewo.
 translation__table__data_filter_r.move_right__hint=Przesuń w prawo.
 translation__table__data_filter_r.parameter_by=Parametr według.

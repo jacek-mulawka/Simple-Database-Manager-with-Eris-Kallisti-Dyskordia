@@ -1542,7 +1542,7 @@ translation__messages_r.word__view=view
 
 translation__table__data_filter_r.automatically_use_quotation_sign=a.'
 translation__table__data_filter_r.automatically_use_quotation_sign__hint=Automatically use quotation sign.
-translation__table__data_filter_r.buttons_panel__hint=Enter - activate all filters#13#10Ctrl + D - show column distinct values#13#10Ctrl + Enter - deactivate all filters#13#10Ctrl + ?, Ctrl + / - show filter value#13#10Ctrl + Shift + A - correct align
+translation__table__data_filter_r.buttons_panel__hint=Enter - activate all filters#13#10Ctrl + D - show column distinct values#13#10Ctrl + Enter - deactivate all filters#13#10Ctrl + O - set focus to the operator#13#10Ctrl + ?, Ctrl + / - show filter value#13#10Ctrl + Shift + A - correct align
 translation__table__data_filter_r.case_insensitive=c.i.
 translation__table__data_filter_r.case_insensitive__hint=Case insensitive.
 translation__table__data_filter_r.day___month___year___hour___minute___second___milli_second=day - month - year   hour : minute : second . millisecond
@@ -1553,7 +1553,7 @@ translation__table__data_filter_r.delete_filter__hint=Delete filter.
 translation__table__data_filter_r.disable_filter=d.
 translation__table__data_filter_r.disable_filter__hint=Disable filter.
 translation__table__data_filter_r.field_name_etiquette_label__hint=Double-click - copy the field name to clipboard#13#10Ctrl + + - increase height#13#10Ctrl + - - decrease height#13#10Ctrl + Shift + A - correct splitters align (all fields)#13#10Ctrl + Shift + Q - correct splitters align (one field)
-translation__table__data_filter_r.field_value__dedicated__use_check_box__hint=Use the value of additional components.#13#10#13#10[Ctrl + U]#13#10#13#10Enter - activate all filters#13#10Ctrl + D - show column distinct values#13#10Ctrl + Enter - deactivate all filters#13#10Ctrl + ?, Ctrl + / - show filter value
+translation__table__data_filter_r.field_value__dedicated__use_check_box__hint=Use the value of additional components.#13#10#13#10[Ctrl + U]#13#10#13#10Enter - activate all filters#13#10Ctrl + D - show column distinct values#13#10Ctrl + Enter - deactivate all filters#13#10Ctrl + O - set focus to the operator#13#10Ctrl + ?, Ctrl + / - show filter value#13#10Ctrl + Shift + A - correct align
 translation__table__data_filter_r.move_left__hint=Move left.
 translation__table__data_filter_r.move_right__hint=Move right.
 translation__table__data_filter_r.parameter_by=Parameter by.
