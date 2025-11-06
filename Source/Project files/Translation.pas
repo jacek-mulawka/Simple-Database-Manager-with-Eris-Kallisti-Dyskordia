@@ -2084,6 +2084,7 @@ begin
     'Enter - activate all filters' + #13 +
     'Ctrl + D - show column distinct values' + #13 +
     'Ctrl + Enter - deactivate all filters' + #13 +
+    'Ctrl + O - set focus to the operator' + #13 +
     'Ctrl + ?, Ctrl + / - show filter value' + #13 +
     'Ctrl + Shift + A - correct align';
   translation__table__data_filter_r.case_insensitive := 'c.i.';
@@ -2107,6 +2108,7 @@ begin
     'Enter - activate all filters' + #13 +
     'Ctrl + D - show column distinct values' + #13 +
     'Ctrl + Enter - deactivate all filters' + #13 +
+    'Ctrl + O - set focus to the operator' + #13 +
     'Ctrl + ?, Ctrl + / - show filter value' + #13 +
     'Ctrl + Shift + A - correct align';
   translation__table__data_filter_r.move_left__hint := 'Move left.';

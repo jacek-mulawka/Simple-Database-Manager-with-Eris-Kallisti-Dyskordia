@@ -92,7 +92,7 @@ type
     procedure Align_Correct__DTF();
     function Filter_Value__Get( const sql__quotation_sign__use__tdf_f : boolean ) : string;
     procedure Positions_Swap( const direction_f : TAlign );
-    procedure Set_Focus();
+    procedure SetFocus(); override;
     procedure Translation__Apply__TDF();
   end;
 
@@ -1035,6 +1035,13 @@ begin
     and ( @First_Rows__Negate_Value_wsk <> nil ) then
     First_Rows__Negate_Value_wsk()
   else
+  // O.
+  if    ( Key = 79 )
+    and ( Shift = [ ssCtrl ] )
+    and ( Self <> nil )
+    and ( Self.operators_combo_box <> nil ) then
+    operators_combo_box.SetFocus()
+  else
   // U.
   if    ( Key = 85 )
     and ( Shift = [ ssCtrl ] )
@@ -1404,7 +1411,7 @@ begin
 
 end;
 
-procedure TTable__Data_Filter.Set_Focus();
+procedure TTable__Data_Filter.SetFocus();
 begin
 
   if    ( Self.field_value__dedicated__use_check_box <> nil )

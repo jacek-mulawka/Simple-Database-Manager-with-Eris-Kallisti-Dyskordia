@@ -231,6 +231,10 @@ begin
 
       Self.Height := 200;
 
+
+      Ok_Button.Default := true;
+      Cancel_Button.Cancel := true;
+
     end;
 
 

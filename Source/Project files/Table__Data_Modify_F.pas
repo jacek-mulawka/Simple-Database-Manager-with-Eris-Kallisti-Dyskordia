@@ -2237,7 +2237,7 @@ begin
   zt_table__data_filter.First_Rows__Negate_Value_wsk := First_Rows__Negate_Value;
 
   if Data_Filter__Focus__Set_CheckBox.Checked then
-    zt_table__data_filter.Set_Focus();
+    zt_table__data_filter.SetFocus();
 
 end;
 
@@ -2419,7 +2419,10 @@ begin
   if    ( Key = 83 )
     and (
              ( Shift = [ ssCtrl ] )
-          or ( Shift = [ ssShift ] )
+          or (
+                   ( Shift = [ ssShift ] )
+               and ( not Editing_CheckBox.Checked )
+             )
         ) then
     Column__Values__Sum()
   else
