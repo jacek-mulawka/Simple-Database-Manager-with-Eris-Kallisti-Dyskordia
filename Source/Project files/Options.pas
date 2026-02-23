@@ -97,8 +97,7 @@ type
     Sql__Quotation_Sign__Use_CheckBox: TCheckBox;
     Sql__View__Parameter_Separator_GroupBox: TGroupBox;
     Sql__View__Parameter_Separator_Memo: TMemo;
-    Syn_Editor_Options_GroupBox: TGroupBox;
-    Syn_Editor_Options_CheckListBox: TCheckListBox;
+    Syn_Editor__Options_CheckListBox: TCheckListBox;
     Sql_Editor_TabSheet: TTabSheet;
     Sql_Editor__Block_Execute__Automatic_Detection_CheckBox: TCheckBox;
     Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox: TCheckBox;
@@ -112,6 +111,7 @@ type
     Sql_Editor__Code__Dent_Width_SpinEdit: TSpinEdit;
     Sql_Editor__Comments_Delete_CheckBox: TCheckBox;
     Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox;
+    Sql_Editor__Error__Caret_Position__Set_CheckBox: TCheckBox;
     Sql_Editor__Execute__Automatic_Detection_CheckBox: TCheckBox;
     Sql_Editor__Execute__Selected_CheckBox: TCheckBox;
     Sql_Editor__Font_Button: TButton;
@@ -142,6 +142,8 @@ type
     Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label: TLabel;
     Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox: TCheckBox;
     Sql_Editor__Left_Panel: TPanel;
+    Syn_Editor__Options_PageControl: TPageControl;
+    Syn_Editor__Options_TabSheet: TTabSheet;
     Sql_Editor__Query_Output_Save_Field_Format_GroupBox: TGroupBox;
     Sql_Editor__Query_Output_Save_Field_Format__Date_Edit: TEdit;
     Sql_Editor__Query_Output_Save_Field_Format__Date_Etiquette_Label: TLabel;
@@ -155,11 +157,15 @@ type
     Sql_Editor__Query_Output_Save_Field_Format__Time_Edit: TEdit;
     Sql_Editor__Query_Output_Save_Field_Format__Time_Etiquette_Label: TLabel;
     Sql_Editor__Right_Panel: TPanel;
+    Sql_Editor__Right_Vertical_Splitter: TSplitter;
+    Syn_Editor__Options__Scroll_TabSheet: TTabSheet;
+    Syn_Editor__Options__Scroll_CheckListBox: TCheckListBox;
     Sql_Editor__Transactions_Automatic_CheckBox: TCheckBox;
     Sql_Text_Memo: TMemo;
     Sql_Text_SynEdit: TSynEdit;
     Sql_Text__SynCompletionProposal: TSynCompletionProposal;
     System_Tables_Visible_CheckBox: TCheckBox;
+    Table__Columns_Sort__Keyboard_Select_CheckBox: TCheckBox;
     Table__Data_Filter_TabSheet: TTabSheet;
     Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox: TCheckBox;
     Table__Data_Filter__Filter__Dedicated_Value_Format_GroupBox: TGroupBox;
@@ -184,6 +190,9 @@ type
     Text__Search_Window_TabSheet: TTabSheet;
     Text__Search__Window__One_Common_CheckBox: TCheckBox;
     Translation_TabSheet: TTabSheet;
+    Syn_Editor__Options__Hint_TabSheet: TTabSheet;
+    Syn_Editor__Options__Hint_ScrollBox: TScrollBox;
+    Syn_Editor__Options__Hint_Label: TLabel;
 
     procedure FormCreate( Sender: TObject );
     procedure FormDestroy( Sender: TObject );
@@ -198,7 +207,7 @@ type
     procedure File_Path__Find_ButtonClick( Sender: TObject );
     procedure Language_ComboBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 
-    procedure Syn_Editor_Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+    procedure Syn_Editor__Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
     procedure Sql_Editor__Font_ButtonClick( Sender: TObject );
 
     procedure Sql_Text_MemoClick( Sender: TObject );
@@ -330,6 +339,7 @@ begin
   Sql_Editor__Code__Dent_Width_SpinEdit.Value := Common.sql_editor__code__dent_width;
   Sql_Editor__Comments_Delete_CheckBox.Checked := Common.sql_editor__comments_delete;
   Sql_Editor__Database_Connection__Separated_CheckBox.Checked := Common.sql_editor__database_connection__separated;
+  Sql_Editor__Error__Caret_Position__Set_CheckBox.Checked := Common.sql_editor__error__caret_position__set;
   Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked := Common.sql_editor__execute__automatic_detection;
   Sql_Editor__Execute__Selected_CheckBox.Checked := Common.sql_editor__execute__selected;
   Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked := Common.sql_editor__font__use_in_other_components;
@@ -378,11 +388,16 @@ begin
   Sql__View__Parameter_Separator_Memo.Lines.Text := Common.sql__view__parameter_separator;
   Splitter_Show_CheckBox.Checked := Common.splitter_show;
 
-  for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
+  for i := 0 to Syn_Editor__Options_CheckListBox.Items.Count - 1 do
     if SynEdit.TSynEditorOption(i) in Common.syn_editor_options then
-      Syn_Editor_Options_CheckListBox.Checked[ i ] := true;
+      Syn_Editor__Options_CheckListBox.Checked[ i ] := true;
+
+  for i := 0 to Syn_Editor__Options__Scroll_CheckListBox.Items.Count - 1 do
+    if SynEdit.TSynEditorScrollOption(i) in Common.syn_editor_options__scroll then
+      Syn_Editor__Options__Scroll_CheckListBox.Checked[ i ] := true;
 
   System_Tables_Visible_CheckBox.Checked := Common.system_tables_visible;
+  Table__Columns_Sort__Keyboard_Select_CheckBox.Checked := Common.table__columns_sort__keyboard_select;
   Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked := Common.table__data_filter__field_dedicated__default_use;
   Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__date;
   Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit.Text := Common.table__data_filter__filter__dedicated_value_format__separator__date;
@@ -571,6 +586,7 @@ begin
   Common.sql_editor__code__dent_width := Sql_Editor__Code__Dent_Width_SpinEdit.Value;
   Common.sql_editor__comments_delete := Sql_Editor__Comments_Delete_CheckBox.Checked;
   Common.sql_editor__database_connection__separated := Sql_Editor__Database_Connection__Separated_CheckBox.Checked;
+  Common.sql_editor__error__caret_position__set := Sql_Editor__Error__Caret_Position__Set_CheckBox.Checked;
   Common.sql_editor__execute__automatic_detection := Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked;
   Common.sql_editor__execute__selected := Sql_Editor__Execute__Selected_CheckBox.Checked;
   Common.sql_editor__font__use_in_other_components := Sql_Editor__Font__Use_In_Other_Components_CheckBox.Checked;
@@ -608,11 +624,17 @@ begin
   Common.system_tables_visible := System_Tables_Visible_CheckBox.Checked;
 
   Common.syn_editor_options := [];
+  Common.syn_editor_options__scroll := [];
 
-  for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
-    if Syn_Editor_Options_CheckListBox.Checked[ i ] then
+  for i := 0 to Syn_Editor__Options_CheckListBox.Items.Count - 1 do
+    if Syn_Editor__Options_CheckListBox.Checked[ i ] then
       Common.syn_editor_options := Common.syn_editor_options + [ SynEdit.TSynEditorOption(i) ];
 
+  for i := 0 to Syn_Editor__Options__Scroll_CheckListBox.Items.Count - 1 do
+    if Syn_Editor__Options__Scroll_CheckListBox.Checked[ i ] then
+      Common.syn_editor_options__scroll := Common.syn_editor_options__scroll + [ SynEdit.TSynEditorScrollOption(i) ];
+
+  Common.table__columns_sort__keyboard_select := Table__Columns_Sort__Keyboard_Select_CheckBox.Checked;
   Common.table__data_filter__field_dedicated__default_use := Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox.Checked;
   Common.table__data_filter__filter__dedicated_value_format__date := Table__Data_Filter__Filter__Dedicated_Value_Format__Date_Edit.Text;
   Common.table__data_filter__filter__dedicated_value_format__separator__date := Table__Data_Filter__Filter__Dedicated_Value_Format__Separator__Date_Edit.Text;
@@ -707,6 +729,7 @@ var
   fetch_options__mode_l : TFDFetchMode;
   fetch_options__record_count_mode_l : TFDRecordCountMode;
   syn_editor_option_l : SynEdit.TSynEditorOption;
+  syn_editor_scroll_option_l : SynEdit.TSynEditorScrollOption;
 
   zt_object_id_caption : Common.TObject_Id_Caption;
 begin
@@ -730,6 +753,7 @@ begin
 
   Options_PageControl.ActivePage := Basic_TabSheet;
   Sql_Editor__Highlights_PageControl.ActivePage := Sql_Editor__Highlights__Syntax_TabSheet;
+  Syn_Editor__Options_PageControl.ActivePage := Syn_Editor__Options_TabSheet;
 
   OpenDialog1.Filter := Translation.translation__messages_r.application_files + '|*' + Common.exe__file__default_extension + '|' + Translation.translation__messages_r.all_files + '|' + Common.all_files_find__filter;
 
@@ -745,10 +769,16 @@ begin
     Fire_Dac__Query__Fetch_Options__Record_Count_Mode_ComboBox.Items.Add(   System.TypInfo.GetEnumName(  System.TypeInfo(TFDRecordCountMode), Ord( fetch_options__record_count_mode_l )  )   );
 
 
-  Syn_Editor_Options_CheckListBox.Items.Clear();
+  Syn_Editor__Options_CheckListBox.Items.Clear();
 
   for syn_editor_option_l := Low( SynEdit.TSynEditorOption ) to High( SynEdit.TSynEditorOption ) do
-    Syn_Editor_Options_CheckListBox.Items.Add(   System.TypInfo.GetEnumName(  System.TypeInfo(SynEdit.TSynEditorOption), Ord( syn_editor_option_l )  )   );
+    Syn_Editor__Options_CheckListBox.Items.Add(   System.TypInfo.GetEnumName(  System.TypeInfo(SynEdit.TSynEditorOption), Ord( syn_editor_option_l )  )   );
+
+
+  Syn_Editor__Options__Scroll_CheckListBox.Items.Clear();
+
+  for syn_editor_scroll_option_l := Low( SynEdit.TSynEditorScrollOption ) to High( SynEdit.TSynEditorScrollOption ) do
+    Syn_Editor__Options__Scroll_CheckListBox.Items.Add(   System.TypInfo.GetEnumName(  System.TypeInfo(SynEdit.TSynEditorScrollOption), Ord( syn_editor_scroll_option_l )  )   );
 
 
 
@@ -802,7 +832,8 @@ begin
 
   Common.Syn_Edit__Parameters__Set( Sql_Text_SynEdit );
 
-  Common.Font__Set( Syn_Editor_Options_CheckListBox.Font, FontDialog1.Font );
+  Common.Font__Set( Syn_Editor__Options_CheckListBox.Font, FontDialog1.Font );
+  Common.Font__Set( Syn_Editor__Options__Scroll_CheckListBox.Font, FontDialog1.Font );
 
 
   zts_1 := Common.sql_editor__code_completion_list_c;
@@ -895,7 +926,8 @@ var
   i : integer;
 begin
 
-  Syn_Editor_Options_CheckListBox.Items.Clear();
+  Syn_Editor__Options_CheckListBox.Items.Clear();
+  Syn_Editor__Options__Scroll_CheckListBox.Items.Clear();
 
 
   Common.Text__Search_Replace__Syn_Edit__Set( nil, text__search_replace_form );
@@ -1313,6 +1345,13 @@ begin
 
 
   if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'sql_editor__error__caret_position__set' )  ) then
+    file_ini.WriteBool( 'Options', 'sql_editor__error__caret_position__set', Sql_Editor__Error__Caret_Position__Set_CheckBox.Checked )
+  else
+    Sql_Editor__Error__Caret_Position__Set_CheckBox.Checked := file_ini.ReadBool( 'Options', 'sql_editor__error__caret_position__set', Sql_Editor__Error__Caret_Position__Set_CheckBox.Checked );
+
+
+  if   ( save_l )
     or (  not file_ini.ValueExists( 'Options', 'sql_editor__execute__automatic_detection' )  ) then
     file_ini.WriteBool( 'Options', 'sql_editor__execute__automatic_detection', Sql_Editor__Execute__Automatic_Detection_CheckBox.Checked )
   else
@@ -1354,6 +1393,9 @@ begin
 
 
       Common.Font__Set( FontDialog1.Font, Sql_Text_SynEdit.Font );
+
+      Common.Font__Set( Syn_Editor__Options_CheckListBox.Font, FontDialog1.Font );
+      Common.Font__Set( Syn_Editor__Options__Scroll_CheckListBox.Font, FontDialog1.Font );
 
     end;
 
@@ -1621,8 +1663,8 @@ begin
 
   zts := '';
 
-  for zti := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
-    if Syn_Editor_Options_CheckListBox.Checked[ zti ] then
+  for zti := 0 to Syn_Editor__Options_CheckListBox.Items.Count - 1 do
+    if Syn_Editor__Options_CheckListBox.Checked[ zti ] then
       begin
 
         if Trim( zts ) <> '' then
@@ -1630,7 +1672,7 @@ begin
             ', ';
 
         zts := zts +
-          Syn_Editor_Options_CheckListBox.Items[ zti ];
+          Syn_Editor__Options_CheckListBox.Items[ zti ];
 
       end;
 
@@ -1646,11 +1688,47 @@ begin
 
       zts := file_ini.ReadString( 'Options', 'syn_editor_options', zts );
 
-      Syn_Editor_Options_CheckListBox.CheckAll( cbUnchecked, false, false );
+      Syn_Editor__Options_CheckListBox.CheckAll( cbUnchecked, false, false );
 
-      for zti := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
-        if Pos( ', ' + Syn_Editor_Options_CheckListBox.Items[ zti ] + ',', ', ' + zts + ',' ) > 0 then
-          Syn_Editor_Options_CheckListBox.Checked[ zti ] := true;
+      for zti := 0 to Syn_Editor__Options_CheckListBox.Items.Count - 1 do
+        if Pos( ', ' + Syn_Editor__Options_CheckListBox.Items[ zti ] + ',', ', ' + zts + ',' ) > 0 then
+          Syn_Editor__Options_CheckListBox.Checked[ zti ] := true;
+
+    end;
+
+
+  zts := '';
+
+  for zti := 0 to Syn_Editor__Options__Scroll_CheckListBox.Items.Count - 1 do
+    if Syn_Editor__Options__Scroll_CheckListBox.Checked[ zti ] then
+      begin
+
+        if Trim( zts ) <> '' then
+          zts := zts +
+            ', ';
+
+        zts := zts +
+          Syn_Editor__Options__Scroll_CheckListBox.Items[ zti ];
+
+      end;
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'syn_editor_options__scroll' )  ) then
+    begin
+
+      file_ini.WriteString( 'Options', 'syn_editor_options__scroll', zts );
+
+    end
+  else
+    begin
+
+      zts := file_ini.ReadString( 'Options', 'syn_editor_options__scroll', zts );
+
+      Syn_Editor__Options__Scroll_CheckListBox.CheckAll( cbUnchecked, false, false );
+
+      for zti := 0 to Syn_Editor__Options__Scroll_CheckListBox.Items.Count - 1 do
+        if Pos( ', ' + Syn_Editor__Options__Scroll_CheckListBox.Items[ zti ] + ',', ', ' + zts + ',' ) > 0 then
+          Syn_Editor__Options__Scroll_CheckListBox.Checked[ zti ] := true;
 
     end;
 
@@ -1660,6 +1738,13 @@ begin
     file_ini.WriteBool( 'Options', 'system_tables_visible', System_Tables_Visible_CheckBox.Checked )
   else
     System_Tables_Visible_CheckBox.Checked := file_ini.ReadBool( 'Options', 'system_tables_visible', System_Tables_Visible_CheckBox.Checked );
+
+
+  if   ( save_l )
+    or (  not file_ini.ValueExists( 'Options', 'table__columns_sort__keyboard_select' )  ) then
+    file_ini.WriteBool( 'Options', 'table__columns_sort__keyboard_select', Table__Columns_Sort__Keyboard_Select_CheckBox.Checked )
+  else
+    Table__Columns_Sort__Keyboard_Select_CheckBox.Checked := file_ini.ReadBool( 'Options', 'table__columns_sort__keyboard_select', Table__Columns_Sort__Keyboard_Select_CheckBox.Checked );
 
 
   if   ( save_l )
@@ -2096,26 +2181,31 @@ begin
 
 end;
 
-procedure TOptions_Form.Syn_Editor_Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+procedure TOptions_Form.Syn_Editor__Options_CheckListBoxKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 var
   i : integer;
 begin
 
+  if   ( Sender = nil )
+    or (  not ( Sender is TCheckListBox )  ) then
+    Exit;
+
+
   // A.
   if    ( Key = 65 )
     and ( Shift = [ ssCtrl ] ) then
-    Syn_Editor_Options_CheckListBox.CheckAll( cbChecked, false, false )
+    TCheckListBox(Sender).CheckAll( cbChecked, false, false )
   else
   // N.
   if    ( Key = 78 )
     and ( Shift = [ ssCtrl ] ) then
-    Syn_Editor_Options_CheckListBox.CheckAll( cbUnchecked, false, false )
+    TCheckListBox(Sender).CheckAll( cbUnchecked, false, false )
   else
   // I.
   if    ( Key = 73 )
     and ( Shift = [ ssCtrl ] ) then
-    for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
-      Syn_Editor_Options_CheckListBox.Checked[ i ] := not Syn_Editor_Options_CheckListBox.Checked[ i ];
+    for i := 0 to TCheckListBox(Sender).Items.Count - 1 do
+      TCheckListBox(Sender).Checked[ i ] := not TCheckListBox(Sender).Checked[ i ];
 
 end;
 
@@ -2127,7 +2217,8 @@ begin
 
       //Common.Font__Set( Sql_Text_Memo.Font, FontDialog1.Font );
       Common.Font__Set( Sql_Text_SynEdit.Font, FontDialog1.Font );
-      Common.Font__Set( Syn_Editor_Options_CheckListBox.Font, FontDialog1.Font );
+      Common.Font__Set( Syn_Editor__Options_CheckListBox.Font, FontDialog1.Font );
+      Common.Font__Set( Syn_Editor__Options__Scroll_CheckListBox.Font, FontDialog1.Font );
 
     end;
 
@@ -2165,9 +2256,16 @@ begin
 
   Sql_Text_SynEdit.Options := [];
 
-  for i := 0 to Syn_Editor_Options_CheckListBox.Items.Count - 1 do
-    if Syn_Editor_Options_CheckListBox.Checked[ i ] then
+  for i := 0 to Syn_Editor__Options_CheckListBox.Items.Count - 1 do
+    if Syn_Editor__Options_CheckListBox.Checked[ i ] then
       Sql_Text_SynEdit.Options := Sql_Text_SynEdit.Options + [ SynEdit.TSynEditorOption(i) ];
+
+
+  Sql_Text_SynEdit.ScrollOptions := [];
+
+  for i := 0 to Syn_Editor__Options__Scroll_CheckListBox.Items.Count - 1 do
+    if Syn_Editor__Options__Scroll_CheckListBox.Checked[ i ] then
+      Sql_Text_SynEdit.ScrollOptions := Sql_Text_SynEdit.ScrollOptions + [ SynEdit.TSynEditorScrollOption(i) ];
 
 
   if Sql_Text_SynEdit.TabWidth <> Sql_Editor__Code__Dent_Width_SpinEdit.Value then

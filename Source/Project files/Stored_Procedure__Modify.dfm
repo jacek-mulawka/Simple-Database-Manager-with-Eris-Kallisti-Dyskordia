@@ -450,9 +450,8 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
             Kind = gbkMargin
             Width = 3
           end>
-        Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
         RightEdge = 255
-        SelectedColor.Alpha = 0.400000005960464500
+        ScrollbarAnnotations = <>
         TabWidth = 2
         WantTabs = True
         OnReplaceText = Stored_Procedure__Source_SynEditReplaceText
@@ -473,6 +472,11 @@ object Stored_Procedure__Modify_Form: TStored_Procedure__Modify_Form
     TitleFont.Height = -11
     TitleFont.Name = 'MS Shell Dlg 2'
     TitleFont.Style = [fsBold]
+    GripperFont.Charset = DEFAULT_CHARSET
+    GripperFont.Color = clBtnText
+    GripperFont.Height = -12
+    GripperFont.Name = 'Segoe UI'
+    GripperFont.Style = []
     Columns = <>
     Resizeable = True
     ShortCut = 16416

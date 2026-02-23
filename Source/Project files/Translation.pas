@@ -957,6 +957,7 @@ begin
     Translation__Component__Add( 'Sql_Editor__Code__Dent_Width_GroupBox', 'Code dent width', 'Indents / outdents a selected code line or block by width (characters count).' );
     Translation__Component__Add( 'Sql_Editor__Comments_Delete_CheckBox', 'Delete comments', 'Delete comments from SQL commands.' );
     Translation__Component__Add( 'Sql_Editor__Database_Connection__Separated_CheckBox', 'Separated database connection', 'Every tab has own database connection.' );
+    Translation__Component__Add( 'Sql_Editor__Error__Caret_Position__Set_CheckBox', 'Indicate error locations with caret' );
     Translation__Component__Add( 'Sql_Editor__Execute__Automatic_Detection_CheckBox', 'Automatically command execute detection', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
     Translation__Component__Add( 'Sql_Editor__Execute__Selected_CheckBox', 'Execute selected SQL only', 'Execute only the selected part of the SQL command (if the selection is not empty).' );
     Translation__Component__Add( 'Sql_Editor__Font_Button', 'Font' );
@@ -979,6 +980,10 @@ begin
     Translation__Component__Add( 'Sql_Editor__Highlights__Words__Color__Background_Etiquette_Label', 'Background' );
     Translation__Component__Add( 'Sql_Editor__Highlights__Words__Color__Border_Etiquette_Label', 'Border' );
     Translation__Component__Add( 'Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox', 'Switch keyboard shortcuts ''Save query output as csv'' with ''Save file''' );
+    Translation__Component__Add( 'Syn_Editor__Options_TabSheet', 'Editor options' );
+    Translation__Component__Add( 'Syn_Editor__Options__Hint_Label', 'Ctrl + A - select all' + #13 + #10 + 'Ctrl + I - invert selection' + #13 + #10 + 'Ctrl + N - unselect all' );
+    Translation__Component__Add( 'Syn_Editor__Options__Hint_TabSheet', 'Hint' );
+    Translation__Component__Add( 'Syn_Editor__Options__Scroll_TabSheet', 'Editor scroll options' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Date_Etiquette_Label', 'Date', 'E.g.:' + #13 + #10 + 'dd.mm.yyyy' + #13 + #10 + 'dd-mm-yyyy' + #13 + #10 + 'yyyy-mm-dd' + #13 + #10 + 'yy mmm ddd' + #13 + #10 + 'd dddd mmmm y' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Real_Numbers_Etiquette_Label', 'Real numbers', 'E.g.:' + #13 + #10 + '### ### ### ### ### ### ##0.###' + #13 + #10 + '0.##############' + #13 + #10 + '### ### ##0.### ### ###' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Separator__Date_Time_GroupBox', 'Date time' );
@@ -987,9 +992,8 @@ begin
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format__Time_Etiquette_Label', 'Time', 'E.g.:' + #13 + #10 + 'hh:mm:ss' + #13 + #10 + 'hh mm ss.zzz' + #13 + #10 + 'h m s am/pm' + #13 + #10 + 'hh-m a/p' );
     Translation__Component__Add( 'Sql_Editor__Query_Output_Save_Field_Format_GroupBox', 'Query output save field format' );
     Translation__Component__Add( 'Sql_Editor__Transactions_Automatic_CheckBox', 'Automatically transaction begining', 'Automatically begin transaction (if there is no active transaction) when the SQL text contains words like: delete, insert, update etc.' );
-    Translation__Component__Add( 'Syn_Editor_Options_GroupBox', 'Editor options' );
-    Translation__Component__Add( 'Syn_Editor_Options_CheckListBox', '', 'Ctrl + A - select all' + #13 + #10 + 'Ctrl + I - invert selection' + #13 + #10 + 'Ctrl + N - unselect all' );
     Translation__Component__Add( 'System_Tables_Visible_CheckBox', 'System tables, roles visible' );
+    Translation__Component__Add( 'Table__Columns_Sort__Keyboard_Select_CheckBox', 'Table columns sort - keyboard rows select', 'Select rows using the keyboard in the table column sorting tab.' );
     Translation__Component__Add( 'Table__Data_Filter_TabSheet', 'Table data filter' );
     Translation__Component__Add( 'Table__Data_Filter__Field_Dedicated__Default_Use_CheckBox', 'Use additional value as default', 'Use dedicated value as default in table data filter.' );
     Translation__Component__Add( 'Table__Data_Filter__Filter__Dedicated_Value_Format_GroupBox', 'Filter value format' );
@@ -1118,6 +1122,7 @@ begin
     Translation__Component__Add( 'Data_Value_Format__Disabled_CheckBox', 'Data value format disabled', '[Ctrl + W]' );
     Translation__Component__Add( 'Data_Value_Format__Disabled_MenuItem', 'Data value format disabled [Ctrl + W]' );
     Translation__Component__Add( 'Database__Reconnect_MenuItem', 'Database reconnect' );
+    Translation__Component__Add( 'Error__Caret_Position__Set_MenuItem', 'Indicate error locations with caret' );
     Translation__Component__Add( 'Execute_Button', '', 'Command execute.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + E]' );
     Translation__Component__Add( 'Execute_MenuItem', 'Command execute [Ctrl + Shift + E]' );
     Translation__Component__Add( 'Execute__Automatic_Detection_CheckBox', 'E.', 'Automatically detect whether to use ''Query execute'' or ''Command execute'' button.' + #13 + #10 + #13 + #10 + 'Will use ''Command execute'' when the SQL text contains words like: alter, create, delete, drop, insert, recreate, set, update etc.' );
@@ -1310,8 +1315,11 @@ begin
 
   Translation__Unit__Add( 'TTable__Columns_Sort_F_Frame' );
     Translation__Component__Add( 'Buttons_Panel__Hide_Button', '', 'Hide panel.' );
+    Translation__Component__Add( 'Column__Move__Down_Button', '', 'Move selected column down.' + #13 + #10 + #13 + #10 + '[Ctrl + Down arrow]' );
+    Translation__Component__Add( 'Column__Move__Up_Button', '', 'Move selected column up.' + #13 + #10 + #13 + #10 + '[Ctrl + Up arrow]' );
     Translation__Component__Add( 'Columns_Sort_ListView', '', '', 'Column name;Column position;' );
     Translation__Component__Add( 'Execute_Button', '', 'Save changes.' );
+    Translation__Component__Add( 'Keyboard_Select_CheckBox', 'Keyboard rows select', 'Select rows using the keyboard.' + #13 + #10 + #13 + #10 + '[Ctrl + K]' + #13 + #10 + #13 + #10 + 'Backspace - unselect all' + #13 + #10 + 'Space - select one' );
     Translation__Component__Add( 'Refresh_Button', '', 'Refresh.' + #13 + #10 + #13 + #10 + '[Ctrl + R]' );
     Translation__Component__Add( 'Sort_Button', '', 'Sort columns.' );
 

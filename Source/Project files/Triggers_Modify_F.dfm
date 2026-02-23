@@ -58,7 +58,7 @@ object Triggers_Modify_F_Frame: TTriggers_Modify_F_Frame
       Caption = 'Trigger name'
       ParentShowHint = False
       ShowHint = False
-      ExplicitWidth = 71
+      ExplicitWidth = 70
     end
     object Caret_Position_Label: TLabel
       AlignWithMargins = True
@@ -410,10 +410,9 @@ object Triggers_Modify_F_Frame: TTriggers_Modify_F_Frame
             Kind = gbkMargin
             Width = 3
           end>
-        Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
         ReadOnly = True
         RightEdge = 255
-        SelectedColor.Alpha = 0.400000005960464500
+        ScrollbarAnnotations = <>
         TabWidth = 2
         WantTabs = True
         OnReplaceText = Trigger_Source_SynEditReplaceText

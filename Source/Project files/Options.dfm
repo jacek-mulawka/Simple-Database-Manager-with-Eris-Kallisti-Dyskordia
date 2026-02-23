@@ -4,7 +4,7 @@ object Options_Form: TOptions_Form
   Margins.Bottom = 5
   Caption = 'Options'
   ClientHeight = 762
-  ClientWidth = 884
+  ClientWidth = 984
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,7 +20,7 @@ object Options_Form: TOptions_Form
     AlignWithMargins = True
     Left = 10
     Top = 697
-    Width = 864
+    Width = 964
     Height = 60
     Margins.Left = 10
     Margins.Top = 0
@@ -29,22 +29,22 @@ object Options_Form: TOptions_Form
     Align = alBottom
     TabOrder = 1
     DesignSize = (
-      864
+      964
       60)
     object Apply_Hint_Label: TLabel
-      Left = 510
+      Left = 611
       Top = 5
-      Width = 336
+      Width = 335
       Height = 15
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       Caption = 'To apply settings in all open windows use the reconnect option.'
       ParentShowHint = False
       ShowHint = True
-      ExplicitLeft = 310
+      ExplicitLeft = 511
     end
     object Cancel_Button: TButton
-      Left = 779
+      Left = 879
       Top = 30
       Width = 75
       Height = 25
@@ -67,7 +67,7 @@ object Options_Form: TOptions_Form
       OnClick = Load_Save_ButtonClick
     end
     object Ok_Button: TButton
-      Left = 690
+      Left = 790
       Top = 30
       Width = 75
       Height = 25
@@ -94,13 +94,13 @@ object Options_Form: TOptions_Form
     AlignWithMargins = True
     Left = 10
     Top = 5
-    Width = 864
+    Width = 964
     Height = 687
     Margins.Left = 10
     Margins.Top = 5
     Margins.Right = 10
     Margins.Bottom = 5
-    ActivePage = Table__Data_Filter_TabSheet
+    ActivePage = Sql_Editor_TabSheet
     Align = alClient
     TabOrder = 0
     object Basic_TabSheet: TTabSheet
@@ -109,7 +109,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 59
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -123,7 +123,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 136
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -137,7 +137,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 447
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -151,7 +151,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 163
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -165,7 +165,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 420
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -179,7 +179,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 190
-        Width = 836
+        Width = 936
         Height = 40
         Margins.Left = 10
         Margins.Top = 5
@@ -192,7 +192,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 7
           Top = 17
-          Width = 822
+          Width = 922
           Height = 21
           Margins.Left = 5
           Margins.Top = 0
@@ -207,7 +207,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 240
-        Width = 836
+        Width = 936
         Height = 80
         Margins.Left = 10
         Margins.Top = 5
@@ -219,7 +219,7 @@ object Options_Form: TOptions_Form
         object Sql__External_Function__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
-          Width = 832
+          Width = 932
           Height = 61
           Align = alClient
           ScrollBars = ssBoth
@@ -230,7 +230,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 330
-        Width = 836
+        Width = 936
         Height = 80
         Margins.Left = 10
         Margins.Top = 5
@@ -242,7 +242,7 @@ object Options_Form: TOptions_Form
         object Sql__View__Parameter_Separator_Memo: TMemo
           Left = 2
           Top = 17
-          Width = 832
+          Width = 932
           Height = 61
           Align = alClient
           ScrollBars = ssBoth
@@ -252,8 +252,8 @@ object Options_Form: TOptions_Form
       object Table__Data_Modify__Editing__Default_State_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 474
-        Width = 836
+        Top = 501
+        Width = 936
         Height = 17
         Hint = 'Data in the tables defaults to edit mode.'
         Margins.Left = 10
@@ -264,13 +264,13 @@ object Options_Form: TOptions_Form
         Caption = 'Table data editing default state'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 11
+        TabOrder = 12
       end
       object Log__Auto_Scroll__GroupBox: TGroupBox
         AlignWithMargins = True
         Left = 10
         Top = 86
-        Width = 836
+        Width = 936
         Height = 40
         Hint = 
           'Log automatic scrolling:'#13#10'< 0 - disabled;'#13#10'= 0 - always;'#13#10'> 0 - ' +
@@ -285,10 +285,10 @@ object Options_Form: TOptions_Form
         ShowHint = True
         TabOrder = 3
         DesignSize = (
-          836
+          936
           40)
         object Log__Auto_Scroll__Seconds_SpinEdit: TSpinEdit
-          Left = 710
+          Left = 810
           Top = 12
           Width = 120
           Height = 24
@@ -304,8 +304,8 @@ object Options_Form: TOptions_Form
       object Sql_Editor__Font__Use_In_Other_Components_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
-        Top = 501
-        Width = 836
+        Top = 528
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -315,13 +315,13 @@ object Options_Form: TOptions_Form
         Caption = 'Use SQL editor font in other components'
         ParentShowHint = False
         ShowHint = False
-        TabOrder = 12
+        TabOrder = 13
       end
       object Database__Modify__Window__Maximized_CheckBox: TCheckBox
         AlignWithMargins = True
         Left = 10
         Top = 32
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -337,7 +337,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 5
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -349,6 +349,23 @@ object Options_Form: TOptions_Form
         ShowHint = False
         TabOrder = 0
       end
+      object Table__Columns_Sort__Keyboard_Select_CheckBox: TCheckBox
+        AlignWithMargins = True
+        Left = 10
+        Top = 474
+        Width = 936
+        Height = 17
+        Hint = 'Select rows using the keyboard in the table column sorting tab.'
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Table columns sort - keyboard rows select'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 11
+      end
     end
     object Data_Presentation_TabSheet: TTabSheet
       Caption = 'Data presentation'
@@ -357,7 +374,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 260
-        Width = 836
+        Width = 936
         Height = 15
         Hint = 'Display first <value> rows only.'#13#10'Negative value = disabled.'
         Margins.Left = 10
@@ -374,7 +391,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 5
-        Width = 836
+        Width = 936
         Height = 245
         Margins.Left = 10
         Margins.Top = 5
@@ -387,7 +404,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 202
-          Width = 812
+          Width = 912
           Height = 40
           Hint = 'E.g.:'#13#10'hh:mm:ss'#13#10'hh mm ss.z'#13#10'hh mm ss.zzz'#13#10'h m s am/pm'#13#10'hh-m a/p'
           Margins.Left = 10
@@ -400,7 +417,7 @@ object Options_Form: TOptions_Form
           ShowHint = True
           TabOrder = 4
           object Data_Presentation__Data_Value_Format__Time__Use_CheckBox: TCheckBox
-            Left = 610
+            Left = 710
             Top = 17
             Width = 200
             Height = 21
@@ -412,7 +429,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 17
-            Width = 588
+            Width = 688
             Height = 21
             Margins.Left = 10
             Margins.Top = 0
@@ -427,7 +444,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 157
-          Width = 812
+          Width = 912
           Height = 40
           Hint = 
             'E.g.:'#13#10'### ### ### ### ### ### ##0.###'#13#10'0.##############'#13#10'### ##' +
@@ -442,7 +459,7 @@ object Options_Form: TOptions_Form
           ShowHint = True
           TabOrder = 3
           object Data_Presentation__Data_Value_Format__Real_Numbers__Use_CheckBox: TCheckBox
-            Left = 610
+            Left = 710
             Top = 17
             Width = 200
             Height = 21
@@ -454,7 +471,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 17
-            Width = 588
+            Width = 688
             Height = 21
             Margins.Left = 10
             Margins.Top = 0
@@ -469,7 +486,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 67
-          Width = 812
+          Width = 912
           Height = 40
           Hint = 'E.g.:'#13#10'dd.mm.yyyy hh:mm:ss.zzz'
           Margins.Left = 10
@@ -482,7 +499,7 @@ object Options_Form: TOptions_Form
           ShowHint = True
           TabOrder = 1
           object Data_Presentation__Data_Value_Format__Date_Time__Use_CheckBox: TCheckBox
-            Left = 610
+            Left = 710
             Top = 17
             Width = 200
             Height = 21
@@ -494,7 +511,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 17
-            Width = 588
+            Width = 688
             Height = 21
             Margins.Left = 10
             Margins.Top = 0
@@ -509,7 +526,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 22
-          Width = 812
+          Width = 912
           Height = 40
           Hint = 
             'E.g.:'#13#10'dd.mm.yyyy'#13#10'dd-mm-yyyy'#13#10'yyyy-mm-dd'#13#10'yy mmm ddd'#13#10'd dddd mm' +
@@ -524,7 +541,7 @@ object Options_Form: TOptions_Form
           ShowHint = True
           TabOrder = 0
           object Data_Presentation__Data_Value_Format__Date__Use_CheckBox: TCheckBox
-            Left = 610
+            Left = 710
             Top = 17
             Width = 200
             Height = 21
@@ -536,7 +553,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 17
-            Width = 588
+            Width = 688
             Height = 21
             Margins.Left = 10
             Margins.Top = 0
@@ -551,7 +568,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 112
-          Width = 812
+          Width = 912
           Height = 40
           Hint = 'E.g.:'#13#10'### ### ### ### ### ### ##0'#13#10'0'#13#10'000000'
           Margins.Left = 10
@@ -564,7 +581,7 @@ object Options_Form: TOptions_Form
           ShowHint = True
           TabOrder = 2
           object Data_Presentation__Data_Value_Format__Numbers__Use_CheckBox: TCheckBox
-            Left = 610
+            Left = 710
             Top = 17
             Width = 200
             Height = 21
@@ -576,7 +593,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 17
-            Width = 588
+            Width = 688
             Height = 21
             Margins.Left = 10
             Margins.Top = 0
@@ -592,7 +609,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 280
-        Width = 836
+        Width = 936
         Height = 24
         Margins.Left = 10
         Margins.Top = 0
@@ -612,7 +629,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 5
-        Width = 836
+        Width = 936
         Height = 40
         Hint = 'E.g.:'#13#10'C:\Program Files\Firebird\Firebird_3_0\gbak.exe'
         Margins.Left = 10
@@ -626,7 +643,7 @@ object Options_Form: TOptions_Form
         TabOrder = 0
         object Database__Backup__Application__File_Path__Find_Button: TButton
           AlignWithMargins = True
-          Left = 794
+          Left = 894
           Top = 17
           Width = 30
           Height = 21
@@ -648,7 +665,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 17
-          Width = 767
+          Width = 867
           Height = 21
           Margins.Left = 10
           Margins.Top = 0
@@ -664,7 +681,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 50
-        Width = 836
+        Width = 936
         Height = 40
         Hint = 'E.g.:'#13#10'C:\Program Files\Firebird\Firebird_3_0\isql.exe'
         Margins.Left = 10
@@ -678,7 +695,7 @@ object Options_Form: TOptions_Form
         TabOrder = 1
         object Database__Create__Application__File_Path__Find_Button: TButton
           AlignWithMargins = True
-          Left = 794
+          Left = 894
           Top = 17
           Width = 30
           Height = 21
@@ -700,7 +717,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 17
-          Width = 767
+          Width = 867
           Height = 21
           Margins.Left = 10
           Margins.Top = 0
@@ -716,7 +733,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 95
-        Width = 836
+        Width = 936
         Height = 110
         Margins.Left = 10
         Margins.Top = 5
@@ -731,7 +748,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 22
-          Width = 812
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 5
@@ -747,7 +764,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 65
-          Width = 812
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 5
@@ -763,7 +780,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 37
-          Width = 812
+          Width = 912
           Height = 23
           Margins.Left = 10
           Margins.Top = 0
@@ -776,7 +793,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 80
-          Width = 812
+          Width = 912
           Height = 23
           Margins.Left = 10
           Margins.Top = 0
@@ -790,7 +807,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 210
-        Width = 836
+        Width = 936
         Height = 40
         Margins.Left = 10
         Margins.Top = 5
@@ -813,7 +830,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 5
-        Width = 836
+        Width = 936
         Height = 200
         Margins.Left = 10
         Margins.Top = 5
@@ -826,7 +843,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 27
-          Width = 812
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
@@ -842,7 +859,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 83
-          Width = 812
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
@@ -856,7 +873,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 139
-          Width = 812
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
@@ -870,7 +887,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 47
-          Width = 812
+          Width = 912
           Height = 21
           Margins.Left = 10
           Margins.Top = 0
@@ -886,7 +903,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 103
-          Width = 812
+          Width = 912
           Height = 21
           Margins.Left = 10
           Margins.Top = 0
@@ -902,7 +919,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 159
-          Width = 812
+          Width = 912
           Height = 24
           Margins.Left = 10
           Margins.Top = 0
@@ -923,7 +940,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 10
-        Width = 836
+        Width = 936
         Height = 15
         Margins.Left = 10
         Margins.Top = 10
@@ -939,7 +956,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 30
-        Width = 836
+        Width = 936
         Height = 21
         Margins.Left = 10
         Margins.Top = 0
@@ -956,23 +973,37 @@ object Options_Form: TOptions_Form
     object Sql_Editor_TabSheet: TTabSheet
       Caption = 'SQL editor'
       ImageIndex = 1
+      object Sql_Editor__Right_Vertical_Splitter: TSplitter
+        Left = 595
+        Top = 0
+        Width = 6
+        Height = 657
+        Align = alRight
+        AutoSnap = False
+        Color = clSkyBlue
+        MinSize = 1
+        ParentColor = False
+        ExplicitLeft = 147
+        ExplicitTop = 19
+        ExplicitHeight = 245
+      end
       object Sql_Editor__Left_Panel: TPanel
         Left = 0
         Top = 0
-        Width = 601
+        Width = 595
         Height = 657
         Align = alClient
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
         DesignSize = (
-          601
+          595
           657)
         object Caret_Position_Label: TLabel
           AlignWithMargins = True
           Left = 11
-          Top = 352
-          Width = 579
+          Top = 379
+          Width = 573
           Height = 15
           Hint = 'Caret position, text length.'
           Margins.Left = 10
@@ -984,13 +1015,14 @@ object Options_Form: TOptions_Form
           ParentShowHint = False
           ShowHint = True
           Layout = tlCenter
+          ExplicitTop = 352
           ExplicitWidth = 83
         end
         object Sql_Editor__Code__Completion_Window_GroupBox: TGroupBox
           AlignWithMargins = True
           Left = 11
           Top = 72
-          Width = 579
+          Width = 573
           Height = 66
           Margins.Left = 10
           Margins.Top = 5
@@ -1001,7 +1033,7 @@ object Options_Form: TOptions_Form
           TabOrder = 4
           object Sql_Editor__Code__Completion_Window__Default__Width_GroupBox: TGroupBox
             AlignWithMargins = True
-            Left = 427
+            Left = 421
             Top = 17
             Width = 150
             Height = 47
@@ -1033,7 +1065,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 2
             Top = 17
-            Width = 425
+            Width = 419
             Height = 47
             Margins.Left = 0
             Margins.Top = 0
@@ -1046,7 +1078,7 @@ object Options_Form: TOptions_Form
               AlignWithMargins = True
               Left = 7
               Top = 17
-              Width = 411
+              Width = 405
               Height = 24
               Margins.Left = 5
               Margins.Top = 0
@@ -1064,7 +1096,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 28
-          Width = 579
+          Width = 573
           Height = 17
           Hint = 
             'Automatically detect whether to use '#39'Query execute'#39' or '#39'Command ' +
@@ -1085,7 +1117,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 50
-          Width = 579
+          Width = 573
           Height = 17
           Hint = 
             'Automatically begin transaction (if there is no active transacti' +
@@ -1102,8 +1134,8 @@ object Options_Form: TOptions_Form
           TabOrder = 3
         end
         object Sql_Text_Memo: TMemo
-          Left = 1
-          Top = 371
+          Left = 5
+          Top = 445
           Width = 200
           Height = 150
           Lines.Strings = (
@@ -1124,16 +1156,16 @@ object Options_Form: TOptions_Form
             'where CUSTOMER.CUST_NO is not null'
             'order by CUSTOMER.POSTAL_CODE')
           ScrollBars = ssBoth
-          TabOrder = 12
+          TabOrder = 13
           Visible = False
           OnClick = Sql_Text_MemoClick
           OnKeyUp = Sql_Text_MemoKeyUp
         end
         object Sql_Text_SynEdit: TSynEdit
           Left = 1
-          Top = 367
-          Width = 599
-          Height = 289
+          Top = 394
+          Width = 593
+          Height = 262
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -1141,7 +1173,7 @@ object Options_Form: TOptions_Form
           Font.Name = 'Consolas'
           Font.Style = []
           Font.Quality = fqClearTypeNatural
-          TabOrder = 13
+          TabOrder = 14
           OnClick = Sql_Text_SynEditClick
           OnEnter = Sql_Text_SynEditEnter
           OnKeyDown = Sql_Text_SynEditKeyDown
@@ -1188,18 +1220,19 @@ object Options_Form: TOptions_Form
             'left join CUSTOMER on CUSTOMER.COUNTRY = COUNTRY.COUNTRY'
             'where CUSTOMER.CUST_NO is not null'
             'order by CUSTOMER.POSTAL_CODE')
-          Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
           RightEdge = 255
-          SelectedColor.Alpha = 0.400000005960464500
+          ScrollbarAnnotations = <>
           TabWidth = 2
           WantTabs = True
           OnReplaceText = Sql_Text_SynEditReplaceText
+          ExplicitTop = 550
+          ExplicitHeight = 106
         end
         object Sql_Editor__Comments_Delete_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
           Top = 222
-          Width = 579
+          Width = 573
           Height = 17
           Hint = 'Delete comments from SQL commands.'
           Margins.Left = 10
@@ -1216,7 +1249,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 143
-          Width = 579
+          Width = 573
           Height = 47
           Hint = 
             'Indents / outdents a selected code line or block by width (chara' +
@@ -1232,7 +1265,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 7
             Top = 17
-            Width = 565
+            Width = 559
             Height = 24
             Margins.Left = 5
             Margins.Top = 0
@@ -1249,7 +1282,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 195
-          Width = 579
+          Width = 573
           Height = 17
           Hint = 'Prompt before closing SQL editor if text or data are not empty.'
           Margins.Left = 10
@@ -1265,8 +1298,8 @@ object Options_Form: TOptions_Form
         object Sql_Editor__Database_Connection__Separated_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 276
-          Width = 579
+          Top = 303
+          Width = 573
           Height = 17
           Hint = 'Every tab has own database connection.'
           Margins.Left = 10
@@ -1277,13 +1310,14 @@ object Options_Form: TOptions_Form
           Caption = 'Separated database connection'
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 9
+          TabOrder = 10
+          ExplicitTop = 276
         end
         object Sql_Editor__Execute__Selected_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
           Top = 249
-          Width = 579
+          Width = 573
           Height = 17
           Margins.Left = 10
           Margins.Top = 5
@@ -1292,14 +1326,14 @@ object Options_Form: TOptions_Form
           Align = alTop
           Caption = 'Execute selected SQL only'
           ParentShowHint = False
-          ShowHint = False
+          ShowHint = True
           TabOrder = 8
         end
         object Sql_Editor__Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 303
-          Width = 579
+          Top = 330
+          Width = 573
           Height = 17
           Margins.Left = 10
           Margins.Top = 5
@@ -1310,14 +1344,15 @@ object Options_Form: TOptions_Form
             'Switch keyboard shortcuts '#39'Save query output as csv'#39' with '#39'Save ' +
             'file'#39
           ParentShowHint = False
-          ShowHint = False
-          TabOrder = 10
+          ShowHint = True
+          TabOrder = 11
+          ExplicitTop = 303
         end
         object Sql_Editor__Bookmarks__Toggle__With__Line_Color_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
-          Top = 330
-          Width = 579
+          Top = 357
+          Width = 573
           Height = 17
           Margins.Left = 10
           Margins.Top = 5
@@ -1326,14 +1361,15 @@ object Options_Form: TOptions_Form
           Align = alTop
           Caption = 'Toggle bookmarks with line color'
           ParentShowHint = False
-          ShowHint = False
-          TabOrder = 11
+          ShowHint = True
+          TabOrder = 12
+          ExplicitTop = 330
         end
         object Sql_Editor__Block_Execute__Automatic_Detection_CheckBox: TCheckBox
           AlignWithMargins = True
           Left = 11
           Top = 6
-          Width = 579
+          Width = 573
           Height = 17
           Margins.Left = 10
           Margins.Top = 5
@@ -1342,11 +1378,11 @@ object Options_Form: TOptions_Form
           Align = alTop
           Caption = 'Automatically '#39'block execute'#39' detection'
           ParentShowHint = False
-          ShowHint = False
+          ShowHint = True
           TabOrder = 1
         end
         object Sql_Editor__Font_Button: TButton
-          Left = 510
+          Left = 504
           Top = 5
           Width = 75
           Height = 25
@@ -1355,11 +1391,28 @@ object Options_Form: TOptions_Form
           TabOrder = 0
           OnClick = Sql_Editor__Font_ButtonClick
         end
+        object Sql_Editor__Error__Caret_Position__Set_CheckBox: TCheckBox
+          AlignWithMargins = True
+          Left = 11
+          Top = 276
+          Width = 573
+          Height = 17
+          Margins.Left = 10
+          Margins.Top = 5
+          Margins.Right = 10
+          Margins.Bottom = 5
+          Align = alTop
+          Caption = 'Indicate error locations with caret'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 9
+          ExplicitLeft = 9
+        end
       end
       object Sql_Editor__Right_Panel: TPanel
         Left = 601
         Top = 0
-        Width = 255
+        Width = 355
         Height = 657
         Align = alRight
         TabOrder = 1
@@ -1367,7 +1420,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 70
-          Width = 233
+          Width = 333
           Height = 215
           Margins.Left = 10
           Margins.Top = 0
@@ -1380,7 +1433,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 22
-            Width = 209
+            Width = 309
             Height = 15
             Hint = 
               'E.g.:'#13#10'dd.mm.yyyy'#13#10'dd-mm-yyyy'#13#10'yyyy-mm-dd'#13#10'yy mmm ddd'#13#10'd dddd mm' +
@@ -1399,7 +1452,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 65
-            Width = 209
+            Width = 309
             Height = 15
             Hint = 
               'E.g.:'#13#10'### ### ### ### ### ### ##0.###'#13#10'0.##############'#13#10'### ##' +
@@ -1418,7 +1471,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 108
-            Width = 209
+            Width = 309
             Height = 15
             Hint = 'E.g.:'#13#10'hh:mm:ss'#13#10'hh mm ss.zzz'#13#10'h m s am/pm'#13#10'hh-m a/p'
             Margins.Left = 10
@@ -1435,7 +1488,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 37
-            Width = 209
+            Width = 309
             Height = 23
             Margins.Left = 10
             Margins.Top = 0
@@ -1448,7 +1501,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 80
-            Width = 209
+            Width = 309
             Height = 23
             Margins.Left = 10
             Margins.Top = 0
@@ -1461,7 +1514,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 123
-            Width = 209
+            Width = 309
             Height = 23
             Margins.Left = 10
             Margins.Top = 0
@@ -1474,7 +1527,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 151
-            Width = 209
+            Width = 309
             Height = 59
             Margins.Left = 10
             Margins.Top = 5
@@ -1485,7 +1538,7 @@ object Options_Form: TOptions_Form
             TabOrder = 3
             object Sql_Editor__Query_Output_Save_Field_Format__Separator__Decimal_GroupBox: TGroupBox
               AlignWithMargins = True
-              Left = 127
+              Left = 227
               Top = 17
               Width = 80
               Height = 40
@@ -1515,7 +1568,7 @@ object Options_Form: TOptions_Form
               AlignWithMargins = True
               Left = 2
               Top = 17
-              Width = 125
+              Width = 225
               Height = 40
               Margins.Left = 0
               Margins.Top = 0
@@ -1528,7 +1581,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 7
                 Top = 17
-                Width = 111
+                Width = 211
                 Height = 21
                 Margins.Left = 5
                 Margins.Top = 0
@@ -1545,7 +1598,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 290
-          Width = 233
+          Width = 333
           Height = 145
           Margins.Left = 10
           Margins.Top = 0
@@ -1557,7 +1610,7 @@ object Options_Form: TOptions_Form
           object Sql_Editor__Highlights_PageControl: TPageControl
             Left = 2
             Top = 17
-            Width = 229
+            Width = 329
             Height = 126
             ActivePage = Sql_Editor__Highlights__Syntax_TabSheet
             Align = alClient
@@ -1569,7 +1622,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 5
-                Width = 201
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1585,7 +1638,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 53
-                Width = 201
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1601,7 +1654,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 23
-                Width = 201
+                Width = 301
                 Height = 22
                 Margins.Left = 10
                 Margins.Right = 10
@@ -1614,7 +1667,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 71
-                Width = 201
+                Width = 301
                 Height = 22
                 Margins.Left = 10
                 Margins.Right = 10
@@ -1631,7 +1684,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 5
-                Width = 201
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1647,7 +1700,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 23
-                Width = 201
+                Width = 301
                 Height = 22
                 Margins.Left = 10
                 Margins.Right = 10
@@ -1664,7 +1717,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 5
-                Width = 201
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1680,7 +1733,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 25
-                Width = 201
+                Width = 301
                 Height = 21
                 Margins.Left = 10
                 Margins.Top = 0
@@ -1768,7 +1821,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 5
-                Width = 201
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1784,7 +1837,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 53
-                Width = 201
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1800,7 +1853,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 23
-                Width = 201
+                Width = 301
                 Height = 22
                 Margins.Left = 10
                 Margins.Right = 10
@@ -1813,7 +1866,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 71
-                Width = 201
+                Width = 301
                 Height = 22
                 Margins.Left = 10
                 Margins.Right = 10
@@ -1829,7 +1882,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 11
           Top = 6
-          Width = 233
+          Width = 333
           Height = 59
           Margins.Left = 10
           Margins.Top = 5
@@ -1840,7 +1893,7 @@ object Options_Form: TOptions_Form
           TabOrder = 0
           object Csv__File__Text_Qualifier_GroupBox: TGroupBox
             AlignWithMargins = True
-            Left = 151
+            Left = 251
             Top = 17
             Width = 80
             Height = 40
@@ -1875,7 +1928,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 2
             Top = 17
-            Width = 149
+            Width = 249
             Height = 40
             Hint = 'Csv data separator.'
             Margins.Left = 0
@@ -1891,7 +1944,7 @@ object Options_Form: TOptions_Form
               AlignWithMargins = True
               Left = 7
               Top = 17
-              Width = 135
+              Width = 235
               Height = 21
               Margins.Left = 5
               Margins.Top = 0
@@ -1905,33 +1958,74 @@ object Options_Form: TOptions_Form
             end
           end
         end
-        object Syn_Editor_Options_GroupBox: TGroupBox
+        object Syn_Editor__Options_PageControl: TPageControl
           AlignWithMargins = True
           Left = 11
           Top = 440
-          Width = 233
-          Height = 216
+          Width = 333
+          Height = 211
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10
-          Margins.Bottom = 0
+          Margins.Bottom = 5
+          ActivePage = Syn_Editor__Options_TabSheet
           Align = alClient
-          Caption = 'Editor options'
           TabOrder = 3
-          object Syn_Editor_Options_CheckListBox: TCheckListBox
-            Left = 2
-            Top = 17
-            Width = 229
-            Height = 197
-            Hint = 
-              'Ctrl + A - select all'#13#10'Ctrl + I - invert selection'#13#10'Ctrl + N - u' +
-              'nselect all'
-            Align = alClient
-            ItemHeight = 15
+          object Syn_Editor__Options_TabSheet: TTabSheet
+            Caption = 'Editor options'
+            object Syn_Editor__Options_CheckListBox: TCheckListBox
+              Left = 0
+              Top = 0
+              Width = 325
+              Height = 181
+              Align = alClient
+              ItemHeight = 15
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              OnKeyDown = Syn_Editor__Options_CheckListBoxKeyDown
+            end
+          end
+          object Syn_Editor__Options__Scroll_TabSheet: TTabSheet
+            Caption = 'Editor scroll options'
+            ImageIndex = 1
             ParentShowHint = False
-            ShowHint = True
-            TabOrder = 0
-            OnKeyDown = Syn_Editor_Options_CheckListBoxKeyDown
+            ShowHint = False
+            object Syn_Editor__Options__Scroll_CheckListBox: TCheckListBox
+              Left = 0
+              Top = 0
+              Width = 325
+              Height = 181
+              Align = alClient
+              ItemHeight = 15
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              OnKeyDown = Syn_Editor__Options_CheckListBoxKeyDown
+            end
+          end
+          object Syn_Editor__Options__Hint_TabSheet: TTabSheet
+            Caption = 'Hint'
+            ImageIndex = 2
+            object Syn_Editor__Options__Hint_ScrollBox: TScrollBox
+              Left = 0
+              Top = 0
+              Width = 325
+              Height = 181
+              Align = alClient
+              TabOrder = 0
+              object Syn_Editor__Options__Hint_Label: TLabel
+                Left = 0
+                Top = 0
+                Width = 127
+                Height = 45
+                Caption = 
+                  'Ctrl + A - select all'#13#10'Ctrl + I - invert selection'#13#10'Ctrl + N - u' +
+                  'nselect all'
+                ParentShowHint = False
+                ShowHint = True
+              end
+            end
           end
         end
       end
@@ -1943,7 +2037,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 366
-        Width = 836
+        Width = 936
         Height = 17
         Hint = 'Use additional value as default in table data filter.'
         Margins.Left = 10
@@ -1960,7 +2054,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 339
-        Width = 836
+        Width = 936
         Height = 17
         Hint = 
           'Automatically use quotation sign in table data filter e.g. for t' +
@@ -1979,7 +2073,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 155
-        Width = 836
+        Width = 936
         Height = 110
         Margins.Left = 10
         Margins.Top = 0
@@ -1992,7 +2086,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 22
-          Width = 812
+          Width = 912
           Height = 15
           Hint = 'E.g.:'#13#10'dd.mm.yyyy'
           Margins.Left = 10
@@ -2009,7 +2103,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 65
-          Width = 812
+          Width = 912
           Height = 15
           Hint = 'E.g.:'#13#10'hh:mm:ss.zzz'
           Margins.Left = 10
@@ -2026,7 +2120,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 37
-          Width = 812
+          Width = 912
           Height = 23
           Margins.Left = 10
           Margins.Top = 0
@@ -2039,7 +2133,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 80
-          Width = 812
+          Width = 912
           Height = 23
           Margins.Left = 10
           Margins.Top = 0
@@ -2053,7 +2147,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 270
-        Width = 836
+        Width = 936
         Height = 59
         Margins.Left = 10
         Margins.Top = 0
@@ -2187,7 +2281,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 5
-        Width = 836
+        Width = 936
         Height = 145
         Margins.Left = 10
         Margins.Top = 5
@@ -2200,7 +2294,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 17
-          Width = 812
+          Width = 912
           Height = 120
           Margins.Left = 10
           Margins.Top = 0
@@ -2213,7 +2307,7 @@ object Options_Form: TOptions_Form
             AlignWithMargins = True
             Left = 12
             Top = 17
-            Width = 788
+            Width = 888
             Height = 17
             Hint = 
               'Use a conventional component to handling date and time.'#13#10'Support' +
@@ -2232,12 +2326,12 @@ object Options_Form: TOptions_Form
           object Component__Date_Time__Conventional__Use__Example_Panel: TPanel
             Left = 2
             Top = 34
-            Width = 808
+            Width = 908
             Height = 84
             Align = alClient
             TabOrder = 1
             DesignSize = (
-              808
+              908
               84)
             object Component__Date_Time__Conventional__Use__Example__Mode_RadioGroup: TRadioGroup
               AlignWithMargins = True
@@ -2284,7 +2378,7 @@ object Options_Form: TOptions_Form
             object Component__Date_Time__Conventional__Date_Time__Format_GroupBox: TGroupBox
               Left = 435
               Top = 0
-              Width = 365
+              Width = 465
               Height = 45
               Hint = 'E.g.:'#13#10'dd.MM.yyyy HH:mm:ss'
               Anchors = [akLeft, akTop, akRight]
@@ -2295,14 +2389,11 @@ object Options_Form: TOptions_Form
               object Component__Date_Time__Conventional__Date_Time__Format_Edit: TEdit
                 Left = 2
                 Top = 17
-                Width = 361
+                Width = 461
                 Height = 23
                 Align = alTop
                 TabOrder = 0
                 OnChange = Component__Date_Time__Conventional__Use__Example__Mode_RadioGroupClick
-                ExplicitLeft = 30
-                ExplicitTop = 30
-                ExplicitWidth = 121
               end
             end
           end
@@ -2316,7 +2407,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 64
-        Width = 836
+        Width = 936
         Height = 15
         Margins.Left = 10
         Margins.Top = 10
@@ -2332,7 +2423,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 32
-        Width = 836
+        Width = 936
         Height = 17
         Margins.Left = 10
         Margins.Top = 5
@@ -2348,7 +2439,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 5
-        Width = 836
+        Width = 936
         Height = 17
         Hint = 'One common search window for the entire application.'
         Margins.Left = 10
@@ -2365,7 +2456,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 84
-        Width = 836
+        Width = 936
         Height = 24
         Margins.Left = 10
         Margins.Top = 0
@@ -2408,6 +2499,11 @@ object Options_Form: TOptions_Form
     TitleFont.Height = -11
     TitleFont.Name = 'MS Shell Dlg 2'
     TitleFont.Style = [fsBold]
+    GripperFont.Charset = DEFAULT_CHARSET
+    GripperFont.Color = clBtnText
+    GripperFont.Height = -12
+    GripperFont.Name = 'Segoe UI'
+    GripperFont.Style = []
     Columns = <>
     Resizeable = True
     ShortCut = 16416

@@ -16,7 +16,6 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object Trigger_Name_Etiquette_Label: TLabel
@@ -130,7 +129,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         AlignWithMargins = True
         Left = 11
         Top = 6
-        Width = 26
+        Width = 228
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -140,12 +139,13 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Caption = 'Type'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 25
       end
       object Trigger_Activity_Etiquette_Label: TLabel
         AlignWithMargins = True
         Left = 11
         Top = 59
-        Width = 40
+        Width = 228
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -155,12 +155,13 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Caption = 'Activity'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 40
       end
       object Trigger_Sequence_Etiquette_Label: TLabel
         AlignWithMargins = True
         Left = 11
         Top = 112
-        Width = 51
+        Width = 228
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -170,6 +171,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Caption = 'Sequence'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 51
       end
       object Trigger_Type_ComboBox: TComboBox
         AlignWithMargins = True
@@ -405,6 +407,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
     Gutter.Font.Height = -11
     Gutter.Font.Name = 'Consolas'
     Gutter.Font.Style = []
+    Gutter.Font.Quality = fqClearTypeNatural
     Gutter.ShowLineNumbers = True
     Gutter.Bands = <
       item
@@ -424,9 +427,8 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Kind = gbkMargin
         Width = 3
       end>
-    Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
     RightEdge = 255
-    SelectedColor.Alpha = 0.400000005960464500
+    ScrollbarAnnotations = <>
     TabWidth = 2
     WantTabs = True
     OnReplaceText = Trigger_Source_SynEditReplaceText
@@ -445,6 +447,11 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
     TitleFont.Height = -11
     TitleFont.Name = 'MS Shell Dlg 2'
     TitleFont.Style = [fsBold]
+    GripperFont.Charset = DEFAULT_CHARSET
+    GripperFont.Color = clBtnText
+    GripperFont.Height = -12
+    GripperFont.Name = 'Segoe UI'
+    GripperFont.Style = []
     Columns = <>
     Resizeable = True
     ShortCut = 16416

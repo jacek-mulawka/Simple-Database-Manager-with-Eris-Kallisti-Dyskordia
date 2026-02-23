@@ -123,9 +123,8 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
             Kind = gbkMargin
             Width = 3
           end>
-        Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
         RightEdge = 255
-        SelectedColor.Alpha = 0.400000005960464500
+        ScrollbarAnnotations = <>
         TabWidth = 2
         WantTabs = True
         OnDropFiles = Sql_Text_SynEditDropFiles
@@ -1204,6 +1203,11 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     TitleFont.Height = -11
     TitleFont.Name = 'MS Shell Dlg 2'
     TitleFont.Style = [fsBold]
+    GripperFont.Charset = DEFAULT_CHARSET
+    GripperFont.Color = clBtnText
+    GripperFont.Height = -12
+    GripperFont.Name = 'Segoe UI'
+    GripperFont.Style = []
     Columns = <>
     Resizeable = True
     ShortCut = 16416
@@ -1469,6 +1473,10 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
     object Execute__Selected_MenuItem: TMenuItem
       AutoCheck = True
       Caption = 'Execute selected SQL only'
+    end
+    object Error__Caret_Position__Set_MenuItem: TMenuItem
+      AutoCheck = True
+      Caption = 'Indicate error locations with caret'
     end
     object Ado_Command_Param_Check_MenuItem: TMenuItem
       AutoCheck = True

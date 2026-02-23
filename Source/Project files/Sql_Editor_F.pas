@@ -158,6 +158,7 @@ type
     Execute__Automatic_Detection_MenuItem: TMenuItem;
     Data_Value_Format__Disabled_MenuItem: TMenuItem;
     Comments_Delete_MenuItem: TMenuItem;
+    Error__Caret_Position__Set_MenuItem: TMenuItem;
     Execute__Selected_MenuItem: TMenuItem;
     Ado_Command_Param_Check_MenuItem: TMenuItem;
     Queries_Open_In_Background_MenuItem: TMenuItem;
@@ -1852,6 +1853,7 @@ begin
   Data_Preview_DBMemo.Height := 1;
   Database__Reconnect_MenuItem.Visible := database_connection__separated_f;
   Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem.Checked := Common.sql_editor__keyboard__shortcuts__switch__output_save__with__text_file_save;
+  Error__Caret_Position__Set_MenuItem.Checked := Common.sql_editor__error__caret_position__set;
   Queries_Open_In_Background_MenuItem.Checked := queries_open_in_background_f;
   Sql_Parameters_ScrollBox.Width := 1;
   Tables_List_ListBox.Height := Round( Tables_Columns_List_Panel.Height * 0.5 ) - Tables_List_Horizontal_Splitter.Height;
@@ -3352,6 +3354,8 @@ begin
 
                 Log_Memo.Lines.Add(  StringReplace( E.Message, #10, #13 + #10, [ rfReplaceAll ] )  );
 
+                Common.Syn_Edit__SQL__Error__Caret_Position__Set( Sql_Text_SynEdit, E.Message, integer(Error__Caret_Position__Set_MenuItem.Checked) );
+
                 Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_open_query + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
 
               end;
@@ -3415,6 +3419,8 @@ begin
                               ztb := false;
 
                               Log_Memo.Lines.Add(  StringReplace( E.Message, #10, #13 + #10, [ rfReplaceAll ] )  );
+
+                              Common.Syn_Edit__SQL__Error__Caret_Position__Set( Sql_Text_SynEdit, E.Message, integer(Error__Caret_Position__Set_MenuItem.Checked) );
 
                               Application.MessageBox(  PChar(Translation.translation__messages_r.failed_to_open_query + #13 + #13 + E.Message + ' ' + IntToStr( E.HelpContext )), PChar(Translation.translation__messages_r.error), MB_OK + MB_ICONEXCLAMATION  );
 

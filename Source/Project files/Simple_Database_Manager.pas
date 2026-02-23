@@ -347,6 +347,7 @@ begin
   Common.sql_editor__code__dent_width := 2;
   Common.sql_editor__comments_delete := true;
   Common.sql_editor__database_connection__separated := false;
+  Common.sql_editor__error__caret_position__set := true;
   Common.sql_editor__execute__automatic_detection := true;
   Common.sql_editor__execute__selected := true;
   Common.sql_editor__font__use_in_other_components := false;
@@ -379,6 +380,7 @@ begin
   Common.sql__text_separator := '''';
   Common.sql__view__parameter_separator := #13 + #10 + '  , ';
   Common.system_tables_visible := false;
+  Common.table__columns_sort__keyboard_select := true;
   Common.table__data_filter__field_dedicated__default_use := true;
   Common.table__data_filter__filter__dedicated_value_format__date := 'dd.mm.yyyy';
   Common.table__data_filter__filter__dedicated_value_format__separator__date := '.';
@@ -402,19 +404,24 @@ begin
     [
       SynEdit.TSynEditorOption.eoAutoIndent,
       SynEdit.TSynEditorOption.eoCopyPlainText,
-      SynEdit.TSynEditorOption.eoDisableScrollArrows,
       SynEdit.TSynEditorOption.eoDragDropEditing,
       SynEdit.TSynEditorOption.eoDropFiles,
       SynEdit.TSynEditorOption.eoEnhanceEndKey,
       SynEdit.TSynEditorOption.eoEnhanceHomeKey,
       SynEdit.TSynEditorOption.eoGroupUndo,
-      SynEdit.TSynEditorOption.eoHideShowScrollbars,
       SynEdit.TSynEditorOption.eoKeepCaretX,
       SynEdit.TSynEditorOption.eoShowLigatures,
-      SynEdit.TSynEditorOption.eoShowScrollHint,
       SynEdit.TSynEditorOption.eoSmartTabDelete,
       SynEdit.TSynEditorOption.eoTabIndent,
-      SynEdit.TSynEditorOption.eoTabsToSpaces
+      SynEdit.TSynEditorOption.eoTabsToSpaces,
+      SynEdit.TSynEditorOption.eoTrimTrailingSpaces
+    ];
+  Common.syn_editor_options__scroll :=
+    [
+      SynEdit.TSynEditorScrollOption.eoDisableScrollArrows,
+      SynEdit.TSynEditorScrollOption.eoHideShowScrollbars,
+      SynEdit.TSynEditorScrollOption.eoScrollPastEol,
+      SynEdit.TSynEditorScrollOption.eoShowScrollHint
     ];
 
   Common.Font__Set( Common.sql_editor__font, Self.Font );

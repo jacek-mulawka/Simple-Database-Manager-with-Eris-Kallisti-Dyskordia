@@ -14,28 +14,36 @@ type
   TTable__Data_Modify_F__Data_Close__TCSF_wsk = function() : boolean of object;
 
   TTable__Columns_Sort_F_Frame = class( TFrame )
-    Left_Panel: TPanel;
-    Buttons_Panel__Hide_Button: TButton;
-    Log_Memo: TMemo;
-    Vertical_Splitter: TSplitter;
-    Log_Horizontal_Splitter: TSplitter;
-    Refresh_Button: TButton;
-    Columns_Sort_Panel: TPanel;
-    Columns_Sort_ListView: TListView;
     Buttons_Panel: TPanel;
+    Buttons_Panel__Hide_Button: TButton;
+    Column__Move__Down_Button: TButton;
+    Column__Move__Up_Button: TButton;
+    Columns_Sort_ListView: TListView;
+    Columns_Sort_Panel: TPanel;
     Execute_Button: TButton;
+    Keyboard_Select_CheckBox: TCheckBox;
+    Left_Panel: TPanel;
+    Log_Horizontal_Splitter: TSplitter;
+    Log_Memo: TMemo;
+    Refresh_Button: TButton;
     Sort_Button: TButton;
+    Vertical_Splitter: TSplitter;
 
     procedure Key_Up_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 
     procedure Sort_ButtonClick( Sender: TObject );
+    procedure Column__Move__Down_ButtonClick( Sender: TObject );
+    procedure Column__Move__Up_ButtonClick( Sender: TObject );
     procedure Execute_ButtonClick( Sender: TObject );
     procedure Refresh_ButtonClick( Sender: TObject );
     procedure Buttons_Panel__Hide_ButtonClick( Sender: TObject );
     procedure Log_MemoKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+    procedure Columns_Sort_ListViewCustomDrawItem( Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean );
     procedure Columns_Sort_ListViewDragDrop( Sender, Source: TObject; X, Y: Integer );
     procedure Columns_Sort_ListViewDragOver( Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean );
     procedure Columns_Sort_ListViewKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+    procedure Columns_Sort_ListViewMouseDown( Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer );
+    procedure Keyboard_Select_CheckBoxClick( Sender: TObject );
   private
     { Private declarations }
     sql__quotation_sign__use__tcsf_g : boolean;
@@ -45,12 +53,17 @@ type
     table_name__tcsf_g
       : string;
 
+    selected_indexes_t_g : array of integer;
+
     columns_sort_sdbm : Common.TSDBM;
 
     table__data_modify_f__data_close__tcsf_wsk_g : TTable__Data_Modify_F__Data_Close__TCSF_wsk;
 
+    procedure Column_Move( const up_f : boolean = false );
     procedure Positions_Number_Write();
     function Quotation_Sign__TCSF() : string;
+    procedure Selected_Indexes___Forget_All();
+    procedure Selected_Indexes___Remember( const index_f : integer );
   public
     { Public declarations }
     parent_supreme_tab_sheet : Vcl.Controls.TWinControl;
@@ -72,10 +85,202 @@ uses
 
 {$R *.dfm}
 
+procedure TTable__Columns_Sort_F_Frame.Column_Move( const up_f : boolean = false );
+
+  procedure Column_Move__One( const up_f_f : boolean = false );
+  var
+    current_index,
+    step
+      : integer;
+
+    zt_list_item : TListItem;
+  begin
+
+    if   ( Columns_Sort_ListView.Selected = nil )
+      or ( Columns_Sort_ListView.Items.Count < 2 ) then
+      Exit;
+
+
+    current_index := Columns_Sort_ListView.Selected.Index;
+
+    if   (
+               ( not up_f_f )
+           and ( current_index > Columns_Sort_ListView.Items.Count - 2 )
+         )
+      or (
+               ( up_f_f )
+           and ( current_index < 1 )
+         ) then
+      Exit;
+
+
+    if not up_f_f then
+      step := 1
+    else
+      step := -1;
+
+
+    Columns_Sort_ListView.Items.BeginUpdate();
+
+
+    zt_list_item := TListItem.Create( Columns_Sort_ListView.Items );
+
+    zt_list_item.Assign( Columns_Sort_ListView.Items.Item[ current_index ] );
+
+    Columns_Sort_ListView.Items.Item[ current_index ].Assign( Columns_Sort_ListView.Items.Item[ current_index + step ] );
+    Columns_Sort_ListView.Items.Item[ current_index + step ].Assign( zt_list_item );
+
+    FreeAndNil( zt_list_item );
+
+
+    Columns_Sort_ListView.Items.EndUpdate();
+
+
+    Columns_Sort_ListView.Selected := nil;
+
+    Columns_Sort_ListView.ItemIndex := current_index + step;
+
+  end;
+
+var
+  selected_indexes_t_g__mode : boolean;
+
+  i,
+  zti
+    : integer;
+
+  selected_indexes_t : array of integer;
+begin
+
+  if Length( selected_indexes_t_g ) > 0 then
+    begin
+
+      selected_indexes_t_g__mode := true;
+
+
+      Columns_Sort_ListView.Selected := nil;
+
+      for i := 0 to Length( selected_indexes_t_g ) - 1 do
+        Columns_Sort_ListView.Items[  selected_indexes_t_g[ i ]  ].Selected := true;
+
+    end
+  else
+    selected_indexes_t_g__mode := false;
+
+
+  if   ( Columns_Sort_ListView.Selected = nil )
+    or ( Columns_Sort_ListView.Items.Count < 2 ) then
+    Exit;
+
+
+  SetLength( selected_indexes_t, 0 );
+
+
+  for i := 0 to Columns_Sort_ListView.Items.Count - 1 do
+    if Columns_Sort_ListView.Items[ i ].Selected then
+      begin
+
+        zti := Length( selected_indexes_t );
+        SetLength( selected_indexes_t, zti + 1 );
+        selected_indexes_t[ zti ] := i;
+
+      end;
+
+
+  if Length( selected_indexes_t ) <= 0 then
+    Exit;
+
+
+  if up_f then
+    begin
+
+      if selected_indexes_t[ 0 ] <= 0 then
+        begin
+
+          SetLength( selected_indexes_t, 0 );
+
+          Exit;
+
+        end;
+
+    end
+  else
+    begin
+
+      if selected_indexes_t[ Length( selected_indexes_t ) - 1 ] >= Columns_Sort_ListView.Items.Count - 1 then
+        begin
+
+          SetLength( selected_indexes_t, 0 );
+
+          Exit;
+
+        end;
+
+    end;
+
+
+  Columns_Sort_ListView.Selected := nil;
+
+
+  if up_f then
+    begin
+
+      for i := 0 to Length( selected_indexes_t ) - 1 do
+        begin
+
+          Columns_Sort_ListView.Items[  selected_indexes_t[ i ]  ].Selected := true;
+
+          Column_Move__One( up_f );
+
+          selected_indexes_t[ i ] := selected_indexes_t[ i ] - 1;
+
+          Columns_Sort_ListView.Selected := nil;
+
+        end;
+
+    end
+  else
+    begin
+
+      for i := Length( selected_indexes_t ) - 1 downto 0 do
+        begin
+
+          Columns_Sort_ListView.Items[  selected_indexes_t[ i ]  ].Selected := true;
+
+          Column_Move__One( up_f );
+
+          selected_indexes_t[ i ] := selected_indexes_t[ i ] + 1;
+
+          Columns_Sort_ListView.Selected := nil;
+
+        end;
+
+    end;
+
+
+  for i := 0 to Length( selected_indexes_t ) - 1 do
+    begin
+
+      Columns_Sort_ListView.Items[  selected_indexes_t[ i ]  ].Selected := true;
+
+
+      if selected_indexes_t_g__mode then
+        selected_indexes_t_g[ i ] := selected_indexes_t[ i ];
+
+    end;
+
+
+  SetLength( selected_indexes_t, 0 );
+
+end;
+
 procedure TTable__Columns_Sort_F_Frame.Data_Open__TCSF();
 var
   zts : string;
 begin
+
+  SetLength( selected_indexes_t_g, 0 );
+
 
   if   ( columns_sort_sdbm = nil )
     or ( columns_sort_sdbm.component_type__sdbm = Common.ct_none ) then
@@ -178,6 +383,9 @@ end;
 
 procedure TTable__Columns_Sort_F_Frame.Finish__TCSF();
 begin
+
+  SetLength( selected_indexes_t_g, 0 );
+
 
   FreeAndNil( columns_sort_sdbm );
 
@@ -326,6 +534,62 @@ begin
 
 end;
 
+procedure TTable__Columns_Sort_F_Frame.Selected_Indexes___Forget_All();
+begin
+
+  SetLength( selected_indexes_t_g, 0 );
+  Columns_Sort_ListView.Repaint();
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Selected_Indexes___Remember( const index_f : integer );
+var
+  ztb : boolean;
+
+  i,
+  zti
+    : integer;
+begin
+
+  if not Keyboard_Select_CheckBox.Checked then
+    Exit;
+
+
+  ztb := false;
+
+  for i := 0 to Length( selected_indexes_t_g ) - 1 do
+    if selected_indexes_t_g[ i ] = index_f then
+      begin
+
+        ztb := true;
+        zti := i;
+
+        Break;
+
+      end;
+
+
+  if not ztb then
+    begin
+
+      i := Length( selected_indexes_t_g );
+      SetLength( selected_indexes_t_g, i + 1 );
+      selected_indexes_t_g[ i ] := index_f;
+
+    end
+  else
+    begin
+
+      for i := zti to Length( selected_indexes_t_g ) - 2 do
+        selected_indexes_t_g[ i ] := selected_indexes_t_g[ i + 1 ];
+
+      i := Length( selected_indexes_t_g );
+      SetLength( selected_indexes_t_g, i - 1 );
+
+    end;
+
+end;
+
 procedure TTable__Columns_Sort_F_Frame.Translation__Apply__TCSF();
 begin
 
@@ -341,6 +605,20 @@ begin
 
 
   Positions_Number_Write();
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Column__Move__Down_ButtonClick( Sender: TObject );
+begin
+
+  Column_Move();
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Column__Move__Up_ButtonClick( Sender: TObject );
+begin
+
+  Column_Move( true );
 
 end;
 
@@ -467,6 +745,33 @@ begin
 
 end;
 
+procedure TTable__Columns_Sort_F_Frame.Columns_Sort_ListViewCustomDrawItem( Sender: TCustomListView; Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean );
+var
+  ztb : boolean;
+
+  i : integer;
+begin
+
+  ztb := false;
+
+  for i := 0 to Length( selected_indexes_t_g ) - 1 do
+    if selected_indexes_t_g[ i ] = Item.Index then
+      begin
+
+        ztb := true;
+
+        Break;
+
+      end;
+
+
+  if ztb then
+    Columns_Sort_ListView.Canvas.Brush.Color := clSkyBlue
+  else
+    Columns_Sort_ListView.Canvas.Brush.Color := clWindow;
+
+end;
+
 procedure TTable__Columns_Sort_F_Frame.Columns_Sort_ListViewDragDrop( Sender, Source: TObject; X, Y: Integer );
 var
   current_item_list_item,
@@ -515,10 +820,84 @@ end;
 procedure TTable__Columns_Sort_F_Frame.Columns_Sort_ListViewKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
+  // K.
+  if    ( Key = 75 )
+    and ( Shift = [ ssCtrl ] ) then
+    Keyboard_Select_CheckBox.Checked := not Keyboard_Select_CheckBox.Checked
+  else
   // R.
   if    ( Key = 82 )
     and ( Shift = [ ssCtrl ] ) then
-    Refresh_ButtonClick( Sender );
+    Refresh_ButtonClick( Sender )
+  else
+  if Key = VK_BACK then
+    begin
+
+      Key := 0;
+      Selected_Indexes___Forget_All();
+
+    end
+  else
+  if    ( Key = VK_UP )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+      Column__Move__Up_ButtonClick( Sender );
+
+    end
+  else
+  if    ( Key = VK_DOWN )
+    and ( Shift = [ ssCtrl ] ) then
+    begin
+
+      Key := 0;
+      Column__Move__Down_ButtonClick( Sender );
+
+    end
+  else
+  if Key = VK_SPACE then
+    begin
+
+      Key := 0;
+      Selected_Indexes___Remember( Columns_Sort_ListView.ItemIndex );
+
+    end;
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Columns_Sort_ListViewMouseDown( Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer );
+var
+  i : integer;
+begin
+
+  if    ( Keyboard_Select_CheckBox.Checked )
+    and ( ssLeft in Shift )
+    and (
+             ( ssCtrl in Shift )
+          or ( ssShift in Shift )
+        ) then
+    begin
+
+      for i := 0 to Length( selected_indexes_t_g ) - 1 do
+        Columns_Sort_ListView.Items[  selected_indexes_t_g[ i ]  ].Selected := true;
+
+      SetLength( selected_indexes_t_g, 0 );
+
+
+      for i := 0 to Columns_Sort_ListView.Items.Count - 1 do
+        if Columns_Sort_ListView.Items[ i ].Selected then
+          Selected_Indexes___Remember( i );
+
+    end;
+
+end;
+
+procedure TTable__Columns_Sort_F_Frame.Keyboard_Select_CheckBoxClick( Sender: TObject );
+begin
+
+  if not Keyboard_Select_CheckBox.Checked then
+    Selected_Indexes___Forget_All();
 
 end;
 

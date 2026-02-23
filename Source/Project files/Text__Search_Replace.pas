@@ -446,9 +446,51 @@ begin
 
     end
   else
-    if    ( not replace_l )
-      and ( not search_text_found_g ) then
-      search_text_found_g := true;
+    begin
+
+      if    ( not replace_l )
+        and ( not search_text_found_g ) then
+        search_text_found_g := true;
+
+
+      if    ( replace_l )
+        and ( not search_text_found_g ) then
+        if search_direction_backward_l then
+          begin
+
+            if Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_end_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes then
+              begin
+
+                if not_found_message_displayed_g then
+                  not_found_message_displayed_g := false;
+
+                Self.syn_edit.CaretY := Self.syn_edit.Lines.Count;
+                Self.syn_edit.CaretX := Length( Self.syn_edit.Lines[ Self.syn_edit.Lines.Count - 1 ] ) + 1;
+
+                search_again_l := true;
+
+              end;
+
+          end
+        else
+          begin
+
+            if Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_beginning_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes then
+              begin
+
+                if not_found_message_displayed_g then
+                  not_found_message_displayed_g := false;
+
+                Self.syn_edit.CaretX := 1;
+                Self.syn_edit.CaretY := 1;
+
+                search_again_l := true;
+
+              end;
+
+          end;
+
+    end;
 
 
   if first_search_g then

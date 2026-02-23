@@ -55,6 +55,7 @@ type
   TCustomSynEdit_Helper = class helper for SynEdit.TCustomSynEdit
     procedure Plugin__Search_Highlighter__Brackets__Set( const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__marked_only_f, brackets__round_f, brackets__square_f : boolean );
     procedure Plugin__Search_Highlighter__Destroy();
+    procedure Plugin__Search_Highlighter__Disabled__Set( const disabled_f : boolean );
   end;
 
   TObject_Id_Caption = class
@@ -209,6 +210,7 @@ procedure Syn_Edit__On_Replace_Text( syn_edit_f : TSynEdit; ASearch, AReplace : 
 procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit ); overload;
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit; const color__brackets__background_f, color__brackets__border_f, color__words__background_f, color__words__border_f : integer; const brackets__all_pairs_f, brackets__angle_f, brackets__curly_f, brackets__marked_only_f, brackets__round_f, brackets__square_f : boolean ); overload;
+procedure Syn_Edit__SQL__Error__Caret_Position__Set( syn_edit_f : TSynEdit; exception_message_f : string; const options_override_f : integer = -1 );
 function Text__File_Load( const file_path_f : string ) : string;
 function Text__Search_Replace__Is_Nil( text__search_replace_form_f : Text__Search_Replace.TText__Search_Replace_Form ) : boolean;
 procedure Text__Search_Replace__Direction__Invert( text__search_replace_form_f : Text__Search_Replace.TText__Search_Replace_Form );
@@ -756,6 +758,7 @@ var
   sql_editor__close_prompt,
   sql_editor__comments_delete,
   sql_editor__database_connection__separated,
+  sql_editor__error__caret_position__set,
   sql_editor__execute__automatic_detection,
   sql_editor__execute__selected,
   sql_editor__font__use_in_other_components,
@@ -770,6 +773,7 @@ var
   sql__quotation_sign__use,
   splitter_show,
   system_tables_visible,
+  table__columns_sort__keyboard_select,
   table__data_filter__field_dedicated__default_use,
   table__data_filter__quotation_sign__use,
   table__data_modify__editing__default_state,
@@ -839,6 +843,8 @@ var
 
   syn_editor_options : SynEdit.TSynEditorOptions;
 
+  syn_editor_options__scroll : SynEdit.TSynEditorScrollOptions;
+
 
 implementation
 
@@ -900,6 +906,25 @@ begin
           if   ( SynEdit.TSynEditPlugin(fPlugins[ i ]) is plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin )
             or ( SynEdit.TSynEditPlugin(fPlugins[ i ]) is plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin__Brackets ) then
             SynEdit.TSynEditPlugin(fPlugins[ i ]).Destroy();
+
+    end;
+
+end;
+
+procedure TCustomSynEdit_Helper.Plugin__Search_Highlighter__Disabled__Set( const disabled_f : boolean );
+var
+  i : integer;
+begin
+
+  //if Self.fPlugins <> nil then // Do not work - cannot access private symbol TCustomSynEdit.fPlugins
+
+  with Self do // But it works.
+    begin
+
+      if fPlugins <> nil then
+        for i := fPlugins.Count - 1 downto 0 do
+          if SynEdit.TSynEditPlugin(fPlugins[ i ]) is plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin then
+            plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin(SynEdit.TSynEditPlugin(fPlugins[ i ])).Disabled__Set( disabled_f );
 
     end;
 
@@ -3916,6 +3941,9 @@ begin
     Exit;
 
 
+  syn_edit_f.Plugin__Search_Highlighter__Disabled__Set( true );
+
+
   if ASearch = AReplace then
     Action := raSkip
   else
@@ -3996,7 +4024,10 @@ begin
             Action := raCancel;
         end;
 
-   end;
+    end;
+
+
+  syn_edit_f.Plugin__Search_Highlighter__Disabled__Set( false );
 
 end;
 
@@ -4015,6 +4046,8 @@ begin
   syn_edit_f.Highlighter := Shared.Shared_DataModule.Syn_Edit__Highlighter__Get( Common.sql_editor__highlights__syntax );
 
   syn_edit_f.Options := syn_editor_options;
+
+  syn_edit_f.ScrollOptions := syn_editor_options__scroll;
 
   if syn_edit_f.TabWidth <> Common.sql_editor__code__dent_width then
     syn_edit_f.TabWidth := Common.sql_editor__code__dent_width;
@@ -4081,6 +4114,113 @@ begin
         brackets__squareg := brackets__square_f;
 
       end;
+
+end;
+
+procedure Syn_Edit__SQL__Error__Caret_Position__Set( syn_edit_f : TSynEdit; exception_message_f : string; const options_override_f : integer = -1 );
+const
+  line_l_c : string = 'line ';
+  column_l_c : string = 'column ';
+
+var
+  sql_editor__error__caret_position__set_l : boolean;
+
+  zti,
+  column_l,
+  line_l
+    : integer;
+
+  zts : string;
+begin
+
+  // At line 11, column 8
+  // Token unknown - line 3, column 3
+
+
+  if syn_edit_f = nil then
+    Exit;
+
+
+  if options_override_f = -1 then
+    sql_editor__error__caret_position__set_l := Common.sql_editor__error__caret_position__set
+  else
+    sql_editor__error__caret_position__set_l := boolean(options_override_f);
+
+  if not sql_editor__error__caret_position__set_l then
+    Exit;
+
+
+  column_l := -1;
+  line_l := -1;
+
+
+  zti := Pos( line_l_c, exception_message_f );
+
+  if zti > 0 then
+    begin
+
+      Delete( exception_message_f, 1, zti - 1 );
+      exception_message_f := StringReplace( exception_message_f, line_l_c, '', [ rfReplaceAll ] );
+
+
+      zti := Pos( ',', exception_message_f );
+
+      if zti > 0 then
+        begin
+
+          zts := Trim(  Copy( exception_message_f, 1, zti - 1 )  );
+
+          try
+            line_l := StrToInt( zts );
+          except
+            line_l := -1;
+          end;
+
+
+          Delete( exception_message_f, 1, zti );
+
+
+          zti := Pos( column_l_c, exception_message_f );
+
+          if zti > 0 then
+            begin
+
+              Delete( exception_message_f, 1, zti - 1 );
+              exception_message_f := Trim(  StringReplace( exception_message_f, column_l_c, '', [ rfReplaceAll ] )  );
+
+
+              zts := '';
+
+              for zti := 1 to Length( exception_message_f ) do
+                try
+                  StrToInt( exception_message_f[ zti ] );
+                  zts := zts + exception_message_f[ zti ];
+                except
+                  Break;
+                end;
+
+
+              try
+                column_l := StrToInt( zts );
+              except
+                column_l := -1;
+              end;
+
+
+              if    ( column_l > 0 )
+                and ( line_l > 0 ) then
+                begin
+
+                  syn_edit_f.CaretY := line_l;
+                  syn_edit_f.CaretX := column_l;
+
+                end;
+
+            end;
+
+        end;
+
+    end;
 
 end;
 

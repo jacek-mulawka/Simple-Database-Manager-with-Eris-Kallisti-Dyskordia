@@ -230,10 +230,9 @@ object View__Edit_Execute_F_Frame: TView__Edit_Execute_F_Frame
               Kind = gbkMargin
               Width = 3
             end>
-          Options = [eoAutoIndent, eoDisableScrollArrows, eoDragDropEditing, eoDropFiles, eoEnhanceHomeKey, eoEnhanceEndKey, eoGroupUndo, eoHideShowScrollbars, eoKeepCaretX, eoShowScrollHint, eoSmartTabDelete, eoTabIndent, eoTabsToSpaces, eoShowLigatures, eoCopyPlainText]
           ReadOnly = True
           RightEdge = 255
-          SelectedColor.Alpha = 0.400000005960464500
+          ScrollbarAnnotations = <>
           TabWidth = 2
           WantTabs = True
           OnReplaceText = View__Source_SynEditReplaceText

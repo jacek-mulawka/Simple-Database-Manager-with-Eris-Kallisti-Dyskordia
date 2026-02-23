@@ -26,7 +26,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
     TabOrder = 0
     object Log_Horizontal_Splitter: TSplitter
       Left = 1
-      Top = 36
+      Top = 61
       Width = 183
       Height = 6
       Cursor = crVSplit
@@ -41,9 +41,9 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
     object Log_Memo: TMemo
       AlignWithMargins = True
       Left = 11
-      Top = 45
+      Top = 70
       Width = 163
-      Height = 531
+      Height = 506
       Margins.Left = 10
       Margins.Right = 10
       Align = alClient
@@ -53,19 +53,21 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
       TabOrder = 1
       OnKeyDown = Log_MemoKeyDown
       OnKeyUp = Key_Up_Common
+      ExplicitTop = 45
+      ExplicitHeight = 531
     end
     object Buttons_Panel: TPanel
       Left = 1
       Top = 1
       Width = 183
-      Height = 35
+      Height = 60
       Align = alTop
       TabOrder = 0
       DesignSize = (
         183
-        35)
+        60)
       object Execute_Button: TButton
-        Left = 50
+        Left = 95
         Top = 5
         Width = 25
         Height = 25
@@ -74,7 +76,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 1
+        TabOrder = 3
         OnClick = Execute_ButtonClick
       end
       object Sort_Button: TButton
@@ -83,7 +85,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
         Width = 25
         Height = 25
         Hint = 'Sort columns.'
-        ImageIndex = 14
+        ImageIndex = 30
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True
@@ -91,7 +93,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
         OnClick = Sort_ButtonClick
       end
       object Refresh_Button: TButton
-        Left = 110
+        Left = 130
         Top = 5
         Width = 25
         Height = 25
@@ -101,7 +103,7 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 2
+        TabOrder = 4
         OnClick = Refresh_ButtonClick
       end
       object Buttons_Panel__Hide_Button: TButton
@@ -115,8 +117,50 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
         Images = Shared_DataModule.ImageList1
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 3
+        TabOrder = 5
         OnClick = Buttons_Panel__Hide_ButtonClick
+      end
+      object Column__Move__Up_Button: TButton
+        Left = 35
+        Top = 5
+        Width = 25
+        Height = 25
+        Hint = 'Move selected column up.'#13#10#13#10'[Ctrl + Up arrow]'
+        ImageIndex = 13
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = Column__Move__Up_ButtonClick
+      end
+      object Column__Move__Down_Button: TButton
+        Left = 60
+        Top = 5
+        Width = 25
+        Height = 25
+        Hint = 'Move selected column down.'#13#10#13#10'[Ctrl + Down arrow]'
+        ImageIndex = 14
+        Images = Shared_DataModule.ImageList1
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = Column__Move__Down_ButtonClick
+      end
+      object Keyboard_Select_CheckBox: TCheckBox
+        Left = 5
+        Top = 35
+        Width = 170
+        Height = 17
+        Hint = 
+          'Select rows using the keyboard.'#13#10#13#10'[Ctrl + K]'#13#10#13#10'Backspace - uns' +
+          'elect all'#13#10'Space - select one'
+        Caption = 'Keyboard rows select'
+        Checked = True
+        ParentShowHint = False
+        ShowHint = True
+        State = cbChecked
+        TabOrder = 6
+        OnClick = Keyboard_Select_CheckBoxClick
       end
     end
   end
@@ -148,10 +192,12 @@ object Table__Columns_Sort_F_Frame: TTable__Columns_Sort_F_Frame
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
+      OnCustomDrawItem = Columns_Sort_ListViewCustomDrawItem
       OnDragDrop = Columns_Sort_ListViewDragDrop
       OnDragOver = Columns_Sort_ListViewDragOver
       OnKeyDown = Columns_Sort_ListViewKeyDown
       OnKeyUp = Key_Up_Common
+      OnMouseDown = Columns_Sort_ListViewMouseDown
     end
   end
 end

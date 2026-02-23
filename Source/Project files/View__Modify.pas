@@ -850,7 +850,13 @@ begin
     begin
 
       if Trim( error_message_l ) <> '' then
-        Log_Memo.Lines.Add(  StringReplace( error_message_l, #10, #13 + #10, [ rfReplaceAll ] )  );
+        begin
+
+          Log_Memo.Lines.Add(  StringReplace( error_message_l, #10, #13 + #10, [ rfReplaceAll ] )  );
+
+          Common.Syn_Edit__SQL__Error__Caret_Position__Set( View__Source_SynEdit, error_message_l );
+
+        end;
 
     end;
 
