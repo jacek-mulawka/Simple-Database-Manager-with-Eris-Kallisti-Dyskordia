@@ -8,6 +8,8 @@ uses
 type
   TSearchTextHightlighterSynEditPlugin = class(TSynEditPlugin)
   private
+    disabled : boolean; // If it highlights selected text, it incorrectly replaces characters when replacing words if the string appears several times on the same line. // Jacek Mulawka (20.Feb.2026).
+
     FAttribute: TSynHighlighterAttributes;
   protected
     procedure AfterPaint(ACanvas: TCanvas; const AClip: TRect;
@@ -15,6 +17,7 @@ type
   public
     procedure AfterConstruction; override;
     destructor Destroy; override;
+    procedure Disabled__Set( const disabled_f : boolean ); // Jacek Mulawka (20.Feb.2026).
 
     property Attribute: TSynHighlighterAttributes read FAttribute write FAttribute;
   end;
@@ -49,13 +52,24 @@ implementation
 procedure TSearchTextHightlighterSynEditPlugin.AfterConstruction;
 begin
   inherited;
+
+  Self.disabled := false;
+
   FAttribute := TSynHighlighterAttributes.Create('SearchText', 'Search Text Highlighter');
+
 end;
 
 destructor TSearchTextHightlighterSynEditPlugin.Destroy;
 begin
   FAttribute.Free;
   inherited;
+end;
+
+procedure TSearchTextHightlighterSynEditPlugin.Disabled__Set( const disabled_f : boolean );
+begin
+
+  Self.disabled := disabled_f;
+
 end;
 
 procedure TSearchTextHightlighterSynEditPlugin.AfterPaint(ACanvas: TCanvas;
@@ -69,6 +83,9 @@ var
   CurrCoord: TBufferCoord;
 begin
   inherited;
+
+  if Self.disabled then
+    Exit;
 
   if not Assigned(Editor.SearchEngine) then
     Exit;
@@ -159,8 +176,8 @@ procedure TSearchTextHightlighterSynEditPlugin__Brackets.AfterPaint( ACanvas: TC
     zts : string;
   begin
 
-    if    ( buffer_coord_f.Line <> 0 )
-      and ( buffer_coord_f.Char <> 0 ) then
+    if    ( buffer_coord_f.Line > 0 )
+      and ( buffer_coord_f.Char > 0 ) then
       begin
 
         zts := Editor.Lines[ buffer_coord_f.Line - 1 ][ buffer_coord_f.Char ];
@@ -297,8 +314,8 @@ begin
 
         zt_buffer_coord_1 := Editor.GetMatchingBracketEx( Editor.CaretXY, zts );
 
-        if   ( zt_buffer_coord_1.Line = 0 )
-          or ( zt_buffer_coord_1.Char = 0 ) then
+        if   ( zt_buffer_coord_1.Line <= 0 )
+          or ( zt_buffer_coord_1.Char <= 0 ) then
           begin
 
             if   (  Pos( '<', Editor.Text ) > 0  )
