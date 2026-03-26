@@ -197,7 +197,7 @@ begin
   Self.calendar_date_time_picker.Parent := Self.date_panel;
   Self.calendar_date_time_picker.Hint := '<?>';
   Self.calendar_date_time_picker.Left := Self.year_spin_edit.Left + 30;
-  Self.calendar_date_time_picker.ShowHint := true;;
+  Self.calendar_date_time_picker.ShowHint := true;
   Self.calendar_date_time_picker.Width := 100;
   Self.calendar_date_time_picker.SendToBack();
   Self.calendar_date_time_picker.OnCloseUp := calendar_date_time_picker_Close_Up;
