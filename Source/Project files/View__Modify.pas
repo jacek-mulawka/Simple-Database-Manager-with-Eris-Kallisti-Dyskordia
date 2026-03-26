@@ -143,6 +143,9 @@ begin
   //Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', View__Source_Memo.CaretPos.Y + 1 )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', View__Source_Memo.CaretPos.X + 1 ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', View__Source_Memo.Lines.Text.Length )  )   );
   Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', View__Source_SynEdit.CaretY )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', View__Source_SynEdit.CaretX ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', View__Source_SynEdit.Lines.Text.Length )  )   );
 
+
+  View__Source_SynEdit.Lines_Color__Update__Line_Numbers();
+
 end;
 
 procedure TView__Modify_Form.View__Parameter_On_Click( Sender : TObject );
@@ -1111,6 +1114,8 @@ procedure TView__Modify_Form.View__Source_SynEditEnter( Sender: TObject );
 begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( View__Source_SynEdit, text__search_replace_form );
+
+  Common.Syn_Edit__On_Enter( View__Source_SynEdit );
 
 end;
 

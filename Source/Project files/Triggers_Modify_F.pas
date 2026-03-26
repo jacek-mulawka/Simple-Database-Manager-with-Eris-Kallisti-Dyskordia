@@ -1233,6 +1233,8 @@ begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( Trigger_Source_SynEdit, text__search_replace_form );
 
+  Common.Syn_Edit__On_Enter( Trigger_Source_SynEdit );
+
 end;
 
 procedure TTriggers_Modify_F_Frame.Trigger_Source_SynEditClick( Sender: TObject );

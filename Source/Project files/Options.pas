@@ -280,6 +280,9 @@ begin
   //Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.CaretPos.Y + 1 )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.CaretPos.X + 1 ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_Memo.Lines.Text.Length )  )   );
   Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.CaretY )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.CaretX ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Sql_Text_SynEdit.Lines.Text.Length )  )   );
 
+
+  Sql_Text_SynEdit.Lines_Color__Update__Line_Numbers();
+
 end;
 
 procedure TOptions_Form.Components_Value_Set();
@@ -2321,6 +2324,9 @@ begin
         );
 
     end;
+
+
+  Common.Syn_Edit__On_Enter( Sql_Text_SynEdit );
 
 end;
 

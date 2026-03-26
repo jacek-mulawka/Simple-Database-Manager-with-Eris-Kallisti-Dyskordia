@@ -32,7 +32,7 @@ type
     procedure Caption_Text__Replace__Set( const caption_text_f : string );
     procedure Caption_Text__Set( const caption_text_f : string );
 
-    function Modal_Result__Get( const caption_text_f : string; buttons_f : TSet_Of_TMsgDlgBtn = [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbCancel, TMsgDlgBtn.mbNo, TMsgDlgBtn.mbYesToAll ] ) : TModalResult;
+    class function Modal_Result__Get( const caption_text_f : string; buttons_f : TSet_Of_TMsgDlgBtn = [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbCancel, TMsgDlgBtn.mbNo, TMsgDlgBtn.mbYesToAll ] ) : TModalResult;
   end;
 
 var
@@ -60,7 +60,7 @@ begin
 
 end;
 
-function TText__Search_Replace__Prompt_Form.Modal_Result__Get( const caption_text_f : string; buttons_f : TSet_Of_TMsgDlgBtn = [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbCancel, TMsgDlgBtn.mbNo, TMsgDlgBtn.mbYesToAll ] ) : TModalResult;
+class function TText__Search_Replace__Prompt_Form.Modal_Result__Get( const caption_text_f : string; buttons_f : TSet_Of_TMsgDlgBtn = [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbCancel, TMsgDlgBtn.mbNo, TMsgDlgBtn.mbYesToAll ] ) : TModalResult;
 var
   text__search_replace__prompt_form_l : TText__Search_Replace__Prompt_Form;
 begin

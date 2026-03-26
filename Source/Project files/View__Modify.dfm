@@ -17,6 +17,7 @@ object View__Modify_Form: TView__Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object View_Name_Etiquette_Label: TLabel

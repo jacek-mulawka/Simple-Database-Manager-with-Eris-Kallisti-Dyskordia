@@ -154,6 +154,9 @@ begin
   //Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Stored_Procedure__Source_Memo.CaretPos.Y + 1 )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Stored_Procedure__Source_Memo.CaretPos.X + 1 ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Stored_Procedure__Source_Memo.Lines.Text.Length )  )   );
   Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Stored_Procedure__Source_SynEdit.CaretY )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Stored_Procedure__Source_SynEdit.CaretX ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Stored_Procedure__Source_SynEdit.Lines.Text.Length )  )   );
 
+
+  Stored_Procedure__Source_SynEdit.Lines_Color__Update__Line_Numbers();
+
 end;
 
 procedure TStored_Procedure__Modify_Form.Stored_Procedure__Parameter_On_Click( Sender : TObject );
@@ -1408,6 +1411,8 @@ procedure TStored_Procedure__Modify_Form.Stored_Procedure__Source_SynEditEnter( 
 begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( Stored_Procedure__Source_SynEdit, text__search_replace_form );
+
+  Common.Syn_Edit__On_Enter( Stored_Procedure__Source_SynEdit );
 
 end;
 

@@ -117,6 +117,9 @@ begin
   //Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Trigger_Source_Memo.CaretPos.Y + 1 )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Trigger_Source_Memo.CaretPos.X + 1 ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Trigger_Source_Memo.Lines.Text.Length )  )   );
   Caret_Position_Label.Caption := Trim(  FormatFloat( '### ### ### ### ### ### ##0', Trigger_Source_SynEdit.CaretY )  ) + ' / ' + Trim(   FormatFloat( '### ### ### ### ### ### ##0', Trigger_Source_SynEdit.CaretX ) + ' : ' + Trim(  FormatFloat( '### ### ### ### ### ### ##0', Trigger_Source_SynEdit.Lines.Text.Length )  )   );
 
+
+  Trigger_Source_SynEdit.Lines_Color__Update__Line_Numbers();
+
 end;
 
 function TDatabase__Trigger_Modify_Form.Quotation_Sign__DTM() : string;
@@ -844,6 +847,8 @@ procedure TDatabase__Trigger_Modify_Form.Trigger_Source_SynEditEnter( Sender: TO
 begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( Trigger_Source_SynEdit, text__search_replace_form );
+
+  Common.Syn_Edit__On_Enter( Trigger_Source_SynEdit );
 
 end;
 

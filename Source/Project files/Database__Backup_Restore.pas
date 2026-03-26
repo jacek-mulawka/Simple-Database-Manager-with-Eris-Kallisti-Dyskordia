@@ -984,6 +984,8 @@ begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( Log_SynEdit, text__search_replace_form );
 
+  Common.Syn_Edit__On_Enter( Log_SynEdit );
+
 end;
 
 procedure TDatabase__Backup_Restore_Form.Log_SynEditClick( Sender: TObject );

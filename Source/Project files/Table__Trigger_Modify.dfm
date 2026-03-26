@@ -16,6 +16,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 15
   object Trigger_Name_Etiquette_Label: TLabel
@@ -129,7 +130,7 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         AlignWithMargins = True
         Left = 11
         Top = 6
-        Width = 228
+        Width = 25
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -139,13 +140,12 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Caption = 'Type'
         ParentShowHint = False
         ShowHint = False
-        ExplicitWidth = 25
       end
       object Trigger_Activity_Etiquette_Label: TLabel
         AlignWithMargins = True
         Left = 11
         Top = 59
-        Width = 228
+        Width = 40
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -155,13 +155,12 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Caption = 'Activity'
         ParentShowHint = False
         ShowHint = False
-        ExplicitWidth = 40
       end
       object Trigger_Sequence_Etiquette_Label: TLabel
         AlignWithMargins = True
         Left = 11
         Top = 112
-        Width = 228
+        Width = 51
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -171,7 +170,6 @@ object Table__Trigger_Modify_Form: TTable__Trigger_Modify_Form
         Caption = 'Sequence'
         ParentShowHint = False
         ShowHint = False
-        ExplicitWidth = 51
       end
       object Trigger_Type_ComboBox: TComboBox
         AlignWithMargins = True

@@ -398,8 +398,6 @@ begin
   //Common.fd_connection__format_options__max_string_size := 32767;
   Common.table__data_modify__filter__height_keeper__top := 240;
 
-
-  Common.sql_editor__font := Vcl.Graphics.TFont.Create();
   Common.syn_editor_options :=
     [
       SynEdit.TSynEditorOption.eoAutoIndent,
@@ -423,6 +421,8 @@ begin
       SynEdit.TSynEditorScrollOption.eoScrollPastEol,
       SynEdit.TSynEditorScrollOption.eoShowScrollHint
     ];
+  Common.sql_editor__font := Vcl.Graphics.TFont.Create();
+  Common.syn_editor__replace__break := false;
 
   Common.Font__Set( Common.sql_editor__font, Self.Font );
 

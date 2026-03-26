@@ -2809,6 +2809,8 @@ begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( Stored_Procedure__Source_SynEdit, text__search_replace_form );
 
+  Common.Syn_Edit__On_Enter( Stored_Procedure__Source_SynEdit );
+
 end;
 
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Source_SynEditClick( Sender: TObject );

@@ -206,6 +206,7 @@ function Syn_Edit__CharScan( syn_edit_f : TSynEdit; const do_delete_f : boolean 
 procedure Syn_Edit__Highlight__Text( syn_edit_f : TSynEdit );
 function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState ) : boolean; overload;
 function Syn_Edit_Key_Down( syn_edit_f : TSynEdit; Sender: TObject; var Key: Word; Shift: TShiftState; const bookmarks__toggle__with__line_color_f : boolean ) : boolean; overload;
+procedure Syn_Edit__On_Enter( syn_edit_f : TSynEdit );
 procedure Syn_Edit__On_Replace_Text( syn_edit_f : TSynEdit; ASearch, AReplace : string; Line, Column : Integer; var Action : TSynReplaceAction; AClientRect : TRect );
 procedure Syn_Edit__Parameters__Set( syn_edit_f : TSynEdit );
 procedure Syn_Edit__Search_Text_Hightlighter_Syn_Edit_Plugin__Create( syn_edit_f : TSynEdit ); overload;
@@ -772,6 +773,7 @@ var
   sql_editor__transactions_automatic,
   sql__quotation_sign__use,
   splitter_show,
+  syn_editor__replace__break,
   system_tables_visible,
   table__columns_sort__keyboard_select,
   table__data_filter__field_dedicated__default_use,
@@ -839,11 +841,11 @@ var
   txt__file__default_extension
     : string;
 
-  sql_editor__font : Vcl.Graphics.TFont;
-
   syn_editor_options : SynEdit.TSynEditorOptions;
 
   syn_editor_options__scroll : SynEdit.TSynEditorScrollOptions;
+
+  sql_editor__font : Vcl.Graphics.TFont;
 
 
 implementation
@@ -3702,13 +3704,24 @@ begin
 
     end
   else
-  if Key = VK_F6 then
+  if Key = VK_F6 then // Ctrl + F6, Ctrl + Shift + F6 = fsMDIForm default shortcut.
     begin
 
       if not syn_edit_f.Lines_Color__Check( syn_edit_f.CaretY ) then
         syn_edit_f.Lines_Color__Add( syn_edit_f.CaretY );
 
       syn_edit_f.Lines_Color__Change( syn_edit_f.CaretY );
+
+
+      Result := true;
+
+    end
+  else
+  if    ( Key = VK_F7 )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    begin
+
+      syn_edit_f.Lines_Color__Add__All_Colors( syn_edit_f.CaretY );
 
 
       Result := true;
@@ -3927,6 +3940,18 @@ begin
 
 end;
 
+procedure Syn_Edit__On_Enter( syn_edit_f : TSynEdit );
+begin
+
+  if    ( syn_edit_f <> nil )
+    and ( syn_edit_f.Lines.Count <= 1 )
+    and ( syn_edit_f.CaretX > 1  )
+    and ( syn_edit_f.CaretY <= 1  )
+    and (  Trim( syn_edit_f.Text ) = ''  ) then
+    syn_edit_f.CaretX := 1;
+
+end;
+
 procedure Syn_Edit__On_Replace_Text( syn_edit_f : TSynEdit; ASearch, AReplace : string; Line, Column : Integer; var Action : TSynReplaceAction; AClientRect : TRect );
 var
   line_height_l : integer;
@@ -3937,6 +3962,9 @@ begin
 
   // Based on SynEdit SearchReplaceDemo.
 
+  Common.syn_editor__replace__break := false;
+
+
   if syn_edit_f = nil then
     Exit;
 
@@ -3945,7 +3973,7 @@ begin
 
 
   if ASearch = AReplace then
-    Action := raSkip
+    Action := SynEdit.TSynReplaceAction.raSkip
   else
     begin
 
@@ -4017,14 +4045,17 @@ begin
       System.SysUtils.FreeAndNil( text__search_replace__prompt_form_l );
 
       case modal_result of
-          mrYes : Action := raReplace;
-          mrYesToAll : Action := raReplaceAll;
-          mrNo : Action := raSkip;
+          mrYes : Action := SynEdit.TSynReplaceAction.raReplace;
+          mrYesToAll : Action := SynEdit.TSynReplaceAction.raReplaceAll;
+          mrNo : Action := SynEdit.TSynReplaceAction.raSkip;
           else
-            Action := raCancel;
+            Action := SynEdit.TSynReplaceAction.raCancel;
         end;
 
     end;
+
+
+  Common.syn_editor__replace__break := Action = SynEdit.TSynReplaceAction.raCancel;
 
 
   syn_edit_f.Plugin__Search_Highlighter__Disabled__Set( false );

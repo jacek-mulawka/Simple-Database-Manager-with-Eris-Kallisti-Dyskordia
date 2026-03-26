@@ -1139,7 +1139,7 @@ begin
     Translation__Component__Add( 'Highlighter__Syntax_MenuItem', 'Syntax highlighter' );
     Translation__Component__Add( 'Keyboard__Shortcuts__Switch__Output_Save__With__Text_File_Save_MenuItem', 'Switch keyboard shortcuts ''Save query output as csv'' with ''Save file''' );
     Translation__Component__Add( 'Lines_Color__Change_MenuItem', 'Change line color [F6]' );
-    Translation__Component__Add( 'Lines_Color__Choose_MenuItem', 'Choose line color [F7]' );
+    Translation__Component__Add( 'Lines_Color__Choose_MenuItem', 'Choose line color [F7, Ctrl + Shift + F7]' );
     Translation__Component__Add( 'Lines_Color__Clear__All_MenuItem', 'Clear all lines color [Shift + F5]' );
     Translation__Component__Add( 'Lines_Color__Toggle_MenuItem', 'Toggle line color [F5]' );
     Translation__Component__Add( 'Open_Button', '', 'Query execute.' + #13 + #10 + #13 + #10 + '[Ctrl + E]' );
@@ -1445,7 +1445,9 @@ begin
     Translation__Component__Add( 'Search_Etiquette_Label', 'Search' );
     Translation__Component__Add( 'Search__Case_Insensitive_CheckBox', 'Case insensitive' );
     Translation__Component__Add( 'Search__Close_Button', '', 'Close.' );
-    Translation__Component__Add( 'Search__Direction_RadioGroup', 'Direction', '', 'Backward;Forward;' );
+    Translation__Component__Add( 'Search__Direction_GroupBox', 'Direction' );
+    Translation__Component__Add( 'Search__Direction__Backward_RadioButton', 'Backward' );
+    Translation__Component__Add( 'Search__Direction__Forward_RadioButton', 'Forward' );
     Translation__Component__Add( 'Search__Find_Next_Button', '', 'Find next.' );
     Translation__Component__Add( 'Search__From_Cursor_CheckBox', 'Search from cursor' );
     Translation__Component__Add( 'Search__Partial_Key_CheckBox', 'Partial key' );

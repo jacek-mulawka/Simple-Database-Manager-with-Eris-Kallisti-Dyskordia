@@ -120,6 +120,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Checked = True
         State = cbChecked
         TabOrder = 0
+        OnKeyDown = Search_Replace_ComboBoxKeyDown
       end
       object Search__Partial_Key_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -136,6 +137,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Checked = True
         State = cbChecked
         TabOrder = 1
+        OnKeyDown = Search_Replace_ComboBoxKeyDown
       end
       object Search__From_Cursor_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -152,6 +154,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Checked = True
         State = cbChecked
         TabOrder = 2
+        OnKeyDown = Search_Replace_ComboBoxKeyDown
       end
       object Search__Selected_Text_Only_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -166,6 +169,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Align = alTop
         Caption = 'Selected text only'
         TabOrder = 3
+        OnKeyDown = Search_Replace_ComboBoxKeyDown
       end
       object Search__Regular_Expression_CheckBox: TCheckBox
         AlignWithMargins = True
@@ -180,6 +184,7 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         Align = alTop
         Caption = 'Regular expression'
         TabOrder = 4
+        OnKeyDown = Search_Replace_ComboBoxKeyDown
       end
     end
     object Buttons_Panel: TPanel
@@ -194,24 +199,6 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
       Margins.Bottom = 5
       Align = alRight
       TabOrder = 1
-      object Search__Direction_RadioGroup: TRadioGroup
-        AlignWithMargins = True
-        Left = 11
-        Top = 6
-        Width = 133
-        Height = 75
-        Margins.Left = 10
-        Margins.Top = 5
-        Margins.Right = 10
-        Margins.Bottom = 5
-        Align = alTop
-        Caption = 'Direction'
-        ItemIndex = 1
-        Items.Strings = (
-          'Backward'
-          'Forward')
-        TabOrder = 0
-      end
       object Search__Find_Next_Button: TButton
         Left = 10
         Top = 89
@@ -277,6 +264,46 @@ object Text__Search_Replace_Form: TText__Search_Replace_Form
         ShowHint = True
         State = cbChecked
         TabOrder = 2
+        OnKeyDown = Search_Replace_ComboBoxKeyDown
+      end
+      object Search__Direction_GroupBox: TGroupBox
+        AlignWithMargins = True
+        Left = 11
+        Top = 6
+        Width = 133
+        Height = 75
+        Margins.Left = 10
+        Margins.Top = 5
+        Margins.Right = 10
+        Margins.Bottom = 5
+        Align = alTop
+        Caption = 'Direction'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        ExplicitLeft = 20
+        ExplicitTop = 130
+        ExplicitWidth = 185
+        object Search__Direction__Backward_RadioButton: TRadioButton
+          Left = 10
+          Top = 20
+          Width = 113
+          Height = 17
+          Caption = 'Backward'
+          TabOrder = 0
+          OnKeyDown = Search_Replace_ComboBoxKeyDown
+        end
+        object Search__Direction__Forward_RadioButton: TRadioButton
+          Left = 10
+          Top = 50
+          Width = 113
+          Height = 17
+          Caption = 'Forward'
+          Checked = True
+          TabOrder = 1
+          TabStop = True
+          OnKeyDown = Search_Replace_ComboBoxKeyDown
+        end
       end
     end
   end

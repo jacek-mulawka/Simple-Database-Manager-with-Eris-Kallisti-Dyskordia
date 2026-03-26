@@ -423,6 +423,9 @@ begin
 
   Parent_Caption__Set( parent_caption_copy_g + zts );
 
+
+  Sql_Text_SynEdit.Lines_Color__Update__Line_Numbers();
+
 end;
 
 function TSql_Editor_F_Frame.Close_Block_Check__SEF( var modal_result_f : TModalResult; const message_show_f : boolean = true ) : boolean;
@@ -461,7 +464,7 @@ begin
     and ( message_show_f ) then
     begin
 
-      modal_result_f := Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.sql_editor_contains_data__continue_ );
+      modal_result_f := Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.sql_editor_contains_data__continue_ );
 
 
       if modal_result_f in [ mrYes, mrYesToAll ] then
@@ -4778,6 +4781,8 @@ procedure TSql_Editor_F_Frame.Sql_Text_SynEditEnter( Sender: TObject );
 begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( Sql_Text_SynEdit, text__search_replace_form );
+
+  Common.Syn_Edit__On_Enter( Sql_Text_SynEdit );
 
 end;
 

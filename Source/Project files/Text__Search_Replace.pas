@@ -24,10 +24,12 @@ type
     Replace_Etiquette_Label: TLabel;
     Replace_ComboBox: TComboBox;
     Search_Options_Panel: TPanel;
-    Search__Direction_RadioGroup: TRadioGroup;
     Centre_Panel: TPanel;
     Buttons_Panel: TPanel;
     Replace__Prompt_CheckBox: TCheckBox;
+    Search__Direction_GroupBox: TGroupBox;
+    Search__Direction__Backward_RadioButton: TRadioButton;
+    Search__Direction__Forward_RadioButton: TRadioButton;
     procedure FormCreate( Sender: TObject );
     procedure FormActivate( Sender: TObject );
     procedure FormDestroy( Sender: TObject );
@@ -48,7 +50,9 @@ type
     shared_window_g
       : boolean;
 
-    previous_search_text_g : string;
+    language__selected__copy_g,
+    previous_search_text_g
+      : string;
 
     syn_edit : TSynEdit;
 
@@ -221,12 +225,24 @@ begin
   History__Load();
 
 
+  language__selected__copy_g := Common.language__selected;
+
   Translation.Translation__Apply( Self );
 
 end;
 
 procedure TText__Search_Replace_Form.FormActivate( Sender: TObject );
 begin
+
+  if language__selected__copy_g <> Common.language__selected then
+    begin
+
+      language__selected__copy_g := Common.language__selected;
+
+      Translation.Translation__Apply( Self );
+
+    end;
+
 
   if    ( replace )
     and ( Search_ComboBox.Text <> '' ) then
@@ -301,7 +317,10 @@ begin
     end;
 
 
-  search_direction_backward_l := Search__Direction_RadioGroup.ItemIndex = 0; // Backward.
+  Common.syn_editor__replace__break := false;
+
+
+  search_direction_backward_l := Search__Direction__Backward_RadioButton.Checked;
 
 
   if search_direction__invert__temporary_g then
@@ -398,7 +417,14 @@ begin
 
       if    ( not first_search_g )
         and ( not not_found_message_displayed_g )
-        and ( not search_text_found_g ) then
+        and ( not search_text_found_g )
+        and (
+                 ( not replace_l )
+              or (
+                       ( replace_l )
+                   and ( not Common.syn_editor__replace__break )
+                 )
+            ) then
         begin
 
           not_found_message_displayed_g := true;
@@ -407,42 +433,47 @@ begin
 
         end
       else
-        if search_direction_backward_l then
-          begin
+        if   ( not replace_l )
+          or (
+                   ( replace_l )
+               and ( not Common.syn_editor__replace__break )
+             ) then
+          if search_direction_backward_l then
+            begin
 
-            if   ( first_search_g )
-              or (  Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_end_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes  ) then
-              begin
+              if   ( first_search_g )
+                or (  Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_end_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes  ) then
+                begin
 
-                if not_found_message_displayed_g then
-                  not_found_message_displayed_g := false;
+                  if not_found_message_displayed_g then
+                    not_found_message_displayed_g := false;
 
-                Self.syn_edit.CaretY := Self.syn_edit.Lines.Count;
-                Self.syn_edit.CaretX := Length( Self.syn_edit.Lines[ Self.syn_edit.Lines.Count - 1 ] ) + 1;
+                  Self.syn_edit.CaretY := Self.syn_edit.Lines.Count;
+                  Self.syn_edit.CaretX := Length( Self.syn_edit.Lines[ Self.syn_edit.Lines.Count - 1 ] ) + 1;
 
-                search_again_l := true;
+                  search_again_l := true;
 
-              end;
+                end;
 
-          end
-        else
-          begin
+            end
+          else
+            begin
 
-            if   ( first_search_g )
-              or (  Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_beginning_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes  ) then
-              begin
+              if   ( first_search_g )
+                or (  Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_beginning_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes  ) then
+                begin
 
-                if not_found_message_displayed_g then
-                  not_found_message_displayed_g := false;
+                  if not_found_message_displayed_g then
+                    not_found_message_displayed_g := false;
 
-                Self.syn_edit.CaretX := 1;
-                Self.syn_edit.CaretY := 1;
+                  Self.syn_edit.CaretX := 1;
+                  Self.syn_edit.CaretY := 1;
 
-                search_again_l := true;
+                  search_again_l := true;
 
-              end;
+                end;
 
-          end;
+            end;
 
     end
   else
@@ -454,11 +485,12 @@ begin
 
 
       if    ( replace_l )
-        and ( not search_text_found_g ) then
+        and ( not search_text_found_g )
+        and ( not Common.syn_editor__replace__break ) then
         if search_direction_backward_l then
           begin
 
-            if Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_end_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes then
+            if Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_end_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes then
               begin
 
                 if not_found_message_displayed_g then
@@ -475,7 +507,7 @@ begin
         else
           begin
 
-            if Text__Search_Replace__Prompt.Text__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_beginning_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes then
+            if Text__Search_Replace__Prompt.TText__Search_Replace__Prompt_Form.Modal_Result__Get( Translation.translation__messages_r.reset_search_from_the_beginning_, [ TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo ] ) = mrYes then
               begin
 
                 if not_found_message_displayed_g then

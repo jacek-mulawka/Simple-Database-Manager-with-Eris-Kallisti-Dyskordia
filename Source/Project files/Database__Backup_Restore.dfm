@@ -51,7 +51,7 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       AlignWithMargins = True
       Left = 12
       Top = 22
-      Width = 740
+      Width = 25
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -61,13 +61,12 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Caption = 'Alias'
       ParentShowHint = False
       ShowHint = False
-      ExplicitWidth = 25
     end
     object User_Name_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 203
-      Width = 740
+      Width = 56
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -75,13 +74,12 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Margins.Bottom = 5
       Align = alTop
       Caption = 'User name'
-      ExplicitWidth = 56
     end
     object Password_Etiquette_Label: TLabel
       AlignWithMargins = True
       Left = 12
       Top = 251
-      Width = 740
+      Width = 50
       Height = 15
       Margins.Left = 10
       Margins.Top = 5
@@ -89,7 +87,6 @@ object Database__Backup_Restore_Form: TDatabase__Backup_Restore_Form
       Margins.Bottom = 5
       Align = alTop
       Caption = 'Password'
-      ExplicitWidth = 50
     end
     object Database__Alias_ComboBox: TComboBox
       AlignWithMargins = True

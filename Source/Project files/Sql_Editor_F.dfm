@@ -1366,7 +1366,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
     end
     object Lines_Color__Choose_MenuItem: TMenuItem
-      Caption = 'Choose lines color [F7]'
+      Caption = 'Choose lines color [F7, Ctrl + Shift + F7]'
       ImageIndex = 42
       OnClick = Sql_Text_PopupMenu__MenuItemClick_Common
     end

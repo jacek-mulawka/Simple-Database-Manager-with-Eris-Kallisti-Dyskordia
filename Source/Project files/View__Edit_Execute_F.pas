@@ -2419,6 +2419,8 @@ begin
 
   Common.Text__Search_Replace__Syn_Edit__Set( View__Source_SynEdit, text__search_replace_form );
 
+  Common.Syn_Edit__On_Enter( View__Source_SynEdit );
+
 end;
 
 procedure TView__Edit_Execute_F_Frame.View__Source_SynEditClick( Sender: TObject );
