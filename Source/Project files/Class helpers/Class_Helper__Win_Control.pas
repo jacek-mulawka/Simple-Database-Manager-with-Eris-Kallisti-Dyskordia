@@ -8,12 +8,12 @@ uses
 
 type
   TWinControl_Helper = class helper for Vcl.Controls.TWinControl
-    procedure SetChildOrder( Child : TComponent; Order : Integer );
+    procedure SetChildOrder( Child : System.Classes.TComponent; Order : Integer );
   end;
 
 implementation
 
-procedure TWinControl_Helper.SetChildOrder( Child : TComponent; Order : Integer );
+procedure TWinControl_Helper.SetChildOrder( Child : System.Classes.TComponent; Order : Integer );
 begin
 
   inherited SetChildOrder( Child, Order );
