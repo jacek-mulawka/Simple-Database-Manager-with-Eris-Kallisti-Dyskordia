@@ -1131,9 +1131,14 @@ begin
 end;
 
 procedure TView__Modify_Form.View__Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+var
+  ztb : boolean;
 begin
 
-  if not Common.Syn_Edit_Key_Down( View__Source_SynEdit, Sender, Key, Shift ) then
+  ztb := Common.Syn_Edit_Key_Down( View__Source_SynEdit, Sender, Key, Shift );
+
+
+  if not ztb then
     if    ( Key = VK_ADD )
       and ( Shift = [ ssCtrl ] ) then
        Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked := not Execute_Button_Works_As_Prepare_Execute_CheckBox.Checked
@@ -1147,6 +1152,10 @@ begin
     if    ( Key = 80 )
       and ( Shift = [ ssCtrl ] ) then
       Sql_Prepare_ButtonClick( Sender );
+
+
+  if ztb then
+    Key := 0; // To avoid TCustomSynEdit.KeyDown - CommandProcessor.
 
 end;
 

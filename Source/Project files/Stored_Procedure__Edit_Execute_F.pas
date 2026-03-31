@@ -2825,12 +2825,17 @@ begin
 end;
 
 procedure TStored_Procedure__Edit_Execute_F_Frame.Stored_Procedure__Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+var
+  ztb : boolean;
 begin
 
-  Common.Syn_Edit_Key_Down( Stored_Procedure__Source_SynEdit, Sender, Key, Shift );
-
+  ztb := Common.Syn_Edit_Key_Down( Stored_Procedure__Source_SynEdit, Sender, Key, Shift );
 
   Key_Down_Common( Sender, Key, Shift );
+
+
+  if ztb then
+    Key := 0; // To avoid TCustomSynEdit.KeyDown - CommandProcessor.
 
 end;
 

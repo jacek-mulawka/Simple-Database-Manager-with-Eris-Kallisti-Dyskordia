@@ -1000,7 +1000,8 @@ end;
 procedure TDatabase__Backup_Restore_Form.Log_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  Common.Syn_Edit_Key_Down( Log_SynEdit, Sender, Key, Shift );
+  if Common.Syn_Edit_Key_Down( Log_SynEdit, Sender, Key, Shift ) then
+    Key := 0; // To avoid TCustomSynEdit.KeyDown - CommandProcessor.
 
 end;
 

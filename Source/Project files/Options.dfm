@@ -840,7 +840,7 @@ object Options_Form: TOptions_Form
           AlignWithMargins = True
           Left = 12
           Top = 27
-          Width = 31
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
@@ -850,12 +850,13 @@ object Options_Form: TOptions_Form
           Caption = 'Mode'
           ParentShowHint = False
           ShowHint = False
+          ExplicitWidth = 31
         end
         object Fire_Dac__Query__Fetch_Options__Record_Count_Mode_Etiquette_Label: TLabel
           AlignWithMargins = True
           Left = 12
           Top = 83
-          Width = 105
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
@@ -863,12 +864,13 @@ object Options_Form: TOptions_Form
           Margins.Bottom = 5
           Align = alTop
           Caption = 'Record count mode'
+          ExplicitWidth = 105
         end
         object Fire_Dac__Query__Fetch_Options__Rowset_Size_Etiquette_Label: TLabel
           AlignWithMargins = True
           Left = 12
           Top = 139
-          Width = 60
+          Width = 912
           Height = 15
           Margins.Left = 10
           Margins.Top = 10
@@ -876,6 +878,7 @@ object Options_Form: TOptions_Form
           Margins.Bottom = 5
           Align = alTop
           Caption = 'Rowset size'
+          ExplicitWidth = 60
         end
         object Fire_Dac__Query__Fetch_Options__Mode_ComboBox: TComboBox
           AlignWithMargins = True
@@ -934,7 +937,7 @@ object Options_Form: TOptions_Form
         AlignWithMargins = True
         Left = 10
         Top = 10
-        Width = 52
+        Width = 936
         Height = 15
         Margins.Left = 10
         Margins.Top = 10
@@ -944,6 +947,7 @@ object Options_Form: TOptions_Form
         Caption = 'Language'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 52
       end
       object Language_ComboBox: TComboBox
         AlignWithMargins = True
@@ -1706,7 +1710,7 @@ object Options_Form: TOptions_Form
                 AlignWithMargins = True
                 Left = 10
                 Top = 5
-                Width = 34
+                Width = 301
                 Height = 15
                 Margins.Left = 10
                 Margins.Top = 5
@@ -1716,6 +1720,7 @@ object Options_Form: TOptions_Form
                 Caption = 'Syntax'
                 ParentShowHint = False
                 ShowHint = False
+                ExplicitWidth = 34
               end
               object Sql_Editor__Highlights__Syntax_ComboBox: TComboBox
                 AlignWithMargins = True

@@ -118,7 +118,7 @@ object Database__Trigger_Modify_Form: TDatabase__Trigger_Modify_Form
         AlignWithMargins = True
         Left = 11
         Top = 6
-        Width = 29
+        Width = 580
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -128,12 +128,13 @@ object Database__Trigger_Modify_Form: TDatabase__Trigger_Modify_Form
         Caption = 'Event'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 29
       end
       object Trigger_Activity_Etiquette_Label: TLabel
         AlignWithMargins = True
         Left = 11
         Top = 59
-        Width = 40
+        Width = 580
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -143,12 +144,13 @@ object Database__Trigger_Modify_Form: TDatabase__Trigger_Modify_Form
         Caption = 'Activity'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 40
       end
       object Trigger_Sequence_Etiquette_Label: TLabel
         AlignWithMargins = True
         Left = 11
         Top = 112
-        Width = 51
+        Width = 580
         Height = 15
         Margins.Left = 10
         Margins.Top = 5
@@ -158,6 +160,7 @@ object Database__Trigger_Modify_Form: TDatabase__Trigger_Modify_Form
         Caption = 'Sequence'
         ParentShowHint = False
         ShowHint = False
+        ExplicitWidth = 51
       end
       object Trigger_Event_ComboBox: TComboBox
         AlignWithMargins = True

@@ -4814,12 +4814,17 @@ begin
 end;
 
 procedure TSql_Editor_F_Frame.Sql_Text_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
+var
+  ztb : boolean;
 begin
 
-  Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift, Bookmarks__Toggle__With__Line_Color_MenuItem.Checked );
-
+  ztb := Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift, Bookmarks__Toggle__With__Line_Color_MenuItem.Checked );
 
   Key_Down_Common( Sender, Key, Shift );
+
+
+  if ztb then // To avoid TCustomSynEdit.KeyDown - CommandProcessor.
+    Key := 0;
 
 end;
 

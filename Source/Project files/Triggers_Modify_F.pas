@@ -1251,7 +1251,8 @@ end;
 procedure TTriggers_Modify_F_Frame.Trigger_Source_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  Common.Syn_Edit_Key_Down( Trigger_Source_SynEdit, Sender, Key, Shift );
+  if Common.Syn_Edit_Key_Down( Trigger_Source_SynEdit, Sender, Key, Shift ) then
+    Key := 0; // To avoid TCustomSynEdit.KeyDown - CommandProcessor.
 
 end;
 

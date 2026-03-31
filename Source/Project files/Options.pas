@@ -2344,7 +2344,8 @@ end;
 procedure TOptions_Form.Sql_Text_SynEditKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
 begin
 
-  Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift );
+  if Common.Syn_Edit_Key_Down( Sql_Text_SynEdit, Sender, Key, Shift ) then
+    Key := 0; // To avoid TCustomSynEdit.KeyDown - CommandProcessor.
 
 end;
 
