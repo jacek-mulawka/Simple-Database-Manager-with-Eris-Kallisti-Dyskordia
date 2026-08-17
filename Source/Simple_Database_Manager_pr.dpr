@@ -1,5 +1,7 @@
 program Simple_Database_Manager_pr;
 
+{$I Definitions.inc}
+
 uses
   Vcl.Forms,
   About in 'Project files\About.pas' {About_Form},
@@ -54,6 +56,10 @@ uses
   View__Edit_Execute_F in 'Project files\View__Edit_Execute_F.pas' {View__Edit_Execute_F_Frame},
   View__Modify in 'Project files\View__Modify.pas' {View__Modify_Form},
   View__Parameter in 'Project files\View__Parameter.pas',
+
+  {$IFDEF Syn_Edit__overwrite}
+  SynEdit in 'Project files\Redistributable\SynEdit.pas', // From SynEdit.
+  {$ENDIF}
 
   plgSearchHighlighter in 'Project files\Redistributable\plgSearchHighlighter.pas'; // From SynEdit SearchReplaceDemo.
 

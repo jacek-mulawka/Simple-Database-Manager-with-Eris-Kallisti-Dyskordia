@@ -9,3 +9,5 @@
 //
 
 {$UNDEF JVCL__use}
+
+{$UNDEF Syn_Edit__overwrite}
