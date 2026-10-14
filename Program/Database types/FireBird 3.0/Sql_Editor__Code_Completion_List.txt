@@ -79,6 +79,7 @@
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trim( | )\style{-B}-->trim( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trunc( | )\style{-B}-->trunc( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union \style{-B}-->union 
+\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union all \style{-B}-->union all 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}update \style{-B}-->update 
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}upper( | )\style{-B}-->upper( | )
 \color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}values \style{-B}-->values 
