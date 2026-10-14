@@ -558,7 +558,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
           Top = 15
           Width = 25
           Height = 25
-          Hint = 'Commit transaction.'
+          Hint = 'Commit transaction.'#13#10#13#10'[Ctrl + Shift + Enter]'
           Enabled = False
           ImageIndex = 4
           Images = Shared_DataModule.ImageList1
@@ -1257,7 +1257,7 @@ object Sql_Editor_F_Frame: TSql_Editor_F_Frame
       OnClick = Transaction__Begin_ButtonClick
     end
     object Transaction__Commit_MenuItem: TMenuItem
-      Caption = 'Commit transaction'
+      Caption = 'Commit transaction [Ctrl + Shift + Enter]'
       Enabled = False
       ImageIndex = 4
       OnClick = Transaction__Commit_ButtonClick

@@ -1187,8 +1187,8 @@ begin
     Translation__Component__Add( 'Text__File__Save_MenuItem', 'Save file [Ctrl + Shift + S]' );
     Translation__Component__Add( 'Transaction__Begin_Button', '', 'Begin transaction.' );
     Translation__Component__Add( 'Transaction__Begin_MenuItem', 'Begin transaction' );
-    Translation__Component__Add( 'Transaction__Commit_Button', '', 'Commit transaction.' );
-    Translation__Component__Add( 'Transaction__Commit_MenuItem', 'Commit transaction' );
+    Translation__Component__Add( 'Transaction__Commit_Button', '', 'Commit transaction.' + #13 + #10 + #13 + #10 + '[Ctrl + Shift + Enter]' );
+    Translation__Component__Add( 'Transaction__Commit_MenuItem', 'Commit transaction [Ctrl + Shift + Enter]' );
     Translation__Component__Add( 'Transaction__Rollback_Button', '', 'Rollback transaction.' );
     Translation__Component__Add( 'Transaction__Rollback_MenuItem', 'Rollback transaction' );
     Translation__Component__Add( 'Transactions_Automatic_CheckBox', 'T.', 'Automatically begin transaction (if there is no active transaction) when the SQL text contains words like: delete, insert, update etc.' );

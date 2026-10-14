@@ -855,6 +855,15 @@ end;
 procedure TSql_Editor_F_Frame.Key_Down_Common( Sender : TObject; var Key : Word; Shift : TShiftState );
 begin
 
+  if    ( Key = VK_RETURN )
+    and ( Shift = [ ssCtrl, ssShift ] ) then
+    begin
+
+      if Transaction__Commit_Button.Enabled then
+        Transaction__Commit_ButtonClick( Sender );
+
+    end
+  else
   // E.
   if    ( Key = 69 )
     and ( Shift = [ ssCtrl, ssShift ] ) then

@@ -627,6 +627,7 @@ const
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trim( | )\style{-B}-->trim( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}trunc( | )\style{-B}-->trunc( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union \style{-B}-->union ' + #13 + #10 +
+    '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}union all \style{-B}-->union all ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}update \style{-B}-->update ' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}upper( | )\style{-B}-->upper( | )' + #13 + #10 +
     '\color{clGreen}__sql__ \color{clWindowText}\column{}\style{+B}values \style{-B}-->values ' + #13 + #10 +
