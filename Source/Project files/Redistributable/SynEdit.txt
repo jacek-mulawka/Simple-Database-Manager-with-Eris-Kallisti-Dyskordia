@@ -1,0 +1,37 @@
+﻿unit SynEdit;
+
+  //
+  // You can place the modified SynEdit.pas file in this directory so that the project can use it.
+  // To ensure the project uses the overridden SynEdit.pas file, you must modify the Definitions.inc file accordingly.
+  //
+  // Changes I made to better suit my needs regarding marks (SynEditor.Marks) functionality.
+  //
+  //
+  // W tym katalogu można umieścić zmodyfikowany plik SynEdit.pas aby projekt mógł z niego korzystać.
+  // Aby projekt korzystał z nadpisanego pliku SynEdit.pas należy odpowiednio zmodyfikować plik Definitions.inc.
+  //
+  // Zmiany jakie zrobiłem aby funkcjonalność znaczników (SynEditor.Marks) bardziej mi odpowiadała.
+  //
+
+procedure TCustomSynEdit.DoLinesDeleted(FirstLine, Count: Integer);
+begin
+
+  for Mark in Marks do
+    //if Mark.Line >= FirstLine + Count then // Jacek Mulawka.
+    if Mark.Line > FirstLine + Count then // Jacek Mulawka.
+      Mark.Line := Mark.Line - Count
+    //else if Mark.Line > FirstLine then // Jacek Mulawka.
+    else if Mark.Line > FirstLine + 1 then // Jacek Mulawka.
+      Mark.Line := FirstLine;
+
+end;
+
+procedure TCustomSynEdit.DoLinesInserted(FirstLine, Count: Integer);
+begin
+
+  for Mark in Marks do
+    //if Mark.Line >= FirstLine then // Jacek Mulawka.
+    if Mark.Line > FirstLine then // Jacek Mulawka.
+      Mark.Line := Mark.Line + Count;
+
+end;
